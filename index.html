@@ -303,6 +303,16 @@ function renderAMks(){
     var mk=L.marker([d.lat,d.lng],{icon:icon});
     mk.bindPopup(popDiv,{maxWidth:220});
     mk.addTo(vmap); aMks.push(mk);
+    // 위치 공개된 봉장만 반경 표시
+    if(d.isPublic){
+      var c1=L.circle([d.lat,d.lng],{radius:1000,color:col,fillColor:col,fillOpacity:0.04,weight:1.5,dashArray:'6,4'}).addTo(vmap);
+      var c2=L.circle([d.lat,d.lng],{radius:2000,color:col,fillColor:col,fillOpacity:0.02,weight:1,dashArray:'4,6'}).addTo(vmap);
+      aMks.push(c1); aMks.push(c2);
+      // 반경 라벨
+      var lb1=L.marker([d.lat+0.009,d.lng],{icon:L.divIcon({className:'',html:'<div style="background:rgba(20,12,4,.85);color:'+col+';font-size:.68rem;font-weight:700;padding:2px 6px;border-radius:8px;border:1px solid '+col+';white-space:nowrap;">1km</div>',iconAnchor:[14,10]})}).addTo(vmap);
+      var lb2=L.marker([d.lat+0.018,d.lng],{icon:L.divIcon({className:'',html:'<div style="background:rgba(20,12,4,.85);color:'+col+';font-size:.68rem;font-weight:700;padding:2px 6px;border-radius:8px;border:1px solid '+col+';white-space:nowrap;">2km</div>',iconAnchor:[14,10]})}).addTo(vmap);
+      aMks.push(lb1); aMks.push(lb2);
+    }
   });
 }
 
