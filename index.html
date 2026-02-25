@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🐝 봉장지도</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#100c07;--bg2:#1a1208;--bg3:#221a0e;
+  --bdr:rgba(255,179,0,0.22);
+  --gold:#FFB300;--goldl:#FFD54F;
+  --tx:#e8e0d0;--dim:#64748b;
+  --blue:#3b82f6;--red:#f87171;--green:#4ade80
+}
+body{background:var(--bg);color:var(--tx);font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+#hdr{padding:9px 14px;background:linear-gradient(135deg,#1a0a00,#2d1400);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#hdr h1{font-size:1rem;font-weight:900;color:var(--gold)}
+#gst{font-size:0.72rem;color:var(--dim)}
+#tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--bdr);flex-shrink:0}
+.tab{flex:1;padding:10px 4px;background:transparent;border:none;color:#555;font-size:0.78rem;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;touch-action:manipulation}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+#mapwrap{position:relative;flex-shrink:0}
+#vmap{width:100%;height:50dvh;background:#111}
+.mtr{position:absolute;top:10px;right:10px;z-index:500;display:flex;gap:6px}
+.mbl{position:absolute;bottom:12px;left:10px;z-index:500;display:flex;flex-direction:column;gap:6px}
+.mtype{padding:5px 10px;background:rgba(15,10,5,.9);border:1px solid var(--bdr);border-radius:8px;color:#777;font-size:.72rem;font-weight:700;cursor:pointer;touch-action:manipulation}
+.mtype.on{background:rgba(255,179,0,.9);color:#1a0800;border-color:var(--gold)}
+.icob{width:40px;height:40px;background:rgba(15,10,5,.9);border:2px solid var(--bdr);border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation}
+#locbar{display:none;padding:8px 14px;background:rgba(5,8,15,.96);border-top:1px solid rgba(59,130,246,.3);align-items:center;gap:10px;flex-shrink:0}
+#locbar.on{display:flex}
+#panel{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.pi{padding:12px 14px 80px}
+.ac{background:var(--bg3);border:1px solid var(--bdr);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.acr{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.acn{font-weight:900;font-size:.92rem;margin-bottom:3px}
+.aca{color:var(--dim);font-size:.78rem}
+.acm{color:#475569;font-size:.73rem;margin-top:2px}
+.acb{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
+.btn{padding:6px 11px;border:none;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;touch-action:manipulation}
+.bg{background:rgba(255,179,0,.18);color:var(--goldl)}
+.br{background:rgba(185,28,28,.22);color:var(--red)}
+.bb{background:rgba(59,130,246,.2);color:#60a5fa;border:1px solid rgba(59,130,246,.4)}
+.fl{color:#888;font-size:.82rem;display:block;margin-bottom:5px}
+.fi{width:100%;padding:11px 14px;background:rgba(0,0,0,.35);border:1px solid var(--bdr);border-radius:10px;color:var(--tx);font-size:.9rem;outline:none;margin-bottom:12px}
+.fi:focus{border-color:var(--gold)}
+.fi::placeholder{color:#3a3a3a}
+.fbig{width:100%;padding:13px;border:none;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;touch-action:manipulation;margin-bottom:10px}
+.fsave{background:linear-gradient(135deg,#b45309,#78350f);color:#fef3c7}
+.fgps{background:rgba(59,130,246,.25);color:#60a5fa;border:1px solid rgba(59,130,246,.4)}
+#cbox{display:none;padding:10px 12px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.25);border-radius:10px;margin-bottom:14px;font-size:.8rem;color:var(--dim)}
+#cbox.on{display:block}
+.tw{display:flex;align-items:center;gap:10px;padding:11px 12px;background:rgba(0,0,0,.2);border-radius:10px;margin-bottom:16px}
+.tt{width:48px;height:26px;border-radius:26px;cursor:pointer;display:flex;align-items:center;padding:3px;transition:background .3s}
+.th{width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .3s}
+.as{padding:8px 14px;border-radius:10px;border:2px solid var(--bdr);background:var(--bg3);color:#666;font-weight:700;cursor:pointer;touch-action:manipulation;font-size:.85rem}
+.as.on{background:rgba(255,179,0,.2);color:var(--goldl);border-color:var(--gold)}
+#regi{display:none;background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:10px;padding:12px;margin-bottom:14px}
+#regi.on{display:block}
+.hch{padding:5px 11px;border-radius:20px;font-size:.73rem;font-weight:700;border:2px solid;cursor:pointer;transition:all .18s;touch-action:manipulation;white-space:nowrap}
+.leaflet-popup-content-wrapper{background:transparent!important;border:none!important;box-shadow:none!important;padding:0!important}
+.leaflet-popup-content{margin:0!important}
+.leaflet-popup-tip-container{display:none!important}
+.leaflet-control-zoom{border:1px solid var(--bdr)!important}
+.leaflet-control-zoom a{background:rgba(15,10,5,.9)!important;color:var(--gold)!important}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(20,14,6,.96);color:var(--goldl);padding:9px 18px;border-radius:20px;font-size:.82rem;font-weight:700;border:1px solid rgba(255,179,0,.3);z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <h1>🐝 봉장지도</h1>
+  <span id="gst">GPS 대기</span>
+</div>
+
+<div id="tabs">
+  <button class="tab on" onclick="goTab('apiary')">🐝 봉장지도</button>
+  <button class="tab"    onclick="goTab('honey')">🌸 밀원지도</button>
+  <button class="tab"    onclick="goTab('reg')">📍 위치등록</button>
+</div>
+
+<div id="mapwrap">
+  <div class="mtr">
+    <button class="mtype on" id="bsat"  onclick="setTile('sat')">위성</button>
+    <button class="mtype"    id="bbase" onclick="setTile('base')">일반</button>
+  </div>
+  <div class="mbl">
+    <button class="icob" onclick="goMyLoc()">📍</button>
+  </div>
+  <div id="vmap"></div>
+</div>
+
+<div id="locbar">
+  <span style="font-size:1.1rem">📍</span>
+  <div style="flex:1;min-width:0">
+    <div id="laddr" style="font-size:.82rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">확인 중...</div>
+    <div id="lcoord" style="font-size:.71rem;color:var(--dim)"></div>
+  </div>
+  <button class="btn bg" onclick="locToForm()" style="flex-shrink:0">💾 저장</button>
+  <button class="btn" onclick="hideLocbar()" style="color:#444;flex-shrink:0">✕</button>
+</div>
+
+<div id="panel">
+
+  <div id="tab-apiary" class="pi">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;padding:6px 0 10px;font-size:.76rem;color:#ccc">
+      <span>🟡 고정봉장</span><span>🟠 이동봉장</span><span>⚫ 미등록</span><span>🔵 내위치</span>
+    </div>
+    <div id="alist"></div>
+  </div>
+
+  <div id="tab-honey" class="pi" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="color:var(--goldl);font-weight:700;font-size:.88rem">🌸 밀원수 선택</span>
+      <div style="display:flex;gap:6px">
+        <button class="btn bg" onclick="allHoney(1)" style="font-size:.7rem">전체선택</button>
+        <button class="btn" onclick="allHoney(0)" style="background:rgba(100,100,100,.15);color:#555;font-size:.7rem">전체해제</button>
+      </div>
+    </div>
+    <div id="hchips" style="display:flex;flex-wrap:wrap;gap:7px"></div>
+    <div style="margin-top:14px;padding:10px;background:rgba(255,179,0,.04);border-radius:8px;border:1px solid var(--bdr);color:#475569;font-size:.75rem;line-height:1.8">
+      📌 마커 클릭 시 수종 정보 표시<br>📌 경기남부·평택 중심 샘플 데이터
+    </div>
+  </div>
+
+  <div id="tab-reg" class="pi" style="display:none">
+    <div style="margin-bottom:14px">
+      <div style="color:var(--goldl);font-weight:700;font-size:.88rem;margin-bottom:8px">📍 봉장 선택</div>
+      <div id="aswrap" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    </div>
+    <div id="regi">
+      <div style="color:var(--dim);font-size:.75rem;margin-bottom:5px">📍 현재 등록 위치</div>
+      <div id="ri-a" style="font-size:.87rem;font-weight:700;margin-bottom:2px"></div>
+      <div id="ri-m" style="color:var(--dim);font-size:.75rem;margin-bottom:4px"></div>
+      <div id="ri-c" style="color:#475569;font-size:.72rem;margin-bottom:10px"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn bb" onclick="focusReg()" style="flex:1">🗺️ 지도 보기</button>
+        <button class="btn br" onclick="deleteApiary()" style="flex:1">🗑️ 위치 삭제</button>
+      </div>
+    </div>
+    <div id="regform" style="display:none">
+      <button class="fbig fgps" onclick="gpsToForm()">📡 현재 GPS 위치로 등록</button>
+      <div style="text-align:center;font-size:.74rem;color:#475569;margin:-6px 0 12px;padding:6px;background:rgba(255,179,0,.04);border-radius:8px;border:1px dashed rgba(255,179,0,.2)">
+        🗺️ 또는 봉장지도 탭에서 지도를 직접 클릭해도 됩니다
+      </div>
+      <label class="fl">✏️ 주소 검색 (예: 평택 진위면 / 오성면)</label>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input id="faddy" class="fi" style="flex:1;margin-bottom:0" placeholder="평택 진위면, 아산 도고면, 안성 공도읍 ...">
+        <button class="btn bg" onclick="doSearch()" style="padding:0 14px;flex-shrink:0">검색</button>
+      </div>
+      <div id="cbox">
+        <div id="cb-a" style="font-weight:700;margin-bottom:3px"></div>
+        <div id="cb-c" style="font-size:.72rem;color:var(--green)">✅ 좌표 확정됨</div>
+      </div>
+      <label class="fl">📝 메모</label>
+      <input id="fmemo" class="fi" placeholder="예) 진입로 주의, 아까시 군락지 인근">
+      <div class="tw">
+        <span style="flex:1;font-size:.9rem;color:#ccc">🌐 위치 공개</span>
+        <div id="ttrack" onclick="togglePub()" class="tt" style="background:#374151">
+          <div id="tthumb" class="th"></div>
+        </div>
+        <span id="tlabel" style="color:#555;font-size:.82rem;font-weight:700">비공개</span>
+      </div>
+      <button class="fbig fsave" onclick="saveApiary()">💾 저장</button>
+    </div>
+    <div id="regempty" style="text-align:center;color:#444;padding:30px">봉장을 선택해주세요</div>
+  </div>
+
+</div>
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+// ── VWORLD 키 ──
+var VK = 'F00592E3-2B83-38D8-9EBA-DA543461A436';
+
+// ================================================================
+// 내장 좌표 DB (외부 API 없이 동작)
+// ================================================================
+var ADB = [
+  // 평택 읍면동 전체
+  {k:'평택 진위면',lat:37.063,lng:127.052},{k:'평택 진위',lat:37.063,lng:127.052},
+  {k:'평택 오성면',lat:37.082,lng:127.023},{k:'평택 오성',lat:37.082,lng:127.023},
+  {k:'평택 서탄면',lat:37.051,lng:127.082},{k:'평택 서탄',lat:37.051,lng:127.082},
+  {k:'평택 현덕면',lat:37.001,lng:126.970},{k:'평택 현덕',lat:37.001,lng:126.970},
+  {k:'평택 팽성읍',lat:37.012,lng:127.025},{k:'평택 팽성',lat:37.012,lng:127.025},
+  {k:'평택 청북읍',lat:37.023,lng:126.954},{k:'평택 청북',lat:37.023,lng:126.954},
+  {k:'평택 포승읍',lat:36.989,lng:126.986},{k:'평택 포승',lat:36.989,lng:126.986},
+  {k:'평택 안중읍',lat:36.993,lng:126.924},{k:'평택 안중',lat:36.993,lng:126.924},
+  {k:'평택 고덕면',lat:37.038,lng:127.100},{k:'평택 고덕',lat:37.038,lng:127.100},
+  {k:'평택 송탄',lat:37.084,lng:127.065},{k:'평택 평택동',lat:37.012,lng:126.988},
+  {k:'평택시',lat:37.063,lng:127.080},{k:'평택',lat:37.063,lng:127.080},
+  // 안성
+  {k:'안성 공도읍',lat:37.082,lng:127.143},{k:'안성 공도',lat:37.082,lng:127.143},
+  {k:'안성 미양면',lat:37.043,lng:127.210},{k:'안성 금광면',lat:37.052,lng:127.244},
+  {k:'안성 일죽면',lat:37.008,lng:127.440},{k:'안성 양성면',lat:37.012,lng:127.193},
+  {k:'안성시',lat:37.008,lng:127.270},{k:'안성',lat:37.008,lng:127.270},
+  // 화성
+  {k:'화성 봉담읍',lat:37.212,lng:126.988},{k:'화성 우정읍',lat:37.087,lng:126.780},
+  {k:'화성 팔탄면',lat:37.193,lng:126.878},{k:'화성 향남읍',lat:37.150,lng:126.912},
+  {k:'화성시',lat:37.199,lng:126.831},{k:'화성',lat:37.199,lng:126.831},
+  // 수원·오산·용인
+  {k:'수원시',lat:37.263,lng:127.028},{k:'수원',lat:37.263,lng:127.028},
+  {k:'오산시',lat:37.150,lng:127.076},{k:'오산',lat:37.150,lng:127.076},
+  {k:'용인시',lat:37.238,lng:127.200},{k:'용인',lat:37.238,lng:127.200},
+  {k:'이천시',lat:37.272,lng:127.435},{k:'이천',lat:37.272,lng:127.435},
+  {k:'여주시',lat:37.298,lng:127.637},{k:'여주',lat:37.298,lng:127.637},
+  // 충남
+  {k:'천안시',lat:36.806,lng:127.152},{k:'천안',lat:36.806,lng:127.152},
+  {k:'아산시',lat:36.789,lng:127.002},{k:'아산',lat:36.789,lng:127.002},
+  {k:'아산 도고면',lat:36.816,lng:126.914},{k:'아산 배방읍',lat:36.805,lng:127.021},
+  {k:'아산 선장면',lat:36.768,lng:126.842},{k:'아산 염치읍',lat:36.819,lng:127.036},
+  {k:'당진시',lat:36.889,lng:126.629},{k:'당진',lat:36.889,lng:126.629},
+  {k:'서산시',lat:36.779,lng:126.452},{k:'서산',lat:36.779,lng:126.452},
+  {k:'홍성군',lat:36.601,lng:126.661},{k:'홍성',lat:36.601,lng:126.661},
+  {k:'예산군',lat:36.681,lng:126.849},{k:'예산',lat:36.681,lng:126.849},
+  {k:'논산시',lat:36.187,lng:127.099},{k:'논산',lat:36.187,lng:127.099},
+  {k:'보령시',lat:36.333,lng:126.614},{k:'보령',lat:36.333,lng:126.614},
+  // 전국 대도시
+  {k:'서울',lat:37.566,lng:126.978},{k:'부산',lat:35.179,lng:129.075},
+  {k:'대구',lat:35.871,lng:128.602},{k:'인천',lat:37.456,lng:126.705},
+  {k:'광주',lat:35.160,lng:126.851},{k:'대전',lat:36.351,lng:127.385},
+  {k:'울산',lat:35.538,lng:129.312},{k:'제주',lat:33.499,lng:126.531},
+  {k:'세종',lat:36.480,lng:127.289},{k:'춘천',lat:37.881,lng:127.730},
+  {k:'강릉',lat:37.751,lng:128.876},{k:'청주',lat:36.642,lng:127.489},
+  {k:'전주',lat:35.824,lng:127.148},{k:'순천',lat:34.950,lng:127.487},
+  {k:'창원',lat:35.228,lng:128.681},{k:'진주',lat:35.180,lng:128.107},
+  {k:'포항',lat:36.019,lng:129.343},{k:'경주',lat:35.856,lng:129.225},
+  {k:'안동',lat:36.569,lng:128.729},{k:'원주',lat:37.342,lng:127.921}
+];
+
+// VWorld 역지오코딩 (좌표 → 도로명/지번 주소)
+function nearAddr(lat, lng, cb) {
+  var url = 'https://api.vworld.kr/req/address'
+    + '?service=address&request=getAddress&version=2.0'
+    + '&crs=epsg:4326&point=' + lng + ',' + lat
+    + '&format=json&type=both&zipcode=false&simple=false'
+    + '&key=' + VK;
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data && data.response && data.response.status === 'OK') {
+        var results = data.response.result;
+        // 도로명 주소 우선
+        var road = results.find(function(r){ return r.type === 'road'; });
+        var jibun = results.find(function(r){ return r.type === 'parcel'; });
+        var addr = road ? road.text : (jibun ? jibun.text : '');
+        cb(addr || '');
+      } else { cb(''); }
+    })
+    .catch(function(){ cb(''); });
+}
+
+// 주소 → 좌표 (내장 DB 전용)
+function addrToCoord(addr, cb) {
+  // 1차: VWorld 주소검색 API (도로명/지번 모두 지원)
+  var url = 'https://api.vworld.kr/req/search'
+    + '?service=search&request=search&version=2.0'
+    + '&crs=epsg:4326&query=' + encodeURIComponent(addr)
+    + '&type=address&category=road'
+    + '&format=json&errorformat=json'
+    + '&key=' + VK;
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data && data.response && data.response.status === 'OK'
+         && data.response.result && data.response.result.items
+         && data.response.result.items.length > 0) {
+        var item = data.response.result.items[0];
+        var pt = item.point;
+        cb(parseFloat(pt.y), parseFloat(pt.x), item.title || addr);
+        return;
+      }
+      // 도로명 실패 → 지번으로 재시도
+      var url2 = 'https://api.vworld.kr/req/search'
+        + '?service=search&request=search&version=2.0'
+        + '&crs=epsg:4326&query=' + encodeURIComponent(addr)
+        + '&type=address&category=parcel'
+        + '&format=json&errorformat=json'
+        + '&key=' + VK;
+      return fetch(url2)
+        .then(function(r){ return r.json(); })
+        .then(function(data2){
+          if(data2 && data2.response && data2.response.status === 'OK'
+             && data2.response.result && data2.response.result.items
+             && data2.response.result.items.length > 0) {
+            var item2 = data2.response.result.items[0];
+            var pt2 = item2.point;
+            cb(parseFloat(pt2.y), parseFloat(pt2.x), item2.title || addr);
+          } else {
+            // 2차: 내장 DB fallback
+            addrToCoordDB(addr, cb);
+          }
+        });
+    })
+    .catch(function(){
+      // 네트워크 오류 시 내장 DB
+      addrToCoordDB(addr, cb);
+    });
+}
+
+// 내장 DB 검색 (fallback)
+function addrToCoordDB(addr, cb) {
+  function norm(s){ return s.replace(/\s/g,'').replace(/시$|군$|구$/,'').replace(/읍$|면$|동$|리$/,''); }
+  var q = norm(addr);
+  var found=null, bl=0;
+  ADB.forEach(function(r){
+    var k = norm(r.k);
+    if(q.indexOf(k)>=0 || k.indexOf(q)>=0){
+      if(r.k.length>bl){ bl=r.k.length; found=r; }
+    }
+  });
+  if(found){ cb(found.lat, found.lng, found.k); return; }
+  cb(null, null, null);
+}
+
+// ================================================================
+// 데이터 (localStorage)
+// ================================================================
+var AS = (function(){ try{return JSON.parse(localStorage.getItem('apiarySettings'));}catch(e){return null;} })()
+  || {'1봉장':true,'2봉장':true,'3봉장':true,'이동1봉장':false,'이동2봉장':false,'이동3봉장':false};
+
+var AL = (function(){ try{return JSON.parse(localStorage.getItem('apiaryLocations'))||{};}catch(e){return{};} })();
+
+function getNames(){ return Object.keys(AS).filter(function(k){return AS[k];}); }
+
+function saveLocs(){
+  try{ localStorage.setItem('apiaryLocations',JSON.stringify(AL)); return true; }
+  catch(e){ showToast('⚠️ 저장 실패: '+e.message); return false; }
+}
+
+// ================================================================
+// 밀원수 데이터
+// ================================================================
+var HONEY=[
+  {id:'acacia',   nm:'아까시나무',c:'#fffde7',i:'🌼',s:'5-6월',pts:[[37.0632,127.0532,'평택 진위면 가곡리'],[37.0821,127.0234,'평택 오성면 숙성리'],[37.0512,127.0821,'평택 서탄면 마두리'],[37.0934,126.9821,'평택 현덕면 권관리'],[37.1123,127.0432,'평택 팽성읍 노양리'],[37.0234,127.0654,'평택 청북읍 어연리'],[36.9821,127.0123,'평택 포승읍 홍원리'],[37.0432,127.1234,'안성 미양면 갈전리'],[37.2143,127.0765,'수원 광교산'],[36.8765,127.1543,'천안 광덕면']]},
+  {id:'chestnut', nm:'밤나무',    c:'#ffcc02',i:'🌰',s:'6-7월',pts:[[37.0543,127.0987,'평택 진위면 은산리'],[37.0876,127.1234,'안성 공도읍'],[36.9654,127.0543,'평택 포승읍 만호리'],[36.8543,127.1876,'아산 도고면'],[36.6123,127.5234,'청주 가덕면']]},
+  {id:'rape',     nm:'유채',      c:'#fff176',i:'🌻',s:'4-5월',pts:[[37.0123,127.0345,'평택 오성면 양교리'],[36.9876,126.9654,'평택 현덕면 장수리'],[33.4321,126.5987,'제주 표선면'],[34.8765,127.5234,'보성 회천면']]},
+  {id:'clover',   nm:'클로버',    c:'#a5d6a7',i:'🍀',s:'5-9월',pts:[[37.0765,127.0543,'평택 진위면 마산리'],[37.1234,127.0123,'평택 팽성읍 추팔리'],[37.0543,126.9876,'평택 현덕면 화양리'],[36.9876,127.0432,'평택 포승읍 내기리']]},
+  {id:'buckwheat',nm:'메밀',      c:'#e1bee7',i:'⚪',s:'8-9월',pts:[[37.0654,127.0876,'평택 진위면 봉남리'],[37.1987,128.3456,'평창 봉평면'],[38.0234,127.5432,'철원 동송읍']]},
+  {id:'linden',   nm:'피나무',    c:'#c8e6c9',i:'🍃',s:'7월',  pts:[[37.6543,128.7123,'홍천 두촌면'],[37.8765,128.4987,'인제 기린면'],[38.1234,128.2345,'양양 서면']]},
+  {id:'cherry',   nm:'벚나무',    c:'#fce4ec',i:'🌸',s:'4월',  pts:[[37.0643,127.0543,'평택 진위면 동천리'],[37.5432,127.0876,'서울 여의도'],[35.8654,128.5987,'경주 보문단지']]},
+  {id:'goldenrod',nm:'황금꽃',    c:'#ffe082',i:'✨',s:'9-10월',pts:[[37.0432,127.1123,'평택 서탄면 내천리'],[37.5876,128.6543,'홍천 서석면']]},
+  {id:'willow',   nm:'버드나무',  c:'#dcedc8',i:'🌿',s:'3-4월',pts:[[37.0234,127.0654,'평택 진위천 변'],[37.0876,127.0123,'평택 오성면 안화리'],[37.0543,126.9765,'평택 현덕면 황산리']]},
+  {id:'sunflower',nm:'해바라기',  c:'#ffd54f',i:'🌻',s:'7-8월',pts:[[37.0432,127.0876,'평택 진위면 봉남리'],[37.1654,127.0234,'화성 양감면']]},
+  {id:'cosmos',   nm:'코스모스',  c:'#f48fb1',i:'🌸',s:'9-10월',pts:[[37.0654,127.0543,'평택 진위면 산직리'],[36.9876,127.0876,'평택 포승읍 원정리']]},
+  {id:'lotus',    nm:'연꽃',      c:'#f8bbd0',i:'🪷',s:'7-8월',pts:[[36.9654,127.0234,'평택 포승읍 방림리'],[37.0123,127.0543,'평택 오성면 야막리']]},
+  {id:'peach',    nm:'복숭아',    c:'#ffccbc',i:'🍑',s:'4월',  pts:[[37.0543,127.1234,'안성 금광면 상중리'],[35.9876,128.6543,'청도 화양읍']]},
+  {id:'pear',     nm:'배나무',    c:'#e8e8e8',i:'🍐',s:'4월',  pts:[[36.9543,127.0876,'평택 포승읍 홍원리'],[36.7432,126.9876,'당진 합덕읍']]},
+  {id:'oriental', nm:'때죽나무',  c:'#fce4ec',i:'🌸',s:'5-6월',pts:[[37.0234,127.0543,'평택 진위면 마두리'],[36.5876,129.0234,'영덕 지품면']]}
+];
+var HON={};
+HONEY.forEach(function(t){HON[t.id]=(t.id==='acacia'||t.id==='chestnut'||t.id==='rape');});
+
+// ================================================================
+// 지도 변수
+// ================================================================
+var vmap=null, tiles=[], aMks=[], hMks={}, myMk=null, myC=null, myPos=null, wid=null, tpin=null;
+var fLat=null, fLng=null, curApy=null, curTab='apiary';
+var NAMES=[];
+
+// ================================================================
+// 지도 초기화
+// ================================================================
+function initMap(){
+  if(vmap) return;
+  vmap=L.map('vmap',{center:[36.5,127.8],zoom:7,zoomControl:true,attributionControl:false});
+  setTile('sat');
+  vmap.on('click',function(e){
+    if(curTab!=='reg'||!curApy) return;
+    setFCoord(e.latlng.lat,e.latlng.lng,'지도 클릭');
+  });
+  setTimeout(function(){
+    vmap.invalidateSize();
+    renderAMks();
+    startGPS();
+    var cnt=getNames().filter(function(n){return AL[n]&&AL[n].lat;}).length;
+    if(cnt>0) showToast('📂 저장된 봉장 위치 '+cnt+'개 복원됨');
+  },300);
+}
+
+function setTile(type){
+  tiles.forEach(function(l){vmap.removeLayer(l);}); tiles=[];
+  if(type==='sat'){
+    tiles.push(L.tileLayer('https://api.vworld.kr/req/wmts/1.0.0/'+VK+'/Satellite/{z}/{y}/{x}.jpeg',{maxZoom:19,errorTileUrl:'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='}).addTo(vmap));
+    tiles.push(L.tileLayer('https://api.vworld.kr/req/wmts/1.0.0/'+VK+'/Hybrid/{z}/{y}/{x}.png',{maxZoom:19,opacity:0.85}).addTo(vmap));
+  } else {
+    tiles.push(L.tileLayer('https://api.vworld.kr/req/wmts/1.0.0/'+VK+'/Base/{z}/{y}/{x}.png',{maxZoom:19}).addTo(vmap));
+  }
+  document.getElementById('bsat').classList.toggle('on',type==='sat');
+  document.getElementById('bbase').classList.toggle('on',type==='base');
+}
+
+// ================================================================
+// GPS
+// ================================================================
+var gpsMoved=false;
+function startGPS(){
+  if(!navigator.geolocation){ showToast('⚠️ GPS 미지원'); return; }
+  if(wid) navigator.geolocation.clearWatch(wid);
+  gpsMoved=false;
+  document.getElementById('gst').textContent='📡 GPS 확인중...';
+  wid=navigator.geolocation.watchPosition(onGPS,function(e){
+    document.getElementById('gst').textContent=e.code===1?'🔒 위치권한 차단':'⚠️ GPS없음';
+  },{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+}
+
+function onGPS(pos){
+  var lat=pos.coords.latitude, lng=pos.coords.longitude, acc=Math.round(pos.coords.accuracy);
+  myPos={lat:lat,lng:lng,acc:acc};
+  var col=acc<=50?'#4ade80':acc<=300?'#fbbf24':'#f87171';
+  var gst=document.getElementById('gst');
+  gst.textContent='📍 ±'+acc+'m'; gst.style.color=col;
+  // 마커 갱신
+  if(myMk) vmap.removeLayer(myMk);
+  if(myC)  vmap.removeLayer(myC);
+  myC=L.circle([lat,lng],{radius:acc,color:'#3b82f6',fillColor:'#3b82f6',fillOpacity:0.1,weight:1.5}).addTo(vmap);
+  myMk=L.marker([lat,lng],{icon:L.divIcon({
+    className:'',
+    html:'<div style="width:16px;height:16px;background:#3b82f6;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 4px rgba(59,130,246,0.25);"></div>',
+    iconSize:[16,16],iconAnchor:[8,8]
+  }),zIndexOffset:2000}).addTo(vmap);
+  // 첫 fix + 정확도 500m 이하 → 지도 이동
+  if(!gpsMoved && acc<=500){ gpsMoved=true; vmap.setView([lat,lng],14); }
+  // 내위치바
+  document.getElementById('laddr').textContent='주소 확인 중...';
+  document.getElementById('lcoord').textContent=lat.toFixed(5)+', '+lng.toFixed(5)+'  (±'+acc+'m)';
+  document.getElementById('locbar').classList.add('on');
+  nearAddr(lat, lng, function(addr){
+    document.getElementById('laddr').textContent = addr || '위치 확인됨';
+  });
+}
+
+function goMyLoc(){
+  if(myPos){ vmap.setView([myPos.lat,myPos.lng],15); showToast('📍 내 위치로 이동'); }
+  else{ startGPS(); showToast('📡 GPS 신호 확인 중...'); }
+}
+function hideLocbar(){ document.getElementById('locbar').classList.remove('on'); }
+
+// ================================================================
+// 봉장 마커
+// ================================================================
+function renderAMks(){
+  if(!vmap) return;
+  aMks.forEach(function(m){vmap.removeLayer(m);}); aMks=[];
+  getNames().forEach(function(name){
+    var d=AL[name]; if(!d||!d.lat) return;
+    var mov=name.indexOf('이동')>=0;
+    var col=mov?'#f97316':'#FFB300';
+    var icon=L.divIcon({className:'',
+      html:'<div style="width:30px;height:38px;"><svg viewBox="0 0 30 38" width="30" height="38">'
+        +'<path d="M15 0C6.7 0 0 6.7 0 15c0 10 15 23 15 23s15-13 15-23C30 6.7 23.3 0 15 0z" fill="'+col+'"/>'
+        +'<circle cx="15" cy="15" r="8" fill="rgba(255,255,255,0.92)"/>'
+        +'<text x="15" y="20" font-size="9" text-anchor="middle">'+(mov?'🚚':'🐝')+'</text>'
+        +'</svg></div>',
+      iconSize:[30,38],iconAnchor:[15,38],popupAnchor:[0,-40]
+    });
+    var pop='<div style="background:#1e1410;border:2px solid '+col+';border-radius:10px;padding:10px 13px;min-width:155px;">'
+      +'<b style="color:'+col+';">'+(mov?'🚚 ':'🐝 ')+name+'</b>'
+      +(d.address?'<div style="color:#aaa;font-size:.78rem;margin-top:4px;">📍 '+d.address+'</div>':'')
+      +(d.memo?'<div style="color:#666;font-size:.76rem;margin-top:2px;">📝 '+d.memo+'</div>':'')
+      +'<div style="color:#475569;font-size:.72rem;margin-top:4px;">🌐 '+d.lat.toFixed(4)+', '+d.lng.toFixed(4)+'</div>'
+      +'<div style="color:#374151;font-size:.72rem;margin-top:6px;">목록 카드에서 수정·삭제</div>'
+      +'</div>';
+    var mk=L.marker([d.lat,d.lng],{icon:icon});
+    mk.bindPopup(pop,{maxWidth:220});
+    mk.addTo(vmap); aMks.push(mk);
+  });
+}
+
+// ================================================================
+// 봉장 카드 목록
+// ================================================================
+function renderAList(){
+  NAMES=getNames();
+  var el=document.getElementById('alist');
+  if(!NAMES.length){el.innerHTML='<div style="text-align:center;color:#444;padding:24px;">활성화된 봉장이 없습니다</div>';return;}
+  el.innerHTML=NAMES.map(function(name,i){
+    var d=AL[name]||{};
+    var mov=name.indexOf('이동')>=0;
+    var col=mov?'#f97316':'#FFB300';
+    var has=!!d.lat;
+    return '<div class="ac" style="border-left:4px solid '+col+';">'
+      +'<div class="acr">'
+        +'<div style="flex:1;min-width:0;">'
+          +'<div class="acn">'+(mov?'🚚 ':'🐝 ')+name+'</div>'
+          +(has
+            ?'<div class="aca">📍 '+(d.address||d.lat.toFixed(4)+', '+d.lng.toFixed(4))+'</div>'+(d.memo?'<div class="acm">📝 '+d.memo+'</div>':'')
+            :'<div style="color:#444;font-size:.78rem;">위치 미등록</div>')
+        +'</div>'
+        +'<div class="acb">'
+          +(has?'<span style="padding:2px 7px;background:'+(d.isPublic?'rgba(74,222,128,.12)':'rgba(100,100,100,.15)')+';color:'+(d.isPublic?'#4ade80':'#555')+';border-radius:5px;font-size:.7rem;">'+(d.isPublic?'공개':'비공개')+'</span>':'')
+          +'<button class="btn bg" onclick="tapEdit('+i+')">'+( has?'✏️ 수정':'+ 등록')+'</button>'
+          +(has?'<button class="btn br" onclick="tapDel('+i+')">🗑️ 삭제</button>':'')
+        +'</div>'
+      +'</div>'
+      +(has?'<button onclick="tapFocus('+i+')" style="margin-top:8px;width:100%;padding:6px;background:rgba(255,179,0,.08);color:var(--goldl);border:1px solid rgba(255,179,0,.2);border-radius:7px;font-size:.75rem;cursor:pointer;touch-action:manipulation;">🗺️ 지도에서 보기</button>':'')
+      +'</div>';
+  }).join('');
+}
+
+function tapEdit(i){ var n=NAMES[i]; goTab('reg'); setTimeout(function(){selectApy(n);},120); }
+function tapDel(i){
+  var n=NAMES[i];
+  if(!confirm(n+' 위치를 삭제하시겠습니까?')) return;
+  delete AL[n]; saveLocs();
+  showToast('🗑️ '+n+' 삭제 완료');
+  renderAList(); renderAMks();
+  if(curApy===n) renderRegForm(n);
+}
+function tapFocus(i){
+  var d=AL[NAMES[i]]; if(!d||!vmap) return;
+  goTab('apiary');
+  setTimeout(function(){vmap.invalidateSize();vmap.setView([d.lat,d.lng],15);},200);
+}
+
+// ================================================================
+// 탭 전환
+// ================================================================
+function goTab(tab){
+  curTab=tab;
+  ['apiary','honey','reg'].forEach(function(t,idx){
+    document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
+    document.querySelectorAll('#tabs .tab')[idx].classList.toggle('on',t===tab);
+  });
+  if(!vmap){initMap();return;}
+  vmap.invalidateSize();
+  if(tab==='apiary'){ renderAList(); renderAMks(); }
+  else if(tab==='honey'){ renderHChips(); renderHMks(); }
+  else{ renderASelBtns(); }
+}
+
+// ================================================================
+// 위치등록 폼
+// ================================================================
+function renderASelBtns(){
+  NAMES=getNames();
+  document.getElementById('aswrap').innerHTML=NAMES.map(function(n){
+    var mov=n.indexOf('이동')>=0;
+    return '<button class="as'+(curApy===n?' on':'')+'" onclick="selectApy(\''+n+'\')">'+
+      (mov?'🚚 ':'🐝 ')+n+'</button>';
+  }).join('');
+}
+
+function selectApy(name){
+  curApy=name;
+  document.querySelectorAll('.as').forEach(function(b){
+    b.classList.toggle('on', b.textContent.trim().replace(/^[🚚🐝]\s+/,'')=== name);
+  });
+  renderRegForm(name);
+}
+
+function renderRegForm(name){
+  var d=AL[name]||{}, has=!!d.lat;
+  document.getElementById('regempty').style.display='none';
+  document.getElementById('regform').style.display='block';
+  // 등록된 위치 카드
+  var ri=document.getElementById('regi');
+  if(has){
+    ri.classList.add('on');
+    document.getElementById('ri-a').textContent=d.address||'주소 없음';
+    document.getElementById('ri-m').textContent=d.memo?'📝 '+d.memo:'';
+    document.getElementById('ri-c').textContent='🌐 '+d.lat.toFixed(5)+', '+d.lng.toFixed(5);
+  } else { ri.classList.remove('on'); }
+  // 폼
+  document.getElementById('faddy').value=d.address||'';
+  document.getElementById('fmemo').value=d.memo||'';
+  var pub=!!d.isPublic;
+  document.getElementById('ttrack').style.background=pub?'#16a34a':'#374151';
+  document.getElementById('tthumb').style.transform=pub?'translateX(22px)':'translateX(0)';
+  document.getElementById('tlabel').textContent=pub?'공개':'비공개';
+  document.getElementById('tlabel').style.color=pub?'var(--green)':'#555';
+  fLat=d.lat||null; fLng=d.lng||null;
+  updCBox();
+}
+
+function updCBox(){
+  var box=document.getElementById('cbox');
+  if(fLat){
+    box.classList.add('on');
+    document.getElementById('cb-a').textContent='📍 '+(document.getElementById('faddy').value||nearAddr(fLat,fLng)||'위치 선택됨');
+    document.getElementById('cb-c').textContent='🌐 '+fLat.toFixed(5)+', '+fLng.toFixed(5)+'  ✅ 좌표 확정';
+  } else { box.classList.remove('on'); }
+}
+
+function setFCoord(lat,lng,label){
+  fLat=lat; fLng=lng;
+  if(tpin){vmap.removeLayer(tpin);tpin=null;}
+  tpin=L.marker([lat,lng],{icon:L.divIcon({
+    className:'',
+    html:'<div style="font-size:1.8rem;filter:drop-shadow(0 2px 5px rgba(0,0,0,.8))">📍</div>',
+    iconSize:[30,30],iconAnchor:[10,28]
+  }),zIndexOffset:1500}).addTo(vmap);
+  vmap.setView([lat,lng],15);
+  updCBox();
+  showToast('📍 '+label+' - 메모 입력 후 저장하세요');
+}
+
+function gpsToForm(){
+  if(myPos&&myPos.lat){
+    setFCoord(myPos.lat,myPos.lng,'현재 위치 (±'+myPos.acc+'m)');
+    document.getElementById('faddy').value='주소 확인 중...';
+    nearAddr(myPos.lat, myPos.lng, function(addr){
+      document.getElementById('faddy').value = addr || '';
+      updCBox();
+    });
+  } else { showToast('📡 GPS 신호 확인 중... 잠시 후 다시 눌러주세요'); startGPS(); }
+}
+
+function doSearch(){
+  var addr=document.getElementById('faddy').value.trim();
+  if(!addr){ showToast('⚠️ 주소를 입력해주세요'); return; }
+  showToast('🔍 검색 중...');
+  addrToCoord(addr, function(lat, lng, title){
+    if(lat){
+      document.getElementById('faddy').value = title || addr;
+      setFCoord(lat, lng, title || addr);
+    } else {
+      showToast('⚠️ 찾을 수 없습니다. 도로명/지번 주소를 정확히 입력해주세요');
+    }
+  });
+}
+
+function togglePub(){
+  var on=document.getElementById('tthumb').style.transform!=='translateX(22px)';
+  document.getElementById('ttrack').style.background=on?'#16a34a':'#374151';
+  document.getElementById('tthumb').style.transform=on?'translateX(22px)':'translateX(0)';
+  document.getElementById('tlabel').textContent=on?'공개':'비공개';
+  document.getElementById('tlabel').style.color=on?'var(--green)':'#555';
+}
+
+function saveApiary(){
+  if(!curApy){ showToast('⚠️ 봉장을 선택해주세요'); return; }
+  if(!fLat){ showToast('⚠️ GPS 버튼이나 주소 검색으로 위치를 먼저 설정해주세요'); return; }
+  var pub=document.getElementById('tthumb').style.transform==='translateX(22px)';
+  AL[curApy]={lat:fLat,lng:fLng,
+    address:document.getElementById('faddy').value.trim(),
+    memo:document.getElementById('fmemo').value.trim(),
+    isPublic:pub, updatedAt:new Date().toISOString()};
+  if(saveLocs()){
+    if(tpin){vmap.removeLayer(tpin);tpin=null;}
+    showToast('✅ '+curApy+' 저장 완료!');
+    setTimeout(function(){
+      goTab('apiary');
+      setTimeout(function(){vmap.invalidateSize();vmap.setView([fLat,fLng],15);renderAMks();},200);
+    },600);
+  }
+}
+
+function deleteApiary(){
+  if(!curApy) return;
+  if(!confirm(curApy+' 위치를 삭제하시겠습니까?')) return;
+  delete AL[curApy]; saveLocs();
+  showToast('🗑️ 삭제 완료');
+  renderRegForm(curApy); renderAMks();
+}
+
+function focusReg(){
+  if(!curApy) return;
+  var d=AL[curApy]; if(!d||!vmap) return;
+  goTab('apiary');
+  setTimeout(function(){vmap.invalidateSize();vmap.setView([d.lat,d.lng],15);},200);
+}
+
+function locToForm(){
+  if(!myPos){ showToast('⚠️ GPS 위치를 먼저 확인해주세요'); return; }
+  var ns=getNames();
+  if(!ns.length){ showToast('⚠️ 활성 봉장이 없습니다'); return; }
+  var unreg=ns.filter(function(n){return !AL[n]||!AL[n].lat;});
+  var target=unreg.length?unreg[0]:ns[0];
+  goTab('reg');
+  setTimeout(function(){
+    renderASelBtns(); selectApy(target);
+    setTimeout(function(){
+      setFCoord(myPos.lat,myPos.lng,'현재 위치 (±'+myPos.acc+'m)');
+      nearAddr(myPos.lat, myPos.lng, function(addr){
+        document.getElementById('faddy').value = addr || '';
+        updCBox();
+      });
+    },200);
+  },150);
+}
+
+// ================================================================
+// 밀원 마커
+// ================================================================
+function renderHChips(){
+  document.getElementById('hchips').innerHTML=HONEY.map(function(t){
+    var on=HON[t.id];
+    return '<button class="hch" onclick="togH(\''+t.id+'\')" style="border-color:'+t.c+';'+(on?'background:'+t.c+';color:#1a0800;':'color:'+t.c+';background:transparent;')+'">'+t.i+' '+t.nm+'</button>';
+  }).join('');
+}
+function togH(id){ HON[id]=!HON[id]; renderHChips(); renderHMks(); }
+function allHoney(v){ HONEY.forEach(function(t){HON[t.id]=!!v;}); renderHChips(); renderHMks(); }
+function renderHMks(){
+  if(!vmap) return;
+  Object.keys(hMks).forEach(function(id){hMks[id].forEach(function(m){vmap.removeLayer(m);});});
+  hMks={};
+  HONEY.forEach(function(t){
+    if(!HON[t.id]) return;
+    hMks[t.id]=[];
+    t.pts.forEach(function(pt){
+      var mk=L.marker([pt[0],pt[1]],{icon:L.divIcon({className:'',html:'<div style="font-size:1.2rem;filter:drop-shadow(0 1px 3px rgba(0,0,0,.7))">'+t.i+'</div>',iconSize:[24,24],iconAnchor:[12,12]}),opacity:0.9});
+      mk.bindPopup('<div style="background:#1e1410;border:1px solid rgba(255,179,0,.3);border-radius:8px;padding:8px 11px;font-size:.8rem;">'
+        +'<b style="color:'+t.c+';">'+t.i+' '+t.nm+'</b>'
+        +'<div style="color:#94a3b8;margin-top:3px;">🌸 개화: '+t.s+'</div>'
+        +(pt[2]?'<div style="color:#64748b;font-size:.73rem;margin-top:2px;">📍 '+pt[2]+'</div>':'')
+        +'</div>',{maxWidth:200});
+      mk.addTo(vmap); hMks[t.id].push(mk);
+    });
+  });
+}
+
+// ================================================================
+// 토스트
+// ================================================================
+var _tt=null;
+function showToast(msg){
+  var el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('on');
+  if(_tt) clearTimeout(_tt);
+  _tt=setTimeout(function(){el.classList.remove('on');},2800);
+}
+
+// ================================================================
+// 시작
+// ================================================================
+window.addEventListener('load',function(){
+  NAMES=getNames();
+  renderAList();
+  initMap();
+});
+</script>
+</body>
+</html>
