@@ -78,7 +78,6 @@ body{background:var(--bg);color:var(--tx);font-family:'Apple SD Gothic Neo','Not
 
 <div id="tabs">
   <button class="tab on" onclick="goTab('apiary')">🐝 봉장지도</button>
-  <button class="tab"    onclick="goTab('honey')">🌸 밀원지도</button>
   <button class="tab"    onclick="goTab('reg')">📍 위치등록</button>
 </div>
 
@@ -233,74 +232,73 @@ var ADB = [
   {k:'안동',lat:36.569,lng:128.729},{k:'원주',lat:37.342,lng:127.921}
 ];
 
-// VWorld 역지오코딩 (좌표 → 도로명/지번 주소)
+// JSONP 호출 (file:// CORS 우회)
+function jsonp(url, cbName, cb) {
+  var fn = 'vw_cb_' + Date.now();
+  window[fn] = function(data) {
+    delete window[fn];
+    document.head.removeChild(s);
+    cb(data);
+  };
+  var s = document.createElement('script');
+  s.src = url + '&callback=' + fn;
+  s.onerror = function() { delete window[fn]; document.head.removeChild(s); cb(null); };
+  document.head.appendChild(s);
+}
+
+// VWorld 역지오코딩 (좌표 → 도로명 주소)
 function nearAddr(lat, lng, cb) {
   var url = 'https://api.vworld.kr/req/address'
     + '?service=address&request=getAddress&version=2.0'
     + '&crs=epsg:4326&point=' + lng + ',' + lat
     + '&format=json&type=both&zipcode=false&simple=false'
     + '&key=' + VK;
-  fetch(url)
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      if(data && data.response && data.response.status === 'OK') {
-        var results = data.response.result;
-        // 도로명 주소 우선
-        var road = results.find(function(r){ return r.type === 'road'; });
-        var jibun = results.find(function(r){ return r.type === 'parcel'; });
-        var addr = road ? road.text : (jibun ? jibun.text : '');
-        cb(addr || '');
-      } else { cb(''); }
-    })
-    .catch(function(){ cb(''); });
+  jsonp(url, 'callback', function(data) {
+    if(data && data.response && data.response.status === 'OK') {
+      var results = data.response.result;
+      var road   = results.filter(function(r){ return r.type === 'road'; })[0];
+      var jibun  = results.filter(function(r){ return r.type === 'parcel'; })[0];
+      cb((road ? road.text : '') || (jibun ? jibun.text : '') || '');
+    } else { cb(''); }
+  });
 }
 
 // 주소 → 좌표 (내장 DB 전용)
 function addrToCoord(addr, cb) {
-  // 1차: VWorld 주소검색 API (도로명/지번 모두 지원)
+  // VWorld 주소검색 JSONP (도로명 우선)
   var url = 'https://api.vworld.kr/req/search'
     + '?service=search&request=search&version=2.0'
     + '&crs=epsg:4326&query=' + encodeURIComponent(addr)
     + '&type=address&category=road'
     + '&format=json&errorformat=json'
     + '&key=' + VK;
-  fetch(url)
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      if(data && data.response && data.response.status === 'OK'
-         && data.response.result && data.response.result.items
-         && data.response.result.items.length > 0) {
-        var item = data.response.result.items[0];
-        var pt = item.point;
-        cb(parseFloat(pt.y), parseFloat(pt.x), item.title || addr);
-        return;
+  jsonp(url, 'callback', function(data) {
+    if(data && data.response && data.response.status === 'OK'
+       && data.response.result && data.response.result.items
+       && data.response.result.items.length > 0) {
+      var item = data.response.result.items[0];
+      cb(parseFloat(item.point.y), parseFloat(item.point.x), item.title || addr);
+      return;
+    }
+    // 도로명 실패 → 지번으로 재시도
+    var url2 = 'https://api.vworld.kr/req/search'
+      + '?service=search&request=search&version=2.0'
+      + '&crs=epsg:4326&query=' + encodeURIComponent(addr)
+      + '&type=address&category=parcel'
+      + '&format=json&errorformat=json'
+      + '&key=' + VK;
+    jsonp(url2, 'callback', function(data2) {
+      if(data2 && data2.response && data2.response.status === 'OK'
+         && data2.response.result && data2.response.result.items
+         && data2.response.result.items.length > 0) {
+        var item2 = data2.response.result.items[0];
+        cb(parseFloat(item2.point.y), parseFloat(item2.point.x), item2.title || addr);
+      } else {
+        // 내장 DB fallback
+        addrToCoordDB(addr, cb);
       }
-      // 도로명 실패 → 지번으로 재시도
-      var url2 = 'https://api.vworld.kr/req/search'
-        + '?service=search&request=search&version=2.0'
-        + '&crs=epsg:4326&query=' + encodeURIComponent(addr)
-        + '&type=address&category=parcel'
-        + '&format=json&errorformat=json'
-        + '&key=' + VK;
-      return fetch(url2)
-        .then(function(r){ return r.json(); })
-        .then(function(data2){
-          if(data2 && data2.response && data2.response.status === 'OK'
-             && data2.response.result && data2.response.result.items
-             && data2.response.result.items.length > 0) {
-            var item2 = data2.response.result.items[0];
-            var pt2 = item2.point;
-            cb(parseFloat(pt2.y), parseFloat(pt2.x), item2.title || addr);
-          } else {
-            // 2차: 내장 DB fallback
-            addrToCoordDB(addr, cb);
-          }
-        });
-    })
-    .catch(function(){
-      // 네트워크 오류 시 내장 DB
-      addrToCoordDB(addr, cb);
     });
+  });
 }
 
 // 내장 DB 검색 (fallback)
@@ -334,32 +332,9 @@ function saveLocs(){
 }
 
 // ================================================================
-// 밀원수 데이터
-// ================================================================
-var HONEY=[
-  {id:'acacia',   nm:'아까시나무',c:'#fffde7',i:'🌼',s:'5-6월',pts:[[37.0632,127.0532,'평택 진위면 가곡리'],[37.0821,127.0234,'평택 오성면 숙성리'],[37.0512,127.0821,'평택 서탄면 마두리'],[37.0934,126.9821,'평택 현덕면 권관리'],[37.1123,127.0432,'평택 팽성읍 노양리'],[37.0234,127.0654,'평택 청북읍 어연리'],[36.9821,127.0123,'평택 포승읍 홍원리'],[37.0432,127.1234,'안성 미양면 갈전리'],[37.2143,127.0765,'수원 광교산'],[36.8765,127.1543,'천안 광덕면']]},
-  {id:'chestnut', nm:'밤나무',    c:'#ffcc02',i:'🌰',s:'6-7월',pts:[[37.0543,127.0987,'평택 진위면 은산리'],[37.0876,127.1234,'안성 공도읍'],[36.9654,127.0543,'평택 포승읍 만호리'],[36.8543,127.1876,'아산 도고면'],[36.6123,127.5234,'청주 가덕면']]},
-  {id:'rape',     nm:'유채',      c:'#fff176',i:'🌻',s:'4-5월',pts:[[37.0123,127.0345,'평택 오성면 양교리'],[36.9876,126.9654,'평택 현덕면 장수리'],[33.4321,126.5987,'제주 표선면'],[34.8765,127.5234,'보성 회천면']]},
-  {id:'clover',   nm:'클로버',    c:'#a5d6a7',i:'🍀',s:'5-9월',pts:[[37.0765,127.0543,'평택 진위면 마산리'],[37.1234,127.0123,'평택 팽성읍 추팔리'],[37.0543,126.9876,'평택 현덕면 화양리'],[36.9876,127.0432,'평택 포승읍 내기리']]},
-  {id:'buckwheat',nm:'메밀',      c:'#e1bee7',i:'⚪',s:'8-9월',pts:[[37.0654,127.0876,'평택 진위면 봉남리'],[37.1987,128.3456,'평창 봉평면'],[38.0234,127.5432,'철원 동송읍']]},
-  {id:'linden',   nm:'피나무',    c:'#c8e6c9',i:'🍃',s:'7월',  pts:[[37.6543,128.7123,'홍천 두촌면'],[37.8765,128.4987,'인제 기린면'],[38.1234,128.2345,'양양 서면']]},
-  {id:'cherry',   nm:'벚나무',    c:'#fce4ec',i:'🌸',s:'4월',  pts:[[37.0643,127.0543,'평택 진위면 동천리'],[37.5432,127.0876,'서울 여의도'],[35.8654,128.5987,'경주 보문단지']]},
-  {id:'goldenrod',nm:'황금꽃',    c:'#ffe082',i:'✨',s:'9-10월',pts:[[37.0432,127.1123,'평택 서탄면 내천리'],[37.5876,128.6543,'홍천 서석면']]},
-  {id:'willow',   nm:'버드나무',  c:'#dcedc8',i:'🌿',s:'3-4월',pts:[[37.0234,127.0654,'평택 진위천 변'],[37.0876,127.0123,'평택 오성면 안화리'],[37.0543,126.9765,'평택 현덕면 황산리']]},
-  {id:'sunflower',nm:'해바라기',  c:'#ffd54f',i:'🌻',s:'7-8월',pts:[[37.0432,127.0876,'평택 진위면 봉남리'],[37.1654,127.0234,'화성 양감면']]},
-  {id:'cosmos',   nm:'코스모스',  c:'#f48fb1',i:'🌸',s:'9-10월',pts:[[37.0654,127.0543,'평택 진위면 산직리'],[36.9876,127.0876,'평택 포승읍 원정리']]},
-  {id:'lotus',    nm:'연꽃',      c:'#f8bbd0',i:'🪷',s:'7-8월',pts:[[36.9654,127.0234,'평택 포승읍 방림리'],[37.0123,127.0543,'평택 오성면 야막리']]},
-  {id:'peach',    nm:'복숭아',    c:'#ffccbc',i:'🍑',s:'4월',  pts:[[37.0543,127.1234,'안성 금광면 상중리'],[35.9876,128.6543,'청도 화양읍']]},
-  {id:'pear',     nm:'배나무',    c:'#e8e8e8',i:'🍐',s:'4월',  pts:[[36.9543,127.0876,'평택 포승읍 홍원리'],[36.7432,126.9876,'당진 합덕읍']]},
-  {id:'oriental', nm:'때죽나무',  c:'#fce4ec',i:'🌸',s:'5-6월',pts:[[37.0234,127.0543,'평택 진위면 마두리'],[36.5876,129.0234,'영덕 지품면']]}
-];
-var HON={};
-HONEY.forEach(function(t){HON[t.id]=(t.id==='acacia'||t.id==='chestnut'||t.id==='rape');});
-
-// ================================================================
 // 지도 변수
 // ================================================================
-var vmap=null, tiles=[], aMks=[], hMks={}, myMk=null, myC=null, myPos=null, wid=null, tpin=null;
+var vmap=null, tiles=[], aMks=[], myMk=null, myC=null, myPos=null, wid=null, tpin=null;
 var fLat=null, fLng=null, curApy=null, curTab='apiary';
 var NAMES=[];
 
@@ -530,7 +505,6 @@ function goTab(tab){
   if(!vmap){initMap();return;}
   vmap.invalidateSize();
   if(tab==='apiary'){ renderAList(); renderAMks(); }
-  else if(tab==='honey'){ renderHChips(); renderHMks(); }
   else{ renderASelBtns(); }
 }
 
@@ -683,36 +657,6 @@ function locToForm(){
       });
     },200);
   },150);
-}
-
-// ================================================================
-// 밀원 마커
-// ================================================================
-function renderHChips(){
-  document.getElementById('hchips').innerHTML=HONEY.map(function(t){
-    var on=HON[t.id];
-    return '<button class="hch" onclick="togH(\''+t.id+'\')" style="border-color:'+t.c+';'+(on?'background:'+t.c+';color:#1a0800;':'color:'+t.c+';background:transparent;')+'">'+t.i+' '+t.nm+'</button>';
-  }).join('');
-}
-function togH(id){ HON[id]=!HON[id]; renderHChips(); renderHMks(); }
-function allHoney(v){ HONEY.forEach(function(t){HON[t.id]=!!v;}); renderHChips(); renderHMks(); }
-function renderHMks(){
-  if(!vmap) return;
-  Object.keys(hMks).forEach(function(id){hMks[id].forEach(function(m){vmap.removeLayer(m);});});
-  hMks={};
-  HONEY.forEach(function(t){
-    if(!HON[t.id]) return;
-    hMks[t.id]=[];
-    t.pts.forEach(function(pt){
-      var mk=L.marker([pt[0],pt[1]],{icon:L.divIcon({className:'',html:'<div style="font-size:1.2rem;filter:drop-shadow(0 1px 3px rgba(0,0,0,.7))">'+t.i+'</div>',iconSize:[24,24],iconAnchor:[12,12]}),opacity:0.9});
-      mk.bindPopup('<div style="background:#1e1410;border:1px solid rgba(255,179,0,.3);border-radius:8px;padding:8px 11px;font-size:.8rem;">'
-        +'<b style="color:'+t.c+';">'+t.i+' '+t.nm+'</b>'
-        +'<div style="color:#94a3b8;margin-top:3px;">🌸 개화: '+t.s+'</div>'
-        +(pt[2]?'<div style="color:#64748b;font-size:.73rem;margin-top:2px;">📍 '+pt[2]+'</div>':'')
-        +'</div>',{maxWidth:200});
-      mk.addTo(vmap); hMks[t.id].push(mk);
-    });
-  });
 }
 
 // ================================================================
