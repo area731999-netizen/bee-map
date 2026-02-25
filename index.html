@@ -287,8 +287,9 @@ function renderAMks(){
     popDiv.style.cssText='background:#1e1410;border:2px solid '+col+';border-radius:10px;padding:10px 13px;min-width:175px;';
     popDiv.innerHTML='<b style="color:'+col+';">'+(mov?'🚚 ':'🐝 ')+name+'</b>'
       +(d.address?'<div style="color:#aaa;font-size:.78rem;margin-top:4px;">📍 '+d.address+'</div>':'')
-      +(d.memo?'<div style="color:#666;font-size:.76rem;margin-top:2px;">📝 '+d.memo+'</div>':'')
-      +'<div style="display:flex;gap:6px;margin-top:8px;" id="pbtn-wrap-'+i+'"></div>';
+      +(d.memo?'<div style="color:#666;font-size:.76rem;margin-top:2px;">📝 '+d.memo+'</div>':'');
+    var pbtnRow=document.createElement('div');
+    pbtnRow.style.cssText='display:flex;gap:6px;margin-top:8px;';
     var pbtnEdit=document.createElement('button');
     pbtnEdit.style.cssText='flex:1;padding:6px;background:rgba(255,179,0,.18);color:#FFD54F;border:none;border-radius:7px;font-size:.75rem;font-weight:700;cursor:pointer;';
     pbtnEdit.textContent='✏️ 수정';
@@ -297,8 +298,8 @@ function renderAMks(){
     pbtnDel.style.cssText='flex:1;padding:6px;background:rgba(185,28,28,.22);color:#f87171;border:none;border-radius:7px;font-size:.75rem;font-weight:700;cursor:pointer;';
     pbtnDel.textContent='🗑️ 삭제';
     pbtnDel.onclick=(function(n){return function(){popDel(n);};})(name);
-    var pbtnWrap=popDiv.querySelector('#pbtn-wrap-'+i);
-    if(pbtnWrap){pbtnWrap.appendChild(pbtnEdit);pbtnWrap.appendChild(pbtnDel);}
+    pbtnRow.appendChild(pbtnEdit); pbtnRow.appendChild(pbtnDel);
+    popDiv.appendChild(pbtnRow);
     var mk=L.marker([d.lat,d.lng],{icon:icon});
     mk.bindPopup(popDiv,{maxWidth:220});
     mk.addTo(vmap); aMks.push(mk);
