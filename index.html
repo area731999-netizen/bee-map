@@ -774,12 +774,14 @@
             inset: 0; 
             background: linear-gradient(135deg, #FFB300 0%, #FF8F00 100%);
             z-index: 20000; 
-            display: flex; 
+            display: flex !important; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center;
             overflow: hidden;
-            animation: none;
+        }
+        #splash.hidden-splash {
+            display: none !important;
         }
 
         #splash::before {
@@ -1998,11 +2000,11 @@
         <h1 class="logo-text">BEE MASTER</h1>
         <p class="subtitle">스마트 양봉 관리 시스템</p>
         <div class="choice-btn-container">
-            <button class="choice-btn btn-apiculture" onclick="startApp('양봉')" ontouchend="event.preventDefault();startApp('양봉');">
+            <button class="choice-btn btn-apiculture" ontouchstart="startApp('양봉')" onclick="startApp('양봉')" >
                 <span>🍯</span>
                 양봉
             </button>
-            <button class="choice-btn btn-oriental" onclick="startApp('동양종')" ontouchend="event.preventDefault();startApp('동양종');">
+            <button class="choice-btn btn-oriental" ontouchstart="startApp('동양종')" onclick="startApp('동양종')" >
                 <span>🐝</span>
                 동양종
             </button>
@@ -2984,11 +2986,15 @@
         function goHome() {
             // 대문으로 돌아가기
             document.getElementById('main-app').style.display = 'none';
-            document.getElementById('splash').style.display = 'flex';
+            var _sp=document.getElementById('splash'); _sp.classList.remove('hidden-splash'); _sp.style.display='';
             document.querySelector('.bottom-nav').style.display = 'none';
         }
 
+        var _appStarted = false;
         function startApp(type) {
+            if(_appStarted) return;
+            _appStarted = true;
+            setTimeout(function(){ _appStarted = false; }, 1000);
             try {
                 console.log('🚀 앱 시작:', type);
                 
@@ -2998,7 +3004,7 @@
                 const splash = document.getElementById('splash');
                 const mainApp = document.getElementById('main-app');
                 
-                if(splash) splash.style.display = 'none';
+                if(splash) { splash.style.display = ''; splash.classList.add('hidden-splash'); }
                 if(mainApp) {
                     mainApp.classList.remove('hidden');
                     mainApp.style.display = 'block';  // 명시적으로 display 설정!
@@ -4957,7 +4963,7 @@ function getUserInfo(){
         }
 
         function goHomeWithoutConfirm() {
-            document.getElementById('splash').style.display = 'flex';
+            var _sp=document.getElementById('splash'); _sp.classList.remove('hidden-splash'); _sp.style.display='';
             document.getElementById('main-app').classList.add('hidden');
             document.getElementById('main-memo').value = '';
             document.querySelectorAll('.work-btn.selected').forEach(btn => btn.classList.remove('selected'));
@@ -7786,6 +7792,18 @@ function getUserInfo(){
         }
 
         // ===== 삭제/수정 함수 전역 노출 (window에 등록) =====
+        // bfcache(뒤로가기 캐시) 복원 시 항상 대문으로 리셋
+        window.addEventListener('pageshow', function(e) {
+            if(e.persisted) {
+                // bfcache에서 복원된 경우 - 대문 화면으로 강제 리셋
+                var sp = document.getElementById('splash');
+                var ma = document.getElementById('main-app');
+                if(sp) { sp.classList.remove('hidden-splash'); sp.style.display = ''; }
+                if(ma) { ma.classList.add('hidden'); ma.style.display = 'none'; }
+                _appStarted = false;
+            }
+        });
+
         window.addEventListener('load', function() {
             window.deleteDayRecord    = deleteDayRecord;
             window.editDayRecord      = editDayRecord;
