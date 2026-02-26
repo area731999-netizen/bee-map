@@ -12,6 +12,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;600;700;900&display=swap');
         
         * { box-sizing: border-box; }
+        html, body { height: 100%; }
         body { 
             margin: 0; 
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1410 100%); 
@@ -772,7 +773,11 @@
         /* 스플래시 화면 */
         #splash { 
             position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            min-width: 100vw;
+            min-height: 100vh;
             background: linear-gradient(135deg, #FFB300 0%, #FF8F00 100%);
             z-index: 20000; 
             display: flex; 
@@ -1993,28 +1998,6 @@
 </style>
 </head>
 <body>
-
-    <div id="dbg" style="position:fixed;top:0;left:0;right:0;background:#00f;color:#fff;font-size:11px;padding:4px 8px;z-index:99999;font-family:monospace;word-break:break-all;"></div>
-    <script>
-    var dbg = function(msg) {
-        var el = document.getElementById('dbg');
-        if(el) el.textContent = new Date().toISOString().slice(11,19) + ' ' + msg;
-    };
-    dbg('HTML 파싱 시작');
-    
-    window.addEventListener('pageshow', function(e) {
-        dbg('pageshow persisted=' + e.persisted + ' splash=' + (document.getElementById('splash') ? getComputedStyle(document.getElementById('splash')).display : 'null'));
-    });
-    window.addEventListener('load', function() {
-        dbg('load 이벤트 splash=' + (document.getElementById('splash') ? getComputedStyle(document.getElementById('splash')).display : 'null'));
-        setTimeout(function() {
-            dbg('load+1s splash=' + (document.getElementById('splash') ? getComputedStyle(document.getElementById('splash')).display : 'null'));
-        }, 1000);
-        setTimeout(function() {
-            dbg('load+3s splash=' + (document.getElementById('splash') ? getComputedStyle(document.getElementById('splash')).display : 'null'));
-        }, 3000);
-    });
-    </script>
 
     <div id="splash">
         <div class="bee-fly">🐝</div>
