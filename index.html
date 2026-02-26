@@ -1283,17 +1283,16 @@
         }
         
         .solar-term {
-            position: absolute;
-            top: 2px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: #ffffff;
             font-weight: 900;
             background: #16a34a;
-            padding: 2px 6px;
-            border-radius: 8px;
+            padding: 1px 5px;
+            border-radius: 6px;
             white-space: nowrap;
+            display: block;
+            margin-bottom: 1px;
+            line-height: 1.4;
         }
         
         .today-highlight {
@@ -3426,12 +3425,12 @@
                         content += `<span class="solar-term">${solarTerm}</span>`;
                     }
                     
-                    content += `<span style="font-weight: bold; font-size: 1.1rem;">${d}</span>`;
+                    content += `<span style="font-weight: bold; font-size: ${solarTerm ? '0.95rem' : '1.1rem'};">${d}</span>`;
                     
                     if(isThisMonth && d === todayDateNum) {
                         content = (solarTerm ? `<span class="solar-term">${solarTerm}</span>` : '') +
-                                  `<div style="position: absolute; top: ${solarTerm ? '24px' : '4px'}; right: 4px; background: #FFB300; color: #1a0800; font-size: 0.6rem; padding: 2px 6px; border-radius: 8px; font-weight: 900;">오늘</div>
-                                  <span style="font-weight: bold; font-size: 1.1rem;">${d}</span>`;
+                                  `<span style="background:#FFB300;color:#1a0800;font-size:0.6rem;padding:1px 5px;border-radius:6px;font-weight:900;display:block;margin-bottom:1px;">오늘</span>
+                                  <span style="font-weight:bold;font-size:${solarTerm ? '0.9rem' : '1.05rem'}">${d}</span>`;
                     }
                     
                     if(db[key]?.records && db[key].records.length > 0) {
@@ -6506,8 +6505,8 @@ function getUserInfo(){
                 
                 if(isThisMonth && d === todayDateNum) {
                     content = (solarTerm ? '<span class="solar-term">' + solarTerm + '</span>' : '') +
-                              '<div style="position: absolute; top: ' + (solarTerm ? '24px' : '4px') + '; right: 4px; background: #15803d; color: #ffffff; font-size: 0.6rem; padding: 2px 6px; border-radius: 8px; font-weight: 900;">오늘</div>' +
-                              '<span style="font-weight: bold; font-size: 1.1rem;">' + d + '</span>';
+                              '<span style="background:#15803d;color:#fff;font-size:0.6rem;padding:1px 5px;border-radius:6px;font-weight:900;display:block;margin-bottom:1px;">오늘</span>' +
+                              '<span style="font-weight:bold;font-size:' + (solarTerm ? '0.9rem' : '1.05rem') + ';">' + d + '</span>';
                 }
                 
                 if(hasAccData) {
