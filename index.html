@@ -13,7 +13,8 @@
             margin: 0; 
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1410 100%); 
             color: #e8e3d8; 
-            font-family: 'Noto Sans KR', sans-serif; 
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 16px;
             overflow-x: hidden;
             position: relative;
             transition: background 0.3s ease, color 0.3s ease;
@@ -638,11 +639,11 @@
 
         /* 작은 텍스트 크기 증가 */
         .text-xs {
-            font-size: 0.8125rem !important; /* 13px */
+            font-size: 0.875rem !important; /* 14px */
         }
 
         .text-sm {
-            font-size: 0.875rem !important; /* 14px */
+            font-size: 0.9375rem !important; /* 15px */
         }
 
         /* 달력 날짜 최소 크기 */
@@ -942,8 +943,8 @@
         }
 
         .top-nav-type-badge {
-            font-size: 10px;
-            font-weight: 700;
+            font-size: 11px;
+            font-weight: 800;
             color: #FFB300;
             background: rgba(255,179,0,0.12);
             border: 1px solid rgba(255,179,0,0.25);
@@ -956,14 +957,15 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 800;
             color: #e8e3d8;
         }
 
         .top-nav-temp {
             color: #FFB300;
-            font-weight: 800;
+            font-weight: 900;
+            font-size: 16px;
         }
 
         /* 상단 우측 버튼 그룹 */
@@ -1033,11 +1035,11 @@
         
         .input-label { 
             color: #FFD54F; 
-            font-weight: 700; 
-            font-size: 0.95rem; 
+            font-weight: 800; 
+            font-size: 1.05rem; 
             margin-bottom: 12px; 
             display: block;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
         }
         
         .field { 
@@ -1047,10 +1049,11 @@
             border: 1px solid rgba(141,78,42,0.3); 
             padding: 14px; 
             border-radius: 10px; 
-            font-size: 1rem; 
+            font-size: 1.05rem; 
             outline: none;
             transition: all 0.2s;
             font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 600;
         }
 
         .field:focus {
@@ -1354,7 +1357,7 @@
         }
         
         .solar-term {
-            font-size: 0.6rem;
+            font-size: 0.68rem;
             color: #ffffff;
             font-weight: 900;
             background: #16a34a;
@@ -1364,6 +1367,7 @@
             display: block;
             margin-bottom: 1px;
             line-height: 1.4;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }
         
         .today-highlight {
@@ -1376,7 +1380,7 @@
             color: #FFB300; 
             font-weight: 900; 
             text-align: center; 
-            font-size: 0.85rem; 
+            font-size: 0.95rem; 
             padding: 10px 0;
             background: rgba(255,179,0,0.08);
             border-radius: 8px;
@@ -1395,11 +1399,14 @@
         }
         
         .queen-text { 
-            color: #ff6b6b; 
-            font-size: 11px; 
+            color: #fff; 
+            background: rgba(185,28,28,0.8);
+            border-radius: 4px;
+            padding: 1px 4px;
+            font-size: 0.72rem;
             font-weight: 900;
-            margin-top: 4px;
-            text-shadow: 0 0 10px rgba(255,107,107,0.5);
+            margin-top: 2px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
 
         .disease-alarm-day {
@@ -1408,11 +1415,14 @@
         }
 
         .disease-alarm-text {
-            color: #c4b5fd;
-            font-size: 11px;
+            color: #fff;
+            background: rgba(109,40,217,0.75);
+            border-radius: 4px;
+            padding: 1px 4px;
+            font-size: 0.72rem;
             font-weight: 900;
-            margin-top: 4px;
-            text-shadow: 0 0 10px rgba(196,181,253,0.5);
+            margin-top: 2px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }
 
         .cal-day.border-amber-600 {
@@ -1653,7 +1663,7 @@
             position: fixed; 
             bottom: 0; 
             width: 100%; 
-            height: 80px; 
+            height: 88px; 
             background: rgba(10,6,2,0.92);
             backdrop-filter: blur(16px);
             border-top: 1px solid rgba(255,179,0,0.15); 
@@ -1669,13 +1679,13 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            font-size: 11px; 
+            font-size: 13px; 
             color: #555; 
             cursor: pointer;
             transition: all 0.2s;
-            font-weight: 700;
+            font-weight: 800;
             position: relative;
-            gap: 3px;
+            gap: 2px;
             border-radius: 0;
         }
 
@@ -1709,7 +1719,7 @@
             padding: 4px 10px;
             border-radius: 10px;
             transition: background 0.2s;
-            font-size: 1.35rem;
+            font-size: 1.5rem;
             line-height: 1;
         }
 
@@ -1850,6 +1860,76 @@
             background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
             color: #fff !important;
             border-color: #2563eb !important;
+        }
+
+        /* ===== 방역일지 조회 탭 버튼 라이트모드 ===== */
+        body.light-mode #dh-tab-loc {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            font-weight: 900 !important;
+        }
+        body.light-mode #dh-tab-period {
+            background: #f3f4f6 !important;
+            color: #374151 !important;
+            font-weight: 800 !important;
+        }
+        body.light-mode #dh-tab-loc[style*="rgba(40"],
+        body.light-mode #dh-tab-period[style*="rgba(255"] {
+            background: #f3f4f6 !important;
+            color: #374151 !important;
+        }
+
+        /* ===== 방역 기간별 빠른 버튼 ===== */
+        body.light-mode #view-disease-history button[onclick^="setDiseasePeriod"] {
+            background: #e0f2fe !important;
+            color: #0369a1 !important;
+            border: 1px solid #bae6fd !important;
+            font-weight: 800 !important;
+        }
+        body.light-mode #view-disease-history button[onclick="setDiseasePeriod(0)"] {
+            background: #f3f4f6 !important;
+            color: #374151 !important;
+            border: 1px solid #d1d5db !important;
+        }
+
+        /* ===== 기간별 날짜 라벨 ===== */
+        body.light-mode #view-disease-history label[style*="color:#999"] {
+            color: #374151 !important;
+            font-weight: 700 !important;
+        }
+
+        /* ===== 일지 조회 화면 제목 ===== */
+        body.light-mode #view-disease-history h2 {
+            color: #1d4ed8 !important;
+        }
+
+        /* ===== 가계부 탭 라이트모드 ===== */
+        body.light-mode .v-switch {
+            background: #f3f4f6 !important;
+            border-color: #d1d5db !important;
+        }
+        body.light-mode .v-switch > div {
+            color: #374151 !important;
+        }
+        body.light-mode .v-switch > div.active {
+            background: #2563eb !important;
+            color: #fff !important;
+        }
+
+        /* ===== 가계부 탭 (달력/기록/통계/고객) 라이트모드 ===== */
+        body.light-mode #view-account [id^="v-acc-"] {
+            color: #374151 !important;
+        }
+        body.light-mode #view-account [id^="v-acc-"].acc-tab-active {
+            background: #16a34a !important;
+            color: #fff !important;
+        }
+
+        /* ===== 방역일지 조회 탭 전환 JS 오버라이드 도우미 ===== */
+        body.light-mode #dh-panel-loc label,
+        body.light-mode #dh-panel-period label {
+            color: #374151 !important;
+            font-weight: 700 !important;
         }
         /* 오늘의 추천 섹션 아이콘 텍스트 */
         body.light-mode #today-work-suggestion [style*="color: #FFD54F"] {
@@ -2149,29 +2229,29 @@
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px;">
                 <button onclick="switchView('diary', true)" style="
                     background: linear-gradient(145deg, rgba(160,82,45,0.55) 0%, rgba(120,55,25,0.45) 100%);
-                    color: #FFD54F; padding: 14px 8px; border-radius: 14px; font-size: 13px; font-weight: 800;
+                    color: #FFD54F; padding: 16px 8px; border-radius: 14px; font-size: 15px; font-weight: 900;
                     border: 1px solid rgba(255,179,0,0.3); box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-                    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;
+                    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px;
                     backdrop-filter: blur(4px); transition: all 0.18s; touch-action: manipulation;">
-                    <span style="font-size: 1.4rem;">✍️</span>
+                    <span style="font-size: 1.6rem;">✍️</span>
                     <span>일지작성</span>
                 </button>
                 <button onclick="switchView('disease-history', true)" style="
                     background: linear-gradient(145deg, rgba(160,82,45,0.55) 0%, rgba(120,55,25,0.45) 100%);
-                    color: #FFD54F; padding: 14px 8px; border-radius: 14px; font-size: 13px; font-weight: 800;
+                    color: #FFD54F; padding: 16px 8px; border-radius: 14px; font-size: 15px; font-weight: 900;
                     border: 1px solid rgba(255,179,0,0.3); box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-                    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;
+                    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px;
                     backdrop-filter: blur(4px); transition: all 0.18s; touch-action: manipulation;">
-                    <span style="font-size: 1.4rem;">📋</span>
+                    <span style="font-size: 1.6rem;">📋</span>
                     <span>방역조회</span>
                 </button>
                 <button onclick="switchView('personal-schedule', true)" style="
                     background: linear-gradient(145deg, rgba(100,70,200,0.45) 0%, rgba(80,40,170,0.35) 100%);
-                    color: #c4b5fd; padding: 14px 8px; border-radius: 14px; font-size: 13px; font-weight: 800;
-                    border: 1px solid rgba(167,139,250,0.3); box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-                    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;
+                    color: #fff; padding: 16px 8px; border-radius: 14px; font-size: 15px; font-weight: 900;
+                    border: 1px solid rgba(167,139,250,0.4); box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+                    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px;
                     backdrop-filter: blur(4px); transition: all 0.18s; touch-action: manipulation;">
-                    <span style="font-size: 1.4rem;">📅</span>
+                    <span style="font-size: 1.6rem;">📅</span>
                     <span>일정</span>
                 </button>
             </div>
@@ -2449,16 +2529,16 @@
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding: 0 4px;">
                     <div style="display: flex; gap: 6px; align-items: center;">
-                        <button onclick="changeAccYear(-1)" style="color: #4ade80; background: rgba(74,222,128,0.15); border: none; border-radius: 10px; padding: 10px 12px; font-size: 1rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">◀◀</button>
-                        <button onclick="changeAccMonth(-1)" style="color: #4ade80; background: rgba(74,222,128,0.1); border: none; border-radius: 10px; padding: 10px 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">◀</button>
+                        <button onclick="changeAccYear(-1)" style="color: #fff; background: rgba(22,163,74,0.8); border: none; border-radius: 10px; padding: 10px 12px; font-size: 1rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">◀◀</button>
+                        <button onclick="changeAccMonth(-1)" style="color: #fff; background: rgba(22,163,74,0.7); border: none; border-radius: 10px; padding: 10px 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">◀</button>
                     </div>
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
                         <h3 id="acc-cal-title" style="color: #4ade80; font-weight: 900; font-size: 1.2rem; margin: 0;"></h3>
-                        <button onclick="goToAccToday()" style="color: #4ade80; background: rgba(74,222,128,0.15); border: 1px solid rgba(74,222,128,0.3); border-radius: 12px; padding: 6px 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer; min-height: 36px;">오늘로</button>
+                        <button onclick="goToAccToday()" style="color: #fff; background: rgba(22,163,74,0.7); border: 1px solid rgba(74,222,128,0.5); border-radius: 12px; padding: 6px 14px; font-size: 0.85rem; font-weight: 800; cursor: pointer; min-height: 36px;">오늘로</button>
                     </div>
                     <div style="display: flex; gap: 6px; align-items: center;">
-                        <button onclick="changeAccMonth(1)" style="color: #4ade80; background: rgba(74,222,128,0.1); border: none; border-radius: 10px; padding: 10px 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">▶</button>
-                        <button onclick="changeAccYear(1)" style="color: #4ade80; background: rgba(74,222,128,0.15); border: none; border-radius: 10px; padding: 10px 12px; font-size: 1rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">▶▶</button>
+                        <button onclick="changeAccMonth(1)" style="color: #fff; background: rgba(22,163,74,0.7); border: none; border-radius: 10px; padding: 10px 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">▶</button>
+                        <button onclick="changeAccYear(1)" style="color: #fff; background: rgba(22,163,74,0.8); border: none; border-radius: 10px; padding: 10px 12px; font-size: 1rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">▶▶</button>
                     </div>
                 </div>
                 <div id="acc-cal-body" class="calendar-grid"></div>
@@ -3526,12 +3606,12 @@
                         content += `<span class="solar-term">${solarTerm}</span>`;
                     }
                     
-                    content += `<span style="font-weight: bold; font-size: ${solarTerm ? '0.95rem' : '1.1rem'};">${d}</span>`;
+                    content += `<span style="font-weight: bold; font-size: ${solarTerm ? '1.05rem' : '1.25rem'};">${d}</span>`;
                     
                     if(isThisMonth && d === todayDateNum) {
                         content = (solarTerm ? `<span class="solar-term">${solarTerm}</span>` : '') +
-                                  `<span style="background:#FFB300;color:#1a0800;font-size:0.6rem;padding:1px 5px;border-radius:6px;font-weight:900;display:block;margin-bottom:1px;">오늘</span>
-                                  <span style="font-weight:bold;font-size:${solarTerm ? '0.9rem' : '1.05rem'}">${d}</span>`;
+                                  `<span style="background:#FFB300;color:#1a0800;font-size:0.65rem;padding:1px 5px;border-radius:6px;font-weight:900;display:block;margin-bottom:1px;">오늘</span>
+                                  <span style="font-weight:bold;font-size:${solarTerm ? '1.0rem' : '1.2rem'}">${d}</span>`;
                     }
                     
                     if(db[key]?.records && db[key].records.length > 0) {
@@ -3543,8 +3623,8 @@
                             const loc = firstRecord.loc;
                             const mainWork = firstRecord.works[0] || '작업';
                             const moreCount = filteredRecords.length > 1 ? `+${filteredRecords.length - 1}봉장` : '';
-                            content += `<div style="font-size: 0.6rem; color: #FFB300; margin-top: 2px; font-weight: 700;">📍 ${loc}${moreCount}</div>`;
-                            content += `<div style="font-size: 0.65rem; color: #FFD54F; margin-top: 2px;">${mainWork}</div>`;
+                            content += `<div style="font-size: 0.68rem; color: #FFD54F; margin-top: 2px; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">📍 ${loc}${moreCount}</div>`;
+                            content += `<div style="font-size: 0.7rem; color: #fff; margin-top: 1px; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">${mainWork}</div>`;
                         }
                     }
                     
@@ -3560,7 +3640,7 @@
                     
                     if(hasSchedule) {
                         const daySchedules = personalSchedules.filter(s => s.date === scheduleDate);
-                        content += '<div style="font-size: 0.6rem; color: #c084fc; margin-top: 2px; font-weight: 700;">📅 ' + daySchedules.length + '건</div>';
+                        content += '<div style="font-size: 0.75rem; color: #fff; background: rgba(109,40,217,0.85); border-radius: 4px; padding: 1px 4px; margin-top: 2px; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">📅' + daySchedules.length + '건</div>';
                     }
                     
                     body.innerHTML += `<div class="${cls}" onclick="showDayRecordBelow('${key}')">${content}</div>`;
@@ -3831,18 +3911,22 @@
             var locPanel = document.getElementById('dh-panel-loc');
             var perPanel = document.getElementById('dh-panel-period');
             if(!locBtn) return;
+            var isLight = document.body.classList.contains('light-mode');
+            var activeBg    = isLight ? '#2563eb'           : 'rgba(255,179,0,0.3)';
+            var activeColor = isLight ? '#ffffff'           : '#FFD54F';
+            var inactiveBg  = isLight ? '#f3f4f6'           : 'rgba(40,30,25,0.6)';
+            var inactiveClr = isLight ? '#374151'           : '#999';
             if(tab === 'loc') {
-                locBtn.style.background = 'rgba(255,179,0,0.3)'; locBtn.style.color = '#FFD54F';
-                perBtn.style.background = 'rgba(40,30,25,0.6)';  perBtn.style.color = '#999';
+                locBtn.style.background = activeBg;   locBtn.style.color = activeColor;
+                perBtn.style.background = inactiveBg; perBtn.style.color = inactiveClr;
                 locPanel.style.display = 'block';
                 perPanel.style.display = 'none';
                 renderDiseaseHistory();
             } else {
-                perBtn.style.background = 'rgba(255,179,0,0.3)'; perBtn.style.color = '#FFD54F';
-                locBtn.style.background = 'rgba(40,30,25,0.6)';  locBtn.style.color = '#999';
+                perBtn.style.background = activeBg;   perBtn.style.color = activeColor;
+                locBtn.style.background = inactiveBg; locBtn.style.color = inactiveClr;
                 locPanel.style.display = 'none';
                 perPanel.style.display = 'block';
-                // 기본 날짜 설정 (이번달)
                 var now = new Date();
                 var y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0');
                 var fromEl = document.getElementById('dh-date-from');
@@ -3878,18 +3962,35 @@
             if(!container) return;
             var fromEl = document.getElementById('dh-date-from');
             var toEl   = document.getElementById('dh-date-to');
+
+            var isLight = document.body.classList.contains('light-mode');
+            var c = {
+                empty:      isLight ? '#374151' : '#666',
+                summaryBg:  isLight ? 'background:#fef9c3; border:2px solid #ca8a04; border-radius:12px; padding:14px;'
+                                    : 'background:rgba(255,179,0,0.1); border:1px solid rgba(255,179,0,0.3); border-radius:10px; padding:12px;',
+                summaryTitle: isLight ? '#92400e' : '#FFD54F',
+                summaryText:  isLight ? '#374151' : '#999',
+                cardBg:     isLight ? '#ffffff' : 'rgba(30,25,20,0.9)',
+                cardBorder: isLight ? '#e5e7eb' : 'rgba(255,179,0,0.15)',
+                diseaseTitle: isLight ? '#b91c1c' : '#ef4444',
+                subText:    isLight ? '#374151' : '#999',
+                labelText:  isLight ? '#374151' : '#aaa',
+                medBg:      isLight ? '#f3f4f6; border:1px solid #e5e7eb;' : 'rgba(255,179,0,0.08);',
+                medText:    isLight ? '#111827' : '#FFB300',
+                memoText:   isLight ? '#1f2937' : '#aaa',
+                timeText:   isLight ? '#6b7280' : '#555',
+            };
+
             if(!fromEl || !fromEl.value || !toEl || !toEl.value) {
-                container.innerHTML = '<p class="text-center py-20" style="color:#666; font-style:italic;">기간을 선택하세요.</p>';
+                container.innerHTML = '<p class="text-center py-20" style="color:' + c.empty + '; font-style:italic;">기간을 선택하세요.</p>';
                 return;
             }
-            var fromStr = fromEl.value; // yyyy-mm-dd
+            var fromStr = fromEl.value;
             var toStr   = toEl.value;
 
-            // diseaseLogs에서 기간 필터
             var filtered = [];
             (diseaseLogs || []).forEach(function(log, i) {
                 if(!log.dateStr) return;
-                // log.dateStr 형식: yyyy-m-d → ISO형식으로 변환 비교
                 var parts = log.dateStr.split('-');
                 var dateISO = parts[0] + '-' + String(parts[1]).padStart(2,'0') + '-' + String(parts[2]).padStart(2,'0');
                 if(dateISO >= fromStr && dateISO <= toStr) {
@@ -3897,15 +3998,13 @@
                 }
             });
 
-            // 최신순 정렬
             filtered.sort(function(a, b) { return b.log.dateStr > a.log.dateStr ? 1 : -1; });
 
             if(filtered.length === 0) {
-                container.innerHTML = '<p class="text-center py-20" style="color:#666; font-style:italic;">해당 기간의 방역 기록이 없습니다.</p>';
+                container.innerHTML = '<p class="text-center py-20" style="color:' + c.empty + '; font-style:italic;">해당 기간의 방역 기록이 없습니다.</p>';
                 return;
             }
 
-            // 요약 통계
             var locMap = {};
             filtered.forEach(function(f) {
                 var loc = f.log.location || '미상';
@@ -3913,27 +4012,27 @@
             });
             var summaryItems = Object.entries(locMap).map(function(e) { return e[0] + ' ' + e[1] + '건'; }).join(' · ');
 
-            var html = '<div style="background:rgba(255,179,0,0.1); border:1px solid rgba(255,179,0,0.3); border-radius:10px; padding:12px; margin-bottom:14px;">'
-                + '<div style="color:#FFD54F; font-weight:700; margin-bottom:4px;">📊 조회 결과: ' + filtered.length + '건</div>'
-                + '<div style="color:#999; font-size:0.8rem;">' + summaryItems + '</div></div>';
+            var html = '<div style="' + c.summaryBg + ' margin-bottom:16px;">'
+                + '<div style="color:' + c.summaryTitle + '; font-weight:800; font-size:1rem; margin-bottom:4px;">📊 조회 결과: ' + filtered.length + '건</div>'
+                + '<div style="color:' + c.summaryText + '; font-size:0.9rem; font-weight:600;">' + summaryItems + '</div></div>';
 
             filtered.forEach(function(f) {
                 var log = f.log;
                 var i = f.i;
                 var diseaseInfo = log.diseaseTypeName || log.diseaseType || '미상';
-                var dateInfo = log.dateStr || '';
                 var locIcon = (log.location || '').includes('이동') ? '🚚' : '📍';
-                var medicineText = log.medicineName || log.medicine || '미기재';
-                html += '<div style="background:rgba(30,25,20,0.9); border:1px solid rgba(255,179,0,0.15); border-left:4px solid #dc2626; border-radius:12px; padding:16px; margin-bottom:12px;">'
-                    + '<div style="color:#ef4444; font-weight:800; font-size:1rem; margin-bottom:6px;">🦠 ' + diseaseInfo + '</div>'
-                    + '<div style="color:#999; font-size:0.85rem; margin-bottom:8px;">' + locIcon + ' ' + (log.location || '') + ' • ' + dateInfo + '</div>'
-                    + '<div style="font-size:0.85rem; color:#aaa; margin-bottom:4px;">약제 정보</div>'
-                    + '<div style="background:rgba(255,179,0,0.1); border-radius:8px; padding:8px; margin-bottom:8px;">'
-                    + '<span style="color:#FFB300;">💊 ' + medicineText + '</span>'
+                var medicineText = (log.medicineName || log.medicine || '미기재')
                     + (log.detail ? ' · ' + log.detail : '')
-                    + (log.method ? ' · ' + log.method : '') + '</div>'
-                    + (log.memo ? '<div style="color:#aaa; font-size:0.82rem; margin-bottom:8px;">📝 ' + log.memo + '</div>' : '')
-                    + '<div style="color:#555; font-size:0.75rem;">기록: ' + new Date(log.timestamp||log.date).toLocaleString('ko-KR') + '</div>'
+                    + (log.method ? ' · ' + log.method : '');
+
+                html += '<div style="background:' + c.cardBg + '; border:1px solid ' + c.cardBorder + '; border-left:5px solid #dc2626; border-radius:14px; padding:16px; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,' + (isLight?'0.07':'0.25') + ');">'
+                    + '<div style="color:' + c.diseaseTitle + '; font-weight:900; font-size:1.1rem; margin-bottom:6px;">🦠 ' + diseaseInfo + '</div>'
+                    + '<div style="color:' + c.subText + '; font-size:0.9rem; font-weight:600; margin-bottom:10px;">' + locIcon + ' ' + (log.location || '') + ' • ' + (log.dateStr || '') + '</div>'
+                    + '<div style="font-size:0.85rem; color:' + c.labelText + '; font-weight:700; margin-bottom:6px;">약제 정보</div>'
+                    + '<div style="background:' + c.medBg + ' border-radius:10px; padding:10px; margin-bottom:' + (log.memo?'10':'8') + 'px;">'
+                    + '<span style="color:' + c.medText + '; font-weight:700; font-size:0.95rem;">💊 ' + medicineText + '</span></div>'
+                    + (log.memo ? '<div style="color:' + c.memoText + '; font-size:0.9rem; font-weight:600; margin-bottom:8px;">📝 ' + log.memo + '</div>' : '')
+                    + '<div style="color:' + c.timeText + '; font-size:0.82rem; font-weight:600;">기록: ' + new Date(log.timestamp||log.date).toLocaleString('ko-KR') + '</div>'
                     + '</div>';
             });
 
@@ -3944,12 +4043,31 @@
             const container = document.getElementById('history-list-view');
             if(!container) return;
             
+            const isLight = document.body.classList.contains('light-mode');
+            const c = {
+                empty:      isLight ? '#374151' : '#666',
+                cardBg:     isLight ? '#ffffff' : 'rgba(26,20,15,0.9)',
+                cardBorder: isLight ? '#e5e7eb' : 'rgba(255,179,0,0.12)',
+                titleRed:   isLight ? '#b91c1c' : '#ef4444',
+                subText:    isLight ? '#374151' : '#999',
+                itemText:   isLight ? '#111827' : '#d4c8b8',
+                medBg:      isLight ? '#f3f4f6' : 'rgba(0,0,0,0.2)',
+                medText:    isLight ? '#111827' : '#d4c8b8',
+                methodText: isLight ? '#374151' : '#999',
+                memoBg:     isLight ? '#f9fafb' : 'rgba(0,0,0,0.3)',
+                memoText:   isLight ? '#1f2937' : '#d4c8b8',
+                timeLine:   isLight ? '#e5e7eb' : 'rgba(255,179,0,0.1)',
+                timeText:   isLight ? '#6b7280' : '#666',
+                labelText:  isLight ? '#374151' : '#999',
+                editBtn:    isLight ? 'background:#2563eb; color:#fff;' : 'background:rgba(59,130,246,0.3); color:#60a5fa;',
+                delBtn:     'background:#dc2626; color:#ffffff;',
+            };
+
             if(!diseaseLogs || diseaseLogs.length === 0) {
-                container.innerHTML = '<p class="text-center py-20" style="color: #666; font-style: italic;">방역 기록이 없습니다.</p>';
+                container.innerHTML = '<p class="text-center py-20" style="color:' + c.empty + '; font-style:italic;">방역 기록이 없습니다.</p>';
                 return;
             }
             
-            // 봉장 필터 적용
             const filtered = [];
             for(let i = diseaseLogs.length - 1; i >= 0; i--) {
                 const log = diseaseLogs[i];
@@ -3959,7 +4077,7 @@
             }
 
             if(filtered.length === 0) {
-                container.innerHTML = '<p class="text-center py-20" style="color: #666; font-style: italic;">' + 
+                container.innerHTML = '<p class="text-center py-20" style="color:' + c.empty + '; font-style:italic;">' + 
                     (diseaseLocFilter === 'all' ? '방역 기록이 없습니다.' : diseaseLocFilter + ' 방역 기록이 없습니다.') + '</p>';
                 return;
             }
@@ -3969,54 +4087,53 @@
             for(const { log, i } of filtered) {
                 const dateObj = new Date(log.timestamp);
                 const dateStr = dateObj.toLocaleString('ko-KR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
+                    year: 'numeric', month: 'long', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
                 });
                 
+                const medicineLine = (log.medicineName || log.medicine || '미기재') 
+                    + (log.detail ? ' (' + log.detail + ')' : '');
+
                 html += `
-                    <div class="record-card" style="border-left: 4px solid #ef4444;">
-                        <div class="flex justify-between items-start mb-3">
+                    <div style="background:${c.cardBg}; border:1px solid ${c.cardBorder}; border-left:5px solid #dc2626; border-radius:14px; padding:18px; margin-bottom:14px; box-shadow:0 2px 8px rgba(0,0,0,${isLight?'0.07':'0.3'});">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
                             <div>
-                                <p class="font-bold text-lg" style="color: #ef4444;">🦠 ${log.diseaseTypeName || log.diseaseType}</p>
-                                <p class="text-sm mt-1" style="color: #999;">📍 ${log.location} • ${log.dateStr}</p>
+                                <p style="color:${c.titleRed}; font-weight:900; font-size:1.1rem; margin:0 0 5px 0;">🦠 ${log.diseaseTypeName || log.diseaseType}</p>
+                                <p style="color:${c.subText}; font-size:0.9rem; font-weight:600; margin:0;">📍 ${log.location} • ${log.dateStr}</p>
                             </div>
-                            <div style="display: flex; gap: 8px;">
-                                <button class="dyn-btn" data-action="editDiseaseRecord" data-index="${i}" style="background: rgba(59,130,246,0.3); color: #60a5fa; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; border: none; cursor: pointer; font-weight: 700;">수정</button>
-                                <button class="dyn-btn" data-action="deleteDiseaseRecord" data-index="${i}" style="background: #dc2626; color: #ffffff; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; border: none; cursor: pointer; font-weight: 800; letter-spacing: 0.5px;">삭제</button>
+                            <div style="display:flex; gap:8px; flex-shrink:0; margin-left:10px;">
+                                <button class="dyn-btn" data-action="editDiseaseRecord" data-index="${i}" style="${c.editBtn} padding:8px 14px; border-radius:8px; font-size:0.9rem; border:none; cursor:pointer; font-weight:800; min-height:40px;">수정</button>
+                                <button class="dyn-btn" data-action="deleteDiseaseRecord" data-index="${i}" style="${c.delBtn} padding:8px 14px; border-radius:8px; font-size:0.9rem; border:none; cursor:pointer; font-weight:800; min-height:40px;">삭제</button>
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <p class="text-xs mb-2" style="color: #999;">약제 정보</p>
-                            <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
-                                <p style="color: #d4c8b8; font-size: 0.9rem;">
-                                    💊 ${log.medicineName || log.medicine || '미기재'}
-                                    ${log.detail ? ' (' + log.detail + ')' : ''}
+                        <div style="margin-bottom:10px;">
+                            <p style="color:${c.labelText}; font-size:0.85rem; font-weight:700; margin:0 0 6px 0;">약제 정보</p>
+                            <div style="background:${c.medBg}; padding:12px; border-radius:10px; ${isLight?'border:1px solid #e5e7eb;':''}">
+                                <p style="color:${c.medText}; font-size:1rem; font-weight:700; margin:0 0 ${log.method?'4px':'0'} 0;">
+                                    💊 ${medicineLine}
                                 </p>
-                                ${log.method ? '<p style="color: #999; font-size: 0.85rem; margin-top: 4px;">처리방법: ' + log.method + '</p>' : ''}
+                                ${log.method ? `<p style="color:${c.methodText}; font-size:0.9rem; font-weight:600; margin:0;">처리방법: ${log.method}</p>` : ''}
                             </div>
                         </div>
                         
                         ${log.memo ? `
-                        <div class="mb-3">
-                            <p class="text-xs mb-2" style="color: #999;">상세 메모</p>
-                            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; color: #d4c8b8; font-size: 0.85rem; white-space: pre-wrap;">${log.memo}</div>
+                        <div style="margin-bottom:10px;">
+                            <p style="color:${c.labelText}; font-size:0.85rem; font-weight:700; margin:0 0 6px 0;">상세 메모</p>
+                            <div style="background:${c.memoBg}; padding:12px; border-radius:10px; color:${c.memoText}; font-size:0.95rem; font-weight:600; white-space:pre-wrap; ${isLight?'border:1px solid #e5e7eb;':''}">${log.memo}</div>
                         </div>
                         ` : ''}
                         
                         ${log.photos && log.photos.length > 0 ? `
-                        <div class="mb-3">
-                            <p class="text-xs mb-2" style="color: #999;">첨부 사진 (${log.photos.length}장)</p>
-                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                                ${log.photos.map(p => '<img src="' + p + '" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="showPhotoModal(\'' + p + '\')">').join('')}
+                        <div style="margin-bottom:10px;">
+                            <p style="color:${c.labelText}; font-size:0.85rem; font-weight:700; margin:0 0 6px 0;">첨부 사진 (${log.photos.length}장)</p>
+                            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+                                ${log.photos.map(p => '<img src="' + p + '" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px; cursor:pointer;" onclick="showPhotoModal(\'' + p + '\')">').join('')}
                             </div>
                         </div>
                         ` : ''}
                         
-                        <div class="text-xs mt-3 pt-3" style="color: #666; border-top: 1px solid rgba(255,179,0,0.1);">
+                        <div style="color:${c.timeText}; font-size:0.85rem; font-weight:600; border-top:1px solid ${c.timeLine}; margin-top:10px; padding-top:10px;">
                             기록 시간: ${dateStr}
                         </div>
                     </div>
@@ -5281,6 +5398,18 @@ function getUserInfo(){
                 if(toggleBtn) toggleBtn.textContent = '🌙';
             }
             showToast(theme === 'light' ? '☀️ 라이트 모드로 전환' : '🌙 다크 모드로 전환');
+            // 열려있는 동적 렌더 화면 재적용
+            setTimeout(function() {
+                if(document.getElementById('view-disease-history')?.classList.contains('view-active')) {
+                    switchDiseaseHistoryTab(diseaseHistoryTab || 'loc');
+                }
+                if(document.getElementById('acc-today-summary')?.offsetParent !== null) {
+                    renderAccTodaySummary();
+                }
+                if(document.getElementById('history-period-view')?.offsetParent !== null) {
+                    renderDiseaseHistoryPeriod();
+                }
+            }, 50);
         }
 
         function toggleTheme() {
@@ -6610,8 +6739,8 @@ function getUserInfo(){
                 
                 if(isThisMonth && d === todayDateNum) {
                     content = (solarTerm ? '<span class="solar-term">' + solarTerm + '</span>' : '') +
-                              '<span style="background:#15803d;color:#fff;font-size:0.6rem;padding:1px 5px;border-radius:6px;font-weight:900;display:block;margin-bottom:1px;">오늘</span>' +
-                              '<span style="font-weight:bold;font-size:' + (solarTerm ? '0.9rem' : '1.05rem') + ';">' + d + '</span>';
+                              '<span style="background:#15803d;color:#fff;font-size:0.65rem;padding:1px 5px;border-radius:6px;font-weight:900;display:block;margin-bottom:1px;">오늘</span>' +
+                              '<span style="font-weight:bold;font-size:' + (solarTerm ? '1.0rem' : '1.2rem') + ';">' + d + '</span>';
                 }
                 
                 if(hasAccData) {
@@ -6620,7 +6749,7 @@ function getUserInfo(){
                         return logDate.getFullYear() === y && logDate.getMonth() === m && logDate.getDate() === d;
                     });
                     const count = dayLogs.length;
-                    content += '<div style="font-size: 0.65rem; color: #4ade80; margin-top: 4px;">💰' + count + '건</div>';
+                    content += '<div style="font-size: 0.75rem; color: #fff; background: rgba(22,163,74,0.85); border-radius: 4px; padding: 1px 4px; margin-top: 2px; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">💰' + count + '건</div>';
                 }
                 
                 body.innerHTML += '<div class="' + cls + '" onclick="goToAccInput()">' + content + '</div>';
@@ -6648,50 +6777,80 @@ function getUserInfo(){
                 return d.getFullYear() === ty && d.getMonth() === tm && d.getDate() === td;
             });
 
+            var isLight = document.body.classList.contains('light-mode');
+
+            // 색상 팔레트 (라이트/다크 분기)
+            var clr = {
+                wrap:       isLight ? 'background:#f0fdf4; border:2px solid #16a34a; border-radius:16px; padding:18px;'
+                                    : 'background:rgba(22,163,74,0.1); border:2px solid rgba(22,163,74,0.4); border-radius:16px; padding:18px;',
+                title:      isLight ? '#15803d' : '#4ade80',
+                cnt:        isLight ? '#374151' : '#aaa',
+                emptyText:  isLight ? '#374151' : '#999',
+                rowBg:      isLight ? 'background:#fff; border:1px solid #d1fae5;'
+                                    : 'background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05);',
+                inBadgeBg:  isLight ? 'background:#dcfce7; color:#15803d;' : 'background:rgba(74,222,128,0.2); color:#4ade80;',
+                outBadgeBg: isLight ? 'background:#fee2e2; color:#b91c1c;' : 'background:rgba(248,113,113,0.2); color:#f87171;',
+                itemName:   isLight ? '#111827' : '#e8e3d8',
+                subText:    isLight ? '#4b5563' : '#999',
+                inAmt:      isLight ? '#15803d' : '#4ade80',
+                outAmt:     isLight ? '#b91c1c' : '#f87171',
+                divider:    isLight ? 'border-top:2px solid #bbf7d0;' : 'border-top:1px solid rgba(74,222,128,0.2);',
+                lblColor:   isLight ? '#374151' : '#999',
+                editBtn:    isLight ? 'background:#16a34a; color:#fff;' : 'background:rgba(74,222,128,0.3); color:#4ade80;',
+                delBtn:     isLight ? 'background:#dc2626; color:#fff;' : 'background:rgba(185,28,28,0.5); color:#fca5a5;',
+            };
+
             if(todayLogs.length === 0) {
                 container.innerHTML =
-                    '<div style="padding: 16px; background: rgba(74,222,128,0.05); border-radius: 12px; border: 1px solid rgba(74,222,128,0.15); text-align: center;">' +
-                        '<p style="color: #666; font-size: 0.9rem;">오늘 기록된 수입/지출이 없습니다</p>' +
+                    '<div style="padding:18px; ' + clr.wrap + ' text-align:center;">' +
+                        '<p style="color:' + clr.emptyText + '; font-size:1rem; font-weight:600;">오늘 기록된 수입/지출이 없습니다</p>' +
                     '</div>';
                 return;
             }
 
-            var totalIn  = 0, totalOut = 0;
+            var totalIn = 0, totalOut = 0;
             todayLogs.forEach(function(l) {
-                if(l.type === 'in')  totalIn  += (l.price || 0);
-                else                 totalOut += (l.price || 0);
+                if(l.type === 'in') totalIn  += (l.price || 0);
+                else                totalOut += (l.price || 0);
             });
             var net = totalIn - totalOut;
 
-            var rows = todayLogs.map(function(l, i) {
+            var rows = todayLogs.map(function(l) {
                 var isIn = l.type === 'in';
-                var color = isIn ? '#4ade80' : '#f87171';
-                var sign  = isIn ? '+' : '-';
+                var sign = isIn ? '+' : '-';
+                var amtColor = isIn ? clr.inAmt : clr.outAmt;
+                var badgeStyle = isIn ? clr.inBadgeBg : clr.outBadgeBg;
                 var originalIndex = accLogs.indexOf(l);
-                return '<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 8px;">' +
+                var subLines = (l.lines && l.lines.length > 0)
+                    ? '<div style="margin-top:4px;">' + l.lines.map(function(ln){
+                        return '<span style="font-size:0.8rem; color:' + clr.subText + '; margin-right:6px; font-weight:600;">'
+                            + ln.name + ' ' + ln.qty + '개×' + ln.unitPrice.toLocaleString() + '원</span>';
+                      }).join('') + '</div>'
+                    : '';
+                return '<div style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; ' + clr.rowBg + ' border-radius:10px; margin-bottom:10px;">' +
                     '<div>' +
-                        '<span style="font-size: 0.75rem; background: rgba(' + (isIn ? '74,222,128' : '248,113,113') + ',0.2); color: ' + color + '; padding: 2px 8px; border-radius: 10px; margin-right: 8px;">' + (isIn ? '수입' : '지출') + '</span>' +
-                        '<span style="color: #e8e3d8; font-size: 0.9rem;">' + (l.item || '항목 없음') + '</span>' +
-                        (l.lines && l.lines.length > 0 ? '<div style="margin-top:3px;">' + l.lines.map(function(ln){ return '<span style="font-size:0.72rem;color:#999;margin-right:6px;">'+ln.name+' '+ln.qty+'개×'+ln.unitPrice.toLocaleString()+'원</span>'; }).join('') + '</div>' : '') +
+                        '<span style="font-size:0.82rem; ' + badgeStyle + ' padding:3px 10px; border-radius:10px; margin-right:8px; font-weight:800;">' + (isIn ? '수입' : '지출') + '</span>' +
+                        '<span style="color:' + clr.itemName + '; font-size:1rem; font-weight:700;">' + (l.item || '항목 없음') + '</span>' +
+                        subLines +
                     '</div>' +
-                    '<div style="display: flex; align-items: center; gap: 8px;">' +
-                        '<span style="color: ' + color + '; font-weight: 700;">' + sign + (l.price || 0).toLocaleString() + '원</span>' +
-                        '<button class="dyn-btn" data-action="editAccountRecord" data-index="' + originalIndex + '" style="background: rgba(74,222,128,0.25); color: #4ade80; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; border: none; cursor: pointer;">수정</button> ' +
-                        '<button class="dyn-btn" data-action="deleteAccountRecord" data-index="' + originalIndex + '" style="background: rgba(185,28,28,0.4); color: #ff6b6b; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; border: none; cursor: pointer;">삭제</button>' +
+                    '<div style="display:flex; align-items:center; gap:8px; flex-shrink:0; margin-left:8px;">' +
+                        '<span style="color:' + amtColor + '; font-weight:900; font-size:1rem;">' + sign + (l.price||0).toLocaleString() + '원</span>' +
+                        '<button class="dyn-btn" data-action="editAccountRecord" data-index="' + originalIndex + '" style="' + clr.editBtn + ' padding:6px 12px; border-radius:8px; font-size:0.85rem; border:none; cursor:pointer; font-weight:800; min-height:36px;">수정</button>' +
+                        '<button class="dyn-btn" data-action="deleteAccountRecord" data-index="' + originalIndex + '" style="' + clr.delBtn + ' padding:6px 12px; border-radius:8px; font-size:0.85rem; border:none; cursor:pointer; font-weight:800; min-height:36px;">삭제</button>' +
                     '</div>' +
                 '</div>';
             }).join('');
 
             container.innerHTML =
-                '<div style="background: rgba(74,222,128,0.08); border-radius: 14px; border: 1px solid rgba(74,222,128,0.2); padding: 16px;">' +
-                    '<p style="color: #4ade80; font-weight: 900; font-size: 1rem; margin-bottom: 14px; display: flex; align-items: center; gap: 6px;">📋 오늘 수입/지출 <span style="font-size:0.8rem; color:#999;">(' + todayLogs.length + '건)</span></p>' +
+                '<div style="' + clr.wrap + '">' +
+                    '<p style="color:' + clr.title + '; font-weight:900; font-size:1.05rem; margin:0 0 14px 0; display:flex; align-items:center; gap:6px;">📋 오늘 수입/지출 <span style="font-size:0.85rem; color:' + clr.cnt + '; font-weight:700;">(' + todayLogs.length + '건)</span></p>' +
                     rows +
-                    '<div style="border-top: 1px solid rgba(74,222,128,0.2); margin-top: 12px; padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">' +
-                        '<div style="display: flex; gap: 16px;">' +
-                            '<div><span style="color: #999; font-size: 0.8rem;">수입 </span><span style="color: #4ade80; font-weight: 700;">+' + totalIn.toLocaleString() + '원</span></div>' +
-                            '<div><span style="color: #999; font-size: 0.8rem;">지출 </span><span style="color: #f87171; font-weight: 700;">-' + totalOut.toLocaleString() + '원</span></div>' +
+                    '<div style="' + clr.divider + ' margin-top:12px; padding-top:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
+                        '<div style="display:flex; gap:16px; flex-wrap:wrap;">' +
+                            '<div style="font-size:1rem; font-weight:700;"><span style="color:' + clr.lblColor + '; font-weight:600;">수입 </span><span style="color:' + clr.inAmt + '; font-weight:900;">+' + totalIn.toLocaleString() + '원</span></div>' +
+                            '<div style="font-size:1rem; font-weight:700;"><span style="color:' + clr.lblColor + '; font-weight:600;">지출 </span><span style="color:' + clr.outAmt + '; font-weight:900;">-' + totalOut.toLocaleString() + '원</span></div>' +
                         '</div>' +
-                        '<div><span style="color: #999; font-size: 0.8rem;">잔액 </span><strong style="color: ' + (net >= 0 ? '#4ade80' : '#f87171') + '; font-size: 1.05rem;">' + (net >= 0 ? '+' : '') + net.toLocaleString() + '원</strong></div>' +
+                        '<div style="font-size:1rem; font-weight:700;"><span style="color:' + clr.lblColor + '; font-weight:600;">잔액 </span><strong style="color:' + (net >= 0 ? clr.inAmt : clr.outAmt) + '; font-size:1.1rem; font-weight:900;">' + (net >= 0 ? '+' : '') + net.toLocaleString() + '원</strong></div>' +
                     '</div>' +
                 '</div>';
         }
