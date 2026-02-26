@@ -780,9 +780,6 @@
             justify-content: center;
             overflow: hidden;
         }
-        #splash.hidden-splash {
-            display: none !important;
-        }
 
         #splash::before {
             content: '';
@@ -1995,17 +1992,17 @@
 </head>
 <body>
 
-    <div id="splash">
-        <div class="bee-fly">🐝</div>
-        <h1 class="logo-text">BEE MASTER</h1>
-        <p class="subtitle">스마트 양봉 관리 시스템</p>
-        <div class="choice-btn-container">
-            <button class="choice-btn btn-apiculture" ontouchstart="startApp('양봉')" onclick="startApp('양봉')" >
-                <span>🍯</span>
+    <div id="splash" style="position:fixed;inset:0;background:linear-gradient(135deg,#FFB300 0%,#FF8F00 100%);z-index:20000;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;">
+        <div style="font-size:5rem;animation:bounce 1.2s ease-in-out infinite;">🐝</div>
+        <h1 style="font-family:sans-serif;font-size:2.8rem;font-weight:900;color:#1a0800;letter-spacing:3px;margin:12px 0 4px;text-shadow:0 2px 8px rgba(0,0,0,0.15);">BEE MASTER</h1>
+        <p style="font-family:sans-serif;color:#5a3000;font-size:1rem;margin:0 0 40px;font-weight:600;">스마트 양봉 관리 시스템</p>
+        <div style="display:flex;gap:24px;padding:0 32px;width:100%;max-width:400px;">
+            <button id="btn-apiculture" style="flex:1;height:170px;border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:1.5rem;border:4px solid #E65100;background:#fff;color:#E65100;box-shadow:0 12px 30px rgba(0,0,0,0.2);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;gap:8px;">
+                <span style="font-size:3rem;">🍯</span>
                 양봉
             </button>
-            <button class="choice-btn btn-oriental" ontouchstart="startApp('동양종')" onclick="startApp('동양종')" >
-                <span>🐝</span>
+            <button id="btn-oriental" style="flex:1;height:170px;border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:1.5rem;border:4px solid #4E342E;background:#fff;color:#4E342E;box-shadow:0 12px 30px rgba(0,0,0,0.2);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;gap:8px;">
+                <span style="font-size:3rem;">🐝</span>
                 동양종
             </button>
         </div>
@@ -2986,11 +2983,26 @@
         function goHome() {
             // 대문으로 돌아가기
             document.getElementById('main-app').style.display = 'none';
-            var _sp=document.getElementById('splash'); _sp.classList.remove('hidden-splash'); _sp.style.display='';
+            var _sp=document.getElementById('splash'); if(_sp) _sp.style.display='flex';
             document.querySelector('.bottom-nav').style.display = 'none';
         }
 
         var _appStarted = false;
+        
+        // 대문 버튼 이벤트 연결
+        document.addEventListener('DOMContentLoaded', function() {
+            var btnA = document.getElementById('btn-apiculture');
+            var btnO = document.getElementById('btn-oriental');
+            if(btnA) {
+                btnA.addEventListener('click', function() { startApp('양봉'); });
+                btnA.addEventListener('touchend', function(e) { e.preventDefault(); startApp('양봉'); });
+            }
+            if(btnO) {
+                btnO.addEventListener('click', function() { startApp('동양종'); });
+                btnO.addEventListener('touchend', function(e) { e.preventDefault(); startApp('동양종'); });
+            }
+        });
+        
         function startApp(type) {
             if(_appStarted) return;
             _appStarted = true;
@@ -3004,7 +3016,7 @@
                 const splash = document.getElementById('splash');
                 const mainApp = document.getElementById('main-app');
                 
-                if(splash) { splash.style.display = ''; splash.classList.add('hidden-splash'); }
+                if(splash) { splash.style.display = 'none'; }
                 if(mainApp) {
                     mainApp.classList.remove('hidden');
                     mainApp.style.display = 'block';  // 명시적으로 display 설정!
@@ -4963,7 +4975,7 @@ function getUserInfo(){
         }
 
         function goHomeWithoutConfirm() {
-            var _sp=document.getElementById('splash'); _sp.classList.remove('hidden-splash'); _sp.style.display='';
+            var _sp=document.getElementById('splash'); if(_sp) _sp.style.display='flex';
             document.getElementById('main-app').classList.add('hidden');
             document.getElementById('main-memo').value = '';
             document.querySelectorAll('.work-btn.selected').forEach(btn => btn.classList.remove('selected'));
@@ -7798,7 +7810,7 @@ function getUserInfo(){
                 // bfcache에서 복원된 경우 - 대문 화면으로 강제 리셋
                 var sp = document.getElementById('splash');
                 var ma = document.getElementById('main-app');
-                if(sp) { sp.classList.remove('hidden-splash'); sp.style.display = ''; }
+                if(sp) sp.style.display = 'flex';
                 if(ma) { ma.classList.add('hidden'); ma.style.display = 'none'; }
                 _appStarted = false;
             }
