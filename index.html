@@ -2,6 +2,9 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -1990,6 +1993,28 @@
 </style>
 </head>
 <body>
+
+    <div id="dbg" style="position:fixed;top:0;left:0;right:0;background:#00f;color:#fff;font-size:11px;padding:4px 8px;z-index:99999;font-family:monospace;word-break:break-all;"></div>
+    <script>
+    var dbg = function(msg) {
+        var el = document.getElementById('dbg');
+        if(el) el.textContent = new Date().toISOString().slice(11,19) + ' ' + msg;
+    };
+    dbg('HTML 파싱 시작');
+    
+    window.addEventListener('pageshow', function(e) {
+        dbg('pageshow persisted=' + e.persisted + ' splash=' + (document.getElementById('splash') ? getComputedStyle(document.getElementById('splash')).display : 'null'));
+    });
+    window.addEventListener('load', function() {
+        dbg('load 이벤트 splash=' + (document.getElementById('splash') ? getComputedStyle(document.getElementById('splash')).display : 'null'));
+        setTimeout(function() {
+            dbg('load+1s splash=' + (document.getElementById('splash') ? getComputedStyle(document.getElementById('splash')).display : 'null'));
+        }, 1000);
+        setTimeout(function() {
+            dbg('load+3s splash=' + (document.getElementById('splash') ? getComputedStyle(document.getElementById('splash')).display : 'null'));
+        }, 3000);
+    });
+    </script>
 
     <div id="splash">
         <div class="bee-fly">🐝</div>
