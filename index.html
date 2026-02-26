@@ -2459,12 +2459,7 @@
         </div>
 
         <!-- 지도 화면 -->
-        <!-- ============ 꿀벌 스플래시 ============ -->
-        <div id="bee-splash">
-            <div style="font-size:3.5rem; margin-bottom:8px; animation:beeFly 0.7s ease-in-out infinite;">🐝</div>
-            <div style="color:#FFB300; font-size:1.6rem; font-weight:900; letter-spacing:2px;">BEE MASTER</div>
-            <div style="color:#a78040; font-size:0.85rem; margin-top:4px;">양봉 관리 시스템 로딩 중...</div>
-        </div>
+        <!-- bee-splash 제거됨 -->
 
         <!-- ============ 지도 화면 ============ -->
         <div id="view-map" class="view-group" style="padding:0;">
@@ -4750,36 +4745,7 @@ function showToast(msg){
 
 
 
-        function initSplash() {
-            var splash = document.getElementById('bee-splash');
-            if(!splash) return;
-            // 꿀벌들 날아오기
-            var emojis = ['🐝','🐝','🍯','🌸','🐝','🌼','🐝','🍀','🐝'];
-            emojis.forEach(function(em, i) {
-                var bee = document.createElement('div');
-                bee.className = 'splash-bee';
-                bee.textContent = em;
-                var sx = (Math.random()-0.5)*200 + 'px';
-                var sy = (Math.random()-0.5)*200 + 'px';
-                var ex = (Math.random()-0.5)*300 + 'px';
-                var ey = (Math.random()-0.5)*300 + 'px';
-                var sr = Math.random()*360 + 'deg';
-                var er = Math.random()*360 + 'deg';
-                bee.style.setProperty('--sx', sx);
-                bee.style.setProperty('--sy', sy);
-                bee.style.setProperty('--ex', ex);
-                bee.style.setProperty('--ey', ey);
-                bee.style.setProperty('--sr', sr);
-                bee.style.setProperty('--er', er);
-                bee.style.animationDelay = (i * 0.12) + 's';
-                bee.style.fontSize = (1.5 + Math.random()) + 'rem';
-                splash.appendChild(bee);
-            });
-            setTimeout(function() {
-                splash.style.animation = 'fadeOutSplash 0.6s ease forwards';
-                setTimeout(function() { splash.style.display = 'none'; }, 600);
-            }, 1800);
-        }
+        function initSplash() { /* bee-splash 제거됨 */ }
 
         // ── VWorld 지도 초기화 ──
         // ── 내 위치 찾기 ──
