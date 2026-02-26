@@ -7838,6 +7838,16 @@ function getUserInfo(){
         }
 
         // ===== 삭제/수정 함수 전역 노출 (window에 등록) =====
+        // 모바일 bfcache 대응: 뒤로가기/새로고침으로 캐시 복원 시 대문 리셋
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) {
+                var sp = document.getElementById('splash');
+                var ma = document.getElementById('main-app');
+                if (sp) sp.style.display = 'flex';
+                if (ma) { ma.style.display = 'none'; ma.classList.add('hidden'); }
+            }
+        });
+
         window.addEventListener('load', function() {
             window.deleteDayRecord    = deleteDayRecord;
             window.editDayRecord      = editDayRecord;
