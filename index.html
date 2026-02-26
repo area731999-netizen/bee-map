@@ -39,12 +39,6 @@
         }
 
         /* 네비게이션 바 */
-        body.light-mode .nav-bar {
-            background: #ffffff;
-            border-top: 1px solid #e9ecef;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
-        }
-
         body.light-mode .bottom-nav {
             background: rgba(255,255,255,0.97) !important;
             border-top: 1px solid #dee2e6 !important;
@@ -52,7 +46,7 @@
         }
 
         body.light-mode .nav-item {
-            color: #6c757d !important;
+            color: #9ca3af !important;
         }
         body.light-mode .nav-item.active {
             color: #2563eb !important;
@@ -60,31 +54,41 @@
         body.light-mode .nav-item::before {
             background: #2563eb !important;
         }
-
-        body.light-mode .nav-item {
-            color: #6c757d;
-        }
-
-        body.light-mode .nav-item.active {
-            color: #3b82f6;
-            background: rgba(59, 130, 246, 0.1);
+        body.light-mode .nav-item.active .nav-icon-wrap {
+            background: rgba(37,99,235,0.08) !important;
         }
 
         /* 상단 네비게이션 */
         body.light-mode .top-nav-bar {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        body.light-mode .top-nav-bar .ml-2 {
-            color: #ffffff !important;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 2px 10px rgba(37,99,235,0.2);
         }
 
         body.light-mode .btn-home {
-            background: rgba(255,255,255,0.25) !important;
+            background: rgba(255,255,255,0.18) !important;
             color: #ffffff !important;
-            border: 1px solid rgba(255,255,255,0.5) !important;
+            border: 1px solid rgba(255,255,255,0.4) !important;
+        }
+
+        body.light-mode .top-nav-type-badge {
+            background: rgba(255,255,255,0.18);
+            border-color: rgba(255,255,255,0.3);
+            color: #fff;
+        }
+
+        body.light-mode .top-nav-datetime {
+            color: #ffffff;
+        }
+
+        body.light-mode .top-nav-temp {
+            color: #fde68a;
+        }
+
+        body.light-mode .top-icon-btn {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+            color: #fff;
         }
 
         /* 입력 필드 */
@@ -894,41 +898,108 @@
 
         /* 상단 네비게이션 */
         .top-nav-bar { 
-            padding: 16px 20px; 
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
+            padding: 10px 16px 10px; 
+            background: linear-gradient(135deg, rgba(20,10,3,0.95) 0%, rgba(35,18,6,0.95) 100%);
+            backdrop-filter: blur(12px);
             display: flex; 
             justify-content: space-between; 
-            align-items: flex-start; 
-            border-bottom: 1px solid rgba(255,213,79,0.2); 
+            align-items: center; 
+            border-bottom: 1px solid rgba(255,179,0,0.18); 
             position: sticky; 
             top: 0; 
             z-index: 6000;
+            gap: 10px;
+            min-height: 60px;
         }
         
         .btn-home { 
-            background: linear-gradient(135deg, #FFD54F 0%, #FFB300 100%); 
-            color: #1a0800; 
-            padding: 8px 16px; 
-            border-radius: 12px; 
+            background: rgba(255,179,0,0.12); 
+            color: #FFD54F; 
+            padding: 8px 14px; 
+            border-radius: 10px; 
             font-size: 13px; 
-            font-weight: 800; 
-            border: none;
-            box-shadow: 0 4px 12px rgba(255,213,79,0.3);
+            font-weight: 700; 
+            border: 1px solid rgba(255,179,0,0.3);
+            box-shadow: none;
             transition: all 0.2s;
             cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .btn-home:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 6px rgba(255,213,79,0.3);
+            transform: scale(0.96);
+            background: rgba(255,179,0,0.22);
+        }
+
+        /* 상단 네비 중앙 정보 */
+        .top-nav-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .top-nav-type-badge {
+            font-size: 10px;
+            font-weight: 700;
+            color: #FFB300;
+            background: rgba(255,179,0,0.12);
+            border: 1px solid rgba(255,179,0,0.25);
+            border-radius: 20px;
+            padding: 2px 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .top-nav-datetime {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #e8e3d8;
+        }
+
+        .top-nav-temp {
+            color: #FFB300;
+            font-weight: 800;
+        }
+
+        /* 상단 우측 버튼 그룹 */
+        .top-nav-right {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .top-icon-btn {
+            background: rgba(255,179,0,0.1);
+            border: 1px solid rgba(255,179,0,0.2);
+            border-radius: 10px;
+            padding: 7px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #FFB300;
+            font-weight: 700;
+            transition: all 0.2s;
+            min-width: 38px;
+            min-height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-icon-btn:active {
+            transform: scale(0.92);
+            background: rgba(255,179,0,0.2);
         }
        
         /* 뷰 컨테이너 */
         .view-group { 
             min-height: calc(100vh - 180px);
             overflow-y: visible;
-            padding: 20px; 
+            padding: 14px 14px; 
             display: none; 
             animation: fadeIn 0.3s ease-out;
         }
@@ -1254,7 +1325,7 @@
             display: grid; 
             grid-template-columns: repeat(7, 1fr); 
             gap: 3px; 
-            background: rgba(30,25,20,0.4); 
+            background: rgba(20,15,10,0.6); 
             padding: 8px; 
             border-radius: 16px;
             border: 1px solid rgba(141,78,42,0.2);
@@ -1263,7 +1334,7 @@
         
         .cal-day { 
             aspect-ratio: 1;
-            background: linear-gradient(135deg, rgba(26,20,15,0.8) 0%, rgba(20,15,10,0.6) 100%); 
+            background: linear-gradient(135deg, rgba(30,22,14,0.85) 0%, rgba(22,16,10,0.7) 100%); 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
@@ -1271,15 +1342,15 @@
             border-radius: 8px; 
             cursor: pointer; 
             position: relative;
-            border: 1px solid transparent;
-            transition: all 0.2s;
-            padding: 4px 2px;
-            font-size: 1rem;
+            border: 1px solid rgba(255,179,0,0.05);
+            transition: all 0.15s;
+            padding: 2px 1px;
+            font-size: 0.95rem;
             overflow: hidden;
         }
 
         .cal-day:active {
-            transform: scale(0.95);
+            transform: scale(0.93);
         }
         
         .solar-term {
@@ -1305,10 +1376,11 @@
             color: #FFB300; 
             font-weight: 900; 
             text-align: center; 
-            font-size: 1rem; 
-            padding: 12px 0;
-            background: rgba(255,179,0,0.1);
+            font-size: 0.85rem; 
+            padding: 10px 0;
+            background: rgba(255,179,0,0.08);
             border-radius: 8px;
+            letter-spacing: 0.5px;
         }
         
         .queen-day { 
@@ -1581,14 +1653,14 @@
             position: fixed; 
             bottom: 0; 
             width: 100%; 
-            height: 85px; 
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255,213,79,0.2); 
+            height: 80px; 
+            background: rgba(10,6,2,0.92);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255,179,0,0.15); 
             display: flex; 
             z-index: 5000; 
             padding-bottom: env(safe-area-inset-bottom);
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
         }
         
         .nav-item { 
@@ -1597,39 +1669,52 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            font-size: 13px; 
-            color: #666; 
+            font-size: 11px; 
+            color: #555; 
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 700;
             position: relative;
-            gap: 2px;
+            gap: 3px;
+            border-radius: 0;
         }
 
         .nav-item::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 3px;
-            background: #FFB300;
-            transition: width 0.3s;
-            border-radius: 0 0 3px 3px;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background: transparent;
+            transition: background 0.3s;
+            border-radius: 0 0 2px 2px;
         }
 
         .nav-item.active::before {
-            width: 60%;
+            background: #FFB300;
         }
-        
-        .nav-item.active { 
-            color: #FFD54F; 
+
+        .nav-item.active {
+            color: #FFD54F;
             font-weight: 800;
         }
 
+        .nav-item.active .nav-icon-wrap {
+            background: rgba(255,179,0,0.12);
+            border-radius: 10px;
+        }
+
+        .nav-icon-wrap {
+            padding: 4px 10px;
+            border-radius: 10px;
+            transition: background 0.2s;
+            font-size: 1.35rem;
+            line-height: 1;
+        }
+
         .nav-item:active {
-            transform: scale(0.95);
+            transform: scale(0.93);
         }
         
         .badge { 
@@ -2008,20 +2093,16 @@
     <div id="main-app" class="hidden">
         <div class="top-nav-bar">
             <button id="top-left-btn" onclick="handleTopLeftBtn()" class="btn-home">⬅ 뒤로가기</button>
-            <div class="text-right">
-                <div style="display: flex; gap: 6px; margin-bottom: 4px; align-items: center;">
-                    <button onclick="toggleHighContrast()" style="background: rgba(255,179,0,0.2); border: 1px solid #FFB300; border-radius: 6px; padding: 4px 8px; font-size: 0.7rem; color: #FFB300; cursor: pointer;">
-                        🔆 고대비
-                    </button>
-                    <button id="theme-toggle-btn" onclick="toggleTheme()" style="background: rgba(255,179,0,0.2); border: 1px solid #FFB300; border-radius: 6px; padding: 4px 10px; font-size: 0.85rem; color: #FFB300; cursor: pointer; font-weight: 700;">
-                        🌙
-                    </button>
-                </div>
-                <div id="selected-type-text" class="text-[11px] font-bold uppercase" style="color: #FFB300;">선택: 양봉</div>
-                <div class="font-bold text-sm" style="color: #e8e3d8;">
+            <div class="top-nav-center">
+                <div id="selected-type-text" class="top-nav-type-badge">선택: 양봉</div>
+                <div class="top-nav-datetime">
                     <span id="current-date">2026.02.05</span>
-                    <span class="ml-2" style="color: #FFB300;">2°C</span>
+                    <span class="top-nav-temp ml-2">2°C</span>
                 </div>
+            </div>
+            <div class="top-nav-right">
+                <button onclick="toggleHighContrast()" class="top-icon-btn" title="고대비">🔆</button>
+                <button id="theme-toggle-btn" onclick="toggleTheme()" class="top-icon-btn">🌙</button>
             </div>
         </div>
 
@@ -2064,33 +2145,53 @@
         <div id="view-calendar" class="view-group">
             
 
-            <div style="display: flex; gap: 8px; margin-bottom: 16px; padding: 0 8px;">
-                <button onclick="switchView('diary', true)" style="flex: 1; background: linear-gradient(135deg, #A0522D 0%, #8D4E2A 100%); color: white; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; border: none; box-shadow: 0 4px 12px rgba(141,78,42,0.3); cursor: pointer;">
-                    ✍️ 일지작성
+            <!-- 퀵 액션 3버튼 -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px;">
+                <button onclick="switchView('diary', true)" style="
+                    background: linear-gradient(145deg, rgba(160,82,45,0.55) 0%, rgba(120,55,25,0.45) 100%);
+                    color: #FFD54F; padding: 14px 8px; border-radius: 14px; font-size: 13px; font-weight: 800;
+                    border: 1px solid rgba(255,179,0,0.3); box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+                    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;
+                    backdrop-filter: blur(4px); transition: all 0.18s; touch-action: manipulation;">
+                    <span style="font-size: 1.4rem;">✍️</span>
+                    <span>일지작성</span>
                 </button>
-                <button onclick="switchView('disease-history', true)" style="flex: 1; background: linear-gradient(135deg, #A0522D 0%, #8D4E2A 100%); color: white; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; border: none; box-shadow: 0 4px 12px rgba(141,78,42,0.3); cursor: pointer;">
-                    📋 방역조회
+                <button onclick="switchView('disease-history', true)" style="
+                    background: linear-gradient(145deg, rgba(160,82,45,0.55) 0%, rgba(120,55,25,0.45) 100%);
+                    color: #FFD54F; padding: 14px 8px; border-radius: 14px; font-size: 13px; font-weight: 800;
+                    border: 1px solid rgba(255,179,0,0.3); box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+                    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;
+                    backdrop-filter: blur(4px); transition: all 0.18s; touch-action: manipulation;">
+                    <span style="font-size: 1.4rem;">📋</span>
+                    <span>방역조회</span>
                 </button>
-                <button onclick="switchView('personal-schedule', true)" style="flex: 1; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; border: none; box-shadow: 0 4px 12px rgba(139,92,246,0.3); cursor: pointer;">
-                    📅 일정
+                <button onclick="switchView('personal-schedule', true)" style="
+                    background: linear-gradient(145deg, rgba(100,70,200,0.45) 0%, rgba(80,40,170,0.35) 100%);
+                    color: #c4b5fd; padding: 14px 8px; border-radius: 14px; font-size: 13px; font-weight: 800;
+                    border: 1px solid rgba(167,139,250,0.3); box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+                    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;
+                    backdrop-filter: blur(4px); transition: all 0.18s; touch-action: manipulation;">
+                    <span style="font-size: 1.4rem;">📅</span>
+                    <span>일정</span>
                 </button>
             </div>
 
             <!-- 봉장별 필터 제거 -->
             <div id="location-filters" style="display:none;"></div>
             
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding: 0 4px;">
-                <div style="display: flex; gap: 6px; align-items: center;">
-                    <button onclick="changeYear(-1)" style="color: #FFB300; background: rgba(255,179,0,0.15); border: none; border-radius: 10px; padding: 10px 12px; font-size: 1rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">◀◀</button>
-                    <button onclick="changeMonth(-1)" style="color: #FFB300; background: rgba(255,179,0,0.1); border: none; border-radius: 10px; padding: 10px 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">◀</button>
+            <!-- 달력 네비게이션 (1줄) -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; background: rgba(255,179,0,0.06); border: 1px solid rgba(255,179,0,0.12); border-radius: 14px; padding: 8px 10px;">
+                <div style="display: flex; gap: 4px;">
+                    <button onclick="changeYear(-1)" style="color: #FFB300; background: rgba(255,179,0,0.1); border: 1px solid rgba(255,179,0,0.2); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; font-weight: 900; cursor: pointer; min-height: 40px; min-width: 40px;">◀◀</button>
+                    <button onclick="changeMonth(-1)" style="color: #FFD54F; background: rgba(255,179,0,0.1); border: 1px solid rgba(255,179,0,0.2); border-radius: 8px; padding: 8px 12px; font-size: 1.2rem; font-weight: 900; cursor: pointer; min-height: 40px; min-width: 40px;">◀</button>
                 </div>
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
-                    <h3 id="cal-title" style="color: #FFD54F; font-weight: 900; font-size: 1.2rem; margin: 0;"></h3>
-                    <button onclick="goToToday()" style="color: #FFB300; background: rgba(255,179,0,0.15); border: 1px solid rgba(255,179,0,0.3); border-radius: 12px; padding: 6px 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer; min-height: 36px;">오늘로</button>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
+                    <h3 id="cal-title" style="color: #FFD54F; font-weight: 900; font-size: 1.1rem; margin: 0; letter-spacing: 0.5px;"></h3>
+                    <button onclick="goToToday()" style="color: #FFB300; background: rgba(255,179,0,0.1); border: 1px solid rgba(255,179,0,0.25); border-radius: 10px; padding: 3px 12px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">오늘로</button>
                 </div>
-                <div style="display: flex; gap: 6px; align-items: center;">
-                    <button onclick="changeMonth(1)" style="color: #FFB300; background: rgba(255,179,0,0.1); border: none; border-radius: 10px; padding: 10px 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">▶</button>
-                    <button onclick="changeYear(1)" style="color: #FFB300; background: rgba(255,179,0,0.15); border: none; border-radius: 10px; padding: 10px 12px; font-size: 1rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">▶▶</button>
+                <div style="display: flex; gap: 4px;">
+                    <button onclick="changeMonth(1)" style="color: #FFD54F; background: rgba(255,179,0,0.1); border: 1px solid rgba(255,179,0,0.2); border-radius: 8px; padding: 8px 12px; font-size: 1.2rem; font-weight: 900; cursor: pointer; min-height: 40px; min-width: 40px;">▶</button>
+                    <button onclick="changeYear(1)" style="color: #FFB300; background: rgba(255,179,0,0.1); border: 1px solid rgba(255,179,0,0.2); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; font-weight: 900; cursor: pointer; min-height: 40px; min-width: 40px;">▶▶</button>
                 </div>
             </div>
             <div id="cal-body" class="calendar-grid"></div>
@@ -2797,27 +2898,27 @@
         <!-- 하단 네비게이션 -->
         <nav class="bottom-nav">
             <div id="nav-home" class="nav-item" onclick="goHome()">
-                <div style="font-size: 24px; margin-bottom: 4px;">🏠</div>
+                <div class="nav-icon-wrap">🏠</div>
                 홈
             </div>
             <div id="nav-calendar" class="nav-item active" onclick="switchView('calendar', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">📅</div>
+                <div class="nav-icon-wrap">📅</div>
                 달력
             </div>
             <div id="nav-calculator" class="nav-item" onclick="switchView('calculator', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">🍯</div>
+                <div class="nav-icon-wrap">🍯</div>
                 계산기
             </div>
             <div id="nav-account" class="nav-item" onclick="switchView('account', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">💰</div>
+                <div class="nav-icon-wrap">💰</div>
                 가계부
             </div>
             <div id="nav-map" class="nav-item" onclick="switchView('map', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">🗺️</div>
+                <div class="nav-icon-wrap">🗺️</div>
                 지도
             </div>
             <div id="nav-settings" class="nav-item" onclick="switchView('apiary-settings', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">⚙️</div>
+                <div class="nav-icon-wrap">⚙️</div>
                 설정
             </div>
         </nav>
