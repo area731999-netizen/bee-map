@@ -779,6 +779,7 @@
             align-items: center; 
             justify-content: center;
             overflow: hidden;
+            animation: none;
         }
 
         #splash::before {
@@ -857,6 +858,9 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         .choice-btn::before {
@@ -1885,7 +1889,7 @@
             100% { opacity:0; pointer-events:none; }
         }
         #bee-splash {
-            position:fixed; inset:0; z-index:9999;
+            position:fixed; inset:0; z-index:25000;
             background:linear-gradient(135deg,#1a0800 0%,#2d1200 50%,#1a0800 100%);
             display:flex; flex-direction:column;
             align-items:center; justify-content:center; gap:16px;
@@ -2003,16 +2007,24 @@
         <h1 class="logo-text">BEE MASTER</h1>
         <p class="subtitle">스마트 양봉 관리 시스템</p>
         <div class="choice-btn-container">
-            <button class="choice-btn btn-apiculture" onclick="startApp('양봉')">
+            <button class="choice-btn btn-apiculture" onclick="startApp('양봉')" ontouchend="event.preventDefault();startApp('양봉');">
                 <span>🍯</span>
                 양봉
             </button>
-            <button class="choice-btn btn-oriental" onclick="startApp('동양종')">
+            <button class="choice-btn btn-oriental" onclick="startApp('동양종')" ontouchend="event.preventDefault();startApp('동양종');">
                 <span>🐝</span>
                 동양종
             </button>
         </div>
     </div>
+
+
+    <!-- 꿀벌 로딩 스플래시 (독립 레이어) -->
+    <div id="bee-splash">
+            <div style="font-size:3.5rem; margin-bottom:8px; animation:beeFly 0.7s ease-in-out infinite;">🐝</div>
+            <div style="color:#FFB300; font-size:1.6rem; font-weight:900; letter-spacing:2px;">BEE MASTER</div>
+            <div style="color:#a78040; font-size:0.85rem; margin-top:4px;">양봉 관리 시스템 로딩 중...</div>
+        </div>
 
     <div id="main-app" class="hidden">
         <div class="top-nav-bar" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;">
@@ -2468,12 +2480,6 @@
         </div>
 
         <!-- 지도 화면 -->
-        <!-- ============ 꿀벌 스플래시 ============ -->
-        <div id="bee-splash">
-            <div style="font-size:3.5rem; margin-bottom:8px; animation:beeFly 0.7s ease-in-out infinite;">🐝</div>
-            <div style="color:#FFB300; font-size:1.6rem; font-weight:900; letter-spacing:2px;">BEE MASTER</div>
-            <div style="color:#a78040; font-size:0.85rem; margin-top:4px;">양봉 관리 시스템 로딩 중...</div>
-        </div>
 
         <!-- ============ 지도 화면 ============ -->
         <div id="view-map" class="view-group" style="padding:0;">
