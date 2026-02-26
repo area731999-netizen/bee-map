@@ -1009,9 +1009,6 @@
         .view-active { 
             display: block !important; 
         }
-#view-map.view-active {
-            display: flex !important;
-        }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -2073,7 +2070,14 @@
     
 /* ── 봉장지도 레이아웃 ── */
 #view-map { display:none; flex-direction:column; }
-#view-map.view-active { display:flex !important; flex-direction:column; height:calc(100dvh - 148px); overflow:hidden; }
+#view-map.view-active { 
+    display:flex !important; 
+    flex-direction:column !important; 
+    height:calc(100dvh - 148px) !important;
+    min-height:0 !important;
+    overflow:hidden !important;
+    padding:0 !important;
+}
 #view-map #hdr { flex-shrink:0; }
 #view-map #mapwrap { flex-shrink:0; }
 #view-map #locbar { flex-shrink:0; display:none; }
@@ -5200,13 +5204,14 @@ function getUserInfo(){
             
             if(v === 'map') {
                 setTimeout(function(){
-                    if(!vmap){ initMap(); }
-                    else { 
-                        vmap.invalidateSize(); 
+                    if(!vmap){ 
+                        initMap(); 
+                    } else { 
+                        vmap.invalidateSize(true); 
                         renderAList();
                         renderAMks(); 
                     }
-                }, 200);
+                }, 350);
             }
 
             if(v === 'disease-history') {
