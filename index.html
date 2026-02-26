@@ -2174,7 +2174,7 @@
                 <input type="text" id="disease-custom-name" placeholder="질병명 직접 입력" class="field">
             </div>
 
-            <div class="input-row">
+            <div class="input-row" id="medicine-section" style="display:none;">
                 <label class="input-label">💊 약제 선택</label>
                 <select id="medicine-type" onchange="showMedicineDetail()" class="field">
                     <option value="">질병을 먼저 선택하세요</option>
@@ -5476,7 +5476,7 @@ function getUserInfo(){
                 diseases.push({ value: newValue, name: val.trim() });
                 saveCustomDiseases(diseases);
                 var medicines = getCustomMedicines();
-                medicines[newValue] = ['직접 입력'];
+                // 약제는 비워둠 (사용자가 직접 추가)
                 saveCustomMedicines(medicines);
                 renderCustomDiseases();
                 renderCustomMedicines();
@@ -5652,11 +5652,15 @@ function getUserInfo(){
             var sel = document.getElementById('disease-type');
             if(!sel) return;
             var diseases = getCustomDiseases();
-            sel.innerHTML = '<option value="">선택하세요</option>' +
-                diseases.map(function(d) {
+            sel.innerHTML = diseases.map(function(d) {
                     return '<option value="' + d.value + '">' + d.name + '</option>';
                 }).join('') +
                 '<option value="direct">직접 입력</option>';
+            // 첫 항목 선택 후 약제 목록 업데이트
+            if(sel.options.length > 0) {
+                sel.selectedIndex = 0;
+                updateMedicineOptions();
+            }
         }
 
         // ===== 작업 버튼 동적 렌더링 =====
@@ -7233,6 +7237,25 @@ function getUserInfo(){
                         }
                     });
                 }
+                if(medicineOptions[diseaseType] && medicineOptions[diseaseType].medicines) {
+                    medicineOptions[diseaseType].medicines.forEach(function(m) {
+                        if(medList.indexOf(m) === -1) {
+                            medicineSelect.innerHTML += '<option value="' + m + '">' + m + '</option>';
+                        }
+                    });
+                }
+
+                // 약제 목록이 있으면 섹션 표시, 없으면 숨김 ('직접 입력'만 있으면 없는 것으로 처리)
+                var realOptions = Array.from(medicineSelect.options).filter(function(o){
+                    return o.value && o.value !== '' && o.value !== '직접 입력';
+                });
+                var totalOptions = realOptions.length;
+                var medSec = document.getElementById('medicine-section');
+                if(medSec) medSec.style.display = totalOptions > 0 ? '' : 'none';
+            } else {
+                // 질병 미선택 또는 직접입력: 약제 섹션 숨김
+                var medSec = document.getElementById('medicine-section');
+                if(medSec) medSec.style.display = 'none';
             }
         }
 
