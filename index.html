@@ -1288,10 +1288,9 @@
             left: 50%;
             transform: translateX(-50%);
             font-size: 0.65rem;
-            color: #4ade80;
+            color: #ffffff;
             font-weight: 900;
-            text-shadow: 0 0 8px rgba(74,222,128,0.5);
-            background: rgba(34,197,94,0.2);
+            background: #16a34a;
             padding: 2px 6px;
             border-radius: 8px;
             white-space: nowrap;
@@ -2063,9 +2062,7 @@
 
         <!-- 달력 화면 -->
         <div id="view-calendar" class="view-group">
-            <div style="text-align: center; margin-bottom: 16px; padding: 12px; background: linear-gradient(135deg, rgba(255,179,0,0.2) 0%, rgba(141,78,42,0.15) 100%); border-radius: 12px;">
-                <h2 style="color: #FFD54F; font-size: 1.3rem; font-weight: 900; text-shadow: 0 2px 8px rgba(255,179,0,0.3);">🐝 양봉 일지</h2>
-            </div>
+            
 
             <div style="display: flex; gap: 8px; margin-bottom: 16px; padding: 0 8px;">
                 <button onclick="switchView('diary', true)" style="flex: 1; background: linear-gradient(135deg, #A0522D 0%, #8D4E2A 100%); color: white; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; border: none; box-shadow: 0 4px 12px rgba(141,78,42,0.3); cursor: pointer;">
@@ -2101,7 +2098,7 @@
         </div>
 
         <!-- 일지 입력 화면 -->
-        <div id="view-diary" class="view-group" style="padding-bottom: 100px;">
+        <div id="view-diary" class="view-group" style="padding-bottom: 120px;">
             <div class="input-row">
                 <span class="input-label">📍 봉장 선택</span>
                 <input type="hidden" id="loc-select" value="1봉장">
@@ -2146,11 +2143,14 @@
                 <div id="diary-photo-preview" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;"></div>
             </div>
 
-            <button onclick="saveData()" class="btn-save btn-diary-save">
-                📔 일지 저장하기
-            </button>
+        
+            <!-- 저장 버튼 고정 -->
+            <div style="position:sticky;bottom:70px;left:0;right:0;padding:10px 16px;background:linear-gradient(to top,rgba(26,14,5,1) 70%,transparent);z-index:100;">
+                <button onclick="saveData()" class="btn-save btn-diary-save" style="width:100%;min-height:52px;font-size:1rem;">
+                    📔 일지 저장하기
+                </button>
+            </div>
         </div>
-
         <!-- 방제 입력 화면 -->
         <div id="view-disease" class="view-group" style="padding-bottom: 100px;">
             <h3 style="color: #FFB300; margin-bottom: 20px; font-size: 1.5rem; font-weight: 900; text-align: center;">💊 방제 처리</h3>
@@ -2321,11 +2321,23 @@
 
         <!-- 가계부 화면 -->
         <div id="view-account" class="view-group" style="padding-bottom: 160px;">
-            <div class="v-switch">
-                <div id="v-acc-calendar" class="v-btn active" onclick="switchAccView('calendar')">달력</div>
-                <div id="v-list" class="v-btn" onclick="switchAccView('list')">기록하기</div>
-                <div id="v-stat" class="v-btn" onclick="switchAccView('stat')">기간별 내역</div>
-                <div id="v-customers" class="v-btn" onclick="switchAccView('customers')">고객관리</div>
+            <div style="display:flex;gap:6px;margin-bottom:18px;padding:5px;background:rgba(0,0,0,0.25);border-radius:14px;border:1px solid rgba(74,222,128,0.15);">
+                <div id="v-acc-calendar" onclick="switchAccView('calendar')"
+                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-size:.72rem;font-weight:800;transition:all .2s;">
+                  <span style="font-size:1.2rem;">📅</span>달력
+                </div>
+                <div id="v-list" onclick="switchAccView('list')"
+                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:transparent;color:#888;font-size:.72rem;font-weight:700;transition:all .2s;">
+                  <span style="font-size:1.2rem;">✏️</span>기록
+                </div>
+                <div id="v-stat" onclick="switchAccView('stat')"
+                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:transparent;color:#888;font-size:.72rem;font-weight:700;transition:all .2s;">
+                  <span style="font-size:1.2rem;">📊</span>내역
+                </div>
+                <div id="v-customers" onclick="switchAccView('customers')"
+                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:transparent;color:#888;font-size:.72rem;font-weight:700;transition:all .2s;">
+                  <span style="font-size:1.2rem;">👥</span>고객
+                </div>
             </div>
 
             <!-- 가계부 달력 -->
@@ -2793,8 +2805,8 @@
                 달력
             </div>
             <div id="nav-calculator" class="nav-item" onclick="switchView('calculator', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">🧮</div>
-                양봉계산기
+                <div style="font-size: 24px; margin-bottom: 4px;">🍯</div>
+                계산기
             </div>
             <div id="nav-account" class="nav-item" onclick="switchView('account', true)">
                 <div style="font-size: 24px; margin-bottom: 4px;">💰</div>
@@ -6378,10 +6390,28 @@ function getUserInfo(){
             document.getElementById('acc-page-stat').style.display = v === 'stat' ? 'block' : 'none';
             var cpEl = document.getElementById('acc-page-customers'); if(cpEl) cpEl.style.display = v === 'customers' ? 'block' : 'none';
             if(v === 'list') { initAccLines(); renderMainCats(); }
-            document.getElementById('v-acc-calendar').className = 'v-btn' + (v === 'calendar' ? ' active' : '');
-            document.getElementById('v-list').className = 'v-btn' + (v === 'list' ? ' active' : '');
-            document.getElementById('v-stat').className = 'v-btn' + (v === 'stat' ? ' active' : '');
-            document.getElementById('v-customers').className = 'v-btn' + (v === 'customers' ? ' active' : '');
+            // 가계부 탭 활성화 스타일
+            var accTabs = {
+                'calendar': 'v-acc-calendar',
+                'list': 'v-list',
+                'stat': 'v-stat',
+                'customers': 'v-customers'
+            };
+            var accIcons = {'calendar':'📅','list':'✏️','stat':'📊','customers':'👥'};
+            var accLabels = {'calendar':'달력','list':'기록','stat':'내역','customers':'고객'};
+            Object.keys(accTabs).forEach(function(key) {
+                var el = document.getElementById(accTabs[key]);
+                if(!el) return;
+                if(key === v) {
+                    el.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
+                    el.style.color = '#fff';
+                    el.style.fontWeight = '800';
+                } else {
+                    el.style.background = 'transparent';
+                    el.style.color = '#888';
+                    el.style.fontWeight = '700';
+                }
+            });
             
             if(v === 'calendar') renderAccCalendar();
             else if(v === 'stat') renderStatView();
@@ -6475,7 +6505,7 @@ function getUserInfo(){
                 
                 if(isThisMonth && d === todayDateNum) {
                     content = (solarTerm ? '<span class="solar-term">' + solarTerm + '</span>' : '') +
-                              '<div style="position: absolute; top: ' + (solarTerm ? '24px' : '4px') + '; right: 4px; background: #4ade80; color: #1a0800; font-size: 0.6rem; padding: 2px 6px; border-radius: 8px; font-weight: 900;">오늘</div>' +
+                              '<div style="position: absolute; top: ' + (solarTerm ? '24px' : '4px') + '; right: 4px; background: #15803d; color: #ffffff; font-size: 0.6rem; padding: 2px 6px; border-radius: 8px; font-weight: 900;">오늘</div>' +
                               '<span style="font-weight: bold; font-size: 1.1rem;">' + d + '</span>';
                 }
                 
@@ -6595,9 +6625,18 @@ function getUserInfo(){
                     return;
                 }
                 
-                area.innerHTML = Object.keys(categories[inoutType]).map(c =>
-                    `<div class="m-cat-btn" onclick="showSub('${c}', this)">${c}</div>`
-                ).join('');
+                area.innerHTML = '';
+                Object.keys(categories[inoutType]).forEach(function(catName) {
+                    var btn = document.createElement('div');
+                    btn.className = 'm-cat-btn';
+                    btn.textContent = catName;
+                    // pointerup: 터치/마우스 모두 한 번만 발생
+                    btn.addEventListener('pointerup', function(e) {
+                        e.stopPropagation();
+                        showSub(catName, btn);
+                    });
+                    area.appendChild(btn);
+                });
                 
                 console.log('✅ 카테고리 렌더링 완료');
             } catch(error) {
@@ -6608,27 +6647,21 @@ function getUserInfo(){
         function showSub(cat, el) {
             document.querySelectorAll('.m-cat-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
-            
+
             const subArea = document.getElementById('sub-area');
             subArea.style.display = 'block';
-            
-            // 세부항목 버튼 재생성 (이전 selected 상태 자동 초기화)
+
             var subList = document.getElementById('sub-list');
             subList.innerHTML = '';
             categories[inoutType][cat].forEach(function(s) {
                 var btn = document.createElement('div');
                 btn.className = 's-btn';
                 btn.textContent = s;
-                // touchend로 처리 후 click 이벤트 억제 (모바일 이중 발생 방지)
-                btn.addEventListener('touchend', (function(v){ 
-                    return function(e){ 
-                        e.preventDefault(); 
-                        setFinal(v); 
-                    }; 
-                })(s), { passive: false });
-                btn.addEventListener('click', (function(v){ 
-                    return function(){ setFinal(v); }; 
-                })(s));
+                // pointerup: 터치/마우스 모두 한 번만 발생
+                btn.addEventListener('pointerup', function(e) {
+                    e.stopPropagation();
+                    setFinal(s);
+                });
                 subList.appendChild(btn);
             });
         }
@@ -6791,10 +6824,15 @@ function getUserInfo(){
                 // 행 수 변경 시에만 전체 재생성
                 _buildAccLinesHTML(container);
             } else {
-                // 행 수 동일 → 소계·활성 테두리만 갱신 (포커스 유지)
+                // 행 수 동일 → 값·소계·활성 테두리 갱신 (포커스 유지)
                 accLines.forEach((line, idx) => {
                     const row = container.querySelector('.acc-line-row[data-idx="'+idx+'"]');
                     if(!row) return;
+                    // 품목명 input 값 동기화 (포커스 없는 행만)
+                    const nameInput = row.querySelector('input[type="text"]');
+                    if(nameInput && document.activeElement !== nameInput) {
+                        nameInput.value = line.name || '';
+                    }
                     const subtotal = (line.qty || 0) * (line.unitPrice || 0);
                     const subEl = row.querySelector('.acc-subtotal');
                     if(subEl) {
@@ -7624,28 +7662,73 @@ function getUserInfo(){
         }
 
         function startVoiceMemo(button) {
-            if(!recognition) {
+            // 브라우저 지원 확인
+            if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
                 showToast('❌ 이 브라우저는 음성 인식을 지원하지 않습니다');
+                return;
+            }
+
+            // 녹음 중이면 중단
+            if(isRecording) {
+                if(recognition) recognition.stop();
+                isRecording = false;
+                button.classList.remove('recording');
+                button.innerHTML = '🎤 음성';
+                button.style.background = '';
                 return;
             }
 
             currentVoiceButton = button;
 
-            if(isRecording) {
-                // 녹음 중단
-                recognition.stop();
-                isRecording = false;
-                button.classList.remove('recording');
-                button.innerHTML = '🎤 음성';
-                button.style.background = '';
-            } else {
-                // 녹음 시작
-                try {
-                    recognition.start();
-                } catch(error) {
-                    console.error('음성 인식 시작 오류:', error);
-                    showToast('⚠️ 음성 인식을 시작할 수 없습니다');
-                }
+            // 매번 새 recognition 객체 생성 (재사용 시 오류 방지)
+            try {
+                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const rec = new SR();
+                rec.lang = 'ko-KR';
+                rec.continuous = false;
+                rec.interimResults = false;
+
+                rec.onstart = function() {
+                    isRecording = true;
+                    button.classList.add('recording');
+                    button.innerHTML = '⏹️ 중단';
+                    button.style.background = 'linear-gradient(135deg,#dc2626,#b91c1c)';
+                    showToast('🎤 말씀하세요...');
+                };
+
+                rec.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    // 현재 버튼 근처의 textarea 찾기
+                    const container = button.closest('div[style]') || button.parentElement;
+                    const textarea = container ? container.querySelector('textarea') : document.getElementById('main-memo');
+                    if(textarea) {
+                        textarea.value = (textarea.value ? textarea.value + ' ' : '') + transcript;
+                    }
+                    showToast('✅ 음성 입력 완료');
+                };
+
+                rec.onerror = function(event) {
+                    console.error('음성 오류:', event.error);
+                    if(event.error === 'no-speech') showToast('⚠️ 음성이 감지되지 않았습니다');
+                    else if(event.error === 'not-allowed') showToast('❌ 마이크 권한을 허용해주세요');
+                    else showToast('⚠️ 음성 인식 오류: ' + event.error);
+                };
+
+                rec.onend = function() {
+                    isRecording = false;
+                    if(currentVoiceButton) {
+                        currentVoiceButton.classList.remove('recording');
+                        currentVoiceButton.innerHTML = '🎤 음성';
+                        currentVoiceButton.style.background = '';
+                    }
+                };
+
+                recognition = rec;
+                rec.start();
+
+            } catch(error) {
+                console.error('음성 인식 시작 오류:', error);
+                showToast('⚠️ 음성 인식을 시작할 수 없습니다: ' + error.message);
             }
         }
 
