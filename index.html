@@ -2308,6 +2308,16 @@
             color: #212529 !important;
             border: 1px solid #e2e8f0 !important;
         }
+        /* ── 선택된 날짜 셀 하이라이트 ── */
+        .cal-day.selected-day {
+            outline: 3px solid #4f46e5 !important;
+            outline-offset: -2px;
+            border-radius: 10px;
+        }
+        body.light-mode .cal-day.selected-day {
+            outline-color: #4f46e5 !important;
+            background: rgba(79,70,229,0.08) !important;
+        }
         /* ========== 라이트모드 보완 끝 ========== */
         </style>
     
@@ -3883,46 +3893,38 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                                   <span style="font-weight:bold;font-size:${solarTerm ? '0.9rem' : '1.05rem'}">${d}</span>`;
                     }
                     
-                    // 기록/일정/이벤트 표시
-                    let eventLabels = '';
-                    const labelStyle = 'font-size:0.68rem;font-weight:800;border-radius:4px;padding:2px 4px;margin:1px 0;display:block;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;color:#ffffff !important;';
+                    // 이벤트 아이콘만 표시 (작은 셀에 최적화)
+                    let eventIcons = '';
+                    const iconStyle = 'font-size:1rem;line-height:1;';
 
-                    // 일지 기록 - 첫번째 봉장의 첫 작업내용 표시
+                    // 일지 기록
                     if(db[key]?.records && db[key].records.length > 0) {
-                        const recs = db[key].records;
-                        const firstWork = recs[0]?.works?.[0] || '일지';
-                        eventLabels += `<span style="${labelStyle}background:#d97706;">🟡 ${firstWork}</span>`;
-                        if(recs.length > 1) {
-                            eventLabels += `<span style="${labelStyle}background:#b45309;">+${recs.length-1}건</span>`;
-                        }
+                        const cnt = db[key].records.length;
+                        eventIcons += `<span style="${iconStyle}" title="일지 ${cnt}건">📝</span>`;
+                        if(cnt > 1) eventIcons += `<span style="font-size:0.6rem;font-weight:900;color:#d97706;vertical-align:top;">${cnt}</span>`;
                     }
 
                     // 여왕벌 이벤트
                     if(db[key]?.isQueen) {
-                        const queenLabel = db[key]?.queenNote || '왕대출방';
-                        eventLabels += `<span style="${labelStyle}background:#db2777;">👑 ${queenLabel}</span>`;
+                        eventIcons += `<span style="${iconStyle}" title="왕대출방">👑</span>`;
                     }
 
                     // 방역 알람
                     const dayDiseases = diseaseLogs.filter(function(dl){return dl.dateStr===key;});
                     if(db[key]?.isDiseaseAlarm || dayDiseases.length > 0) {
-                        const diseaseLabel = dayDiseases.length > 0 ? (dayDiseases[0].diseaseTypeName || dayDiseases[0].diseaseType || '방역') : '방역알람';
-                        eventLabels += `<span style="${labelStyle}background:#dc2626;">🛡️ ${diseaseLabel}</span>`;
+                        eventIcons += `<span style="${iconStyle}" title="방역">🛡️</span>`;
                     }
 
                     // 개인일정
                     if(hasSchedule) {
-                        const schedDate = `${key.split('-')[0]}-${String(parseInt(key.split('-')[1])).padStart(2,'0')}-${String(parseInt(key.split('-')[2])).padStart(2,'0')}`;
-                        const sched = personalSchedules.find(function(s){return s.date===schedDate;});
-                        const schedLabel = sched ? (sched.title || '일정') : '일정';
-                        eventLabels += `<span style="${labelStyle}background:#7c3aed;">📅 ${schedLabel}</span>`;
+                        eventIcons += `<span style="${iconStyle}" title="개인일정">📅</span>`;
                     }
 
-                    if(eventLabels) {
-                        content += `<div style="margin-top:2px;width:100%;">${eventLabels}</div>`;
+                    if(eventIcons) {
+                        content += `<div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:1px;margin-top:3px;">${eventIcons}</div>`;
                     }
                     
-                    body.innerHTML += `<div class="${cls}" onclick="showDayRecordBelow('${key}')">${content}</div>`;
+                    body.innerHTML += `<div class="${cls}" onclick="handleDayClick('${key}', this)">${content}</div>`;
                 }
                 
                 console.log('✅ 달력 렌더링 완료');
@@ -3940,6 +3942,15 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             } else {
                 switchView('diary', true);
             }
+        }
+
+        function handleDayClick(key, el) {
+            // 기존 선택 셀 하이라이트 제거
+            document.querySelectorAll('.cal-day.selected-day').forEach(function(d){ d.classList.remove('selected-day'); });
+            // 클릭한 셀 하이라이트
+            if(el) el.classList.add('selected-day');
+            // 하단에 내용 표시 + 스크롤
+            showDayRecordBelow(key);
         }
 
         function showDayRecordBelow(key) {
