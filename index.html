@@ -317,15 +317,12 @@
         body.light-mode .text-blue-500 { color: #3b82f6 !important; }
         body.light-mode .text-purple-400 { color: #a78bfa !important; }
 
-        /* 링크/버튼 색상 */
-        body.light-mode button {
-            color: inherit;
-        }
-        body.light-mode button[style*="4f46e5"],
-        body.light-mode button[style*="3730a3"],
+        /* 링크/버튼 색상 - inherit 제거로 인라인 스타일 정상 작동 */
         body.light-mode button[onclick="saveUserInfoManual()"],
         body.light-mode button[onclick="saveSettingsAll()"] {
             color: #ffffff !important;
+            background: linear-gradient(135deg,#16a34a,#15803d) !important;
+            -webkit-text-fill-color: #ffffff !important;
         }
 
         body.light-mode .dyn-btn {
@@ -1839,10 +1836,10 @@
             border-top-color: #dee2e6 !important;
         }
         /* 설정 화면 전체 - 다크 스타일 인라인 오버라이드 */
-        body.light-mode #settings-basic [style*="background"],
-        body.light-mode #settings-custom [style*="background"],
-        body.light-mode #settings-apiary [style*="background"],
-        body.light-mode #settings-data [style*="background"] {
+        body.light-mode #settings-basic [style*="background"]:not(button),
+        body.light-mode #settings-custom [style*="background"]:not(button),
+        body.light-mode #settings-apiary [style*="background"]:not(button),
+        body.light-mode #settings-data [style*="background"]:not(button) {
             background: #f8f9fa !important;
         }
         body.light-mode #settings-basic span[style*="color"],
@@ -3073,7 +3070,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     <input id="input-farmname" type="text" placeholder="예) 황실양봉, 행복양봉원" class="field"
                       style="width:100%;padding:9px 12px;background:#2a1a08;border:1px solid rgba(255,179,0,.3);border-radius:8px;color:#fff;font-size:.88rem;box-sizing:border-box;" />
                   </div>
-                  <button onclick="saveUserInfoManual()" style="width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#4f46e5,#3730a3);color:#ffffff !important;border:none;border-radius:10px;font-size:1rem;font-weight:800;cursor:pointer;text-shadow:0 1px 2px rgba(0,0,0,0.3);">✅ 저장</button>
+                  <button onclick="saveUserInfoManual()" style="width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#16a34a,#15803d);color:#ffffff;border:none;border-radius:10px;font-size:1rem;font-weight:800;cursor:pointer;">✅ 저장</button>
                 </div>
                 <p style="color: #999; font-size: 0.85rem; margin-bottom: 14px;">사용할 봉장을 선택하세요</p>
                 <div style="background: rgba(30,25,20,0.7); padding: 18px; border-radius: 12px; margin-bottom: 12px;">
@@ -3096,7 +3093,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     <h3 style="color: #FFD54F; font-weight: bold; margin-bottom: 8px; font-size: 1rem;">🎨 테마 설정</h3>
                     <p style="color: #999; font-size: 0.85rem;">상단 🌙 버튼으로 언제든지 전환할 수 있습니다.</p>
                 </div>
-                <button onclick="saveSettingsAll()" style="width:100%;margin-top:18px;padding:16px;background:linear-gradient(135deg,#4f46e5,#3730a3);color:#fff;border:none;border-radius:14px;font-size:1.1rem;font-weight:900;cursor:pointer;box-shadow:0 4px 16px rgba(79,70,229,0.4);">✅ 설정 저장 완료</button>
+                <button onclick="saveSettingsAll()" style="width:100%;margin-top:18px;padding:16px;background:linear-gradient(135deg,#16a34a,#15803d);color:#ffffff;border:none;border-radius:14px;font-size:1.1rem;font-weight:900;cursor:pointer;box-shadow:0 4px 16px rgba(22,163,74,0.4);">✅ 설정 저장 완료</button>
             </div>
 
             <!-- ===== 항목 설정 탭 ===== -->
@@ -3888,7 +3885,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     
                     // 기록/일정/이벤트 표시
                     let eventLabels = '';
-                    const labelStyle = 'font-size:0.52rem;font-weight:800;border-radius:4px;padding:1px 3px;margin:1px 0;display:block;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;color:#ffffff !important;';
+                    const labelStyle = 'font-size:0.68rem;font-weight:800;border-radius:4px;padding:2px 4px;margin:1px 0;display:block;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;color:#ffffff !important;';
 
                     // 일지 기록 - 첫번째 봉장의 첫 작업내용 표시
                     if(db[key]?.records && db[key].records.length > 0) {
