@@ -3584,8 +3584,30 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
         async function fetchWeatherData() {
             try {
-                const lat = 36.9922;
-                const lon = 127.1129;
+                // 활성 봉장 위치 우선, 없으면 GPS, 없으면 기본값
+                let lat = 36.9922;
+                let lon = 127.1129;
+
+                // 1순위: 선택된 봉장의 등록 GPS 좌표
+                try {
+                    const locs = JSON.parse(localStorage.getItem('apiaryLocations') || '{}');
+                    const names = Object.keys(locs);
+                    const activeName = selectedApiaryLoc || names[0];
+                    if(activeName && locs[activeName] && locs[activeName].lat) {
+                        lat = locs[activeName].lat;
+                        lon = locs[activeName].lng;
+                    } else if(names.length > 0 && locs[names[0]] && locs[names[0]].lat) {
+                        lat = locs[names[0]].lat;
+                        lon = locs[names[0]].lng;
+                    }
+                } catch(e) {}
+
+                // 2순위: 현재 GPS 위치
+                if(lat === 36.9922 && myPos) {
+                    lat = myPos.lat;
+                    lon = myPos.lng;
+                }
+
                 const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m&timezone=Asia/Seoul`;
                 
                 const response = await fetch(url);
@@ -5075,10 +5097,21 @@ function buildFormEl(i, name, d){
   addrInput.style.cssText='flex:1;margin-bottom:0';
   addrInput.placeholder='예) 예) 경기 화성시 봉담읍';
   addrInput.value=has?d.address:'';
+  addrInput.addEventListener('keydown', (function(idx){return function(e){
+    if(e.key==='Enter'||e.keyCode===13){
+      e.preventDefault();
+      this.blur(); // 키보드 닫기
+      doSearch(idx);
+    }
+  };})(i));
   var searchBtn=document.createElement('button'); searchBtn.className='btn bg';
   searchBtn.style.cssText='padding:0 12px;flex-shrink:0';
   searchBtn.textContent='검색';
-  searchBtn.onclick=(function(idx){return function(){doSearch(idx);};})(i);
+  searchBtn.onclick=(function(idx){return function(){
+    var inp=document.getElementById('faddy-'+idx);
+    if(inp) inp.blur(); // 키보드 닫기
+    doSearch(idx);
+  };})(i);
   searchRow.appendChild(addrInput); searchRow.appendChild(searchBtn);
   form.appendChild(searchRow);
 
