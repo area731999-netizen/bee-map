@@ -1853,6 +1853,252 @@
             background: rgba(220,53,69,0.15) !important;
             color: #dc3545 !important;
         }
+
+        /* ========== 라이트모드 전체 가독성 보완 ========== */
+
+        /* ── 지도 뷰 ── */
+        body.light-mode #hdr {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            border-bottom: 2px solid rgba(255,255,255,0.2) !important;
+        }
+        body.light-mode #hdr h1 { color: #ffffff !important; }
+        body.light-mode #gst { color: rgba(255,255,255,0.8) !important; }
+        body.light-mode #panel {
+            background: #f8fafc !important;
+        }
+        body.light-mode #legend { color: #374151 !important; font-weight: 700 !important; }
+        body.light-mode .ac {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+        }
+        body.light-mode .ac-head { background: #ffffff !important; }
+        body.light-mode .ac-form {
+            background: #f1f5f9 !important;
+            border-top: 2px solid #e2e8f0 !important;
+        }
+        body.light-mode .mtype {
+            background: rgba(255,255,255,0.92) !important;
+            color: #374151 !important;
+            border: 1px solid #d1d5db !important;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
+        }
+        body.light-mode .mtype.on {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border-color: #1d4ed8 !important;
+        }
+        body.light-mode .flt {
+            background: rgba(255,255,255,0.92) !important;
+            color: #374151 !important;
+            border: 1px solid #d1d5db !important;
+        }
+        body.light-mode .flt.on {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border-color: #1d4ed8 !important;
+        }
+        body.light-mode .icob {
+            background: rgba(255,255,255,0.95) !important;
+            border-color: #d1d5db !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+        }
+        body.light-mode .mapbtn {
+            background: #f0f7ff !important;
+            color: #2563eb !important;
+            border-top: 1px solid #e2e8f0 !important;
+        }
+        body.light-mode .fi {
+            background: #ffffff !important;
+            color: #212529 !important;
+            border: 1px solid #d1d5db !important;
+        }
+        body.light-mode .fi::placeholder { color: #9ca3af !important; }
+        body.light-mode .fi:focus { border-color: #2563eb !important; background: #ffffff !important; }
+        body.light-mode .fbig.fsave { background: #16a34a !important; color: #ffffff !important; }
+        body.light-mode .fbig.fgps { background: #dbeafe !important; color: #1d4ed8 !important; border: 1px solid #93c5fd !important; }
+        body.light-mode .fbig.fcancel { background: #f1f5f9 !important; color: #6b7280 !important; }
+        body.light-mode .bg { background: #dbeafe !important; color: #1d4ed8 !important; }
+        body.light-mode .br { background: #fee2e2 !important; color: #dc2626 !important; }
+        body.light-mode #locbar { background: #f0f7ff !important; border-top: 1px solid #93c5fd !important; }
+        body.light-mode #laddr { color: #1e3a5f !important; }
+        body.light-mode #lcoord { color: #6b7280 !important; }
+        body.light-mode .ac-btns .btn { background: #f1f5f9 !important; }
+
+        /* ── 전체 인라인 다크 배경 오버라이드 ── */
+        body.light-mode [style*="rgba(30,25,20"] {
+            background: #ffffff !important;
+            border-color: #e2e8f0 !important;
+            color: #212529 !important;
+        }
+        body.light-mode [style*="rgba(26,18,10"] {
+            background: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+        }
+        body.light-mode [style*="rgba(20,15,10"] {
+            background: #f8fafc !important;
+        }
+        body.light-mode [style*="background: rgba(0,0,0,0."] {
+            background: #f1f5f9 !important;
+        }
+        body.light-mode [style*="background:rgba(0,0,0"] {
+            background: #f1f5f9 !important;
+        }
+
+        /* ── 텍스트 색상 전반 ── */
+        body.light-mode [style*="color: #FFD54F"]:not(.top-nav-bar *):not(#hdr *) { color: #b45309 !important; }
+        body.light-mode [style*="color: #FFB300"]:not(.top-nav-bar *):not(#hdr *) { color: #b45309 !important; }
+        body.light-mode [style*="color: #e8e3d8"] { color: #212529 !important; }
+        body.light-mode [style*="color: #aaa"] { color: #6b7280 !important; }
+        body.light-mode [style*="color: #888"] { color: #6b7280 !important; }
+        body.light-mode [style*="color: #999"] { color: #6b7280 !important; }
+        body.light-mode [style*="color: #666"] { color: #6b7280 !important; }
+        body.light-mode [style*="color: #555"] { color: #6b7280 !important; }
+        body.light-mode [style*="color: #444"] { color: #4b5563 !important; }
+        body.light-mode [style*="color: #777"] { color: #374151 !important; }
+        body.light-mode [style*="color: #ffffff"]:not(.top-nav-bar *):not(#hdr *):not(.btn-dis):not(.flt.on):not(.mtype.on):not(.choice-btn) { color: #ffffff; }
+
+        /* ── 카드/목록 배경 ── */
+        body.light-mode .list-card,
+        body.light-mode .record-card,
+        body.light-mode [style*="border-radius: 16px"][style*="rgba"],
+        body.light-mode [style*="border-radius: 14px"][style*="rgba"],
+        body.light-mode [style*="border-radius: 12px"][style*="rgba(30"],
+        body.light-mode [style*="border-radius: 12px"][style*="rgba(26"] {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #212529 !important;
+        }
+
+        /* ── 탭/스위치 ── */
+        body.light-mode .v-btn:not(.active) {
+            background: #f1f5f9 !important;
+            color: #374151 !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+        body.light-mode .v-btn.active {
+            background: #2563eb !important;
+            color: #ffffff !important;
+        }
+        body.light-mode .acc-tab:not(.active) {
+            background: #f1f5f9 !important;
+            color: #374151 !important;
+        }
+
+        /* ── 통계/차트 섹션 ── */
+        body.light-mode .stat-card,
+        body.light-mode [style*="background: rgba(30,25,20,0.7)"],
+        body.light-mode [style*="background: rgba(30,25,20,.7)"] {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+
+        /* ── 가계부 ── */
+        body.light-mode #acc-total-display {
+            background: #f0fdf4 !important;
+            border: 1px solid #86efac !important;
+            color: #166534 !important;
+        }
+        body.light-mode .acc-tab { border: 1px solid #e2e8f0 !important; }
+
+        /* ── 달력 네비 버튼 ── */
+        body.light-mode button[onclick*="changeYear"],
+        body.light-mode button[onclick*="changeMonth"],
+        body.light-mode button[onclick*="goToToday"] {
+            background: #f0f7ff !important;
+            color: #2563eb !important;
+            border: 1px solid #bfdbfe !important;
+        }
+
+        /* ── 모달 ── */
+        body.light-mode #calendar-preview-modal > div {
+            background: #ffffff !important;
+            color: #212529 !important;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15) !important;
+        }
+        body.light-mode #work-selection-area {
+            background: #ffffff !important;
+            color: #212529 !important;
+        }
+
+        /* ── 설정 화면 추가 ── */
+        body.light-mode #view-apiary-settings [style*="rgba(30,25,20"],
+        body.light-mode #view-apiary-settings [style*="rgba(26,18,10"],
+        body.light-mode #view-apiary-settings [style*="rgba(0,0,0"] {
+            background: #ffffff !important;
+            border-color: #e2e8f0 !important;
+            color: #212529 !important;
+        }
+
+        /* ── 병역/방역 ── */
+        body.light-mode #view-disease [style*="rgba(30,25,20"],
+        body.light-mode #view-disease [style*="rgba(26,18,10"],
+        body.light-mode #view-disease-history [style*="rgba(30,25,20"],
+        body.light-mode #view-disease-history [style*="rgba(26,18,10"] {
+            background: #ffffff !important;
+            border-color: #e2e8f0 !important;
+        }
+        /* ── dyn-btn 수정/삭제 버튼 라이트모드 ── */
+        body.light-mode .dyn-btn[data-action*="edit"] {
+            background: #dbeafe !important;
+            color: #1d4ed8 !important;
+        }
+        body.light-mode .dyn-btn[data-action*="delete"] {
+            background: #fee2e2 !important;
+            color: #dc2626 !important;
+        }
+
+        /* ── 가계부 카드 배경 ── */
+        body.light-mode #view-account [style*="rgba(30,25,20"],
+        body.light-mode #view-account [style*="rgba(26,18,10"],
+        body.light-mode #view-account [style*="rgba(20,15,10"],
+        body.light-mode #view-account [style*="rgba(0,0,0"] {
+            background: #ffffff !important;
+            border-color: #e2e8f0 !important;
+            color: #212529 !important;
+        }
+
+        /* ── 가계부 지출/수입 배지 ── */
+        body.light-mode [style*="background: rgba(185,28,28"] {
+            background: #fee2e2 !important;
+            color: #dc2626 !important;
+        }
+        body.light-mode [style*="background: rgba(74,222,128"] {
+            background: #d1fae5 !important;
+            color: #065f46 !important;
+        }
+        body.light-mode [style*="background:rgba(74,222,128"] {
+            background: #d1fae5 !important;
+            color: #065f46 !important;
+        }
+        body.light-mode [style*="background:rgba(185,28,28"] {
+            background: #fee2e2 !important;
+            color: #dc2626 !important;
+        }
+
+        /* ── 가계부 합계 표시줄 ── */
+        body.light-mode #acc-today-summary,
+        body.light-mode [id*="acc"][style*="rgba"] {
+            background: #f0fdf4 !important;
+            border: 1px solid #86efac !important;
+        }
+
+        /* ── 일지 기록 카드 안 수정/삭제 ── */
+        body.light-mode [style*="background: rgba(59,130,246,0.3)"] {
+            background: #dbeafe !important;
+            color: #1d4ed8 !important;
+        }
+        body.light-mode [style*="background: #dc2626"] {
+            background: #ef4444 !important;
+            color: #ffffff !important;
+        }
+
+        /* ── 가계부 수정 모달 내부 ── */
+        body.light-mode #acc-edit-modal > div {
+            background: #ffffff !important;
+            color: #212529 !important;
+        }
+        /* ========== 라이트모드 보완 끝 ========== */
         </style>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -1930,30 +2176,30 @@
 
 
 
-#hdr{padding:9px 14px;background:linear-gradient(135deg,#1a0a00,#2d1400);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-#hdr h1{font-size:1rem;font-weight:900;color:var(--gold)}
-#gst{font-size:0.72rem;color:var(--dim)}
+#hdr{padding:11px 14px;background:linear-gradient(135deg,#1a0a00,#2d1400);border-bottom:2px solid rgba(255,179,0,.25);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#hdr h1{font-size:1.05rem;font-weight:900;color:var(--gold)}
+#gst{font-size:0.78rem;color:#aaa;font-weight:600}
 #mapwrap{position:relative;flex-shrink:0}
 #vmap{width:100%;height:52dvh;background:#111}
 .mtr{position:absolute;top:10px;right:10px;z-index:500;display:flex;gap:6px}
 .mbl{position:absolute;bottom:12px;left:10px;z-index:500;display:flex;flex-direction:column;gap:6px}
-.mtype{padding:5px 10px;background:rgba(15,10,5,.9);border:1px solid var(--bdr);border-radius:8px;color:#777;font-size:.82rem;font-weight:700;cursor:pointer;touch-action:manipulation}
-.mtype.on{background:rgba(255,179,0,.9);color:#1a0800;border-color:var(--gold)}
-.flt{padding:5px 10px;background:rgba(15,10,5,.9);border:1px solid var(--bdr);border-radius:8px;color:#777;font-size:.82rem;font-weight:700;cursor:pointer;touch-action:manipulation;white-space:nowrap}
-.flt.on{background:rgba(255,179,0,.85);color:#1a0800;border-color:var(--gold)}
-.icob{width:40px;height:40px;background:rgba(15,10,5,.9);border:2px solid var(--bdr);border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation}
-#locbar{display:none;padding:8px 14px;background:rgba(5,8,15,.96);border-top:1px solid rgba(59,130,246,.3);align-items:center;gap:10px;flex-shrink:0}
+.mtype{padding:7px 13px;background:rgba(10,6,2,.92);border:1px solid rgba(255,179,0,.35);border-radius:10px;color:#999;font-size:.85rem;font-weight:700;cursor:pointer;touch-action:manipulation}
+.mtype.on{background:rgba(255,179,0,.92);color:#1a0800;border-color:var(--gold);box-shadow:0 2px 8px rgba(255,179,0,.4)}
+.flt{padding:7px 13px;background:rgba(10,6,2,.92);border:1px solid rgba(255,179,0,.25);border-radius:10px;color:#999;font-size:.85rem;font-weight:700;cursor:pointer;touch-action:manipulation;white-space:nowrap}
+.flt.on{background:rgba(255,179,0,.9);color:#1a0800;border-color:var(--gold);box-shadow:0 2px 8px rgba(255,179,0,.35)}
+.icob{width:44px;height:44px;background:rgba(10,6,2,.92);border:2px solid rgba(255,179,0,.35);border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+#locbar{display:none;padding:10px 14px;background:rgba(5,10,20,.97);border-top:1px solid rgba(59,130,246,.4);align-items:center;gap:10px;flex-shrink:0}
 #locbar.on{display:flex}
-#panel{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 30px}
-#legend{display:flex;gap:12px;flex-wrap:wrap;padding:6px 2px 10px;font-size:.76rem;color:#aaa}
-.ac{background:var(--bg3);border:1px solid var(--bdr);border-radius:14px;margin-bottom:10px;overflow:hidden}
-.ac-head{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;gap:8px}
-.ac-btns{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
-.btn{padding:7px 12px;border:none;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;touch-action:manipulation}
-.bg{background:rgba(255,179,0,.18);color:var(--goldl)}
-.br{background:rgba(185,28,28,.22);color:var(--red)}
-.mapbtn{width:100%;padding:7px;background:rgba(255,179,0,.06);color:var(--goldl);border:none;border-top:1px solid var(--bdr);font-size:.75rem;cursor:pointer;touch-action:manipulation}
-.ac-form{display:none;padding:14px;border-top:2px solid rgba(255,179,0,.2);background:rgba(0,0,0,.25)}
+#panel{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 14px 40px}
+#legend{display:flex;gap:10px;flex-wrap:wrap;padding:8px 4px 10px;font-size:.82rem;color:#bbb;font-weight:600}
+.ac{background:rgba(26,18,10,.9);border:1px solid rgba(255,179,0,.2);border-radius:14px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.ac-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;gap:8px}
+.ac-btns{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
+.btn{padding:8px 14px;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;touch-action:manipulation}
+.bg{background:rgba(255,179,0,.2);color:#FFD54F}
+.br{background:rgba(185,28,28,.3);color:#ff8a80}
+.mapbtn{width:100%;padding:9px;background:rgba(255,179,0,.08);color:#FFD54F;border:none;border-top:1px solid rgba(255,179,0,.15);font-size:.8rem;cursor:pointer;touch-action:manipulation;font-weight:600}
+.ac-form{display:none;padding:16px;border-top:2px solid rgba(255,179,0,.2);background:rgba(0,0,0,.3)}
 .ac-form.on{display:block}
 .fi{width:100%;padding:10px 12px;background:rgba(0,0,0,.35);border:1px solid var(--bdr);border-radius:10px;color:var(--tx);font-size:.88rem;outline:none;margin-bottom:10px}
 .fi:focus{border-color:var(--gold)}
@@ -2098,7 +2344,7 @@
         </div>
 
         <!-- 일지 입력 화면 -->
-        <div id="view-diary" class="view-group" style="padding-bottom: 120px;">
+        <div id="view-diary" class="view-group" style="padding-bottom: 200px;">
             <div class="input-row">
                 <span class="input-label">📍 봉장 선택</span>
                 <input type="hidden" id="loc-select" value="1봉장">
@@ -2499,9 +2745,9 @@
 </div>
 
 <div id="panel">
-  <div id="legend" style="flex-wrap:wrap;gap:6px;">
-    <span>🟡 고정봉장</span><span>🟠 이동봉장</span><span>🔘 미등록</span><span>🔵 내위치</span>
-    <div style="display:flex;gap:4px;margin-left:auto;">
+  <div id="legend" style="flex-wrap:wrap;gap:8px;align-items:center;">
+    <span>🟡 고정봉장</span><span>🟠 이동봉장</span><span>⚫ 미등록</span><span>🔵 내위치</span>
+    <div style="display:flex;gap:6px;margin-left:auto;">
       <button class="flt on" id="fall"  onclick="setFilter('all')">전체</button>
       <button class="flt"    id="fwest" onclick="setFilter('western')">🐝 양봉</button>
       <button class="flt"    id="fnat"  onclick="setFilter('native')">🏺 동양종</button>
@@ -2612,8 +2858,8 @@
                       oninput="saveUserInfo()" />
                   </div>
                   <div>
-                    <label style="color:#aaa;font-size:.78rem;display:block;margin-bottom:4px;">농장명 (선택사항)</label>
-                    <input id="input-farmname" type="text" placeholder="예) 행복양봉원, 두루봉양봉"
+                    <label style="color:#aaa;font-size:.78rem;display:block;margin-bottom:4px;">🏷️ 농장 상호명 <span style="color:#FFB300;font-weight:700;">(입력 시 봉장명에 자동으로 붙습니다)</span></label>
+                    <input id="input-farmname" type="text" placeholder="예) 황실양봉, 행복양봉원"
                       style="width:100%;padding:9px 12px;background:#2a1a08;border:1px solid rgba(255,179,0,.3);border-radius:8px;color:#fff;font-size:.88rem;box-sizing:border-box;"
                       oninput="saveUserInfo()" />
                   </div>
@@ -2797,19 +3043,19 @@
             </div>
             <div id="nav-calendar" class="nav-item active" onclick="switchView('calendar', true)">
                 <div style="font-size: 24px; margin-bottom: 4px;">📅</div>
-                달력
+                기록
             </div>
-            <div id="nav-calculator" class="nav-item" onclick="switchView('calculator', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">🍯</div>
-                계산기
+            <div id="nav-map" class="nav-item" onclick="switchView('map', true)">
+                <div style="font-size: 24px; margin-bottom: 4px;">🌍</div>
+                지도
             </div>
             <div id="nav-account" class="nav-item" onclick="switchView('account', true)">
                 <div style="font-size: 24px; margin-bottom: 4px;">💰</div>
                 가계부
             </div>
-            <div id="nav-map" class="nav-item" onclick="switchView('map', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">🗺️</div>
-                지도
+            <div id="nav-calculator" class="nav-item" onclick="switchView('calculator', true)">
+                <div style="font-size: 24px; margin-bottom: 4px;">🍯</div>
+                계산기
             </div>
             <div id="nav-settings" class="nav-item" onclick="switchView('apiary-settings', true)">
                 <div style="font-size: 24px; margin-bottom: 4px;">⚙️</div>
@@ -3428,33 +3674,30 @@
                                   <span style="font-weight:bold;font-size:${solarTerm ? '0.9rem' : '1.05rem'}">${d}</span>`;
                     }
                     
+                    // 기록/일정/이벤트 표시 (날짜 숫자는 이미 content에 포함됨)
+                    let extraDots = '';
                     if(db[key]?.records && db[key].records.length > 0) {
-                        const records = db[key].records;
-                        // 필터에 맞는 기록만 표시
-                        const filteredRecords = records;
+                        const filteredRecords = db[key].records;
                         if(filteredRecords.length > 0) {
-                            const firstRecord = filteredRecords[0];
-                            const loc = firstRecord.loc;
-                            const mainWork = firstRecord.works[0] || '작업';
-                            const moreCount = filteredRecords.length > 1 ? `+${filteredRecords.length - 1}봉장` : '';
-                            content += `<div style="font-size: 0.6rem; color: #FFB300; margin-top: 2px; font-weight: 700;">📍 ${loc}${moreCount}</div>`;
-                            content += `<div style="font-size: 0.65rem; color: #FFD54F; margin-top: 2px;">${mainWork}</div>`;
+                            extraDots += `<span style="display:inline-block;width:6px;height:6px;background:#FFB300;border-radius:50%;margin:1px;"></span>`;
+                            if(filteredRecords.length > 1) extraDots += `<span style="display:inline-block;width:6px;height:6px;background:#FF8F00;border-radius:50%;margin:1px;"></span>`;
                         }
                     }
                     
                     if(db[key]?.isQueen) {
-                        content += '<span class="queen-text">출방</span>';
+                        extraDots += '<span style="display:inline-block;width:6px;height:6px;background:#f472b6;border-radius:50%;margin:1px;"></span>';
                     }
                     
-                    if(db[key]?.isDiseaseAlarm) {
-                        const alarmLoc = db[key]?.alarmLocation || '';
-                        const displayText = alarmLoc ? `${alarmLoc.replace('봉장', '')} 방역` : '방역';
-                        content += '<span class="disease-alarm-text">' + displayText + '</span>';
+                    if(db[key]?.isDiseaseAlarm || diseaseLogs.some(function(dl){return dl.dateStr===key;})) {
+                        extraDots += '<span style="display:inline-block;width:6px;height:6px;background:#f87171;border-radius:50%;margin:1px;"></span>';
                     }
                     
                     if(hasSchedule) {
-                        const daySchedules = personalSchedules.filter(s => s.date === scheduleDate);
-                        content += '<div style="font-size: 0.6rem; color: #c084fc; margin-top: 2px; font-weight: 700;">📅 ' + daySchedules.length + '건</div>';
+                        extraDots += '<span style="display:inline-block;width:6px;height:6px;background:#c084fc;border-radius:50%;margin:1px;"></span>';
+                    }
+                    
+                    if(extraDots) {
+                        content += `<div style="display:flex;justify-content:center;flex-wrap:wrap;margin-top:2px;">${extraDots}</div>`;
                     }
                     
                     body.innerHTML += `<div class="${cls}" onclick="showDayRecordBelow('${key}')">${content}</div>`;
@@ -3564,7 +3807,28 @@
                 html += '</div>';
             }
             
-            if((!data || !data.records || data.records.length === 0) && daySchedules.length === 0) {
+            // 방역 기록 (dateStr 기준으로 필터)
+            const dayDiseaseRecords = diseaseLogs.filter(function(log) { return log.dateStr === key; });
+            if(dayDiseaseRecords.length > 0) {
+                html += '<div style="margin-top: 16px;">' +
+                        '<h5 style="color: #f87171; font-weight: bold; margin-bottom: 12px; font-size: 1rem;">💊 방역 기록</h5>';
+                dayDiseaseRecords.forEach(function(log) {
+                    html += '<div class="record-card" style="border-left: 4px solid #ef4444;">' +
+                        '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">' +
+                            '<div>' +
+                                '<div style="font-weight:800; color:#f87171; font-size:1rem; margin-bottom:4px;">🛡️ ' + (log.diseaseTypeName || log.diseaseType || '방역') + '</div>' +
+                                '<div style="color:#aaa; font-size:0.85rem; font-weight:600;">📍 ' + (log.location || '') + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        (log.medicineName || log.medicine ? '<div style="margin-bottom:6px;"><span style="color:#999;font-size:0.82rem;">약제: </span><span style="color:#d4c8b8;font-size:0.88rem;font-weight:700;">' + (log.medicineName || log.medicine) + '</span></div>' : '') +
+                        (log.method ? '<div style="margin-bottom:6px;"><span style="color:#999;font-size:0.82rem;">처리방법: </span><span style="color:#d4c8b8;font-size:0.85rem;">' + log.method + '</span></div>' : '') +
+                        (log.memo ? '<div style="background:rgba(0,0,0,0.25);padding:8px;border-radius:8px;color:#d4c8b8;font-size:0.85rem;margin-top:6px;white-space:pre-wrap;">' + log.memo + '</div>' : '') +
+                    '</div>';
+                });
+                html += '</div>';
+            }
+
+            if((!data || !data.records || data.records.length === 0) && daySchedules.length === 0 && dayDiseaseRecords.length === 0) {
                 html += '<p class="text-center py-20" style="color: #666; font-style: italic;">이 날짜에 기록된 일지 및 일정이 없습니다.</p>';
             }
             
@@ -4335,7 +4599,7 @@ function startGPS(){
   gpsMoved=false;
   document.getElementById('gst').textContent='📡 GPS 확인중...';
   wid=navigator.geolocation.watchPosition(onGPS,function(e){
-    document.getElementById('gst').textContent=e.code===1?'🔒 위치권한 차단':'⚠️ GPS없음';
+    document.getElementById('gst').textContent=e.code===1?'🔒 위치권한 차단':'⚠️ GPS없음'; document.getElementById('gst').style.color='#ff8a80';
   },{enableHighAccuracy:true,timeout:20000,maximumAge:0});
 }
 
@@ -4480,7 +4744,7 @@ function renderAList(){
   if(reg.length>0){
     var toggleBtn=document.createElement('button');
     toggleBtn.id='reg-toggle-btn';
-    toggleBtn.style.cssText='width:100%;padding:11px;background:rgba(255,179,0,.08);color:var(--goldl);border:1px solid rgba(255,179,0,.25);border-radius:12px;font-size:.85rem;font-weight:700;cursor:pointer;touch-action:manipulation;margin-bottom:4px;';
+    toggleBtn.style.cssText='width:100%;padding:13px;background:rgba(255,179,0,.1);color:#FFD54F;border:1px solid rgba(255,179,0,.35);border-radius:14px;font-size:.92rem;font-weight:800;cursor:pointer;touch-action:manipulation;margin-bottom:6px;letter-spacing:-0.3px;';
     toggleBtn.textContent=(regListOpen?'▲ ':'▼ ')+'등록된 봉장 보기 ('+reg.length+'개)';
     toggleBtn.onclick=function(){
       regListOpen=!regListOpen;
@@ -4552,7 +4816,7 @@ function buildFormEl(i, name, d){
   var addrInput=document.createElement('input');
   addrInput.id='faddy-'+i; addrInput.className='fi';
   addrInput.style.cssText='flex:1;margin-bottom:0';
-  addrInput.placeholder='예) 용인 남사읍, 안골길 28-6';
+  addrInput.placeholder='예) 예) 경기 화성시 봉담읍';
   addrInput.value=has?d.address:'';
   var searchBtn=document.createElement('button'); searchBtn.className='btn bg';
   searchBtn.style.cssText='padding:0 12px;flex-shrink:0';
@@ -4768,6 +5032,8 @@ function saveUserInfo(){
     nickname: nick.value.trim(),
     farmname: farm ? farm.value.trim() : ''
   }));
+  // 농장명 변경 시 봉장 표시명 즉시 갱신
+  try { loadApiarySettings(); renderLocationButtons(); renderLocationFilters(); } catch(e) {}
 }
 
 function loadUserInfo(){
@@ -5169,6 +5435,9 @@ function getUserInfo(){
             Object.keys(apiarySettings).forEach(name => {
                 const checkbox = document.getElementById('toggle-' + name);
                 if(checkbox) checkbox.checked = apiarySettings[name];
+                // 레이블에 농장명 표시
+                const label = checkbox ? checkbox.nextElementSibling : null;
+                if(label) label.textContent = getDisplayName(name);
             });
         }
 
@@ -6144,7 +6413,7 @@ function getUserInfo(){
                 container.innerHTML = activeApiaries.map(loc => {
                     const isActive = loc === newValue;
                     const icon = loc.includes('이동') ? '🚚' : '🏠';
-                    const displayName = loc.replace('봉장', '').replace('이동', '이동');
+                    const displayName = getDisplayName(loc).replace('봉장', '봉').replace('이동봉', '이동봉');
                     
                     return `
                         <button class="location-btn ${isActive ? 'active' : ''}" data-loc="${loc}" onclick="selectLocation(this)" style="flex: 0 0 auto; min-width: 70px; padding: 8px 12px;">
@@ -6184,7 +6453,7 @@ function getUserInfo(){
                     allLocs2.forEach(function(v) {
                         var isAct = (v === calLocFilter);
                         var lbl = (v === 'all') ? '전체'
-                            : ((v.includes('이동') ? '🚚 ' : '🏠 ') + v.replace('봉장',''));
+                            : ((v.includes('이동') ? '🚚 ' : '🏠 ') + getDisplayName(v));
                         var b = document.createElement('button');
                         b.className = 'filter-btn' + (isAct ? ' active' : '');
                         b.setAttribute('data-filter', v);
