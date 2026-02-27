@@ -216,8 +216,9 @@
 
         /* 배지 */
         body.light-mode .badge {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: #ffffff;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
         }
 
         /* 탭 (설정 화면 등) */
@@ -403,6 +404,22 @@
         body.light-mode .m-tab {
             color: #6c757d !important;
         }
+        body.light-mode .tab-in.active {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+        }
+        body.light-mode .tab-out.active {
+            background: linear-gradient(135deg, #b91c1c 0%, #9a3412 100%) !important;
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+        }
+        body.light-mode .tab-in:not(.active) {
+            color: #16a34a !important;
+        }
+        body.light-mode .tab-out:not(.active) {
+            color: #b91c1c !important;
+        }
 
         /* 가계부 카테고리 버튼 */
         body.light-mode .m-cat-btn {
@@ -532,32 +549,54 @@
             color: #ffffff !important;
         }
 
-        /* record-card 라이트 세부 */
+        /* record-card 라이트모드 완전 재정의 */
         body.light-mode .record-card {
-            border-left-color: #3b82f6 !important;
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
         }
-        body.light-mode .record-card [style*="color: #FFB300"] {
-            color: #2563eb !important;
+        body.light-mode .record-card * {
+            color: #212529;
         }
         body.light-mode .record-card [style*="color: #999"],
-        body.light-mode .record-card [style*="color: #666"] {
-            color: #6c757d !important;
+        body.light-mode .record-card [style*="color:#999"],
+        body.light-mode .record-card [style*="color: #aaa"],
+        body.light-mode .record-card [style*="color:#aaa"],
+        body.light-mode .record-card [style*="color: #666"],
+        body.light-mode .record-card [style*="color:#666"],
+        body.light-mode .record-card [style*="color: #d4c8b8"],
+        body.light-mode .record-card [style*="color:#d4c8b8"],
+        body.light-mode .record-card [style*="color: #e8e3d8"],
+        body.light-mode .record-card [style*="color:#e8e3d8"] {
+            color: #374151 !important;
         }
-        body.light-mode .record-card [style*="rgba(0,0,0,0.3)"] {
-            background: #f8f9fa !important;
+        body.light-mode .record-card [style*="color: #555"],
+        body.light-mode .record-card [style*="color:#555"] {
+            color: #6b7280 !important;
         }
-
+        body.light-mode .record-card [style*="rgba(0,0,0,0.2)"],
+        body.light-mode .record-card [style*="rgba(0,0,0,.2)"],
+        body.light-mode .record-card [style*="rgba(0,0,0,0.3)"],
+        body.light-mode .record-card [style*="rgba(0,0,0,.3)"],
+        body.light-mode .record-card [style*="rgba(0,0,0,0.15)"],
+        body.light-mode .record-card [style*="rgba(255,179,0,0.1)"] {
+            background: #f1f5f9 !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #212529 !important;
+        }
+        body.light-mode .record-card [style*="color: #FFB300"],
+        body.light-mode .record-card [style*="color:#FFB300"],
+        body.light-mode .record-card [style*="color: #FFD54F"],
+        body.light-mode .record-card [style*="color:#FFD54F"] {
+            color: #92400e !important;
+        }
         /* 개인일정 카드 */
         body.light-mode .record-card[style*="border-left: 4px solid #c084fc"] {
             border-left-color: #7c3aed !important;
         }
-
         /* 방역카드 */
         body.light-mode .record-card[style*="border-left: 4px solid #ef4444"] {
             border-left-color: #dc2626 !important;
-        }
-        body.light-mode .record-card [style*="rgba(0,0,0,0.2)"] {
-            background: #f1f3f5 !important;
         }
 
         /* toast */
@@ -1933,7 +1972,7 @@
         body.light-mode .fi::placeholder { color: #9ca3af !important; }
         body.light-mode .fi:focus { border-color: #2563eb !important; background: #ffffff !important; }
         body.light-mode .fbig.fsave { background: #16a34a !important; color: #ffffff !important; }
-        body.light-mode .fbig.fgps { background: #dbeafe !important; color: #1d4ed8 !important; border: 1px solid #93c5fd !important; }
+        body.light-mode .fbig.fgps { background: #2563eb !important; color: #ffffff !important; border: 1px solid #1d4ed8 !important; }
         body.light-mode .fbig.fcancel { background: #f1f5f9 !important; color: #6b7280 !important; }
         body.light-mode .bg { background: #e0e7ff !important; color: #3730a3 !important; }
         body.light-mode .br { background: #fee2e2 !important; color: #dc2626 !important; }
@@ -2057,13 +2096,50 @@
             border-color: #e2e8f0 !important;
         }
         /* ── dyn-btn 수정/삭제 버튼 라이트모드 ── */
-        body.light-mode .dyn-btn[data-action*="edit"] {
-            background: #dbeafe !important;
-            color: #1d4ed8 !important;
+        body.light-mode .dyn-btn[data-action*="edit"],
+        body.light-mode button[style*="rgba(59,130,246,0.3)"],
+        body.light-mode button[style*="rgba(59,130,246,.3)"] {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border: none !important;
         }
         body.light-mode .dyn-btn[data-action*="delete"] {
-            background: #fee2e2 !important;
-            color: #dc2626 !important;
+            background: #dc2626 !important;
+            color: #ffffff !important;
+        }
+
+        /* ── 가계부 초록텍스트 라이트모드 ── */
+        body.light-mode #view-account h2[style*="color: #4ade80"],
+        body.light-mode #view-account h3[style*="color: #4ade80"],
+        body.light-mode #view-account [style*="color: #4ade80"] {
+            color: #166534 !important;
+        }
+        body.light-mode #view-account button[style*="color: #4ade80"] {
+            color: #166534 !important;
+            background: #f0fdf4 !important;
+            border-color: #86efac !important;
+        }
+        /* ── 기간별 탭 비활성 배경 ── */
+        body.light-mode #dh-tab-loc,
+        body.light-mode #dh-tab-period {
+            background: #e0e7ff !important;
+            color: #3730a3 !important;
+            border: 1px solid #c7d2fe !important;
+        }
+        /* 기간별/봉장별 탭 */
+        body.light-mode #dh-tab-loc,
+        body.light-mode #dh-tab-period {
+            background: #e0e7ff !important;
+            color: #3730a3 !important;
+        }
+        body.light-mode #dh-tab-loc.active,
+        body.light-mode #dh-tab-period.active {
+            background: linear-gradient(135deg,#4f46e5,#3730a3) !important;
+            color: #ffffff !important;
+        }
+        body.light-mode .dyn-btn-edit {
+            background: #2563eb !important;
+            color: #ffffff !important;
         }
 
         /* ── 가계부 카드 배경 ── */
@@ -2081,13 +2157,16 @@
             background: #fee2e2 !important;
             color: #dc2626 !important;
         }
-        body.light-mode [style*="background: rgba(74,222,128"] {
-            background: #d1fae5 !important;
-            color: #065f46 !important;
-        }
+        body.light-mode [style*="background: rgba(74,222,128"],
         body.light-mode [style*="background:rgba(74,222,128"] {
-            background: #d1fae5 !important;
-            color: #065f46 !important;
+            background: #f0fdf4 !important;
+            border-color: #86efac !important;
+            color: #166534 !important;
+        }
+        body.light-mode .acc-subtotal-box {
+            background: #f0fdf4 !important;
+            border: 1px solid #86efac !important;
+            color: #166534 !important;
         }
         body.light-mode [style*="background:rgba(185,28,28"] {
             background: #fee2e2 !important;
@@ -2102,9 +2181,12 @@
         }
 
         /* ── 일지 기록 카드 안 수정/삭제 ── */
-        body.light-mode [style*="background: rgba(59,130,246,0.3)"] {
-            background: #dbeafe !important;
-            color: #1d4ed8 !important;
+        body.light-mode [style*="background: rgba(59,130,246,0.3)"],
+        body.light-mode [style*="background:rgba(59,130,246,0.3)"],
+        body.light-mode [style*="background:rgba(59,130,246,.3)"],
+        body.light-mode [style*="background: rgba(59,130,246,.3)"] {
+            background: #2563eb !important;
+            color: #ffffff !important;
         }
         body.light-mode [style*="background: #dc2626"] {
             background: #ef4444 !important;
@@ -2211,11 +2293,27 @@
             border: 1px solid #fca5a5 !important;
         }
         /* ── 지도 봉장등록 폼 (buildFormEl) ── */
+        body.light-mode .ac-form,
+        body.light-mode #view-map .ac-form {
+            background: #f8f9fa !important;
+            border-top: 2px solid #e2e8f0 !important;
+        }
         body.light-mode .ac-form .fi,
         body.light-mode .fi {
             background: #ffffff !important;
             color: #212529 !important;
             border: 1px solid #d1d5db !important;
+        }
+        body.light-mode .ac-form input,
+        body.light-mode .ac-form textarea,
+        body.light-mode .ac-form select {
+            background: #ffffff !important;
+            color: #212529 !important;
+            border: 1px solid #d1d5db !important;
+        }
+        body.light-mode .ac-form input::placeholder,
+        body.light-mode .ac-form textarea::placeholder {
+            color: #9ca3af !important;
         }
         body.light-mode .fi::placeholder { color: #9ca3af !important; }
         body.light-mode .tw {
@@ -2314,6 +2412,32 @@
             color: #212529 !important;
             border: 1px solid #e2e8f0 !important;
         }
+
+        /* ── 계산기 결과박스 라이트모드 ── */
+        body.light-mode [style*="var(--bg-purple)"] {
+            background: #f5f3ff !important;
+            border-color: #ddd6fe !important;
+            color: #4c1d95 !important;
+        }
+        /* ── 가계부 수입/수동입력 라벨 라이트모드 ── */
+        body.light-mode label[style*="var(--bg-green)"],
+        body.light-mode label[style*="var(--tx-green)"] {
+            background: #f0fdf4 !important;
+            color: #166534 !important;
+            border-color: #86efac !important;
+        }
+        /* ── 가계부 헤더 버튼들 ── */
+        body.light-mode #view-account button[style*="var(--tx-green)"],
+        body.light-mode #view-account button[style*="var(--bg-green)"] {
+            color: #166534 !important;
+            background: #f0fdf4 !important;
+            border-color: #86efac !important;
+        }
+        body.light-mode #view-account h2,
+        body.light-mode #view-account h3[style*="var(--tx-green)"],
+        body.light-mode #view-account [id="acc-cal-title"] {
+            color: #166534 !important;
+        }
         /* ── 선택된 날짜 셀 하이라이트 ── */
         .cal-day.selected-day {
             outline: 3px solid #4f46e5 !important;
@@ -2324,6 +2448,108 @@
             outline-color: #4f46e5 !important;
             background: rgba(79,70,229,0.08) !important;
         }
+
+        /* ========== CSS 변수 (다크/라이트 통합 관리) ========== */
+        :root, body {
+            --tx-main:    #e8e3d8;
+            --tx-sub:     #aaa;
+            --tx-dim:     #999;
+            --tx-muted:   #666;
+            --tx-gold:    #FFD54F;
+            --tx-amber:   #FFB300;
+            --tx-white:   #ffffff;
+            --tx-green:   #4ade80;   /* 초록 강조 */
+            --bg-card:    rgba(30,25,20,0.7);
+            --bg-input:   rgba(0,0,0,0.2);
+            --bd-card:    rgba(255,213,79,0.15);
+            --bg-green:   rgba(74,222,128,0.1);  /* 초록 배경 */
+            --bd-green:   rgba(74,222,128,0.3);  /* 초록 테두리 */
+            --bg-purple:  rgba(139,92,246,0.2);  /* 보라 결과박스 */
+            --bg-editbtn: rgba(59,130,246,0.3);   /* 수정버튼 배경 */
+            --tx-editbtn: #60a5fa;                /* 수정버튼 글씨 */
+            --bg-editbtn-green: rgba(74,222,128,0.25); /* 가계부 수정버튼 */
+        }
+        body.light-mode {
+            --tx-main:    #212529;
+            --tx-sub:     #374151;
+            --tx-dim:     #4b5563;
+            --tx-muted:   #6b7280;
+            --tx-gold:    #b45309;
+            --tx-amber:   #92400e;
+            --tx-white:   #212529;
+            --tx-green:   #166534;   /* 라이트모드 진한 초록 */
+            --bg-card:    #ffffff;
+            --bg-input:   #f1f5f9;
+            --bd-card:    #e2e8f0;
+            --bg-green:   #f0fdf4;   /* 라이트모드 연초록 배경 */
+            --bd-green:   #86efac;   /* 라이트모드 초록 테두리 */
+            --bg-purple:  #f5f3ff;   /* 라이트모드 연보라 배경 */
+            --bg-editbtn: #2563eb;   /* 라이트모드 수정버튼 배경 - 진파랑 */
+            --tx-editbtn: #ffffff;   /* 라이트모드 수정버튼 글씨 - 흰색 */
+            --bg-editbtn-green: #16a34a; /* 라이트모드 가계부 수정버튼 - 진초록 */
+        }
+        /* 변수 기반 전역 적용 */
+        body.light-mode [style*="color: #999"],
+        body.light-mode [style*="color:#999"],
+        body.light-mode [style*="color: #aaa"],
+        body.light-mode [style*="color:#aaa"],
+        body.light-mode [style*="color: #888"],
+        body.light-mode [style*="color:#888"],
+        body.light-mode [style*="color: #777"],
+        body.light-mode [style*="color:#777"],
+        body.light-mode [style*="color: #666"],
+        body.light-mode [style*="color:#666"],
+        body.light-mode [style*="color: #555"],
+        body.light-mode [style*="color:#555"] {
+            color: var(--tx-sub) !important;
+        }
+        body.light-mode [style*="color: #e8e3d8"],
+        body.light-mode [style*="color:#e8e3d8"],
+        body.light-mode [style*="color: #d4c8b8"],
+        body.light-mode [style*="color:#d4c8b8"] {
+            color: var(--tx-main) !important;
+        }
+        body.light-mode [style*="color: #FFD54F"],
+        body.light-mode [style*="color:#FFD54F"] {
+            color: var(--tx-gold) !important;
+        }
+        body.light-mode [style*="color: #FFB300"],
+        body.light-mode [style*="color:#FFB300"] {
+            color: var(--tx-amber) !important;
+        }
+        body.light-mode [style*="background: rgba(30,25,20"],
+        body.light-mode [style*="background:rgba(30,25,20"],
+        body.light-mode [style*="background: rgba(20,15,10"],
+        body.light-mode [style*="background:rgba(20,15,10"],
+        body.light-mode [style*="background: rgba(25,20,15"],
+        body.light-mode [style*="background:rgba(25,20,15"] {
+            background: var(--bg-card) !important;
+            border-color: var(--bd-card) !important;
+        }
+        body.light-mode [style*="background: rgba(0,0,0,0.2)"],
+        body.light-mode [style*="background:rgba(0,0,0,0.2)"],
+        body.light-mode [style*="background: rgba(0,0,0,.2)"],
+        body.light-mode [style*="background:rgba(0,0,0,.2)"],
+        body.light-mode [style*="background: rgba(0,0,0,0.3)"],
+        body.light-mode [style*="background:rgba(0,0,0,0.3)"],
+        body.light-mode [style*="background: rgba(0,0,0,.3)"],
+        body.light-mode [style*="background:rgba(0,0,0,.3)"] {
+            background: var(--bg-input) !important;
+            color: var(--tx-main) !important;
+        }
+        /* 카드/섹션 내 모든 텍스트 */
+        body.light-mode .input-row *,
+        body.light-mode .record-card *,
+        body.light-mode .ac * {
+            color: var(--tx-main);
+        }
+        body.light-mode .input-row [style*="color: #FFD54F"],
+        body.light-mode .input-row [style*="color:#FFD54F"],
+        body.light-mode .record-card [style*="color: #FFD54F"],
+        body.light-mode .record-card [style*="color:#FFD54F"] {
+            color: var(--tx-gold) !important;
+        }
+        /* ========== CSS 변수 끝 ========== */
         /* ========== 라이트모드 보완 끝 ========== */
         </style>
     
@@ -2470,6 +2696,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 /* 저장 버튼 강화 */
 #view-map .fsave { background: #16a34a !important; color: #fff !important; }
 #view-map .fgps  { background: rgba(59,130,246,.18) !important; color: #93c5fd !important; border: 1px solid rgba(59,130,246,.3) !important; }
+        body.light-mode #view-map .fgps { background: #2563eb !important; color: #ffffff !important; border: 1px solid #1d4ed8 !important; }
 #view-map .fcancel { background: rgba(100,100,100,.2) !important; color: #888 !important; }
 </style>
 </head>
@@ -2495,10 +2722,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         <div class="top-nav-bar" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;">
             <button id="top-left-btn" onclick="handleTopLeftBtn()" class="btn-home" style="flex-shrink:0;white-space:nowrap;">⬅ 뒤로가기</button>
             <div style="flex:1;text-align:center;line-height:1.3;">
-                <div id="selected-type-text" style="color:#FFB300;font-size:12px;font-weight:800;letter-spacing:0.5px;">선택: 양봉</div>
+                <div id="selected-type-text" style="color:var(--tx-amber);font-size:12px;font-weight:800;letter-spacing:0.5px;">선택: 양봉</div>
                 <div style="font-weight:800;font-size:15px;color:#ffffff;">
                     <span id="current-date">2026.02.05</span>
-                    <span style="color:#FFD54F;margin-left:6px;" id="temp-display">--°C</span>
+                    <span style="color:var(--tx-gold);margin-left:6px;" id="temp-display">--°C</span>
                 </div>
             </div>
             <div style="display:flex;gap:5px;align-items:center;flex-shrink:0;">
@@ -2515,9 +2742,9 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div style="background: linear-gradient(135deg, rgba(255,179,0,0.15) 0%, rgba(255,143,0,0.1) 100%); border: 2px solid rgba(255,179,0,0.3); border-radius: 12px; padding: 14px;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                     <span style="font-size: 1.3rem;">💡</span>
-                    <span style="color: #FFD54F; font-weight: 700; font-size: 0.95rem;">오늘의 추천 작업</span>
+                    <span style="color: var(--tx-gold); font-weight: 700; font-size: 0.95rem;">오늘의 추천 작업</span>
                 </div>
-                <div id="today-work-list" style="color: #d4c8b8; font-size: 0.85rem; line-height: 1.6;"></div>
+                <div id="today-work-list" style="color: var(--tx-main); font-size: 0.85rem; line-height: 1.6;"></div>
             </div>
         </div>
 
@@ -2525,11 +2752,11 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         <div id="view-oriental-prep" class="view-group">
             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; padding: 40px;">
                 <div style="font-size: 120px; margin-bottom: 30px; animation: bounce 2s infinite;">🐝</div>
-                <h2 style="font-size: 2rem; font-weight: 900; color: #FFD54F; margin-bottom: 20px; font-family: 'Gowun Batang', serif;">
+                <h2 style="font-size: 2rem; font-weight: 900; color: var(--tx-gold); margin-bottom: 20px; font-family: 'Gowun Batang', serif;">
                     동양종 관리 시스템
                 </h2>
                 <div style="background: linear-gradient(135deg, rgba(78,52,46,0.3) 0%, rgba(62,44,38,0.2) 100%); border: 2px solid rgba(78,52,46,0.5); border-radius: 20px; padding: 40px; max-width: 400px; margin-bottom: 30px;">
-                    <p style="font-size: 1.5rem; font-weight: 700; color: #FFB300; margin-bottom: 15px;">준비중입니다</p>
+                    <p style="font-size: 1.5rem; font-weight: 700; color: var(--tx-amber); margin-bottom: 15px;">준비중입니다</p>
                     <p style="font-size: 1rem; color: #c4b8a8; line-height: 1.8;">
                         동양종 양봉 관리 기능은<br>
                         현재 개발 중에 있습니다.<br><br>
@@ -2562,12 +2789,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div id="location-filters" style="display:none;"></div>
             
             <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,179,0,0.06);border-radius:12px;padding:6px 8px;margin-bottom:10px;gap:4px;">
-                <button onclick="changeYear(-1)" style="color:#FFB300;background:rgba(255,179,0,0.15);border:none;border-radius:8px;padding:8px 10px;font-size:0.9rem;font-weight:900;cursor:pointer;min-height:40px;min-width:38px;touch-action:manipulation;">◀◀</button>
-                <button onclick="changeMonth(-1)" style="color:#FFB300;background:rgba(255,179,0,0.1);border:none;border-radius:8px;padding:8px 12px;font-size:1.2rem;font-weight:900;cursor:pointer;min-height:40px;min-width:38px;touch-action:manipulation;">◀</button>
-                <h3 id="cal-title" style="color:#FFD54F;font-weight:900;font-size:1rem;margin:0;flex:1;text-align:center;"></h3>
-                <button onclick="goToToday()" style="color:#FFB300;background:rgba(255,179,0,0.15);border:1px solid rgba(255,179,0,0.3);border-radius:8px;padding:6px 10px;font-size:0.8rem;font-weight:700;cursor:pointer;min-height:40px;touch-action:manipulation;">오늘</button>
-                <button onclick="changeMonth(1)" style="color:#FFB300;background:rgba(255,179,0,0.1);border:none;border-radius:8px;padding:8px 12px;font-size:1.2rem;font-weight:900;cursor:pointer;min-height:40px;min-width:38px;touch-action:manipulation;">▶</button>
-                <button onclick="changeYear(1)" style="color:#FFB300;background:rgba(255,179,0,0.15);border:none;border-radius:8px;padding:8px 10px;font-size:0.9rem;font-weight:900;cursor:pointer;min-height:40px;min-width:38px;touch-action:manipulation;">▶▶</button>
+                <button onclick="changeYear(-1)" style="color:var(--tx-amber);background:rgba(255,179,0,0.15);border:none;border-radius:8px;padding:8px 10px;font-size:0.9rem;font-weight:900;cursor:pointer;min-height:40px;min-width:38px;touch-action:manipulation;">◀◀</button>
+                <button onclick="changeMonth(-1)" style="color:var(--tx-amber);background:rgba(255,179,0,0.1);border:none;border-radius:8px;padding:8px 12px;font-size:1.2rem;font-weight:900;cursor:pointer;min-height:40px;min-width:38px;touch-action:manipulation;">◀</button>
+                <h3 id="cal-title" style="color:var(--tx-gold);font-weight:900;font-size:1rem;margin:0;flex:1;text-align:center;"></h3>
+                <button onclick="goToToday()" style="color:var(--tx-amber);background:rgba(255,179,0,0.15);border:1px solid rgba(255,179,0,0.3);border-radius:8px;padding:6px 10px;font-size:0.8rem;font-weight:700;cursor:pointer;min-height:40px;touch-action:manipulation;">오늘</button>
+                <button onclick="changeMonth(1)" style="color:var(--tx-amber);background:rgba(255,179,0,0.1);border:none;border-radius:8px;padding:8px 12px;font-size:1.2rem;font-weight:900;cursor:pointer;min-height:40px;min-width:38px;touch-action:manipulation;">▶</button>
+                <button onclick="changeYear(1)" style="color:var(--tx-amber);background:rgba(255,179,0,0.15);border:none;border-radius:8px;padding:8px 10px;font-size:0.9rem;font-weight:900;cursor:pointer;min-height:40px;min-width:38px;touch-action:manipulation;">▶▶</button>
             </div>
             <div id="cal-body" class="calendar-grid"></div>
             <div id="record-list" class="mt-8 space-y-4 pb-24"></div>
@@ -2608,10 +2835,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div class="input-row">
                 <span class="input-label">📷 사진 첨부 (최대 3장)</span>
                 <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                    <button type="button" onclick="openInlineCamera('diary')" style="flex: 1; padding: 12px; background: rgba(255,179,0,0.15); color: #FFB300; border-radius: 10px; text-align: center; font-weight: 700; border: 1px dashed rgba(255,179,0,0.3); cursor: pointer;">
+                    <button type="button" onclick="openInlineCamera('diary')" style="flex: 1; padding: 12px; background: rgba(255,179,0,0.15); color: var(--tx-amber); border-radius: 10px; text-align: center; font-weight: 700; border: 1px dashed rgba(255,179,0,0.3); cursor: pointer;">
                         📸 직접 촬영
                     </button>
-                    <label style="flex: 1; padding: 12px; background: rgba(74,222,128,0.15); color: #4ade80; border-radius: 10px; text-align: center; cursor: pointer; font-weight: 700; border: 1px dashed rgba(74,222,128,0.3);">
+                    <label style="flex: 1; padding: 12px; background: var(--bg-green); color: var(--tx-green); border-radius: 10px; text-align: center; cursor: pointer; font-weight: 700; border: 1px dashed var(--bd-green);">
                         🖼️ 앨범 선택
                         <input type="file" id="diary-photo-input" accept="image/*" multiple onchange="handleDiaryPhotoUpload(this)" style="display:none">
                     </label>
@@ -2629,7 +2856,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         </div>
         <!-- 방제 입력 화면 -->
         <div id="view-disease" class="view-group" style="padding-bottom: 100px;">
-            <h3 style="color: #FFB300; margin-bottom: 20px; font-size: 1.5rem; font-weight: 900; text-align: center;">💊 방제 처리</h3>
+            <h3 style="color: var(--tx-amber); margin-bottom: 20px; font-size: 1.5rem; font-weight: 900; text-align: center;">💊 방제 처리</h3>
             
             <div class="input-row">
                 <label class="input-label">📍 봉장 선택</label>
@@ -2692,10 +2919,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div class="input-row">
                 <span class="input-label">📷 사진 첨부 (최대 3장)</span>
                 <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                    <button type="button" onclick="openInlineCamera('disease')" style="flex: 1; padding: 12px; background: rgba(255,179,0,0.15); color: #FFB300; border-radius: 10px; text-align: center; font-weight: 700; border: 1px dashed rgba(255,179,0,0.3); cursor: pointer;">
+                    <button type="button" onclick="openInlineCamera('disease')" style="flex: 1; padding: 12px; background: rgba(255,179,0,0.15); color: var(--tx-amber); border-radius: 10px; text-align: center; font-weight: 700; border: 1px dashed rgba(255,179,0,0.3); cursor: pointer;">
                         📸 직접 촬영
                     </button>
-                    <label style="flex: 1; padding: 12px; background: rgba(74,222,128,0.15); color: #4ade80; border-radius: 10px; text-align: center; cursor: pointer; font-weight: 700; border: 1px dashed rgba(74,222,128,0.3);">
+                    <label style="flex: 1; padding: 12px; background: var(--bg-green); color: var(--tx-green); border-radius: 10px; text-align: center; cursor: pointer; font-weight: 700; border: 1px dashed var(--bd-green);">
                         🖼️ 앨범 선택
                         <input type="file" id="disease-photo-input" accept="image/*" multiple onchange="handleDiseasePhotoUpload(this)" style="display:none">
                     </label>
@@ -2711,23 +2938,23 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         <!-- 방역일지 조회 화면 -->
         <div id="view-disease-history" class="view-group">
             <div style="margin-bottom: 20px;">
-                <h2 class="text-xl font-black mb-4" style="color: #FFB300;">📋 방역일지 조회</h2>
+                <h2 class="text-xl font-black mb-4" style="color: var(--tx-amber);">📋 방역일지 조회</h2>
 
                 <!-- 조회 탭 (봉장별 / 기간별) -->
                 <div style="display:flex; gap:8px; margin-bottom:14px;">
                     <button id="dh-tab-loc" onclick="switchDiseaseHistoryTab('loc')"
                         style="flex:1; padding:10px; border-radius:10px; border:none; cursor:pointer; font-weight:700; font-size:0.9rem;
-                               background:rgba(255,179,0,0.3); color:#FFD54F;">🏠 봉장별</button>
+                               background:rgba(255,179,0,0.3); color:var(--tx-gold);">🏠 봉장별</button>
                     <button id="dh-tab-period" onclick="switchDiseaseHistoryTab('period')"
                         style="flex:1; padding:10px; border-radius:10px; border:none; cursor:pointer; font-weight:700; font-size:0.9rem;
-                               background:rgba(40,30,25,0.6); color:#999;">📅 기간별</button>
+                               background:var(--bg-card); color:var(--tx-sub);">📅 기간별</button>
                 </div>
 
                 <!-- 봉장별 필터 -->
                 <div id="dh-panel-loc">
                     <div id="disease-location-filters" style="display:flex; gap:6px; margin-bottom:14px; padding:0 2px; overflow-x:auto; flex-wrap:wrap;"></div>
                     <div id="history-list-view" class="space-y-4 pb-24">
-                        <p class="text-center py-20" style="color: #666; font-style: italic;">방역 기록이 없습니다.</p>
+                        <p class="text-center py-20" style="color: var(--tx-muted); font-style: italic;">방역 기록이 없습니다.</p>
                     </div>
                 </div>
 
@@ -2735,24 +2962,24 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 <div id="dh-panel-period" style="display:none;">
                     <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
                         <div style="flex:1; min-width:120px;">
-                            <label style="color:#999; font-size:0.8rem; display:block; margin-bottom:4px;">시작일</label>
+                            <label style="color:var(--tx-sub); font-size:0.8rem; display:block; margin-bottom:4px;">시작일</label>
                             <input type="date" id="dh-date-from" class="field" style="padding:10px;" onchange="renderDiseaseHistoryPeriod()">
                         </div>
                         <div style="flex:1; min-width:120px;">
-                            <label style="color:#999; font-size:0.8rem; display:block; margin-bottom:4px;">종료일</label>
+                            <label style="color:var(--tx-sub); font-size:0.8rem; display:block; margin-bottom:4px;">종료일</label>
                             <input type="date" id="dh-date-to" class="field" style="padding:10px;" onchange="renderDiseaseHistoryPeriod()">
                         </div>
                     </div>
                     <!-- 빠른 기간 버튼 -->
                     <div style="display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap;">
-                        <button onclick="setDiseasePeriod(7)"  style="padding:6px 12px; border-radius:8px; border:none; cursor:pointer; background:rgba(255,179,0,0.2); color:#FFB300; font-size:0.8rem; font-weight:700;">최근 7일</button>
-                        <button onclick="setDiseasePeriod(30)" style="padding:6px 12px; border-radius:8px; border:none; cursor:pointer; background:rgba(255,179,0,0.2); color:#FFB300; font-size:0.8rem; font-weight:700;">최근 30일</button>
-                        <button onclick="setDiseasePeriod(90)" style="padding:6px 12px; border-radius:8px; border:none; cursor:pointer; background:rgba(255,179,0,0.2); color:#FFB300; font-size:0.8rem; font-weight:700;">최근 3개월</button>
-                        <button onclick="setDiseasePeriod(365)" style="padding:6px 12px; border-radius:8px; border:none; cursor:pointer; background:rgba(255,179,0,0.2); color:#FFB300; font-size:0.8rem; font-weight:700;">최근 1년</button>
-                        <button onclick="setDiseasePeriod(0)"  style="padding:6px 12px; border-radius:8px; border:none; cursor:pointer; background:rgba(100,100,100,0.2); color:#999; font-size:0.8rem; font-weight:700;">전체</button>
+                        <button onclick="setDiseasePeriod(7)"  style="padding:6px 12px; border-radius:8px; border:none; cursor:pointer; background:rgba(255,179,0,0.2); color:var(--tx-amber); font-size:0.8rem; font-weight:700;">최근 7일</button>
+                        <button onclick="setDiseasePeriod(30)" style="padding:6px 12px; border-radius:8px; border:none; cursor:pointer; background:rgba(255,179,0,0.2); color:var(--tx-amber); font-size:0.8rem; font-weight:700;">최근 30일</button>
+                        <button onclick="setDiseasePeriod(90)" style="padding:6px 12px; border-radius:8px; border:none; cursor:pointer; background:rgba(255,179,0,0.2); color:var(--tx-amber); font-size:0.8rem; font-weight:700;">최근 3개월</button>
+                        <button onclick="setDiseasePeriod(365)" style="padding:6px 12px; border-radius:8px; border:none; cursor:pointer; background:rgba(255,179,0,0.2); color:var(--tx-amber); font-size:0.8rem; font-weight:700;">최근 1년</button>
+                        <button onclick="setDiseasePeriod(0)"  style="padding:6px 12px; border-radius:8px; border:none; cursor:pointer; background:rgba(100,100,100,0.2); color:var(--tx-sub); font-size:0.8rem; font-weight:700;">전체</button>
                     </div>
                     <div id="history-period-view" class="space-y-4 pb-24">
-                        <p class="text-center py-20" style="color:#666; font-style:italic;">기간을 선택하세요.</p>
+                        <p class="text-center py-20" style="color:var(--tx-muted); font-style:italic;">기간을 선택하세요.</p>
                     </div>
                 </div>
             </div>
@@ -2763,7 +2990,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div style="max-width: 500px; margin: 40px auto; background: #2a1f14; border-radius: 16px; border: 2px solid rgba(255,179,0,0.4);">
                 <div style="padding: 20px; border-bottom: 1px solid rgba(255,179,0,0.2);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3 id="modal-date-title" style="color: #FFD54F; font-weight: 900; font-size: 1.3rem;">2026.02.05</h3>
+                        <h3 id="modal-date-title" style="color: var(--tx-gold); font-weight: 900; font-size: 1.3rem;">2026.02.05</h3>
                         <button onclick="closePreviewModal()" style="background: rgba(185,28,28,0.3); color: #ff6b6b; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 1.2rem; line-height: 32px;">✕</button>
                     </div>
                 </div>
@@ -2780,7 +3007,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
         <!-- 가계부 수정 모달 -->
         <div id="acc-edit-modal" style="display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.85); z-index:12000; align-items:center; justify-content:center; padding:20px;">
-            <div style="background:#1e1410; border:2px solid rgba(74,222,128,0.4); border-radius:16px; padding:24px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto;">
+            <div style="background:#1e1410; border:2px solid var(--bd-green); border-radius:16px; padding:24px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto;">
                 <div id="acc-edit-modal-body"></div>
             </div>
         </div>
@@ -2797,43 +3024,43 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
         <!-- 가계부 화면 -->
         <div id="view-account" class="view-group" style="padding-bottom: 160px;">
-            <div style="display:flex;gap:6px;margin-bottom:18px;padding:5px;background:rgba(0,0,0,0.25);border-radius:14px;border:1px solid rgba(74,222,128,0.15);">
+            <div style="display:flex;gap:6px;margin-bottom:18px;padding:5px;background:var(--bg-input);border-radius:14px;border:1px solid var(--bd-green);">
                 <div id="v-acc-calendar" onclick="switchAccView('calendar')"
                   style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-size:.72rem;font-weight:800;transition:all .2s;">
                   <span style="font-size:1.2rem;">📅</span>달력
                 </div>
                 <div id="v-list" onclick="switchAccView('list')"
-                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:transparent;color:#888;font-size:.82rem;font-weight:700;transition:all .2s;">
+                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:transparent;color:var(--tx-sub);font-size:.82rem;font-weight:700;transition:all .2s;">
                   <span style="font-size:1.2rem;">✏️</span>기록
                 </div>
                 <div id="v-stat" onclick="switchAccView('stat')"
-                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:transparent;color:#888;font-size:.82rem;font-weight:700;transition:all .2s;">
+                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:transparent;color:var(--tx-sub);font-size:.82rem;font-weight:700;transition:all .2s;">
                   <span style="font-size:1.2rem;">📊</span>내역
                 </div>
                 <div id="v-customers" onclick="switchAccView('customers')"
-                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:transparent;color:#888;font-size:.82rem;font-weight:700;transition:all .2s;">
+                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:transparent;color:var(--tx-sub);font-size:.82rem;font-weight:700;transition:all .2s;">
                   <span style="font-size:1.2rem;">👥</span>고객
                 </div>
             </div>
 
             <!-- 가계부 달력 -->
             <div id="acc-page-calendar">
-                <div style="text-align: center; margin-bottom: 16px; padding: 12px; background: linear-gradient(135deg, rgba(74,222,128,0.2) 0%, rgba(34,197,94,0.15) 100%); border-radius: 12px;">
-                    <h2 style="color: #4ade80; font-size: 1.3rem; font-weight: 900; text-shadow: 0 2px 8px rgba(74,222,128,0.3);">💰 가계부</h2>
+                <div style="text-align: center; margin-bottom: 16px; padding: 12px; background: linear-gradient(135deg, var(--bd-green) 0%, rgba(34,197,94,0.15) 100%); border-radius: 12px;">
+                    <h2 style="color: var(--tx-green); font-size: 1.3rem; font-weight: 900; text-shadow: 0 2px 8px var(--bd-green);">💰 가계부</h2>
                 </div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding: 0 4px;">
                     <div style="display: flex; gap: 6px; align-items: center;">
-                        <button onclick="changeAccYear(-1)" style="color: #4ade80; background: rgba(74,222,128,0.15); border: none; border-radius: 10px; padding: 10px 12px; font-size: 1rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">◀◀</button>
-                        <button onclick="changeAccMonth(-1)" style="color: #4ade80; background: rgba(74,222,128,0.1); border: none; border-radius: 10px; padding: 10px 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">◀</button>
+                        <button onclick="changeAccYear(-1)" style="color: var(--tx-green); background: var(--bg-green); border: none; border-radius: 10px; padding: 10px 12px; font-size: 1rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">◀◀</button>
+                        <button onclick="changeAccMonth(-1)" style="color: var(--tx-green); background: var(--bg-green); border: none; border-radius: 10px; padding: 10px 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">◀</button>
                     </div>
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
-                        <h3 id="acc-cal-title" style="color: #4ade80; font-weight: 900; font-size: 1.2rem; margin: 0;"></h3>
-                        <button onclick="goToAccToday()" style="color: #4ade80; background: rgba(74,222,128,0.15); border: 1px solid rgba(74,222,128,0.3); border-radius: 12px; padding: 6px 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer; min-height: 36px;">오늘로</button>
+                        <h3 id="acc-cal-title" style="color: var(--tx-green); font-weight: 900; font-size: 1.2rem; margin: 0;"></h3>
+                        <button onclick="goToAccToday()" style="color: var(--tx-green); background: var(--bg-green); border: 1px solid var(--bd-green); border-radius: 12px; padding: 6px 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer; min-height: 36px;">오늘로</button>
                     </div>
                     <div style="display: flex; gap: 6px; align-items: center;">
-                        <button onclick="changeAccMonth(1)" style="color: #4ade80; background: rgba(74,222,128,0.1); border: none; border-radius: 10px; padding: 10px 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">▶</button>
-                        <button onclick="changeAccYear(1)" style="color: #4ade80; background: rgba(74,222,128,0.15); border: none; border-radius: 10px; padding: 10px 12px; font-size: 1rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">▶▶</button>
+                        <button onclick="changeAccMonth(1)" style="color: var(--tx-green); background: var(--bg-green); border: none; border-radius: 10px; padding: 10px 14px; font-size: 1.4rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">▶</button>
+                        <button onclick="changeAccYear(1)" style="color: var(--tx-green); background: var(--bg-green); border: none; border-radius: 10px; padding: 10px 12px; font-size: 1rem; font-weight: 900; cursor: pointer; min-height: 44px; min-width: 44px;">▶▶</button>
                     </div>
                 </div>
                 <div id="acc-cal-body" class="calendar-grid"></div>
@@ -2859,8 +3086,8 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 <!-- 다중 항목 입력 리스트 -->
                 <div style="margin-bottom:12px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <label style="color:#FFD54F; font-weight:700; font-size:0.92rem;">📦 품목 목록</label>
-                        <button onclick="addAccLine()" style="background:rgba(74,222,128,0.25);color:#4ade80;border:none;border-radius:8px;padding:6px 14px;font-size:0.82rem;font-weight:700;cursor:pointer;">+ 품목추가</button>
+                        <label style="color:var(--tx-gold); font-weight:700; font-size:0.92rem;">📦 품목 목록</label>
+                        <button onclick="addAccLine()" style="background:var(--bg-green);color:var(--tx-green);border:none;border-radius:8px;padding:6px 14px;font-size:0.82rem;font-weight:700;cursor:pointer;">+ 품목추가</button>
                     </div>
                     <div id="acc-lines-container">
                         <!-- JS로 렌더링 -->
@@ -2869,8 +3096,8 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
                 <!-- 합계 표시 -->
                 <div style="background:rgba(255,179,0,0.12);border:1px solid rgba(255,179,0,0.3);border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
-                    <span style="color:#FFD54F;font-weight:700;font-size:0.95rem;">합계 금액</span>
-                    <span id="acc-total-display" style="color:#FFD54F;font-weight:900;font-size:1.2rem;">0 원</span>
+                    <span style="color:var(--tx-gold);font-weight:700;font-size:0.95rem;">합계 금액</span>
+                    <span id="acc-total-display" style="color:var(--tx-gold);font-weight:900;font-size:1.2rem;">0 원</span>
                 </div>
 
                 <!-- 직접입력 hidden (호환용) -->
@@ -2882,15 +3109,15 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 <!-- 고객 관리 (수입 선택 시만 표시) -->
                 <div id="customer-info" style="display: none;">
                     <div style="margin-bottom: 16px;">
-                        <label style="color: #FFD54F; font-weight: 700; display: block; margin-bottom: 8px;">고객명</label>
+                        <label style="color: var(--tx-gold); font-weight: 700; display: block; margin-bottom: 8px;">고객명</label>
                         <input type="text" id="customer-name" placeholder="고객명" class="field">
                     </div>
                     <div style="margin-bottom: 16px;">
-                        <label style="color: #FFD54F; font-weight: 700; display: block; margin-bottom: 8px;">연락처</label>
+                        <label style="color: var(--tx-gold); font-weight: 700; display: block; margin-bottom: 8px;">연락처</label>
                         <input type="tel" id="customer-phone" placeholder="010-0000-0000" class="field">
                     </div>
                     <div style="margin-bottom: 16px;">
-                        <label style="color: #FFD54F; font-weight: 700; display: block; margin-bottom: 8px;">메모</label>
+                        <label style="color: var(--tx-gold); font-weight: 700; display: block; margin-bottom: 8px;">메모</label>
                         <textarea id="customer-memo" class="field" style="height: 80px;" placeholder="거래 메모 (선택사항)"></textarea>
                     </div>
                 </div>
@@ -2933,7 +3160,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <!-- 고객관리 페이지 -->
             <div id="acc-page-customers" style="display:none; padding-bottom:120px;">
                 <div style="text-align:center; margin-bottom:16px; padding:12px; background:linear-gradient(135deg,rgba(96,165,250,0.2),rgba(59,130,246,0.15)); border-radius:12px;">
-                    <h2 style="color:#60a5fa; font-size:1.3rem; font-weight:900;">👥 고객 관리</h2>
+                    <h2 style="color:var(--tx-editbtn); font-size:1.3rem; font-weight:900;">👥 고객 관리</h2>
                 </div>
                 <div style="display:flex; gap:8px; margin-bottom:16px;">
                     <input type="text" id="customer-search" placeholder="이름 또는 연락처 검색..." class="field" style="flex:1;" oninput="renderCustomerList()">
@@ -2948,8 +3175,8 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         <!-- ============ 지도 화면 ============ -->
         <div id="view-map" class="view-group" style="padding:0;">
 <div id="hdr" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--hdr,#1a0e05);border-bottom:1px solid rgba(255,179,0,.15);">
-  <h1 style="font-size:.95rem;font-weight:900;color:#FFB300;">🐝 봉장지도</h1>
-  <span id="gst" style="font-size:.72rem;color:#888;">GPS 대기</span>
+  <h1 style="font-size:.95rem;font-weight:900;color:var(--tx-amber);">🐝 봉장지도</h1>
+  <span id="gst" style="font-size:.72rem;color:var(--tx-sub);">GPS 대기</span>
 </div>
 <div id="mapwrap" style="position:relative;flex-shrink:0;">
   <div class="mtr" style="top:8px;right:8px;flex-direction:column;align-items:flex-end;gap:5px;">
@@ -2971,7 +3198,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
     <div id="laddr" style="font-size:.82rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">확인 중...</div>
     <div id="lcoord" style="font-size:.71rem;color:var(--dim)"></div>
   </div>
-  <button class="btn" onclick="hideLocbar()" style="color:#444;flex-shrink:0">✕</button>
+  <button class="btn" onclick="hideLocbar()" style="color:var(--tx-sub);flex-shrink:0">✕</button>
 </div>
 
 <div id="panel">
@@ -2991,44 +3218,44 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
         <!-- 계산기 화면 -->
         <div id="view-calculator" class="view-group" style="padding-bottom: 120px;">
-            <h2 class="text-2xl font-black mb-6 text-center" style="color: #FFB300;">🧮 양봉 계산기</h2>
+            <h2 class="text-2xl font-black mb-6 text-center" style="color: var(--tx-amber);">🧮 양봉 계산기</h2>
             
             <!-- 개미산 계산 -->
-            <div style="background: rgba(30,25,20,0.7); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,213,79,0.15);">
-                <h4 style="color: #FFD54F; font-weight: 900; margin-bottom: 16px; font-size: 1.1rem;">🧪 개미산 농도 계산</h4>
+            <div style="background: var(--bg-card); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,213,79,0.15);">
+                <h4 style="color: var(--tx-gold); font-weight: 900; margin-bottom: 16px; font-size: 1.1rem;">🧪 개미산 농도 계산</h4>
                 
                 <div style="display: flex; gap: 8px; margin-bottom: 16px;">
                     <button id="formic-volume-btn" onclick="setFormicMode('volume')" style="flex: 1; padding: 12px; background: #9a3412; color: white; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">부피 (L)</button>
-                    <button id="formic-weight-btn" onclick="setFormicMode('weight')" style="flex: 1; padding: 12px; background: rgba(40,30,25,0.8); color: #999; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">무게 기준</button>
+                    <button id="formic-weight-btn" onclick="setFormicMode('weight')" style="flex: 1; padding: 12px; background: var(--bg-card); color: var(--tx-sub); border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">무게 기준</button>
                 </div>
 
                 <div id="formic-volume" style="display: block;">
-                    <p style="color: #999; font-size: 0.82rem; margin-bottom: 12px;">💡 공식: V₁ = (C₂ × V₂) ÷ C₁ &nbsp;|&nbsp; C₁=85%, C₂=목표농도, V₂=희석액총량(L)</p>
+                    <p style="color: var(--tx-sub); font-size: 0.82rem; margin-bottom: 12px;">💡 공식: V₁ = (C₂ × V₂) ÷ C₁ &nbsp;|&nbsp; C₁=85%, C₂=목표농도, V₂=희석액총량(L)</p>
                     <input type="number" id="formic-v-target" placeholder="목표 농도 (%) 예: 60" class="field" style="margin-bottom: 12px;">
                     <input type="number" id="formic-v-total" placeholder="희석액 총량 (L) 예: 1" class="field" style="margin-bottom: 12px;">
                     <div style="display: flex; gap: 8px;">
                         <button onclick="calcFormicVolume()" style="flex: 1; background: #A0522D; color: white; padding: 14px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">계산</button>
                         <button onclick="resetFormicVolume()" style="background: rgba(100,100,100,0.5); color: white; padding: 14px 20px; border-radius: 10px; border: none; cursor: pointer;">초기화</button>
                     </div>
-                    <div id="formic-v-result" style="margin-top: 12px; padding: 16px; background: rgba(139,92,246,0.2); border-radius: 10px; display: none; color: #e8e3d8;"></div>
+                    <div id="formic-v-result" style="margin-top: 12px; padding: 16px; background: var(--bg-purple); border-radius: 10px; display: none; color: var(--tx-main);"></div>
                 </div>
 
                 <div id="formic-weight" style="display: none;">
-                    <p style="color: #999; font-size: 0.82rem; margin-bottom: 12px;">💡 공식: M₁ = (C₂ × M₂) ÷ C₁ &nbsp;|&nbsp; C₁=85%, C₂=목표농도, M₂=희석액총량(kg) · 비중 1.19 적용</p>
+                    <p style="color: var(--tx-sub); font-size: 0.82rem; margin-bottom: 12px;">💡 공식: M₁ = (C₂ × M₂) ÷ C₁ &nbsp;|&nbsp; C₁=85%, C₂=목표농도, M₂=희석액총량(kg) · 비중 1.19 적용</p>
                     <input type="number" id="formic-w-target" placeholder="목표 농도 (%) 예: 60" class="field" style="margin-bottom: 12px;">
                     <input type="number" id="formic-w-total" placeholder="희석액 총량 (kg) 예: 1" class="field" style="margin-bottom: 12px;">
                     <div style="display: flex; gap: 8px;">
                         <button onclick="calcFormicWeight()" style="flex: 1; background: #A0522D; color: white; padding: 14px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">계산</button>
                         <button onclick="resetFormicWeight()" style="background: rgba(100,100,100,0.5); color: white; padding: 14px 20px; border-radius: 10px; border: none; cursor: pointer;">초기화</button>
                     </div>
-                    <div id="formic-w-result" style="margin-top: 12px; padding: 16px; background: rgba(139,92,246,0.2); border-radius: 10px; display: none; color: #e8e3d8;"></div>
+                    <div id="formic-w-result" style="margin-top: 12px; padding: 16px; background: var(--bg-purple); border-radius: 10px; display: none; color: var(--tx-main);"></div>
                 </div>
             </div>
 
             <!-- 옥살산 흘림처리 계산 -->
-            <div style="background: rgba(30,25,20,0.7); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,213,79,0.15);">
-                <h4 style="color: #FFD54F; font-weight: 900; margin-bottom: 8px; font-size: 1.1rem;">💧 옥살산 흘림처리 농도 계산</h4>
-                <p style="color: #999; font-size: 0.82rem; margin-bottom: 14px;">💡 기본 배합: 물 1kg + 설탕 1kg + 옥살산 70g = 3.38%</p>
+            <div style="background: var(--bg-card); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,213,79,0.15);">
+                <h4 style="color: var(--tx-gold); font-weight: 900; margin-bottom: 8px; font-size: 1.1rem;">💧 옥살산 흘림처리 농도 계산</h4>
+                <p style="color: var(--tx-sub); font-size: 0.82rem; margin-bottom: 14px;">💡 기본 배합: 물 1kg + 설탕 1kg + 옥살산 70g = 3.38%</p>
                 <input type="number" id="oxalic-water" placeholder="물의 양 (kg)" class="field" style="margin-bottom: 12px;">
                 <input type="number" id="oxalic-sugar" placeholder="설탕의 양 (kg)" class="field" style="margin-bottom: 12px;">
                 <input type="number" id="oxalic-amount" placeholder="옥살산의 양 (g)" class="field" style="margin-bottom: 12px;">
@@ -3036,12 +3263,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     <button onclick="calcOxalic()" style="flex: 1; background: #A0522D; color: white; padding: 14px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">계산</button>
                     <button onclick="resetOxalic()" style="background: rgba(100,100,100,0.5); color: white; padding: 14px 20px; border-radius: 10px; border: none; cursor: pointer;">초기화</button>
                 </div>
-                <div id="oxalic-result" style="margin-top: 12px; padding: 16px; background: rgba(139,92,246,0.2); border-radius: 10px; display: none; color: #e8e3d8;"></div>
+                <div id="oxalic-result" style="margin-top: 12px; padding: 16px; background: var(--bg-purple); border-radius: 10px; display: none; color: var(--tx-main);"></div>
             </div>
 
             <!-- 주정 계산 -->
-            <div style="background: rgba(30,25,20,0.7); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,213,79,0.15);">
-                <h4 style="color: #FFD54F; font-weight: 900; margin-bottom: 16px; font-size: 1.1rem;">🍶 주정 농도 계산</h4>
+            <div style="background: var(--bg-card); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,213,79,0.15);">
+                <h4 style="color: var(--tx-gold); font-weight: 900; margin-bottom: 16px; font-size: 1.1rem;">🍶 주정 농도 계산</h4>
                 <input type="number" id="alcohol-current" placeholder="현재 농도 (%)" class="field" style="margin-bottom: 12px;">
                 <input type="number" id="alcohol-target" placeholder="목표 농도 (%)" class="field" style="margin-bottom: 12px;">
                 <input type="number" id="alcohol-volume" placeholder="희석액 총량 (L)" class="field" style="margin-bottom: 12px;">
@@ -3049,25 +3276,25 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     <button onclick="calcAlcohol()" style="flex: 1; background: #A0522D; color: white; padding: 14px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">계산</button>
                     <button onclick="resetAlcohol()" style="background: rgba(100,100,100,0.5); color: white; padding: 14px 20px; border-radius: 10px; border: none; cursor: pointer;">초기화</button>
                 </div>
-                <div id="alcohol-result" style="margin-top: 12px; padding: 16px; background: rgba(139,92,246,0.2); border-radius: 10px; display: none; color: #e8e3d8;"></div>
+                <div id="alcohol-result" style="margin-top: 12px; padding: 16px; background: var(--bg-purple); border-radius: 10px; display: none; color: var(--tx-main);"></div>
             </div>
 
             <!-- 설탕 사양액 계산 -->
-            <div style="background: rgba(30,25,20,0.7); padding: 20px; border-radius: 16px; margin-bottom: 100px; border: 1px solid rgba(255,213,79,0.15);">
-                <h4 style="color: #FFD54F; font-weight: 900; margin-bottom: 16px; font-size: 1.1rem;">🍯 설탕 사양액 계산</h4>
+            <div style="background: var(--bg-card); padding: 20px; border-radius: 16px; margin-bottom: 100px; border: 1px solid rgba(255,213,79,0.15);">
+                <h4 style="color: var(--tx-gold); font-weight: 900; margin-bottom: 16px; font-size: 1.1rem;">🍯 설탕 사양액 계산</h4>
                 <input type="number" id="sugar-ratio" placeholder="비율 (1:1은 1 입력)" class="field" style="margin-bottom: 12px;">
                 <input type="number" id="sugar-water" placeholder="물의 양 (L)" class="field" style="margin-bottom: 12px;">
                 <div style="display: flex; gap: 8px;">
                     <button onclick="calcSugar()" style="flex: 1; background: #A0522D; color: white; padding: 14px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">계산</button>
                     <button onclick="resetSugar()" style="background: rgba(100,100,100,0.5); color: white; padding: 14px 20px; border-radius: 10px; border: none; cursor: pointer;">초기화</button>
                 </div>
-                <div id="sugar-result" style="margin-top: 12px; padding: 16px; background: rgba(139,92,246,0.2); border-radius: 10px; display: none; color: #e8e3d8;"></div>
+                <div id="sugar-result" style="margin-top: 12px; padding: 16px; background: var(--bg-purple); border-radius: 10px; display: none; color: var(--tx-main);"></div>
             </div>
         </div>
 
         <!-- 봉장 관리 설정 화면 -->
         <div id="view-apiary-settings" class="view-group" style="padding-bottom: 140px;">
-            <h2 class="text-2xl font-black mb-4 text-center" style="color: #FFB300;">⚙️ 설정</h2>
+            <h2 class="text-2xl font-black mb-4 text-center" style="color: var(--tx-amber);">⚙️ 설정</h2>
             
             <!-- 설정 탭 -->
             <div class="v-switch" style="margin-bottom: 20px;">
@@ -3080,34 +3307,34 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div id="settings-apiary" class="settings-tab">
                 <!-- 닉네임/농장명 -->
                 <div style="background:rgba(255,179,0,.07);border:1px solid rgba(255,179,0,.2);border-radius:12px;padding:14px 16px;margin-bottom:18px;">
-                  <div style="font-weight:900;color:#FFB300;font-size:.9rem;margin-bottom:10px;">👤 내 정보</div>
+                  <div style="font-weight:900;color:var(--tx-amber);font-size:.9rem;margin-bottom:10px;">👤 내 정보</div>
                   <div>
-                    <label style="color:#aaa;font-size:.78rem;display:block;margin-bottom:4px;">🏷️ 농장 상호명 <span style="color:#FFB300;font-weight:700;">(봉장명 앞에 자동으로 붙고 지도에도 표시됩니다)</span></label>
+                    <label style="color:var(--tx-sub);font-size:.78rem;display:block;margin-bottom:4px;">🏷️ 농장 상호명 <span style="color:var(--tx-amber);font-weight:700;">(봉장명 앞에 자동으로 붙고 지도에도 표시됩니다)</span></label>
                     <input id="input-farmname" type="text" placeholder="예) 황실양봉, 행복양봉원" class="field"
                       style="width:100%;padding:9px 12px;background:#2a1a08;border:1px solid rgba(255,179,0,.3);border-radius:8px;color:#fff;font-size:.88rem;box-sizing:border-box;" />
                   </div>
                   <button onclick="saveUserInfoManual()" style="width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#16a34a,#15803d);color:#ffffff;border:none;border-radius:10px;font-size:1rem;font-weight:800;cursor:pointer;">✅ 저장</button>
                 </div>
-                <p style="color: #999; font-size: 0.85rem; margin-bottom: 14px;">사용할 봉장을 선택하세요</p>
-                <div style="background: rgba(30,25,20,0.7); padding: 18px; border-radius: 12px; margin-bottom: 12px;">
-                    <h3 style="color: #FFD54F; font-weight: bold; margin-bottom: 12px; font-size: 1rem;">🏠 고정 봉장</h3>
+                <p style="color: var(--tx-sub); font-size: 0.85rem; margin-bottom: 14px;">사용할 봉장을 선택하세요</p>
+                <div style="background: var(--bg-card); padding: 18px; border-radius: 12px; margin-bottom: 12px;">
+                    <h3 style="color: var(--tx-gold); font-weight: bold; margin-bottom: 12px; font-size: 1rem;">🏠 고정 봉장</h3>
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <label class="apiary-toggle-item"><input type="checkbox" id="toggle-1봉장" onchange="toggleApiary('1봉장', this.checked)"><span class="apiary-label">1봉장</span></label>
                         <label class="apiary-toggle-item"><input type="checkbox" id="toggle-2봉장" onchange="toggleApiary('2봉장', this.checked)"><span class="apiary-label">2봉장</span></label>
                         <label class="apiary-toggle-item"><input type="checkbox" id="toggle-3봉장" onchange="toggleApiary('3봉장', this.checked)"><span class="apiary-label">3봉장</span></label>
                     </div>
                 </div>
-                <div style="background: rgba(30,25,20,0.7); padding: 18px; border-radius: 12px;">
-                    <h3 style="color: #FFD54F; font-weight: bold; margin-bottom: 12px; font-size: 1rem;">🚚 이동 봉장</h3>
+                <div style="background: var(--bg-card); padding: 18px; border-radius: 12px;">
+                    <h3 style="color: var(--tx-gold); font-weight: bold; margin-bottom: 12px; font-size: 1rem;">🚚 이동 봉장</h3>
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <label class="apiary-toggle-item"><input type="checkbox" id="toggle-이동1봉장" onchange="toggleApiary('이동1봉장', this.checked)"><span class="apiary-label">이동1봉장</span></label>
                         <label class="apiary-toggle-item"><input type="checkbox" id="toggle-이동2봉장" onchange="toggleApiary('이동2봉장', this.checked)"><span class="apiary-label">이동2봉장</span></label>
                         <label class="apiary-toggle-item"><input type="checkbox" id="toggle-이동3봉장" onchange="toggleApiary('이동3봉장', this.checked)"><span class="apiary-label">이동3봉장</span></label>
                     </div>
                 </div>
-                <div style="background: rgba(30,25,20,0.7); padding: 18px; border-radius: 12px; margin-top: 12px;">
-                    <h3 style="color: #FFD54F; font-weight: bold; margin-bottom: 8px; font-size: 1rem;">🎨 테마 설정</h3>
-                    <p style="color: #999; font-size: 0.85rem;">상단 🌙 버튼으로 언제든지 전환할 수 있습니다.</p>
+                <div style="background: var(--bg-card); padding: 18px; border-radius: 12px; margin-top: 12px;">
+                    <h3 style="color: var(--tx-gold); font-weight: bold; margin-bottom: 8px; font-size: 1rem;">🎨 테마 설정</h3>
+                    <p style="color: var(--tx-sub); font-size: 0.85rem;">상단 🌙 버튼으로 언제든지 전환할 수 있습니다.</p>
                 </div>
                 <button onclick="saveSettingsAll()" style="width:100%;margin-top:18px;padding:16px;background:linear-gradient(135deg,#16a34a,#15803d);color:#ffffff;border:none;border-radius:14px;font-size:1.1rem;font-weight:900;cursor:pointer;box-shadow:0 4px 16px rgba(22,163,74,0.4);">✅ 설정 저장 완료</button>
             </div>
@@ -3116,84 +3343,84 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div id="settings-custom" class="settings-tab" style="display: none;">
 
                 <!-- 작업 항목 아코디언 -->
-                <div style="background: rgba(30,25,20,0.7); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
+                <div style="background: var(--bg-card); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
                     <div onclick="toggleSettingAccordion('works')" style="padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #FFD54F; font-weight: bold;">✍️ 작업 내용 항목</span>
-                        <span id="acc-arrow-works" style="color: #FFD54F;">▼</span>
+                        <span style="color: var(--tx-gold); font-weight: bold;">✍️ 작업 내용 항목</span>
+                        <span id="acc-arrow-works" style="color: var(--tx-gold);">▼</span>
                     </div>
                     <div id="acc-content-works" style="display: none; padding: 14px; border-top: 1px solid rgba(255,213,79,0.1);">
                         <div id="work-items-list" style="margin-bottom: 10px;"></div>
-                        <button onclick="addWorkItem()" style="width:100%; padding:10px; background:rgba(255,179,0,0.2); color:#FFB300; border-radius:8px; border:none; cursor:pointer; font-weight:700;">+ 작업 항목 추가</button>
-                        <button onclick="resetCustomItems('work')" style="width:100%; padding:8px; background:rgba(100,100,100,0.2); color:#999; border-radius:8px; border:none; cursor:pointer; font-size:0.8rem; margin-top:6px;">기본값으로 초기화</button>
+                        <button onclick="addWorkItem()" style="width:100%; padding:10px; background:rgba(255,179,0,0.2); color:var(--tx-amber); border-radius:8px; border:none; cursor:pointer; font-weight:700;">+ 작업 항목 추가</button>
+                        <button onclick="resetCustomItems('work')" style="width:100%; padding:8px; background:rgba(100,100,100,0.2); color:var(--tx-sub); border-radius:8px; border:none; cursor:pointer; font-size:0.8rem; margin-top:6px;">기본값으로 초기화</button>
                     </div>
                 </div>
 
                 <!-- 질병 종류 아코디언 -->
-                <div style="background: rgba(30,25,20,0.7); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
+                <div style="background: var(--bg-card); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
                     <div onclick="toggleSettingAccordion('diseases')" style="padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #FFD54F; font-weight: bold;">🦠 질병 종류 항목</span>
-                        <span id="acc-arrow-diseases" style="color: #FFD54F;">▼</span>
+                        <span style="color: var(--tx-gold); font-weight: bold;">🦠 질병 종류 항목</span>
+                        <span id="acc-arrow-diseases" style="color: var(--tx-gold);">▼</span>
                     </div>
                     <div id="acc-content-diseases" style="display: none; padding: 14px; border-top: 1px solid rgba(255,213,79,0.1);">
                         <div id="disease-items-list" style="margin-bottom: 10px;"></div>
-                        <button onclick="addDiseaseItem()" style="width:100%; padding:10px; background:rgba(255,179,0,0.2); color:#FFB300; border-radius:8px; border:none; cursor:pointer; font-weight:700;">+ 질병 항목 추가</button>
+                        <button onclick="addDiseaseItem()" style="width:100%; padding:10px; background:rgba(255,179,0,0.2); color:var(--tx-amber); border-radius:8px; border:none; cursor:pointer; font-weight:700;">+ 질병 항목 추가</button>
                     </div>
                 </div>
 
                 <!-- 약제 항목 아코디언 (질병별) -->
-                <div style="background: rgba(30,25,20,0.7); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
+                <div style="background: var(--bg-card); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
                     <div onclick="toggleSettingAccordion('medicines')" style="padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #FFD54F; font-weight: bold;">💊 약제 항목 (질병별)</span>
-                        <span id="acc-arrow-medicines" style="color: #FFD54F;">▼</span>
+                        <span style="color: var(--tx-gold); font-weight: bold;">💊 약제 항목 (질병별)</span>
+                        <span id="acc-arrow-medicines" style="color: var(--tx-gold);">▼</span>
                     </div>
                     <div id="acc-content-medicines" style="display: none; padding: 14px; border-top: 1px solid rgba(255,213,79,0.1);">
-                        <p style="color: #999; font-size: 0.8rem; margin-bottom: 10px;">질병별 약제 및 처리방법을 추가/수정/삭제하세요</p>
+                        <p style="color: var(--tx-sub); font-size: 0.8rem; margin-bottom: 10px;">질병별 약제 및 처리방법을 추가/수정/삭제하세요</p>
                         <div id="medicine-items-list" style="margin-bottom: 10px;"></div>
-                        <button onclick="resetCustomItems('medicine')" style="width:100%; padding:8px; background:rgba(100,100,100,0.2); color:#999; border-radius:8px; border:none; cursor:pointer; font-size:0.8rem; margin-top:4px;">기본값으로 초기화</button>
+                        <button onclick="resetCustomItems('medicine')" style="width:100%; padding:8px; background:rgba(100,100,100,0.2); color:var(--tx-sub); border-radius:8px; border:none; cursor:pointer; font-size:0.8rem; margin-top:4px;">기본값으로 초기화</button>
                     </div>
                 </div>
 
                 <!-- 방역 알림 날짜 아코디언 -->
-                <div style="background: rgba(30,25,20,0.7); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
+                <div style="background: var(--bg-card); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
                     <div onclick="toggleSettingAccordion('alarmdays')" style="padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #FFD54F; font-weight: bold;">🔔 방역 알림 날짜</span>
-                        <span id="acc-arrow-alarmdays" style="color: #FFD54F;">▼</span>
+                        <span style="color: var(--tx-gold); font-weight: bold;">🔔 방역 알림 날짜</span>
+                        <span id="acc-arrow-alarmdays" style="color: var(--tx-gold);">▼</span>
                     </div>
                     <div id="acc-content-alarmdays" style="display: none; padding: 14px; border-top: 1px solid rgba(255,213,79,0.1);">
                         <div id="setting-alarmdays-list" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;"></div>
                         <div style="display: flex; gap: 8px;">
                             <input type="number" id="setting-alarmdays-input" placeholder="날짜 수 (예: 21)" class="field" style="flex: 1; margin: 0;" min="1" max="365">
-                            <button onclick="addAlarmDay()" style="background: rgba(255,179,0,0.3); color: #FFB300; padding: 10px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700;">추가</button>
+                            <button onclick="addAlarmDay()" style="background: rgba(255,179,0,0.3); color: var(--tx-amber); padding: 10px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700;">추가</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- 가계부 지출 항목 아코디언 -->
-                <div style="background: rgba(30,25,20,0.7); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
+                <div style="background: var(--bg-card); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
                     <div onclick="toggleSettingAccordion('accout')" style="padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #FFD54F; font-weight: bold;">💸 가계부 지출 항목</span>
-                        <span id="acc-arrow-accout" style="color: #FFD54F;">▼</span>
+                        <span style="color: var(--tx-gold); font-weight: bold;">💸 가계부 지출 항목</span>
+                        <span id="acc-arrow-accout" style="color: var(--tx-gold);">▼</span>
                     </div>
                     <div id="acc-content-accout" style="display: none; padding: 14px; border-top: 1px solid rgba(255,213,79,0.1);">
                         <div id="setting-accout-list" style="margin-bottom: 10px;"></div>
                         <div style="display: flex; gap: 8px;">
                             <input type="text" id="setting-accout-cat-input" placeholder="카테고리명 (예: 기타경비)" class="field" style="flex: 1; margin: 0;">
-                            <button onclick="addAccCategory('out')" style="background: rgba(255,179,0,0.3); color: #FFB300; padding: 10px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; white-space: nowrap;">추가</button>
+                            <button onclick="addAccCategory('out')" style="background: rgba(255,179,0,0.3); color: var(--tx-amber); padding: 10px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; white-space: nowrap;">추가</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- 가계부 수입 항목 아코디언 -->
-                <div style="background: rgba(30,25,20,0.7); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
+                <div style="background: var(--bg-card); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
                     <div onclick="toggleSettingAccordion('accin')" style="padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #FFD54F; font-weight: bold;">💰 가계부 수입 항목</span>
-                        <span id="acc-arrow-accin" style="color: #FFD54F;">▼</span>
+                        <span style="color: var(--tx-gold); font-weight: bold;">💰 가계부 수입 항목</span>
+                        <span id="acc-arrow-accin" style="color: var(--tx-gold);">▼</span>
                     </div>
                     <div id="acc-content-accin" style="display: none; padding: 14px; border-top: 1px solid rgba(255,213,79,0.1);">
                         <div id="setting-accin-list" style="margin-bottom: 10px;"></div>
                         <div style="display: flex; gap: 8px;">
                             <input type="text" id="setting-accin-cat-input" placeholder="카테고리명 (예: 체험수입)" class="field" style="flex: 1; margin: 0;">
-                            <button onclick="addAccCategory('in')" style="background: rgba(255,179,0,0.3); color: #FFB300; padding: 10px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; white-space: nowrap;">추가</button>
+                            <button onclick="addAccCategory('in')" style="background: rgba(255,179,0,0.3); color: var(--tx-amber); padding: 10px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; white-space: nowrap;">추가</button>
                         </div>
                     </div>
                 </div>
@@ -3292,8 +3519,8 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
     <!-- 작업 선택 팝업 -->
     <div id="work-selection-area">
         <div style="display: flex; align-items: center; margin-bottom: 24px;">
-            <button onclick="closeWorkSelection()" style="background: rgba(255,179,0,0.15); color: #FFB300; border: none; border-radius: 10px; padding: 8px 16px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-right: 12px;">⬅ 뒤로가기</button>
-            <h2 class="text-2xl font-black" style="color: #FFB300; flex: 1; text-align: center; margin-right: 80px;">작업 내용 선택</h2>
+            <button onclick="closeWorkSelection()" style="background: rgba(255,179,0,0.15); color: var(--tx-amber); border: none; border-radius: 10px; padding: 8px 16px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-right: 12px;">⬅ 뒤로가기</button>
+            <h2 class="text-2xl font-black" style="color: var(--tx-amber); flex: 1; text-align: center; margin-right: 80px;">작업 내용 선택</h2>
         </div>
         <div class="work-grid" id="work-btn-grid">
             <!-- JavaScript에서 동적 생성 -->
@@ -3651,11 +3878,11 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             }
             
             guide.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 8px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 2px solid ${color};">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 12px; background: var(--bg-input); border-radius: 10px; border: 2px solid ${color};">
                     <span style="font-size: 1.5rem;">${icon}</span>
                     <div>
                         <div style="color: ${color}; font-weight: bold; font-size: 1rem;">${status}</div>
-                        <div style="color: #999; font-size: 0.75rem;">기온 ${temp}°C / 풍속 ${windSpeed}m/s</div>
+                        <div style="color: var(--tx-sub); font-size: 0.75rem;">기온 ${temp}°C / 풍속 ${windSpeed}m/s</div>
                     </div>
                 </div>
             `;
@@ -3758,12 +3985,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             
             // 일지 기록
             if(db[key] && db[key].records && db[key].records.length > 0) {
-                html += '<div style="margin-bottom: 16px;"><h4 style="color: #FFD54F; font-weight: 700; margin-bottom: 10px;">📝 일지 기록</h4>';
+                html += '<div style="margin-bottom: 16px;"><h4 style="color: var(--tx-gold); font-weight: 700; margin-bottom: 10px;">📝 일지 기록</h4>';
                 db[key].records.forEach(r => {
                     html += `<div style="background: rgba(255,179,0,0.1); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
-                        <div style="color: #FFB300; font-weight: 700; margin-bottom: 6px;">📍 ${r.loc}</div>
-                        ${r.works && r.works.length > 0 ? '<div style="color: #d4c8b8; font-size: 0.85rem; margin-bottom: 4px;">작업: ' + r.works.join(', ') + '</div>' : ''}
-                        ${r.memo ? '<div style="color: #999; font-size: 0.85rem; margin-bottom: 6px;">' + r.memo.substring(0, 100) + (r.memo.length > 100 ? '...' : '') + '</div>' : ''}
+                        <div style="color: var(--tx-amber); font-weight: 700; margin-bottom: 6px;">📍 ${r.loc}</div>
+                        ${r.works && r.works.length > 0 ? '<div style="color: var(--tx-main); font-size: 0.85rem; margin-bottom: 4px;">작업: ' + r.works.join(', ') + '</div>' : ''}
+                        ${r.memo ? '<div style="color: var(--tx-sub); font-size: 0.85rem; margin-bottom: 6px;">' + r.memo.substring(0, 100) + (r.memo.length > 100 ? '...' : '') + '</div>' : ''}
                         ${r.photos && r.photos.length > 0 ? '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 6px;">' + r.photos.map(p => '<img src="' + p + '" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px;">').join('') + '</div>' : ''}
                     </div>`;
                 });
@@ -3773,11 +4000,11 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             // 방역 기록
             const diseaseRecords = diseaseLogs.filter(log => log.date === key);
             if(diseaseRecords.length > 0) {
-                html += '<div style="margin-bottom: 16px;"><h4 style="color: #FFD54F; font-weight: 700; margin-bottom: 10px;">💊 방역 기록</h4>';
+                html += '<div style="margin-bottom: 16px;"><h4 style="color: var(--tx-gold); font-weight: 700; margin-bottom: 10px;">💊 방역 기록</h4>';
                 diseaseRecords.forEach(d => {
                     html += `<div style="background: rgba(255,179,0,0.1); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
-                        <div style="color: #FFB300; font-weight: 700;">${d.diseaseType}</div>
-                        <div style="color: #d4c8b8; font-size: 0.85rem;">약제: ${d.medicine}</div>
+                        <div style="color: var(--tx-amber); font-weight: 700;">${d.diseaseType}</div>
+                        <div style="color: var(--tx-main); font-size: 0.85rem;">약제: ${d.medicine}</div>
                     </div>`;
                 });
                 html += '</div>';
@@ -3787,11 +4014,11 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             const scheduleDate = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
             const schedules = personalSchedules.filter(s => s.date === scheduleDate);
             if(schedules.length > 0) {
-                html += '<div style="margin-bottom: 16px;"><h4 style="color: #FFD54F; font-weight: 700; margin-bottom: 10px;">📅 개인 일정</h4>';
+                html += '<div style="margin-bottom: 16px;"><h4 style="color: var(--tx-gold); font-weight: 700; margin-bottom: 10px;">📅 개인 일정</h4>';
                 schedules.forEach(s => {
                     html += `<div style="background: rgba(255,179,0,0.1); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
-                        <div style="color: #FFB300; font-weight: 700;">${s.title}</div>
-                        ${s.memo ? '<div style="color: #d4c8b8; font-size: 0.85rem;">' + s.memo + '</div>' : ''}
+                        <div style="color: var(--tx-amber); font-weight: 700;">${s.title}</div>
+                        ${s.memo ? '<div style="color: var(--tx-main); font-size: 0.85rem;">' + s.memo + '</div>' : ''}
                     </div>`;
                 });
                 html += '</div>';
@@ -3799,14 +4026,14 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             
             // 특별 이벤트
             if(db[key]?.isQueen) {
-                html += '<div style="background: rgba(255,179,0,0.15); padding: 12px; border-radius: 8px; border: 2px solid rgba(255,179,0,0.3); margin-bottom: 8px;"><div style="color: #FFD54F; font-weight: 700;">👑 여왕벌 출방 예정일</div></div>';
+                html += '<div style="background: rgba(255,179,0,0.15); padding: 12px; border-radius: 8px; border: 2px solid rgba(255,179,0,0.3); margin-bottom: 8px;"><div style="color: var(--tx-gold); font-weight: 700;">👑 여왕벌 출방 예정일</div></div>';
             }
             if(db[key]?.isDiseaseAlarm) {
                 html += '<div style="background: rgba(239,68,68,0.15); padding: 12px; border-radius: 8px; border: 2px solid rgba(239,68,68,0.3); margin-bottom: 8px;"><div style="color: #ff6b6b; font-weight: 700;">🔔 방역 알림</div></div>';
             }
             
             if(html === '') {
-                html = '<p style="text-align: center; color: #666; padding: 40px 20px; font-style: italic;">이 날짜에는 기록이 없습니다</p>';
+                html = '<p style="text-align: center; color: var(--tx-muted); padding: 40px 20px; font-style: italic;">이 날짜에는 기록이 없습니다</p>';
             }
             
             contentEl.innerHTML = html;
@@ -4003,7 +4230,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             const daySchedules = personalSchedules.filter(s => s.date === scheduleDate);
             
             let html = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">' +
-                       '<h4 class="font-bold" style="color: #FFB300; font-size: 1.1rem;">' + key + ' 기록</h4></div>';
+                       '<h4 class="font-bold" style="color: var(--tx-amber); font-size: 1.1rem;">' + key + ' 기록</h4></div>';
             
             // 일지 내용 (봉장 필터 적용)
             if(data && data.records && data.records.length > 0) {
@@ -4015,29 +4242,29 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     index = data.records.indexOf(record);
                     html += '<div class="record-card" style="border-left: 4px solid #FFB300;">' +
                         '<div class="flex justify-between items-start mb-3">' +
-                            '<p class="font-bold text-lg" style="color: #FFB300;">📍 ' + record.loc + '</p>' +
+                            '<p class="font-bold text-lg" style="color: var(--tx-amber);">📍 ' + record.loc + '</p>' +
                             '<div style="display: flex; gap: 8px; align-items: center;">' +
-                                '<button class="dyn-btn" data-action="editRecord" data-key="' + key + '" data-index="' + index + '" style="background: rgba(59,130,246,0.3); color: #60a5fa; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; border: none; cursor: pointer; font-weight: 700;">수정</button>' +
+                                '<button class="dyn-btn" data-action="editRecord" data-key="' + key + '" data-index="' + index + '" style="background: var(--bg-editbtn); color: var(--tx-editbtn); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; border: none; cursor: pointer; font-weight: 700;" class="dyn-btn-edit">수정</button>' +
                                 '<button class="dyn-btn" data-action="deleteRecord" data-key="' + key + '" data-index="' + index + '" style="background: #dc2626; color: #ffffff; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; border: none; cursor: pointer; font-weight: 800; letter-spacing: 0.5px;">삭제</button>' +
                             '</div>' +
                         '</div>' +
                         '<div class="mb-4">' +
-                            '<p class="text-xs mb-2" style="color: #999;">작업 내용</p>' +
+                            '<p class="text-xs mb-2" style="color: var(--tx-sub);">작업 내용</p>' +
                             '<div class="flex flex-wrap gap-2">' +
                                 record.works.map(function(w) { return '<span class="badge" style="font-size: 0.75rem;">' + w + '</span>'; }).join('') +
                             '</div>' +
                         '</div>' +
                         (record.memo ? '<div class="mb-4">' +
-                            '<p class="text-xs mb-2" style="color: #999;">상세 메모</p>' +
-                            '<div class="text-sm leading-relaxed p-4 rounded-lg" style="background: rgba(0,0,0,0.3); color: #d4c8b8; white-space: pre-wrap;">' + record.memo + '</div>' +
+                            '<p class="text-xs mb-2" style="color: var(--tx-sub);">상세 메모</p>' +
+                            '<div class="text-sm leading-relaxed p-4 rounded-lg" style="background: var(--bg-input); color: var(--tx-main); white-space: pre-wrap;">' + record.memo + '</div>' +
                         '</div>' : '') +
                         (record.photos && record.photos.length > 0 ? '<div class="mb-4">' +
-                            '<p class="text-xs mb-2" style="color: #999;">첨부 사진 (' + record.photos.length + '장)</p>' +
+                            '<p class="text-xs mb-2" style="color: var(--tx-sub);">첨부 사진 (' + record.photos.length + '장)</p>' +
                             '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">' +
                                 record.photos.map(function(p) { return '<img src="' + p + '" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="showPhotoModal(\'' + p + '\')">'; }).join('') +
                             '</div>' +
                         '</div>' : '') +
-                        '<div class="text-xs mt-4 pt-3" style="color: #666; border-top: 1px solid rgba(255,179,0,0.1);">' +
+                        '<div class="text-xs mt-4 pt-3" style="color: var(--tx-muted); border-top: 1px solid rgba(255,179,0,0.1);">' +
                             '기록 시간: ' + (record.timestamp ? new Date(record.timestamp).toLocaleString('ko-KR') : '정보 없음') +
                         '</div>' +
                     '</div>';
@@ -4055,10 +4282,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                         '<div class="flex justify-between items-start mb-2">' +
                             '<div style="flex: 1;">' +
                                 '<div style="font-weight: bold; color: #c084fc; font-size: 1.1rem; margin-bottom: 4px;">' + schedule.title + '</div>' +
-                                (schedule.memo ? '<div style="font-size: 0.85rem; color: #999;">' + schedule.memo + '</div>' : '') +
+                                (schedule.memo ? '<div style="font-size: 0.85rem; color: var(--tx-sub);">' + schedule.memo + '</div>' : '') +
                             '</div>' +
                             '<div style="display: flex; gap: 8px;">' +
-                                '<button class="dyn-btn" data-action="editSchedule" data-index="' + originalIndex + '" style="background: rgba(59,130,246,0.3); color: #60a5fa; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; border: none; cursor: pointer; font-weight: 700;">수정</button>' +
+                                '<button class="dyn-btn" data-action="editSchedule" data-index="' + originalIndex + '" style="background: var(--bg-editbtn); color: var(--tx-editbtn); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; border: none; cursor: pointer; font-weight: 700;" class="dyn-btn-edit">수정</button>' +
                                 '<button class="dyn-btn" data-action="deleteSchedule" data-index="' + originalIndex + '" style="background: #dc2626; color: #ffffff; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; border: none; cursor: pointer; font-weight: 800; letter-spacing: 0.5px;">삭제</button>' +
                             '</div>' +
                         '</div>' +
@@ -4079,23 +4306,23 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                         '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">' +
                             '<div style="flex:1;min-width:0;">' +
                                 '<div style="font-weight:800; color:#f87171; font-size:1rem; margin-bottom:4px;">🛡️ ' + (log.diseaseTypeName || log.diseaseType || '방역') + '</div>' +
-                                '<div style="color:#aaa; font-size:0.85rem; font-weight:600;">📍 ' + (log.location || '') + '</div>' +
+                                '<div style="color:var(--tx-sub); font-size:0.85rem; font-weight:600;">📍 ' + (log.location || '') + '</div>' +
                             '</div>' +
                             '<div style="display:flex; gap:6px; flex-shrink:0; margin-left:8px;">' +
-                                '<button class="dyn-btn" data-action="editDiseaseRecord" data-index="' + logIndex + '" style="background:rgba(59,130,246,0.3);color:#60a5fa;padding:6px 12px;border-radius:6px;font-size:0.8rem;border:none;cursor:pointer;font-weight:700;">수정</button>' +
+                                '<button class="dyn-btn" data-action="editDiseaseRecord" data-index="' + logIndex + '" style="background:var(--bg-editbtn);color:var(--tx-editbtn);padding:6px 12px;border-radius:6px;font-size:0.8rem;border:none;cursor:pointer;font-weight:700;" class="dyn-btn-edit">수정</button>' +
                                 '<button class="dyn-btn" data-action="deleteDiseaseRecord" data-index="' + logIndex + '" style="background:#dc2626;color:#fff;padding:6px 12px;border-radius:6px;font-size:0.8rem;border:none;cursor:pointer;font-weight:700;">삭제</button>' +
                             '</div>' +
                         '</div>' +
-                        (log.medicineName || log.medicine ? '<div style="margin-bottom:6px;"><span style="color:#999;font-size:0.82rem;">약제: </span><span style="color:#d4c8b8;font-size:0.88rem;font-weight:700;">' + (log.medicineName || log.medicine) + '</span></div>' : '') +
-                        (log.method ? '<div style="margin-bottom:6px;"><span style="color:#999;font-size:0.82rem;">처리방법: </span><span style="color:#d4c8b8;font-size:0.85rem;">' + log.method + '</span></div>' : '') +
-                        (log.memo ? '<div style="background:rgba(0,0,0,0.25);padding:8px;border-radius:8px;color:#d4c8b8;font-size:0.85rem;margin-top:6px;white-space:pre-wrap;">' + log.memo + '</div>' : '') +
+                        (log.medicineName || log.medicine ? '<div style="margin-bottom:6px;"><span style="color:var(--tx-sub);font-size:0.82rem;">약제: </span><span style="color:var(--tx-main);font-size:0.88rem;font-weight:700;">' + (log.medicineName || log.medicine) + '</span></div>' : '') +
+                        (log.method ? '<div style="margin-bottom:6px;"><span style="color:var(--tx-sub);font-size:0.82rem;">처리방법: </span><span style="color:var(--tx-main);font-size:0.85rem;">' + log.method + '</span></div>' : '') +
+                        (log.memo ? '<div style="background:var(--bg-input);padding:8px;border-radius:8px;color:var(--tx-main);font-size:0.85rem;margin-top:6px;white-space:pre-wrap;">' + log.memo + '</div>' : '') +
                     '</div>';
                 });
                 html += '</div>';
             }
 
             if((!data || !data.records || data.records.length === 0) && daySchedules.length === 0 && dayDiseaseRecords.length === 0) {
-                html += '<p class="text-center py-20" style="color: #666; font-style: italic;">이 날짜에 기록된 일지 및 일정이 없습니다.</p>';
+                html += '<p class="text-center py-20" style="color: var(--tx-muted); font-style: italic;">이 날짜에 기록된 일지 및 일정이 없습니다.</p>';
             }
             
             list.innerHTML = html;
@@ -4114,22 +4341,22 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             // 수정 UI 표시
             const list = document.getElementById('record-list');
             
-            let html = '<div style="background: rgba(30,25,20,0.9); padding: 20px; border-radius: 12px; border: 2px solid #FFB300;">' +
-                       '<h4 class="font-bold mb-4" style="color: #FFB300; font-size: 1.2rem;">📝 ' + key + ' 기록 수정</h4>' +
+            let html = '<div style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 2px solid #FFB300;">' +
+                       '<h4 class="font-bold mb-4" style="color: var(--tx-amber); font-size: 1.2rem;">📝 ' + key + ' 기록 수정</h4>' +
                        
                        '<div class="mb-4">' +
-                           '<label style="display: block; color: #999; font-size: 0.85rem; margin-bottom: 8px;">봉장 위치</label>' +
-                           '<input type="text" id="edit-loc" value="' + record.loc + '" class="field" style="background: rgba(40,30,25,0.8);" readonly>' +
+                           '<label style="display: block; color: var(--tx-sub); font-size: 0.85rem; margin-bottom: 8px;">봉장 위치</label>' +
+                           '<input type="text" id="edit-loc" value="' + record.loc + '" class="field" style="background: var(--bg-card);" readonly>' +
                        '</div>' +
                        
                        '<div class="mb-4">' +
-                           '<label style="display: block; color: #999; font-size: 0.85rem; margin-bottom: 8px;">작업 내용 (쉼표로 구분)</label>' +
-                           '<input type="text" id="edit-works" value="' + record.works.join(', ') + '" class="field" style="background: rgba(40,30,25,0.8);">' +
+                           '<label style="display: block; color: var(--tx-sub); font-size: 0.85rem; margin-bottom: 8px;">작업 내용 (쉼표로 구분)</label>' +
+                           '<input type="text" id="edit-works" value="' + record.works.join(', ') + '" class="field" style="background: var(--bg-card);">' +
                        '</div>' +
                        
                        '<div class="mb-4">' +
-                           '<label style="display: block; color: #999; font-size: 0.85rem; margin-bottom: 8px;">상세 메모</label>' +
-                           '<textarea id="edit-memo" class="field" style="height: 120px; background: rgba(40,30,25,0.8);">' + (record.memo || '') + '</textarea>' +
+                           '<label style="display: block; color: var(--tx-sub); font-size: 0.85rem; margin-bottom: 8px;">상세 메모</label>' +
+                           '<textarea id="edit-memo" class="field" style="height: 120px; background: var(--bg-card);">' + (record.memo || '') + '</textarea>' +
                        '</div>' +
                        
                        '<div style="display: flex; gap: 10px; margin-top: 20px;">' +
@@ -4240,7 +4467,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 showDayWithSchedule(key);
             } else {
                 document.getElementById('record-list').innerHTML = 
-                    '<p class="text-center py-20" style="color: #666; font-style: italic;">삭제되었습니다.</p>';
+                    '<p class="text-center py-20" style="color: var(--tx-muted); font-style: italic;">삭제되었습니다.</p>';
             }
         }
 
@@ -4256,14 +4483,14 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             var perPanel = document.getElementById('dh-panel-period');
             if(!locBtn) return;
             if(tab === 'loc') {
-                locBtn.style.background = 'rgba(255,179,0,0.3)'; locBtn.style.color = '#FFD54F';
-                perBtn.style.background = 'rgba(40,30,25,0.6)';  perBtn.style.color = '#999';
+                locBtn.style.background = 'rgba(255,179,0,0.3)'; locBtn.style.color = 'var(--tx-gold)';
+                perBtn.style.background = 'var(--bg-card)';  perBtn.style.color = 'var(--tx-sub)';
                 locPanel.style.display = 'block';
                 perPanel.style.display = 'none';
                 renderDiseaseHistory();
             } else {
-                perBtn.style.background = 'rgba(255,179,0,0.3)'; perBtn.style.color = '#FFD54F';
-                locBtn.style.background = 'rgba(40,30,25,0.6)';  locBtn.style.color = '#999';
+                perBtn.style.background = 'rgba(255,179,0,0.3)'; perBtn.style.color = 'var(--tx-gold)';
+                locBtn.style.background = 'var(--bg-card)';  locBtn.style.color = 'var(--tx-sub)';
                 locPanel.style.display = 'none';
                 perPanel.style.display = 'block';
                 // 기본 날짜 설정 (이번달)
@@ -4303,7 +4530,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             var fromEl = document.getElementById('dh-date-from');
             var toEl   = document.getElementById('dh-date-to');
             if(!fromEl || !fromEl.value || !toEl || !toEl.value) {
-                container.innerHTML = '<p class="text-center py-20" style="color:#666; font-style:italic;">기간을 선택하세요.</p>';
+                container.innerHTML = '<p class="text-center py-20" style="color:var(--tx-muted); font-style:italic;">기간을 선택하세요.</p>';
                 return;
             }
             var fromStr = fromEl.value; // yyyy-mm-dd
@@ -4325,7 +4552,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             filtered.sort(function(a, b) { return b.log.dateStr > a.log.dateStr ? 1 : -1; });
 
             if(filtered.length === 0) {
-                container.innerHTML = '<p class="text-center py-20" style="color:#666; font-style:italic;">해당 기간의 방역 기록이 없습니다.</p>';
+                container.innerHTML = '<p class="text-center py-20" style="color:var(--tx-muted); font-style:italic;">해당 기간의 방역 기록이 없습니다.</p>';
                 return;
             }
 
@@ -4338,8 +4565,8 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             var summaryItems = Object.entries(locMap).map(function(e) { return e[0] + ' ' + e[1] + '건'; }).join(' · ');
 
             var html = '<div style="background:rgba(255,179,0,0.1); border:1px solid rgba(255,179,0,0.3); border-radius:10px; padding:12px; margin-bottom:14px;">'
-                + '<div style="color:#FFD54F; font-weight:700; margin-bottom:4px;">📊 조회 결과: ' + filtered.length + '건</div>'
-                + '<div style="color:#999; font-size:0.8rem;">' + summaryItems + '</div></div>';
+                + '<div style="color:var(--tx-gold); font-weight:700; margin-bottom:4px;">📊 조회 결과: ' + filtered.length + '건</div>'
+                + '<div style="color:var(--tx-sub); font-size:0.8rem;">' + summaryItems + '</div></div>';
 
             filtered.forEach(function(f) {
                 var log = f.log;
@@ -4348,16 +4575,16 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 var dateInfo = log.dateStr || '';
                 var locIcon = (log.location || '').includes('이동') ? '🚚' : '📍';
                 var medicineText = log.medicineName || log.medicine || '미기재';
-                html += '<div style="background:rgba(30,25,20,0.9); border:1px solid rgba(255,179,0,0.15); border-left:4px solid #dc2626; border-radius:12px; padding:16px; margin-bottom:12px;">'
+                html += '<div style="background:var(--bg-card); border:1px solid var(--bd-card); border-left:4px solid #dc2626; border-radius:12px; padding:16px; margin-bottom:12px;">'
                     + '<div style="color:#ef4444; font-weight:800; font-size:1rem; margin-bottom:6px;">🦠 ' + diseaseInfo + '</div>'
-                    + '<div style="color:#999; font-size:0.85rem; margin-bottom:8px;">' + locIcon + ' ' + (log.location || '') + ' • ' + dateInfo + '</div>'
-                    + '<div style="font-size:0.85rem; color:#aaa; margin-bottom:4px;">약제 정보</div>'
-                    + '<div style="background:rgba(255,179,0,0.1); border-radius:8px; padding:8px; margin-bottom:8px;">'
-                    + '<span style="color:#FFB300;">💊 ' + medicineText + '</span>'
-                    + (log.detail ? ' · ' + log.detail : '')
-                    + (log.method ? ' · ' + log.method : '') + '</div>'
-                    + (log.memo ? '<div style="color:#aaa; font-size:0.82rem; margin-bottom:8px;">📝 ' + log.memo + '</div>' : '')
-                    + '<div style="color:#555; font-size:0.75rem;">기록: ' + new Date(log.timestamp||log.date).toLocaleString('ko-KR') + '</div>'
+                    + '<div style="color:var(--tx-sub); font-size:0.85rem; margin-bottom:8px;">' + locIcon + ' ' + (log.location || '') + ' • ' + dateInfo + '</div>'
+                    + '<div style="font-size:0.85rem; color:var(--tx-sub); font-weight:700; margin-bottom:4px;">약제 정보</div>'
+                    + '<div style="background:var(--bg-input); border:1px solid var(--bd-card); border-radius:8px; padding:8px; margin-bottom:8px;">'
+                    + '<span style="color:var(--tx-amber);">💊 ' + medicineText + '</span>'
+                    + (log.detail ? '<span style="color:var(--tx-main);"> · ' + log.detail + '</span>' : '')
+                    + (log.method ? '<span style="color:var(--tx-sub);"> · ' + log.method + '</span>' : '') + '</div>'
+                    + (log.memo ? '<div style="background:var(--bg-input); border:1px solid var(--bd-card); border-radius:8px; padding:8px; color:var(--tx-main); font-size:0.82rem; margin-bottom:8px;">📝 ' + log.memo + '</div>' : '')
+                    + '<div style="color:var(--tx-muted); font-size:0.75rem;">기록: ' + new Date(log.timestamp||log.date).toLocaleString('ko-KR') + '</div>'
                     + '</div>';
             });
 
@@ -4369,7 +4596,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             if(!container) return;
             
             if(!diseaseLogs || diseaseLogs.length === 0) {
-                container.innerHTML = '<p class="text-center py-20" style="color: #666; font-style: italic;">방역 기록이 없습니다.</p>';
+                container.innerHTML = '<p class="text-center py-20" style="color: var(--tx-muted); font-style: italic;">방역 기록이 없습니다.</p>';
                 return;
             }
             
@@ -4383,7 +4610,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             }
 
             if(filtered.length === 0) {
-                container.innerHTML = '<p class="text-center py-20" style="color: #666; font-style: italic;">' + 
+                container.innerHTML = '<p class="text-center py-20" style="color: var(--tx-muted); font-style: italic;">' + 
                     (diseaseLocFilter === 'all' ? '방역 기록이 없습니다.' : diseaseLocFilter + ' 방역 기록이 없습니다.') + '</p>';
                 return;
             }
@@ -4405,42 +4632,42 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                         <div class="flex justify-between items-start mb-3">
                             <div>
                                 <p class="font-bold text-lg" style="color: #ef4444;">🦠 ${log.diseaseTypeName || log.diseaseType}</p>
-                                <p class="text-sm mt-1" style="color: #999;">📍 ${log.location} • ${log.dateStr}</p>
+                                <p class="text-sm mt-1" style="color: var(--tx-sub);">📍 ${log.location} • ${log.dateStr}</p>
                             </div>
                             <div style="display: flex; gap: 8px;">
-                                <button class="dyn-btn" data-action="editDiseaseRecord" data-index="${i}" style="background: rgba(59,130,246,0.3); color: #60a5fa; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; border: none; cursor: pointer; font-weight: 700;">수정</button>
+                                <button class="dyn-btn" data-action="editDiseaseRecord" data-index="${i}" style="background: var(--bg-editbtn); color: var(--tx-editbtn); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; border: none; cursor: pointer; font-weight: 700;" class="dyn-btn-edit">수정</button>
                                 <button class="dyn-btn" data-action="deleteDiseaseRecord" data-index="${i}" style="background: #dc2626; color: #ffffff; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; border: none; cursor: pointer; font-weight: 800; letter-spacing: 0.5px;">삭제</button>
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <p class="text-xs mb-2" style="color: #999;">약제 정보</p>
-                            <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
-                                <p style="color: #d4c8b8; font-size: 0.9rem;">
+                            <p class="text-xs mb-2" style="color: var(--tx-sub); font-weight:700;">약제 정보</p>
+                            <div style="background: var(--bg-input); border:1px solid var(--bd-card); padding: 10px; border-radius: 8px;">
+                                <p style="color: var(--tx-main); font-size: 0.9rem;">
                                     💊 ${log.medicineName || log.medicine || '미기재'}
                                     ${log.detail ? ' (' + log.detail + ')' : ''}
                                 </p>
-                                ${log.method ? '<p style="color: #999; font-size: 0.85rem; margin-top: 4px;">처리방법: ' + log.method + '</p>' : ''}
+                                ${log.method ? '<p style="color: var(--tx-sub); font-size: 0.85rem; margin-top: 4px;">처리방법: ' + log.method + '</p>' : ''}
                             </div>
                         </div>
                         
                         ${log.memo ? `
                         <div class="mb-3">
-                            <p class="text-xs mb-2" style="color: #999;">상세 메모</p>
-                            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; color: #d4c8b8; font-size: 0.85rem; white-space: pre-wrap;">${log.memo}</div>
+                            <p class="text-xs mb-2" style="color: var(--tx-sub); font-weight:700;">상세 메모</p>
+                            <div style="background: var(--bg-input); border:1px solid var(--bd-card); padding: 10px; border-radius: 8px; color: var(--tx-main); font-size: 0.85rem; white-space: pre-wrap;">${log.memo}</div>
                         </div>
                         ` : ''}
                         
                         ${log.photos && log.photos.length > 0 ? `
                         <div class="mb-3">
-                            <p class="text-xs mb-2" style="color: #999;">첨부 사진 (${log.photos.length}장)</p>
+                            <p class="text-xs mb-2" style="color: var(--tx-sub);">첨부 사진 (${log.photos.length}장)</p>
                             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
                                 ${log.photos.map(p => '<img src="' + p + '" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="showPhotoModal(\'' + p + '\')">').join('')}
                             </div>
                         </div>
                         ` : ''}
                         
-                        <div class="text-xs mt-3 pt-3" style="color: #666; border-top: 1px solid rgba(255,179,0,0.1);">
+                        <div class="text-xs mt-3 pt-3" style="color: var(--tx-muted); border-top: 1px solid rgba(255,179,0,0.1);">
                             기록 시간: ${dateStr}
                         </div>
                     </div>
@@ -4470,45 +4697,45 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             });
             
             let html = `
-                <div style="background: rgba(30,25,20,0.9); padding: 20px; border-radius: 12px; border: 2px solid #ef4444;">
+                <div style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 2px solid #ef4444;">
                     <h4 class="font-bold mb-4" style="color: #ef4444; font-size: 1.2rem;">📝 방역일지 수정</h4>
                     
                     <div class="mb-4">
-                        <label style="display: block; color: #999; font-size: 0.85rem; margin-bottom: 8px;">기록 날짜</label>
-                        <input type="text" value="${log.dateStr || ''}" class="field" style="background: rgba(40,30,25,0.8);" readonly>
+                        <label style="display: block; color: var(--tx-sub); font-size: 0.85rem; margin-bottom: 8px;">기록 날짜</label>
+                        <input type="text" value="${log.dateStr || ''}" class="field" style="background: var(--bg-card);" readonly>
                     </div>
                     
                     <div class="mb-4">
-                        <label style="display: block; color: #999; font-size: 0.85rem; margin-bottom: 8px;">봉장 위치</label>
-                        <input type="text" value="${log.location || ''}" class="field" style="background: rgba(40,30,25,0.8);" readonly>
+                        <label style="display: block; color: var(--tx-sub); font-size: 0.85rem; margin-bottom: 8px;">봉장 위치</label>
+                        <input type="text" value="${log.location || ''}" class="field" style="background: var(--bg-card);" readonly>
                     </div>
                     
                     <div class="mb-4">
-                        <label style="display: block; color: #999; font-size: 0.85rem; margin-bottom: 8px;">질병 종류</label>
-                        <input type="text" value="${log.diseaseTypeName || log.diseaseType}" class="field" style="background: rgba(40,30,25,0.8);" readonly>
+                        <label style="display: block; color: var(--tx-sub); font-size: 0.85rem; margin-bottom: 8px;">질병 종류</label>
+                        <input type="text" value="${log.diseaseTypeName || log.diseaseType}" class="field" style="background: var(--bg-card);" readonly>
                     </div>
                     
                     <div class="mb-4">
-                        <label style="display: block; color: #999; font-size: 0.85rem; margin-bottom: 8px;">약제</label>
-                        <input type="text" value="${log.medicineName || log.medicine || '미기재'}" class="field" style="background: rgba(40,30,25,0.8);" readonly>
+                        <label style="display: block; color: var(--tx-sub); font-size: 0.85rem; margin-bottom: 8px;">약제</label>
+                        <input type="text" value="${log.medicineName || log.medicine || '미기재'}" class="field" style="background: var(--bg-card);" readonly>
                     </div>
                     
                     <div class="mb-4">
-                        <label style="display: block; color: #999; font-size: 0.85rem; margin-bottom: 8px;">약품명 상세 (수정 가능)</label>
-                        <input type="text" id="edit-disease-detail" value="${log.detail || ''}" class="field" style="background: rgba(40,30,25,0.8);" placeholder="예: 왕스, 85%, 1G 등">
+                        <label style="display: block; color: var(--tx-sub); font-size: 0.85rem; margin-bottom: 8px;">약품명 상세 (수정 가능)</label>
+                        <input type="text" id="edit-disease-detail" value="${log.detail || ''}" class="field" style="background: var(--bg-card);" placeholder="예: 왕스, 85%, 1G 등">
                     </div>
                     
                     <div class="mb-4">
-                        <label style="display: block; color: #999; font-size: 0.85rem; margin-bottom: 8px;">처리 방법 (수정 가능)</label>
-                        <input type="text" id="edit-disease-method" value="${log.method || ''}" class="field" style="background: rgba(40,30,25,0.8);" placeholder="예: 분무, 연무, 투입 등">
+                        <label style="display: block; color: var(--tx-sub); font-size: 0.85rem; margin-bottom: 8px;">처리 방법 (수정 가능)</label>
+                        <input type="text" id="edit-disease-method" value="${log.method || ''}" class="field" style="background: var(--bg-card);" placeholder="예: 분무, 연무, 투입 등">
                     </div>
                     
                     <div class="mb-4">
-                        <label style="display: block; color: #999; font-size: 0.85rem; margin-bottom: 8px;">상세 메모 (수정 가능)</label>
-                        <textarea id="edit-disease-memo" class="field" style="height: 120px; background: rgba(40,30,25,0.8);" placeholder="상세 메모를 입력하세요...">${log.memo || ''}</textarea>
+                        <label style="display: block; color: var(--tx-sub); font-size: 0.85rem; margin-bottom: 8px;">상세 메모 (수정 가능)</label>
+                        <textarea id="edit-disease-memo" class="field" style="height: 120px; background: var(--bg-card);" placeholder="상세 메모를 입력하세요...">${log.memo || ''}</textarea>
                     </div>
                     
-                    <div class="text-xs mb-4 pb-3" style="color: #666; border-bottom: 1px solid rgba(255,179,0,0.1);">
+                    <div class="text-xs mb-4 pb-3" style="color: var(--tx-muted); border-bottom: 1px solid rgba(255,179,0,0.1);">
                         기록 시간: ${dateStr}
                     </div>
                     
@@ -4646,13 +4873,13 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             const modal = document.getElementById('acc-edit-modal');
             document.getElementById('acc-edit-modal-body').innerHTML =
                 '<h4 style="color:'+typeColor+'; font-weight:900; font-size:1.1rem; margin-bottom:16px;">📝 가계부 수정 <span style="font-size:0.8rem; background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:8px;">'+typeText+'</span></h4>'
-                + '<div style="color:#999; font-size:0.78rem; margin-bottom:6px;">품목명 · 수량 · 단가</div>'
+                + '<div style="color:var(--tx-sub); font-size:0.78rem; margin-bottom:6px;">품목명 · 수량 · 단가</div>'
                 + linesHtml
-                + (log.customerName ? '<div style="margin-top:10px; padding:8px 12px; background:rgba(0,0,0,0.3); border-radius:8px; color:#94a3b8; font-size:0.85rem;">👤 '
+                + (log.customerName ? '<div style="margin-top:10px; padding:8px 12px; background:var(--bg-input); border-radius:8px; color:#94a3b8; font-size:0.85rem;">👤 '
                     +log.customerName+(log.customerPhone?' · '+log.customerPhone:'')+'</div>' : '')
                 + '<div style="display:flex; gap:8px; margin-top:18px;">'
                 + '<button onclick="saveAccountEdit('+index+','+lineCount+')" style="flex:1; background:linear-gradient(135deg,#4ade80,#16a34a); color:#fff; padding:12px; border-radius:10px; font-weight:700; border:none; cursor:pointer; min-height:44px;">✅ 저장</button>'
-                + '<button onclick="closeAccEditModal()" style="flex:1; background:rgba(100,100,100,0.4); color:#ccc; padding:12px; border-radius:10px; font-weight:700; border:none; cursor:pointer; min-height:44px;">취소</button>'
+                + '<button onclick="closeAccEditModal()" style="flex:1; background:var(--bg-input); color:var(--tx-sub); padding:12px; border-radius:10px; font-weight:700; border:none; cursor:pointer; min-height:44px;">취소</button>'
                 + '</div>';
 
             modal.style.display = 'flex';
@@ -4951,12 +5178,12 @@ function renderAMks(){
     var popDiv=document.createElement('div');
     popDiv.style.cssText='background:#1e1410;border:2px solid '+col+';border-radius:10px;padding:10px 13px;min-width:175px;';
     popDiv.innerHTML='<b style="color:'+col+';">'+(mov?'🚚 ':'🐝 ')+getDisplayName(name)+'</b>'
-      +(d.address?'<div style="color:#aaa;font-size:.78rem;margin-top:4px;">📍 '+d.address+'</div>':'')
-      +(d.memo?'<div style="color:#666;font-size:.76rem;margin-top:2px;">📝 '+d.memo+'</div>':'');
+      +(d.address?'<div style="color:var(--tx-sub);font-size:.78rem;margin-top:4px;">📍 '+d.address+'</div>':'')
+      +(d.memo?'<div style="color:var(--tx-muted);font-size:.76rem;margin-top:2px;">📝 '+d.memo+'</div>':'');
     var pbtnRow=document.createElement('div');
     pbtnRow.style.cssText='display:flex;gap:6px;margin-top:8px;';
     var pbtnEdit=document.createElement('button');
-    pbtnEdit.style.cssText='flex:1;padding:6px;background:rgba(255,179,0,.18);color:#FFD54F;border:none;border-radius:7px;font-size:.75rem;font-weight:700;cursor:pointer;';
+    pbtnEdit.style.cssText='flex:1;padding:6px;background:rgba(255,179,0,.18);color:var(--tx-gold);border:none;border-radius:7px;font-size:.75rem;font-weight:700;cursor:pointer;';
     pbtnEdit.textContent='✏️ 수정';
     pbtnEdit.onclick=(function(n){return function(){popEdit(n);};})(name);
     var pbtnDel=document.createElement('button');
@@ -4989,7 +5216,7 @@ var regListOpen = false;
 function renderAList(){
   NAMES=getNames();
   var el=document.getElementById('alist');
-  if(!NAMES.length){el.innerHTML='<div style="text-align:center;color:#444;padding:24px;">활성화된 봉장이 없습니다</div>';return;}
+  if(!NAMES.length){el.innerHTML='<div style="text-align:center;color:var(--tx-sub);padding:24px;">활성화된 봉장이 없습니다</div>';return;}
   el.innerHTML='';
 
   var unreg = NAMES.filter(function(n){return !AL[n]||!AL[n].lat;});
@@ -5007,7 +5234,7 @@ function renderAList(){
     head.className='ac-head';
     var info=document.createElement('div'); info.style.flex='1';
     info.innerHTML='<div style="font-weight:900;font-size:.92rem">'+(mov?'🚚 ':'🐝 ')+name+'</div>'
-      +'<div style="color:#444;font-size:.78rem;margin-top:2px">위치 미등록</div>';
+      +'<div style="color:var(--tx-sub);font-size:.78rem;margin-top:2px">위치 미등록</div>';
     var btns=document.createElement('div'); btns.className='ac-btns';
     var editBtn=document.createElement('button'); editBtn.className='btn bg';
     editBtn.textContent='+ 등록';
@@ -5023,7 +5250,7 @@ function renderAList(){
   if(reg.length>0){
     var toggleBtn=document.createElement('button');
     toggleBtn.id='reg-toggle-btn';
-    toggleBtn.style.cssText='width:100%;padding:13px;background:rgba(255,179,0,.1);color:#FFD54F;border:1px solid rgba(255,179,0,.35);border-radius:14px;font-size:.92rem;font-weight:800;cursor:pointer;touch-action:manipulation;margin-bottom:6px;letter-spacing:-0.3px;';
+    toggleBtn.style.cssText='width:100%;padding:13px;background:rgba(255,179,0,.1);color:var(--tx-gold);border:1px solid rgba(255,179,0,.35);border-radius:14px;font-size:.92rem;font-weight:800;cursor:pointer;touch-action:manipulation;margin-bottom:6px;letter-spacing:-0.3px;';
     toggleBtn.textContent=(regListOpen?'▲ ':'▼ ')+'등록된 봉장 보기 ('+reg.length+'개)';
     toggleBtn.onclick=function(){
       regListOpen=!regListOpen;
@@ -5049,7 +5276,7 @@ function renderAList(){
 
         var btns=document.createElement('div'); btns.className='ac-btns';
         var badge=document.createElement('span');
-        badge.style.cssText='padding:2px 7px;background:'+(d.isPublic?'rgba(74,222,128,.12)':'rgba(100,100,100,.15)')+';color:'+(d.isPublic?'#4ade80':'#555')+';border-radius:5px;font-size:.7rem;';
+        badge.style.cssText='padding:2px 7px;background:'+(d.isPublic?'var(--bg-green)':'rgba(100,100,100,.15)')+';color:'+(d.isPublic?'#4ade80':'#555')+';border-radius:5px;font-size:.7rem;';
         badge.textContent=d.isPublic?'공개':'비공개';
         btns.appendChild(badge);
         var editBtn=document.createElement('button'); editBtn.className='btn bg';
@@ -5076,7 +5303,7 @@ function renderAList(){
 
   // 미등록도 없고 등록도 없으면
   if(!unreg.length && !reg.length){
-    el.innerHTML='<div style="text-align:center;color:#444;padding:24px;">활성화된 봉장이 없습니다</div>';
+    el.innerHTML='<div style="text-align:center;color:var(--tx-sub);padding:24px;">활성화된 봉장이 없습니다</div>';
   }
 }
 
@@ -5087,6 +5314,9 @@ function buildFormEl(i, name, d){
 
   var gpsBtn=document.createElement('button'); gpsBtn.className='fbig fgps';
   gpsBtn.textContent='📡 현재 GPS 위치로 등록';
+  if(document.body.classList.contains('light-mode')){
+    gpsBtn.style.cssText='background:#2563eb !important;color:#ffffff !important;border:1px solid #1d4ed8 !important;';
+  }
   gpsBtn.onclick=(function(idx){return function(){gpsToForm(idx);};})(i);
   form.appendChild(gpsBtn);
 
@@ -5128,7 +5358,7 @@ function buildFormEl(i, name, d){
 
   var pub = has ? !!(d&&d.isPublic) : true; // 신규 등록 기본값: 공개
   var tw=document.createElement('div'); tw.className='tw';
-  tw.innerHTML='<span style="flex:1;font-size:.88rem;color:#ccc">🌐 위치 공개</span>'
+  tw.innerHTML='<span style="flex:1;font-size:.88rem;color:var(--tx-sub)">🌐 위치 공개</span>'
     +'<div id="tt-'+i+'" onclick="togglePub('+i+')" class="tt" style="background:'+(pub?'#16a34a':'#374151')+'">'
     +'<div id="th-'+i+'" class="th" style="transform:'+(pub?'translateX(22px)':'translateX(0)')+'"></div></div>'
     +'<span id="tl-'+i+'" style="color:'+(pub?'var(--green)':'#555')+';font-size:.8rem;font-weight:700">'+(pub?'공개':'비공개')+'</span>';
@@ -5399,7 +5629,7 @@ function getUserInfo(){
             customers.sort(function(a, b) { return b.totalAmount - a.totalAmount; });
 
             if(customers.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:40px; color:#666; font-style:italic;">'
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--tx-muted); font-style:italic;">'
                     + (searchVal ? '검색 결과가 없습니다.' : '수입 기록에 고객 정보를 입력하면 자동으로 표시됩니다.<br><br>💡 가계부 → 기록하기 → 수입 탭에서<br>고객 정보를 입력하세요.') + '</div>';
                 return;
             }
@@ -5409,24 +5639,24 @@ function getUserInfo(){
 
             let html = '<div style="display:flex; gap:10px; margin-bottom:16px;">'
                 + '<div style="flex:1; background:rgba(96,165,250,0.15); border-radius:10px; padding:12px; text-align:center;">'
-                + '<div style="color:#60a5fa; font-size:0.75rem; margin-bottom:4px;">👥 총 고객수</div>'
-                + '<div style="color:#93c5fd; font-size:1.3rem; font-weight:900;">' + totalCustomers + '명</div></div>'
-                + '<div style="flex:1; background:rgba(74,222,128,0.15); border-radius:10px; padding:12px; text-align:center;">'
-                + '<div style="color:#4ade80; font-size:0.75rem; margin-bottom:4px;">💰 총 매출</div>'
+                + '<div style="color:var(--tx-editbtn); font-size:0.75rem; margin-bottom:4px;">👥 총 고객수</div>'
+                + '<div style="color:var(--tx-editbtn); font-size:1.3rem; font-weight:900;">' + totalCustomers + '명</div></div>'
+                + '<div style="flex:1; background:var(--bg-green); border-radius:10px; padding:12px; text-align:center;">'
+                + '<div style="color:var(--tx-green); font-size:0.75rem; margin-bottom:4px;">💰 총 매출</div>'
                 + '<div style="color:#86efac; font-size:1.1rem; font-weight:900;">' + totalSales.toLocaleString() + '원</div></div>'
                 + '</div>';
 
             customers.forEach(function(cust) {
                 const uniqueItems = [...new Set(cust.items)].slice(0, 3).join(', ');
                 const lastD = cust.lastDate ? cust.lastDate.replace(/-/g, '.') : '';
-                html += '<div style="background:rgba(30,25,20,0.8); border:1px solid rgba(96,165,250,0.2); border-radius:12px; padding:16px; margin-bottom:10px;">'
+                html += '<div style="background:var(--bg-card); border:1px solid rgba(96,165,250,0.2); border-radius:12px; padding:16px; margin-bottom:10px;">'
                     + '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">'
                     + '<div>'
                     + '<div style="font-size:1rem; font-weight:800; color:#e2e8f0; margin-bottom:4px;">👤 ' + cust.name + '</div>'
                     + (cust.phone ? '<div style="font-size:0.85rem; color:#94a3b8;">📞 ' + cust.phone + '</div>' : '')
                     + '</div>'
                     + '<div style="text-align:right;">'
-                    + '<div style="color:#4ade80; font-weight:900; font-size:1rem;">' + cust.totalAmount.toLocaleString() + '원</div>'
+                    + '<div style="color:var(--tx-green); font-weight:900; font-size:1rem;">' + cust.totalAmount.toLocaleString() + '원</div>'
                     + '<div style="color:#64748b; font-size:0.75rem;">' + cust.count + '회 거래</div>'
                     + '</div></div>'
                     + (uniqueItems ? '<div style="font-size:0.78rem; color:#94a3b8; margin-bottom:4px;">🏷️ ' + uniqueItems + (cust.items.length > 3 ? ' 외' : '') + '</div>' : '')
@@ -5837,9 +6067,9 @@ function getUserInfo(){
             var c = document.getElementById('work-items-list');
             if(!c) return;
             c.innerHTML = items.map(function(item, idx) {
-                return '<div style="display:flex;align-items:center;gap:8px;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px;margin-bottom:6px;">' +
-                    '<span style="flex:1;color:#d4c8b8;font-size:0.9rem;">' + item + '</span>' +
-                    '<button onclick="editWorkItem(' + idx + ')" style="background:rgba(59,130,246,0.3);color:#60a5fa;padding:5px 10px;border-radius:6px;border:none;cursor:pointer;font-size:0.8rem;">수정</button>' +
+                return '<div style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg-input);border-radius:8px;margin-bottom:6px;">' +
+                    '<span style="flex:1;color:var(--tx-main);font-size:0.9rem;">' + item + '</span>' +
+                    '<button onclick="editWorkItem(' + idx + ')" style="background:var(--bg-editbtn);color:var(--tx-editbtn);padding:5px 10px;border-radius:6px;border:none;cursor:pointer;font-size:0.8rem;" class="dyn-btn-edit">수정</button>' +
                     '<button onclick="deleteWorkItem(' + idx + ')" style="background:#dc2626;color:#ffffff;padding:5px 10px;border-radius:6px;border:none;cursor:pointer;font-size:0.8rem;font-weight:700;">삭제</button>' +
                 '</div>';
             }).join('');
@@ -5851,9 +6081,9 @@ function getUserInfo(){
             if(!c) return;
             c.innerHTML = diseases.map(function(d, idx) {
                 var isDefault = DEFAULT_DISEASES.some(function(dd) { return dd.value === d.value; });
-                return '<div style="display:flex;align-items:center;gap:8px;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px;margin-bottom:6px;">' +
-                    '<span style="flex:1;color:#d4c8b8;font-size:0.9rem;">' + d.name + (isDefault ? ' <span style="color:#666;font-size:0.75rem;">(기본)</span>' : '') + '</span>' +
-                    '<button onclick="editDiseaseItem(' + idx + ')" style="background:rgba(59,130,246,0.3);color:#60a5fa;padding:5px 10px;border-radius:6px;border:none;cursor:pointer;font-size:0.8rem;">수정</button>' +
+                return '<div style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg-input);border-radius:8px;margin-bottom:6px;">' +
+                    '<span style="flex:1;color:var(--tx-main);font-size:0.9rem;">' + d.name + (isDefault ? ' <span style="color:var(--tx-muted);font-size:0.75rem;">(기본)</span>' : '') + '</span>' +
+                    '<button onclick="editDiseaseItem(' + idx + ')" style="background:var(--bg-editbtn);color:var(--tx-editbtn);padding:5px 10px;border-radius:6px;border:none;cursor:pointer;font-size:0.8rem;" class="dyn-btn-edit">수정</button>' +
                     (!isDefault ? '<button onclick="deleteDiseaseItem(' + idx + ')" style="background:#dc2626;color:#ffffff;padding:5px 10px;border-radius:6px;border:none;cursor:pointer;font-size:0.8rem;font-weight:700;">삭제</button>' : '') +
                 '</div>';
             }).join('');
@@ -5870,12 +6100,12 @@ function getUserInfo(){
                 var meds = medicines[d.value] || [];
                 html += '<div style="margin-bottom:18px;border:1px solid rgba(255,213,79,0.15);border-radius:10px;overflow:hidden;">' +
                     '<div style="background:rgba(255,179,0,0.1);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">' +
-                        '<span style="color:#FFD54F;font-size:0.95rem;font-weight:900;">🦠 ' + d.name + '</span>' +
-                        '<button onclick="addMedicineToDisease(\'' + d.value + '\')" style="background:rgba(74,222,128,0.25);color:#4ade80;padding:5px 12px;border-radius:8px;border:none;cursor:pointer;font-size:0.8rem;font-weight:700;">+ 약제추가</button>' +
+                        '<span style="color:var(--tx-gold);font-size:0.95rem;font-weight:900;">🦠 ' + d.name + '</span>' +
+                        '<button onclick="addMedicineToDisease(\'' + d.value + '\')" style="background:var(--bg-green);color:var(--tx-green);padding:5px 12px;border-radius:8px;border:none;cursor:pointer;font-size:0.8rem;font-weight:700;">+ 약제추가</button>' +
                     '</div>';
 
                 if(meds.length === 0) {
-                    html += '<div style="padding:10px 14px;color:#666;font-size:0.85rem;">등록된 약제 없음</div>';
+                    html += '<div style="padding:10px 14px;color:var(--tx-muted);font-size:0.85rem;">등록된 약제 없음</div>';
                 } else {
                     meds.forEach(function(med, idx) {
                         var medOpts = opts[d.value] || {};
@@ -5886,37 +6116,37 @@ function getUserInfo(){
                         html += '<div style="padding:10px 14px;border-top:1px solid rgba(255,213,79,0.08);">' +
                             // 약제명 행
                             '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-                                '<span style="flex:1;color:#e8e3d8;font-size:0.92rem;font-weight:700;">💊 ' + med + '</span>' +
-                                '<button onclick="editMedicineItem(\'' + d.value + '\',' + idx + ')" style="background:rgba(59,130,246,0.3);color:#60a5fa;padding:5px 10px;border-radius:6px;border:none;cursor:pointer;font-size:0.75rem;">수정</button>' +
+                                '<span style="flex:1;color:var(--tx-main);font-size:0.92rem;font-weight:700;">💊 ' + med + '</span>' +
+                                '<button onclick="editMedicineItem(\'' + d.value + '\',' + idx + ')" style="background:var(--bg-editbtn);color:var(--tx-editbtn);padding:5px 10px;border-radius:6px;border:none;cursor:pointer;font-size:0.75rem;">수정</button>' +
                                 '<button onclick="deleteMedicineItem(\'' + d.value + '\',' + idx + ')" style="background:rgba(239,68,68,0.3);color:#ff6b6b;padding:5px 10px;border-radius:6px;border:none;cursor:pointer;font-size:0.75rem;">삭제</button>' +
                             '</div>';
 
                         // 약품명 상세 (옥시테트라사이클린 포함 모든 약제 - 있는 경우만)
                         if(!isOxitet && details.length > 0) {
                             html += '<div style="margin-left:12px;margin-bottom:6px;">' +
-                                '<div style="color:#aaa;font-size:0.75rem;margin-bottom:4px;">📋 약품명 상세</div>' +
+                                '<div style="color:var(--tx-sub);font-size:0.75rem;margin-bottom:4px;">📋 약품명 상세</div>' +
                                 details.map(function(det, di) {
                                     return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">' +
-                                        '<span style="flex:1;color:#c4b8a8;font-size:0.82rem;padding:4px 8px;background:rgba(0,0,0,0.2);border-radius:4px;">' + det + '</span>' +
-                                        '<button onclick="editMedDetail(\'' + d.value + '\',\'' + med + '\',' + di + ')" style="background:rgba(59,130,246,0.2);color:#93c5fd;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;font-size:0.72rem;">수정</button>' +
+                                        '<span style="flex:1;color:#c4b8a8;font-size:0.82rem;padding:4px 8px;background:var(--bg-input);border-radius:4px;">' + det + '</span>' +
+                                        '<button onclick="editMedDetail(\'' + d.value + '\',\'' + med + '\',' + di + ')" style="background:var(--bg-editbtn);color:var(--tx-editbtn);padding:3px 8px;border-radius:4px;border:none;cursor:pointer;font-size:0.72rem;">수정</button>' +
                                         '<button onclick="deleteMedDetail(\'' + d.value + '\',\'' + med + '\',' + di + ')" style="background:rgba(239,68,68,0.2);color:#fca5a5;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;font-size:0.72rem;">삭제</button>' +
                                     '</div>';
                                 }).join('') +
-                                '<button onclick="addMedDetail(\'' + d.value + '\',\'' + med + '\')" style="font-size:0.75rem;color:#93c5fd;background:rgba(59,130,246,0.15);border:none;border-radius:4px;padding:4px 10px;cursor:pointer;margin-top:2px;">+ 상세 추가</button>' +
+                                '<button onclick="addMedDetail(\'' + d.value + '\',\'' + med + '\')" style="font-size:0.75rem;color:var(--tx-editbtn);background:var(--bg-editbtn);border:none;border-radius:4px;padding:4px 10px;cursor:pointer;margin-top:2px;">+ 상세 추가</button>' +
                             '</div>';
                         }
 
                         // 처리방법
                         html += '<div style="margin-left:12px;">' +
-                            '<div style="color:#aaa;font-size:0.75rem;margin-bottom:4px;">⚙️ 처리방법</div>' +
+                            '<div style="color:var(--tx-sub);font-size:0.75rem;margin-bottom:4px;">⚙️ 처리방법</div>' +
                             methods.map(function(mth, mi) {
                                 return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">' +
-                                    '<span style="flex:1;color:#c4b8a8;font-size:0.82rem;padding:4px 8px;background:rgba(0,0,0,0.2);border-radius:4px;">' + mth + '</span>' +
-                                    '<button onclick="editMedMethod(\'' + d.value + '\',\'' + med + '\',' + mi + ')" style="background:rgba(59,130,246,0.2);color:#93c5fd;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;font-size:0.72rem;">수정</button>' +
+                                    '<span style="flex:1;color:#c4b8a8;font-size:0.82rem;padding:4px 8px;background:var(--bg-input);border-radius:4px;">' + mth + '</span>' +
+                                    '<button onclick="editMedMethod(\'' + d.value + '\',\'' + med + '\',' + mi + ')" style="background:var(--bg-editbtn);color:var(--tx-editbtn);padding:3px 8px;border-radius:4px;border:none;cursor:pointer;font-size:0.72rem;">수정</button>' +
                                     '<button onclick="deleteMedMethod(\'' + d.value + '\',\'' + med + '\',' + mi + ')" style="background:rgba(239,68,68,0.2);color:#fca5a5;padding:3px 8px;border-radius:4px;border:none;cursor:pointer;font-size:0.72rem;">삭제</button>' +
                                 '</div>';
                             }).join('') +
-                            '<button onclick="addMedMethod(\'' + d.value + '\',\'' + med + '\')" style="font-size:0.75rem;color:#86efac;background:rgba(74,222,128,0.15);border:none;border-radius:4px;padding:4px 10px;cursor:pointer;margin-top:2px;">+ 처리방법 추가</button>' +
+                            '<button onclick="addMedMethod(\'' + d.value + '\',\'' + med + '\')" style="font-size:0.75rem;color:#86efac;background:var(--bg-green);border:none;border-radius:4px;padding:4px 10px;cursor:pointer;margin-top:2px;">+ 처리방법 추가</button>' +
                         '</div>';
 
                         html += '</div>'; // 약제 항목 끝
@@ -5934,7 +6164,7 @@ function getUserInfo(){
             if(!c) return;
             c.innerHTML = days.map(function(d, i) {
                 return '<div style="display:inline-flex;align-items:center;background:rgba(255,179,0,0.15);border-radius:20px;padding:6px 12px;gap:6px;">' +
-                    '<span style="color:#e8e3d8;font-size:0.9rem;">' + d + '일 뒤</span>' +
+                    '<span style="color:var(--tx-main);font-size:0.9rem;">' + d + '일 뒤</span>' +
                     '<button onclick="delAlarmDay(' + i + ')" style="background:rgba(185,28,28,0.5);color:#ff6b6b;border:none;border-radius:50%;width:20px;height:20px;font-size:0.75rem;cursor:pointer;line-height:20px;padding:0;">✕</button>' +
                 '</div>';
             }).join('');
@@ -6221,22 +6451,22 @@ function getUserInfo(){
             var cats = customCategories[inout] || {};
             var html = '';
             Object.keys(cats).forEach(function(cat) {
-                html += '<div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:12px;margin-bottom:10px;">' +
+                html += '<div style="background:var(--bg-input);border-radius:10px;padding:12px;margin-bottom:10px;">' +
                     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
-                        '<span style="color:#FFD54F;font-weight:700;font-size:0.95rem;">📂 ' + cat + '</span>' +
+                        '<span style="color:var(--tx-gold);font-weight:700;font-size:0.95rem;">📂 ' + cat + '</span>' +
                         '<button class="dyn-btn" data-action="delAccCategory" data-inout="' + inout + '" data-cat="' + cat + '" style="background:rgba(185,28,28,0.5);color:#ff6b6b;border:none;border-radius:6px;padding:3px 10px;font-size:0.75rem;cursor:pointer;">삭제</button>' +
                     '</div>' +
                     '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">' +
                         cats[cat].map(function(sub, si) {
                             return '<div style="display:inline-flex;align-items:center;background:rgba(255,179,0,0.1);border-radius:14px;padding:4px 10px;gap:5px;">' +
-                                '<span style="color:#e8e3d8;font-size:0.85rem;">' + sub + '</span>' +
+                                '<span style="color:var(--tx-main);font-size:0.85rem;">' + sub + '</span>' +
                                 '<button class="dyn-btn" data-action="delAccSubItem" data-inout="' + inout + '" data-cat="' + cat + '" data-index="' + si + '" style="background:rgba(185,28,28,0.5);color:#ff6b6b;border:none;border-radius:50%;width:18px;height:18px;font-size:0.7rem;cursor:pointer;line-height:18px;padding:0;">✕</button>' +
                             '</div>';
                         }).join('') +
                     '</div>' +
                     '<div style="display:flex;gap:6px;">' +
-                        '<input type="text" id="sub-input-' + inout + '-' + cat + '" placeholder="세부항목 추가" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,179,0,0.2);border-radius:8px;padding:6px 10px;color:#e8e3d8;font-size:0.85rem;">' +
-                        '<button onclick="addAccSubItem(\'' + inout + '\',\'' + cat + '\')" style="background:rgba(255,179,0,0.3);color:#FFD54F;border:none;border-radius:8px;padding:6px 12px;font-size:0.82rem;cursor:pointer;font-weight:700;">추가</button>' +
+                        '<input type="text" id="sub-input-' + inout + '-' + cat + '" placeholder="세부항목 추가" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,179,0,0.2);border-radius:8px;padding:6px 10px;color:var(--tx-main);font-size:0.85rem;">' +
+                        '<button onclick="addAccSubItem(\'' + inout + '\',\'' + cat + '\')" style="background:rgba(255,179,0,0.3);color:var(--tx-gold);border:none;border-radius:8px;padding:6px 12px;font-size:0.82rem;cursor:pointer;font-weight:700;">추가</button>' +
                     '</div>' +
                 '</div>';
             });
@@ -6276,11 +6506,11 @@ function getUserInfo(){
             overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;';
             overlay.innerHTML =
                 '<div style="background:#2a1f14;border-radius:16px;padding:24px;width:85%;max-width:320px;border:1px solid rgba(255,179,0,0.2);">' +
-                    '<h3 style="color:#FFD54F;font-weight:bold;margin-bottom:14px;font-size:1.1rem;">' + title + '</h3>' +
-                    '<input id="custom-input-field" type="text" placeholder="' + placeholder + '" value="' + (defaultVal||'') + '" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,179,0,0.3);border-radius:8px;padding:10px 12px;color:#e8e3d8;font-size:1rem;margin-bottom:14px;box-sizing:border-box;">' +
+                    '<h3 style="color:var(--tx-gold);font-weight:bold;margin-bottom:14px;font-size:1.1rem;">' + title + '</h3>' +
+                    '<input id="custom-input-field" type="text" placeholder="' + placeholder + '" value="' + (defaultVal||'') + '" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,179,0,0.3);border-radius:8px;padding:10px 12px;color:var(--tx-main);font-size:1rem;margin-bottom:14px;box-sizing:border-box;">' +
                     '<div style="display:flex;gap:8px;">' +
-                        '<button id="custom-input-cancel" style="flex:1;padding:10px;background:rgba(100,100,100,0.3);color:#999;border-radius:8px;border:none;cursor:pointer;font-size:0.9rem;">취소</button>' +
-                        '<button id="custom-input-ok" style="flex:1;padding:10px;background:rgba(255,179,0,0.3);color:#FFB300;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:0.9rem;">확인</button>' +
+                        '<button id="custom-input-cancel" style="flex:1;padding:10px;background:rgba(100,100,100,0.3);color:var(--tx-sub);border-radius:8px;border:none;cursor:pointer;font-size:0.9rem;">취소</button>' +
+                        '<button id="custom-input-ok" style="flex:1;padding:10px;background:rgba(255,179,0,0.3);color:var(--tx-amber);border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:0.9rem;">확인</button>' +
                     '</div>' +
                 '</div>';
             document.body.appendChild(overlay);
@@ -6588,7 +6818,7 @@ function getUserInfo(){
 
             container.innerHTML = currentDiaryPhotos.map((photo, idx) => {
                 return `
-                    <div style="position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.3);">
+                    <div style="position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: var(--bg-input);">
                         <img src="${photo}" style="width: 100%; height: 100%; object-fit: cover;">
                         <button onclick="removeDiaryPhoto(${idx})" style="position: absolute; top: 4px; right: 4px; background: rgba(239,68,68,0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px; line-height: 24px;">✕</button>
                     </div>
@@ -6679,7 +6909,7 @@ function getUserInfo(){
 
             container.innerHTML = currentDiseasePhotos.map((photo, idx) => {
                 return `
-                    <div style="position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.3);">
+                    <div style="position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: var(--bg-input);">
                         <img src="${photo}" style="width: 100%; height: 100%; object-fit: cover;">
                         <button onclick="removeDiseasePhoto(${idx})" style="position: absolute; top: 4px; right: 4px; background: rgba(239,68,68,0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px; line-height: 24px;">✕</button>
                     </div>
@@ -6866,7 +7096,7 @@ function getUserInfo(){
             if(!list) return;
 
             if(personalSchedules.length === 0) {
-                list.innerHTML = '<p class="text-center py-20" style="color: #666; font-style: italic;">등록된 일정이 없습니다.</p>';
+                list.innerHTML = '<p class="text-center py-20" style="color: var(--tx-muted); font-style: italic;">등록된 일정이 없습니다.</p>';
                 return;
             }
 
@@ -6885,7 +7115,7 @@ function getUserInfo(){
                         '<button class="dyn-btn" data-action="deleteSchedule" data-index="' + originalIndex + '" style="background: #dc2626; color: #ffffff; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; border: none; cursor: pointer; font-weight: 800; letter-spacing: 0.5px;">삭제</button>' +
                     '</div>' +
                     '<div style="font-weight: bold; color: white; font-size: 1.125rem; margin-bottom: 12px;">' + s.title + '</div>' +
-                    (s.memo ? '<div style="font-size: 0.875rem; color: #999; margin-bottom: 12px;">' + s.memo + '</div>' : '') +
+                    (s.memo ? '<div style="font-size: 0.875rem; color: var(--tx-sub); margin-bottom: 12px;">' + s.memo + '</div>' : '') +
                 '</div>';
             }).join('');
         }
@@ -7060,7 +7290,7 @@ function getUserInfo(){
                         return logDate.getFullYear() === y && logDate.getMonth() === m && logDate.getDate() === d;
                     });
                     const count = dayLogs.length;
-                    content += '<div style="font-size: 0.65rem; color: #4ade80; margin-top: 4px;">💰' + count + '건</div>';
+                    content += '<div style="font-size: 0.65rem; color: var(--tx-green); margin-top: 4px;">💰' + count + '건</div>';
                 }
                 
                 body.innerHTML += '<div class="' + cls + '" onclick="goToAccInput()">' + content + '</div>';
@@ -7090,8 +7320,8 @@ function getUserInfo(){
 
             if(todayLogs.length === 0) {
                 container.innerHTML =
-                    '<div style="padding: 16px; background: rgba(74,222,128,0.05); border-radius: 12px; border: 1px solid rgba(74,222,128,0.15); text-align: center;">' +
-                        '<p style="color: #666; font-size: 0.9rem;">오늘 기록된 수입/지출이 없습니다</p>' +
+                    '<div style="padding: 16px; background: var(--bg-green); border-radius: 12px; border: 1px solid var(--bd-green); text-align: center;">' +
+                        '<p style="color: var(--tx-muted); font-size: 0.9rem;">오늘 기록된 수입/지출이 없습니다</p>' +
                     '</div>';
                 return;
             }
@@ -7108,30 +7338,30 @@ function getUserInfo(){
                 var color = isIn ? '#4ade80' : '#f87171';
                 var sign  = isIn ? '+' : '-';
                 var originalIndex = accLogs.indexOf(l);
-                return '<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 8px;">' +
+                return '<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--bg-input); border-radius: 8px; margin-bottom: 8px;">' +
                     '<div>' +
                         '<span style="font-size: 0.75rem; background: rgba(' + (isIn ? '74,222,128' : '248,113,113') + ',0.2); color: ' + color + '; padding: 2px 8px; border-radius: 10px; margin-right: 8px;">' + (isIn ? '수입' : '지출') + '</span>' +
-                        '<span style="color: #e8e3d8; font-size: 0.9rem;">' + (l.item || '항목 없음') + '</span>' +
-                        (l.lines && l.lines.length > 0 ? '<div style="margin-top:3px;">' + l.lines.map(function(ln){ return '<span style="font-size:0.72rem;color:#999;margin-right:6px;">'+ln.name+' '+ln.qty+'개×'+ln.unitPrice.toLocaleString()+'원</span>'; }).join('') + '</div>' : '') +
+                        '<span style="color: var(--tx-main); font-size: 0.9rem;">' + (l.item || '항목 없음') + '</span>' +
+                        (l.lines && l.lines.length > 0 ? '<div style="margin-top:3px;">' + l.lines.map(function(ln){ return '<span style="font-size:0.72rem;color:var(--tx-sub);margin-right:6px;">'+ln.name+' '+ln.qty+'개×'+ln.unitPrice.toLocaleString()+'원</span>'; }).join('') + '</div>' : '') +
                     '</div>' +
                     '<div style="display: flex; align-items: center; gap: 8px;">' +
                         '<span style="color: ' + color + '; font-weight: 700;">' + sign + (l.price || 0).toLocaleString() + '원</span>' +
-                        '<button class="dyn-btn" data-action="editAccountRecord" data-index="' + originalIndex + '" style="background: rgba(74,222,128,0.25); color: #4ade80; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; border: none; cursor: pointer;">수정</button> ' +
+                        '<button class="dyn-btn" data-action="editAccountRecord" data-index="' + originalIndex + '" style="background: var(--bg-editbtn-green); color: var(--tx-green); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; border: none; cursor: pointer;">수정</button> ' +
                         '<button class="dyn-btn" data-action="deleteAccountRecord" data-index="' + originalIndex + '" style="background: rgba(185,28,28,0.4); color: #ff6b6b; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; border: none; cursor: pointer;">삭제</button>' +
                     '</div>' +
                 '</div>';
             }).join('');
 
             container.innerHTML =
-                '<div style="background: rgba(74,222,128,0.08); border-radius: 14px; border: 1px solid rgba(74,222,128,0.2); padding: 16px;">' +
-                    '<p style="color: #4ade80; font-weight: 900; font-size: 1rem; margin-bottom: 14px; display: flex; align-items: center; gap: 6px;">📋 오늘 수입/지출 <span style="font-size:0.8rem; color:#999;">(' + todayLogs.length + '건)</span></p>' +
+                '<div style="background: var(--bg-green); border-radius: 14px; border: 1px solid var(--bd-green); padding: 16px;">' +
+                    '<p style="color: var(--tx-green); font-weight: 900; font-size: 1rem; margin-bottom: 14px; display: flex; align-items: center; gap: 6px;">📋 오늘 수입/지출 <span style="font-size:0.8rem; color:var(--tx-sub);">(' + todayLogs.length + '건)</span></p>' +
                     rows +
-                    '<div style="border-top: 1px solid rgba(74,222,128,0.2); margin-top: 12px; padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">' +
+                    '<div style="border-top: 1px solid var(--bd-green); margin-top: 12px; padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">' +
                         '<div style="display: flex; gap: 16px;">' +
-                            '<div><span style="color: #999; font-size: 0.8rem;">수입 </span><span style="color: #4ade80; font-weight: 700;">+' + totalIn.toLocaleString() + '원</span></div>' +
-                            '<div><span style="color: #999; font-size: 0.8rem;">지출 </span><span style="color: #f87171; font-weight: 700;">-' + totalOut.toLocaleString() + '원</span></div>' +
+                            '<div><span style="color: var(--tx-sub); font-size: 0.8rem;">수입 </span><span style="color: var(--tx-green); font-weight: 700;">+' + totalIn.toLocaleString() + '원</span></div>' +
+                            '<div><span style="color: var(--tx-sub); font-size: 0.8rem;">지출 </span><span style="color: #f87171; font-weight: 700;">-' + totalOut.toLocaleString() + '원</span></div>' +
                         '</div>' +
-                        '<div><span style="color: #999; font-size: 0.8rem;">잔액 </span><strong style="color: ' + (net >= 0 ? '#4ade80' : '#f87171') + '; font-size: 1.05rem;">' + (net >= 0 ? '+' : '') + net.toLocaleString() + '원</strong></div>' +
+                        '<div><span style="color: var(--tx-sub); font-size: 0.8rem;">잔액 </span><strong style="color: ' + (net >= 0 ? '#4ade80' : '#f87171') + '; font-size: 1.05rem;">' + (net >= 0 ? '+' : '') + net.toLocaleString() + '원</strong></div>' +
                     '</div>' +
                 '</div>';
         }
@@ -7282,7 +7512,7 @@ function getUserInfo(){
             }
             tagsDiv.style.display = 'flex';
             tagsDiv.innerHTML = selectedAccItems.map(item =>
-                `<span style="background:rgba(255,179,0,0.25);color:#FFD54F;border:1px solid rgba(255,179,0,0.5);padding:4px 10px;border-radius:16px;font-size:0.82rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;" onclick="applyTagToCurrentLine('${item}')">
+                `<span style="background:rgba(255,179,0,0.25);color:var(--tx-gold);border:1px solid rgba(255,179,0,0.5);padding:4px 10px;border-radius:16px;font-size:0.82rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;" onclick="applyTagToCurrentLine('${item}')">
                     ${item}
                 </span>`
             ).join('');
@@ -7392,7 +7622,7 @@ function getUserInfo(){
         }
 
         function _buildAccLinesHTML(container) {
-            const fs = "background:rgba(255,255,255,0.08);border:1px solid rgba(255,213,79,0.25);border-radius:8px;padding:10px 12px;color:#e8e3d8;font-size:0.92rem;width:100%;outline:none;box-sizing:border-box;";
+            const fs = "background:rgba(255,255,255,0.08);border:1px solid rgba(255,213,79,0.25);border-radius:8px;padding:10px 12px;color:var(--tx-main);font-size:0.92rem;width:100%;outline:none;box-sizing:border-box;";
             container.innerHTML = accLines.map((line, idx) => {
                 const subtotal = (line.qty||0)*(line.unitPrice||0);
                 const isActive = idx === currentLineIdx;
@@ -7402,7 +7632,7 @@ function getUserInfo(){
 
                     <!-- 행1: 번호 + 품목명 + 삭제 -->
                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                        <span style="color:#FFB300;font-size:0.8rem;font-weight:700;min-width:18px;">${idx+1}</span>
+                        <span style="color:var(--tx-amber);font-size:0.8rem;font-weight:700;min-width:18px;">${idx+1}</span>
                         <input type="text" value="${line.name.replace(/"/g,'&quot;')}" placeholder="품목명 입력 또는 위에서 선택"
                             oninput="accLines[${idx}].name=this.value;"
                             onfocus="setAccActive(${idx});"
@@ -7414,14 +7644,14 @@ function getUserInfo(){
                     <!-- 행2: 수량 | 단가 | 소계 -->
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:end;">
                         <div>
-                            <label style="color:#aaa;font-size:0.72rem;display:block;margin-bottom:5px;font-weight:600;">수량</label>
+                            <label style="color:var(--tx-sub);font-size:0.72rem;display:block;margin-bottom:5px;font-weight:600;">수량</label>
                             <input type="text" inputmode="decimal" value="${line.qty > 0 ? line.qty : ''}" placeholder="0"
                                 oninput="accLines[${idx}].qty=parseFloat(this.value.replace(/[^0-9.]/g,'')||0); updateAccTotal(); updateAccSubtotal(${idx});"
                                 onfocus="setAccActive(${idx});"
-                                style="${fs} text-align:center;font-size:1.05rem;font-weight:700;color:#FFD54F;">
+                                style="${fs} text-align:center;font-size:1.05rem;font-weight:700;color:var(--tx-gold);">
                         </div>
                         <div>
-                            <label style="color:#aaa;font-size:0.72rem;display:block;margin-bottom:5px;font-weight:600;">단가 (원)</label>
+                            <label style="color:var(--tx-sub);font-size:0.72rem;display:block;margin-bottom:5px;font-weight:600;">단가 (원)</label>
                             <input type="text" inputmode="numeric" value="${line.unitPrice?line.unitPrice.toLocaleString('ko-KR'):''}" placeholder="0"
                                 oninput="var v=parseInt(this.value.replace(/[^0-9]/g,'')||0); accLines[${idx}].unitPrice=v; updateAccTotal(); updateAccSubtotal(${idx});"
                                 onblur="if(accLines[${idx}].unitPrice) this.value=accLines[${idx}].unitPrice.toLocaleString('ko-KR');"
@@ -7429,9 +7659,9 @@ function getUserInfo(){
                                 style="${fs} text-align:right;font-size:1.05rem;font-weight:700;">
                         </div>
                         <div>
-                            <label style="color:#aaa;font-size:0.72rem;display:block;margin-bottom:5px;font-weight:600;">소계</label>
+                            <label style="color:var(--tx-sub);font-size:0.72rem;display:block;margin-bottom:5px;font-weight:600;">소계</label>
                             <div class="acc-subtotal"
-                                style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);border-radius:8px;padding:10px 12px;text-align:right;font-weight:800;font-size:0.95rem;color:${subtotal>0?'#4ade80':'#555'};">
+                                style="background:var(--bg-green);border:1px solid var(--bd-green);border-radius:8px;padding:10px 12px;text-align:right;font-weight:800;font-size:0.95rem;color:${subtotal>0?'#4ade80':'#555'};">
                                 ${subtotal>0?subtotal.toLocaleString('ko-KR')+'원':'-'}
                             </div>
                         </div>
@@ -7617,14 +7847,14 @@ function getUserInfo(){
                 const profit = totalIn - totalOut;
                 const profitColor = profit >= 0 ? '#4ade80' : '#f87171';
                 
-                html = `<div class="list-card" style="border-left-color:#FFB300; display:block;">
-                    <div style="margin-bottom:16px; font-weight:bold; font-size: 1.1rem; color:#FFD54F;">💰 정산 합계</div>
+                html = `<div class="list-card" style="border-left-color:var(--tx-amber); display:block;">
+                    <div style="margin-bottom:16px; font-weight:bold; font-size: 1.1rem; color:var(--tx-gold);">💰 정산 합계</div>
                     <div class="flex justify-between mb-3 pb-3" style="border-bottom: 1px solid rgba(255,179,0,0.1);">
-                        <span style="color: #999;">총 수입</span>
-                        <span class="font-bold" style="color: #4ade80;">+${totalIn.toLocaleString()}원</span>
+                        <span style="color: var(--tx-sub);">총 수입</span>
+                        <span class="font-bold" style="color: var(--tx-green);">+${totalIn.toLocaleString()}원</span>
                     </div>
                     <div class="flex justify-between mb-3 pb-3" style="border-bottom: 1px solid rgba(255,179,0,0.1);">
-                        <span style="color: #999;">총 지출</span>
+                        <span style="color: var(--tx-sub);">총 지출</span>
                         <span class="font-bold" style="color: #f87171;">-${totalOut.toLocaleString()}원</span>
                     </div>
                     <div class="flex justify-between pt-2">
@@ -7636,7 +7866,7 @@ function getUserInfo(){
                 const modeFiltered = filtered.filter(l => l.type === statMode);
                 
                 if(modeFiltered.length === 0) {
-                    html = `<p class="text-center py-20" style="color: #666; font-style: italic;">내역이 없습니다.</p>`;
+                    html = `<p class="text-center py-20" style="color: var(--tx-muted); font-style: italic;">내역이 없습니다.</p>`;
                 } else {
                     html = modeFiltered.map((l, idx) => {
                         // 원본 배열에서의 인덱스 찾기
@@ -7656,17 +7886,17 @@ function getUserInfo(){
                             <div class="list-card" style="border-left-color:${borderColor}; display: block;">
                                 <div style="display: flex; justify-content: space-between; align-items: start;">
                                     <div style="flex: 1;">
-                                        <b class="block mb-1" style="color: #e8e3d8; font-size: 1rem;">${l.item}</b>
-                                        <small style="color: #777;">${dateStr}</small>
-                                        ${l.beeType ? `<span class="text-xs ml-2 px-2 py-1 rounded" style="background: rgba(255,179,0,0.2); color: #FFB300;">${l.beeType}</span>` : ''}
-                                        ${l.customerName ? `<div class="text-xs mt-1" style="color: #999;">👤 ${l.customerName}${l.customerPhone ? ' • ' + l.customerPhone : ''}${l.customerQuantity ? ' • ' + l.customerQuantity + '개' : ''}</div>` : ''}
+                                        <b class="block mb-1" style="color: var(--tx-main); font-size: 1rem;">${l.item}</b>
+                                        <small style="color: var(--tx-sub);">${dateStr}</small>
+                                        ${l.beeType ? `<span class="text-xs ml-2 px-2 py-1 rounded" style="background: rgba(255,179,0,0.2); color: var(--tx-amber);">${l.beeType}</span>` : ''}
+                                        ${l.customerName ? `<div class="text-xs mt-1" style="color: var(--tx-sub);">👤 ${l.customerName}${l.customerPhone ? ' • ' + l.customerPhone : ''}${l.customerQuantity ? ' • ' + l.customerQuantity + '개' : ''}</div>` : ''}
                                     </div>
                                     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
                                         <div class="font-bold" style="font-size: 1.1rem; color: ${textColor};">
                                             ${l.type === 'in' ? '+' : '-'}${l.price.toLocaleString()}원
                                         </div>
                                         <div style="display: flex; gap: 6px;">
-                                            <button class="dyn-btn" data-action="editAccountRecord" data-index="${originalIndex}" style="background: rgba(59,130,246,0.3); color: #60a5fa; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; border: none; cursor: pointer; font-weight: 700;">수정</button>
+                                            <button class="dyn-btn" data-action="editAccountRecord" data-index="${originalIndex}" style="background: var(--bg-editbtn); color: var(--tx-editbtn); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; border: none; cursor: pointer; font-weight: 700;">수정</button>
                                             <button class="dyn-btn" data-action="deleteAccountRecord" data-index="${originalIndex}" style="background: rgba(185,28,28,0.5); color: #ff6b6b; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; border: none; cursor: pointer; font-weight: 700;">삭제</button>
                                         </div>
                                     </div>
@@ -7967,15 +8197,15 @@ function getUserInfo(){
             if(mode === 'volume') {
                 volumeBtn.style.background = '#9a3412';
                 volumeBtn.style.color = 'white';
-                weightBtn.style.background = 'rgba(40,30,25,0.8)';
-                weightBtn.style.color = '#999';
+                weightBtn.style.background = 'var(--bg-card)';
+                weightBtn.style.color = 'var(--tx-sub)';
                 volumeDiv.style.display = 'block';
                 weightDiv.style.display = 'none';
             } else {
                 weightBtn.style.background = '#9a3412';
                 weightBtn.style.color = 'white';
-                volumeBtn.style.background = 'rgba(40,30,25,0.8)';
-                volumeBtn.style.color = '#999';
+                volumeBtn.style.background = 'var(--bg-card)';
+                volumeBtn.style.color = 'var(--tx-sub)';
                 volumeDiv.style.display = 'none';
                 weightDiv.style.display = 'block';
             }
@@ -8006,12 +8236,12 @@ function getUserInfo(){
             result.style.display = 'block';
             result.innerHTML =
                 '<p style="color: #c084fc; font-weight: bold; margin-bottom: 12px;">📊 계산 결과 (부피 기준)</p>' +
-                '<p style="color: #999; font-size: 0.8rem; margin-bottom: 10px;">공식: V₁ = (' + c2 + '% × ' + v2L + 'L) ÷ ' + c1 + '%</p>' +
-                '<p style="margin-bottom: 8px;">• 85% 개미산: <strong style="color: #FFD54F;">' + v1mL.toFixed(1) + ' mL</strong> <span style="color:#999;font-size:0.82rem;">(' + v1L.toFixed(3) + ' L)</span></p>' +
-                '<p style="margin-bottom: 8px;">• 추가할 물: <strong style="color: #4ade80;">' + waterMl.toFixed(1) + ' mL</strong> <span style="color:#999;font-size:0.82rem;">(' + waterL.toFixed(3) + ' L)</span></p>' +
+                '<p style="color: var(--tx-sub); font-size: 0.8rem; margin-bottom: 10px;">공식: V₁ = (' + c2 + '% × ' + v2L + 'L) ÷ ' + c1 + '%</p>' +
+                '<p style="margin-bottom: 8px;">• 85% 개미산: <strong style="color: var(--tx-gold);">' + v1mL.toFixed(1) + ' mL</strong> <span style="color:var(--tx-sub);font-size:0.82rem;">(' + v1L.toFixed(3) + ' L)</span></p>' +
+                '<p style="margin-bottom: 8px;">• 추가할 물: <strong style="color: var(--tx-green);">' + waterMl.toFixed(1) + ' mL</strong> <span style="color:var(--tx-sub);font-size:0.82rem;">(' + waterL.toFixed(3) + ' L)</span></p>' +
                 '<p style="margin-bottom: 8px;">• 희석액 총량: <strong style="color: #c084fc;">' + v2L + ' L (' + v2mL.toFixed(0) + ' mL)</strong></p>' +
-                '<p style="padding:8px;background:rgba(255,179,0,0.08);border-radius:6px;font-size:0.85rem;color:#FFD54F;margin-top:10px;">✅ 개미산 ' + v1mL.toFixed(1) + 'mL + 물 ' + waterMl.toFixed(1) + 'mL = ' + v2L + 'L</p>' +
-                '<p style="color: #999; font-size: 0.75rem; margin-top: 6px;">※ 용기(비커 등) 눈금으로 부피 측정 시 사용</p>';
+                '<p style="padding:8px;background:rgba(255,179,0,0.08);border-radius:6px;font-size:0.85rem;color:var(--tx-gold);margin-top:10px;">✅ 개미산 ' + v1mL.toFixed(1) + 'mL + 물 ' + waterMl.toFixed(1) + 'mL = ' + v2L + 'L</p>' +
+                '<p style="color: var(--tx-sub); font-size: 0.75rem; margin-top: 6px;">※ 용기(비커 등) 눈금으로 부피 측정 시 사용</p>';
         }
 
         function resetFormicVolume() {
@@ -8047,12 +8277,12 @@ function getUserInfo(){
             result.style.display = 'block';
             result.innerHTML =
                 '<p style="color: #c084fc; font-weight: bold; margin-bottom: 12px;">📊 계산 결과 (무게 기준)</p>' +
-                '<p style="color: #999; font-size: 0.8rem; margin-bottom: 10px;">공식: M₁ = (' + c2 + '% × ' + m2kg + 'kg) ÷ ' + c1 + '% &nbsp;|&nbsp; 비중 ' + sg + ' 적용</p>' +
-                '<p style="margin-bottom: 8px;">• 85% 개미산: <strong style="color: #FFD54F;">' + m1g.toFixed(1) + ' g</strong> <span style="color:#999;font-size:0.82rem;">(' + m1kg.toFixed(3) + ' kg ≈ ' + acidMl.toFixed(1) + ' mL)</span></p>' +
-                '<p style="margin-bottom: 8px;">• 추가할 물: <strong style="color: #4ade80;">' + waterg.toFixed(1) + ' g</strong> <span style="color:#999;font-size:0.82rem;">(' + waterkg.toFixed(3) + ' kg)</span></p>' +
+                '<p style="color: var(--tx-sub); font-size: 0.8rem; margin-bottom: 10px;">공식: M₁ = (' + c2 + '% × ' + m2kg + 'kg) ÷ ' + c1 + '% &nbsp;|&nbsp; 비중 ' + sg + ' 적용</p>' +
+                '<p style="margin-bottom: 8px;">• 85% 개미산: <strong style="color: var(--tx-gold);">' + m1g.toFixed(1) + ' g</strong> <span style="color:var(--tx-sub);font-size:0.82rem;">(' + m1kg.toFixed(3) + ' kg ≈ ' + acidMl.toFixed(1) + ' mL)</span></p>' +
+                '<p style="margin-bottom: 8px;">• 추가할 물: <strong style="color: var(--tx-green);">' + waterg.toFixed(1) + ' g</strong> <span style="color:var(--tx-sub);font-size:0.82rem;">(' + waterkg.toFixed(3) + ' kg)</span></p>' +
                 '<p style="margin-bottom: 8px;">• 희석액 총 무게: <strong style="color: #c084fc;">' + m2kg + ' kg (' + m2g.toFixed(0) + ' g)</strong></p>' +
-                '<p style="padding:8px;background:rgba(255,179,0,0.08);border-radius:6px;font-size:0.85rem;color:#FFD54F;margin-top:10px;">✅ 개미산 ' + m1g.toFixed(1) + 'g 계량 후 물 부어 전체 ' + m2kg + 'kg 맞추세요</p>' +
-                '<p style="color: #999; font-size: 0.75rem; margin-top: 6px;">※ 저울 정밀 측정 시 사용 (화학적으로 더 정확)</p>';
+                '<p style="padding:8px;background:rgba(255,179,0,0.08);border-radius:6px;font-size:0.85rem;color:var(--tx-gold);margin-top:10px;">✅ 개미산 ' + m1g.toFixed(1) + 'g 계량 후 물 부어 전체 ' + m2kg + 'kg 맞추세요</p>' +
+                '<p style="color: var(--tx-sub); font-size: 0.75rem; margin-top: 6px;">※ 저울 정밀 측정 시 사용 (화학적으로 더 정확)</p>';
         }
 
         function resetFormicWeight() {
@@ -8091,11 +8321,11 @@ function getUserInfo(){
             result.style.display = 'block';
             result.innerHTML =
                 '<p style="color: #c084fc; font-weight: bold; margin-bottom: 12px;">📊 계산 결과</p>' +
-                '<p style="margin-bottom: 8px;">• 옥살산 농도: <strong style="color: #FFD54F;">' + concentration.toFixed(2) + '%</strong></p>' +
-                '<p style="margin-bottom: 8px;">• 전체 용액량: <strong style="color: #4ade80;">' + totalMl.toFixed(0) + ' mL</strong></p>' +
-                '<p style="margin-bottom: 8px;">• 처리 가능 봉군 (5mL×소비5매=25mL/봉군): <strong style="color: #60a5fa;">' + colonies + ' 봉군</strong></p>' +
+                '<p style="margin-bottom: 8px;">• 옥살산 농도: <strong style="color: var(--tx-gold);">' + concentration.toFixed(2) + '%</strong></p>' +
+                '<p style="margin-bottom: 8px;">• 전체 용액량: <strong style="color: var(--tx-green);">' + totalMl.toFixed(0) + ' mL</strong></p>' +
+                '<p style="margin-bottom: 8px;">• 처리 가능 봉군 (5mL×소비5매=25mL/봉군): <strong style="color: var(--tx-editbtn);">' + colonies + ' 봉군</strong></p>' +
                 '<p style="color: ' + resultColor + '; font-size: 0.85rem; margin-top: 10px; padding: 8px; background: rgba(255,179,0,0.08); border-radius: 6px;">' + resultMsg + '</p>' +
-                '<p style="color: #999; font-size: 0.8rem; margin-top: 8px;">※ 옥살산 이수화물(Oxalic acid dihydrate) 기준</p>';
+                '<p style="color: var(--tx-sub); font-size: 0.8rem; margin-top: 8px;">※ 옥살산 이수화물(Oxalic acid dihydrate) 기준</p>';
         }
 
         function resetOxalic() {
@@ -8132,10 +8362,10 @@ function getUserInfo(){
             result.style.display = 'block';
             result.innerHTML =
                 '<p style="color: #c084fc; font-weight: bold; margin-bottom: 12px;">📊 계산 결과</p>' +
-                '<p style="margin-bottom: 8px;">• 필요한 주정(' + current + '%): <strong style="color: #FFD54F;">' + alcoholNeeded.toFixed(3) + ' L</strong></p>' +
-                '<p style="margin-bottom: 8px;">• 추가할 물: <strong style="color: #4ade80;">' + waterNeeded.toFixed(3) + ' L</strong></p>' +
+                '<p style="margin-bottom: 8px;">• 필요한 주정(' + current + '%): <strong style="color: var(--tx-gold);">' + alcoholNeeded.toFixed(3) + ' L</strong></p>' +
+                '<p style="margin-bottom: 8px;">• 추가할 물: <strong style="color: var(--tx-green);">' + waterNeeded.toFixed(3) + ' L</strong></p>' +
                 '<p style="margin-bottom: 8px;">• 희석액 총량: <strong style="color: #c084fc;">' + totalVol.toFixed(2) + ' L</strong></p>' +
-                '<p style="color: #999; font-size: 0.8rem; margin-top: 10px;">※ 공식: 주정량 = 목표농도 × 총량 ÷ 현재농도</p>';
+                '<p style="color: var(--tx-sub); font-size: 0.8rem; margin-top: 10px;">※ 공식: 주정량 = 목표농도 × 총량 ÷ 현재농도</p>';
         }
 
         function resetAlcohol() {
@@ -8161,8 +8391,8 @@ function getUserInfo(){
             result.style.display = 'block';
             result.innerHTML = 
                 '<p style="color: #c084fc; font-weight: bold; margin-bottom: 12px;">📊 계산 결과</p>' +
-                '<p style="margin-bottom: 8px;">• 설탕: <strong style="color: #FFD54F;">' + sugar.toFixed(2) + ' kg</strong></p>' +
-                '<p style="margin-bottom: 8px;">• 물: <strong style="color: #4ade80;">' + water.toFixed(2) + ' L</strong></p>' +
+                '<p style="margin-bottom: 8px;">• 설탕: <strong style="color: var(--tx-gold);">' + sugar.toFixed(2) + ' kg</strong></p>' +
+                '<p style="margin-bottom: 8px;">• 물: <strong style="color: var(--tx-green);">' + water.toFixed(2) + ' L</strong></p>' +
                 '<p>• 예상 용액량: <strong style="color: #c084fc;">' + totalVolume.toFixed(2) + ' L</strong></p>';
         }
 
@@ -8560,7 +8790,7 @@ document.addEventListener('click', function(e) {
         </div>
         <!-- 촬영 버튼 영역 -->
         <div style="background:#111; padding:30px 20px; display:flex; justify-content:center; align-items:center; gap:40px;">
-            <label style="display:flex; flex-direction:column; align-items:center; gap:6px; color:#aaa; font-size:0.75rem; cursor:pointer;">
+            <label style="display:flex; flex-direction:column; align-items:center; gap:6px; color:var(--tx-sub); font-size:0.75rem; cursor:pointer;">
                 🖼️ 앨범
                 <input id="camera-album-fallback" type="file" accept="image/*" multiple style="display:none" onchange="handleCameraAlbumFallback(this)">
             </label>
