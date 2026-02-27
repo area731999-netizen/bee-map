@@ -6951,17 +6951,12 @@ function getUserInfo(){
                     const rawName = getDisplayName(loc);
                     const displayName = rawName;
                     
-                    // 농장명과 봉장명 분리
-                    const farmname = (() => { try { const u=JSON.parse(localStorage.getItem('beeUserInfo')||'{}'); return u.farmname||''; } catch(e){return '';} })();
-                    const shortLoc = loc.replace('봉장','봉').replace('이동봉','이동봉');
-                    const line1 = farmname || '';
-                    const line2 = shortLoc;
+                    const btnDisplayName = getDisplayName(loc);
 
                     return `
                         <button class="location-btn ${isActive ? 'active' : ''}" data-loc="${loc}" onclick="selectLocation(this)" style="width:100%; padding: 8px 2px; box-sizing: border-box; height: auto;">
                             <div style="font-size: 1rem; margin-bottom: 2px;">${icon}</div>
-                            ${line1 ? `<div style="font-weight: 700; font-size: clamp(0.55rem, 2.2vw, 0.72rem); line-height: 1.3; word-break: keep-all; text-align:center; opacity:0.85;">${line1}</div>` : ''}
-                            <div style="font-weight: 800; font-size: clamp(0.62rem, 2.5vw, 0.85rem); line-height: 1.3; word-break: keep-all; text-align:center;">${line2}</div>
+                            <div style="font-weight: 800; font-size: clamp(0.6rem, 2.5vw, 0.85rem); line-height: 1.4; word-break: break-all; text-align:center;">${btnDisplayName}</div>
                         </button>
                     `;
                 }).join('');
