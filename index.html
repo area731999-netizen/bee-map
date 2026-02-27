@@ -667,15 +667,19 @@
 
         /* 봉장 버튼 최소 크기 */
         .location-btn {
-            min-height: 75px !important;
-            min-width: 75px !important;
-            padding: 14px 10px !important;
+            min-height: 0 !important;
+            min-width: 0 !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            padding: 10px 4px !important;
         }
 
         /* 네비게이션 아이콘 터치 영역 */
         .nav-item {
             min-width: 60px;
-            min-height: 60px;
+            min-height: 80px;
+            height: auto;
             padding: 8px !important;
         }
 
@@ -1013,6 +1017,8 @@
             transition: all 0.3s;
             text-align: center;
             min-height: 70px;
+            height: auto;
+            overflow: visible;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -2572,7 +2578,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div class="input-row">
                 <span class="input-label">📍 봉장 선택</span>
                 <input type="hidden" id="loc-select" value="1봉장">
-                <div id="location-buttons" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
+                <div id="location-buttons" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px;">
                     <!-- JavaScript에서 동적 생성 -->
                 </div>
             </div>
@@ -6679,12 +6685,13 @@ function getUserInfo(){
                 container.innerHTML = activeApiaries.map(loc => {
                     const isActive = loc === newValue;
                     const icon = loc.includes('이동') ? '🚚' : '🏠';
-                    const displayName = getDisplayName(loc).replace('봉장', '봉').replace('이동봉', '이동봉');
+                    const rawName = getDisplayName(loc);
+                    const displayName = rawName;
                     
                     return `
-                        <button class="location-btn ${isActive ? 'active' : ''}" data-loc="${loc}" onclick="selectLocation(this)" style="flex: 0 0 auto; min-width: 70px; padding: 8px 12px;">
-                            <div style="font-size: 1rem; margin-bottom: 2px;">${icon}</div>
-                            <div style="font-weight: bold; font-size: 0.8rem;">${displayName}</div>
+                        <button class="location-btn ${isActive ? 'active' : ''}" data-loc="${loc}" onclick="selectLocation(this)" style="width:100%; padding: 10px 4px; box-sizing: border-box; height: auto; min-height: 0; overflow: visible;">
+                            <div style="font-size: clamp(0.85rem, 3vw, 1.1rem); margin-bottom: 2px;">${icon}</div>
+                            <div style="font-weight: 800; font-size: clamp(0.58rem, 1.8vw, 0.8rem); line-height: 1.4; white-space: normal; word-break: break-all; overflow: visible; width: 100%;">${displayName}</div>
                         </button>
                     `;
                 }).join('');
