@@ -1337,7 +1337,7 @@
             border: 1px solid transparent;
             transition: all 0.2s;
             padding: 4px 2px;
-            font-size: 1rem;
+            font-size: 1.15rem;
             overflow: hidden;
         }
 
@@ -2841,21 +2841,8 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <!-- 학술 검색 -->
             <div class="input-row" style="margin-bottom:80px;">
                 <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">🔬 양봉 학술검색</div>
-                <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:8px;">
-                    <button onclick="openScholar('honeybee')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🐝 honeybee</button>
-                    <button onclick="openScholar('varroa mite')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🦠 varroa mite</button>
-                    <button onclick="openScholar('vespa velutina')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🐝 vespa velutina</button>
-                    <button onclick="openScholar('honeybee nutrition')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🌸 honeybee nutrition</button>
-                    <button onclick="openScholar('nosema apis')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🦠 nosema apis</button>
-                    <button onclick="openScholar('nosema ceranae')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🦠 nosema ceranae</button>
-                    <button onclick="openScholar('colony collapse disorder')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🌿 colony collapse</button>
-                    <button onclick="openScholar('honeybee winter survival')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🌡️ winter survival</button>
-                    <button onclick="openScholar('tracheal mite honeybee')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🐛 tracheal mite</button>
-                    <button onclick="openScholar('queen bee behavior')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">👑 queen bee behavior</button>
-                    <button onclick="openScholar('pollination honeybee')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🌺 pollination</button>
-                    <button onclick="openScholar('pesticide honeybee')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🌿 pesticide</button>
-                    <button onclick="openScholar('climate change honeybee')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🌡️ climate change</button>
-                    <button onclick="openScholar('oxalic acid varroa')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">💊 oxalic acid varroa</button>
+                <div id="scholar-buttons-container" style="display:grid; grid-template-columns: repeat(2,1fr); gap:8px;">
+                    <div style="color:var(--tx-sub);font-size:0.85rem;grid-column:span 2;text-align:center;">불러오는 중...</div>
                 </div>
             </div>
         </div>
@@ -3484,6 +3471,22 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                         </div>
                     </div>
                 </div>
+
+                <!-- 학술검색어 관리 아코디언 -->
+                <div style="background: var(--bg-card); border-radius: 12px; margin-bottom: 10px; overflow: hidden;">
+                    <div onclick="toggleSettingAccordion('scholar')" style="padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--tx-gold); font-weight: bold;">🔬 학술검색어 관리</span>
+                        <span id="acc-arrow-scholar" style="color: var(--tx-gold);">▼</span>
+                    </div>
+                    <div id="acc-content-scholar" style="display: none; padding: 14px; border-top: 1px solid rgba(255,213,79,0.1);">
+                        <div id="scholar-list" style="margin-bottom: 10px;"></div>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="scholar-input" placeholder="검색어 입력 (예: honeybee disease)" class="field" style="flex: 1; margin: 0;">
+                            <button onclick="addScholarKeyword()" style="background: rgba(255,179,0,0.3); color: var(--tx-amber); padding: 10px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; white-space: nowrap;">추가</button>
+                        </div>
+                        <button onclick="resetScholarKeywords()" style="width:100%; padding:8px; background:rgba(100,100,100,0.2); color:var(--tx-sub); border-radius:8px; border:none; cursor:pointer; font-size:0.8rem; margin-top:8px;">기본값으로 초기화</button>
+                    </div>
+                </div>
             </div>
 
             <!-- ===== 데이터 탭 ===== -->
@@ -3560,19 +3563,19 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         <!-- 하단 네비게이션 -->
         <nav class="bottom-nav">
             <div id="nav-home" class="nav-item" onclick="goHome()">
-                <div style="font-size: 24px; margin-bottom: 4px;">🏠</div>
+                <div style="font-size: 24px; margin-bottom: 4px;">🏡</div>
                 홈
             </div>
             <div id="nav-calendar" class="nav-item active" onclick="switchView('calendar', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">📅</div>
+                <div style="font-size: 24px; margin-bottom: 4px;">📔</div>
                 기록
             </div>
             <div id="nav-map" class="nav-item" onclick="switchView('map', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">🌍</div>
+                <div style="font-size: 24px; margin-bottom: 4px;">🗺️</div>
                 지도
             </div>
             <div id="nav-account" class="nav-item" onclick="switchView('account', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">💰</div>
+                <div style="font-size: 24px; margin-bottom: 4px;">📒</div>
                 가계부
             </div>
             <div id="nav-calculator" class="nav-item" onclick="switchView('calculator', true)">
@@ -3926,7 +3929,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                         ).join('');
                         diseaseEl.innerHTML = nextHTML + listHTML;
                     } else {
-                        diseaseEl.innerHTML = '<span style="color:var(--tx-sub);">방역 기록이 없습니다.</span>';
+                        diseaseEl.innerHTML = `<div style="text-align:center;padding:12px;"><p style="color:var(--tx-sub);margin-bottom:10px;">방역 기록이 없습니다.</p><button onclick="switchView('disease',true)" style="background:rgba(220,38,38,0.15);color:#f87171;border:1px solid rgba(220,38,38,0.3);border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;">🛡️ 방역 기록하기</button></div>`;
                     }
                 }
 
@@ -3943,7 +3946,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                                 const workArr = rec.works || rec.work || [];
                                 const works = Array.isArray(workArr) ? workArr.join(', ') : (workArr || '기록');
                                 const loc = rec.location || rec.loc || '';
-                                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-input);border-radius:8px;margin-bottom:5px;cursor:pointer;" onclick="handleDayClick('${key}', null); switchView('calendar',true);">
+                                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-input);border-radius:8px;margin-bottom:5px;cursor:pointer;" onclick="switchView('calendar',true); setTimeout(()=>handleDayClick('${key}',null),150);">
                                     <div>
                                         <span style="color:var(--tx-main);font-weight:700;">${key}</span>
                                         ${loc ? `<span style="color:var(--tx-sub);font-size:0.75rem;margin-left:6px;">${loc}</span>` : ''}
@@ -3953,10 +3956,120 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                             }).join('');
                         }).join('');
                     } else {
-                        recentEl.innerHTML = '<span style="color:var(--tx-sub);">최근 일지가 없습니다.</span>';
+                        recentEl.innerHTML = `<div style="text-align:center;padding:12px;"><p style="color:var(--tx-sub);margin-bottom:10px;">최근 일지가 없습니다.</p><button onclick="switchView('diary',true)" style="background:rgba(255,179,0,0.2);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.3);border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;">✍️ 일지 작성하기</button></div>`;
                     }
                 }
+                // 학술검색 버튼 렌더링
+                renderScholarButtons();
             } catch(e) { console.error('대시보드 오류:', e); }
+        }
+
+
+        const SCHOLAR_DEFAULT = [
+    {emoji:'🐝', label:'honeybee', query:'honeybee'},
+    {emoji:'🦠', label:'varroa mite', query:'varroa mite'},
+    {emoji:'🐝', label:'vespa velutina', query:'vespa velutina'},
+    {emoji:'🌸', label:'honeybee nutrition', query:'honeybee nutrition'},
+    {emoji:'🦠', label:'nosema apis', query:'nosema apis'},
+    {emoji:'🦠', label:'nosema ceranae', query:'nosema ceranae'},
+    {emoji:'🌿', label:'colony collapse', query:'colony collapse disorder'},
+    {emoji:'🌡️', label:'winter survival', query:'honeybee winter survival'},
+    {emoji:'🐛', label:'tracheal mite', query:'tracheal mite honeybee'},
+    {emoji:'👑', label:'queen bee behavior', query:'queen bee behavior'},
+    {emoji:'🌺', label:'pollination', query:'pollination honeybee'},
+    {emoji:'🌿', label:'pesticide', query:'pesticide honeybee'},
+    {emoji:'🌡️', label:'climate change', query:'climate change honeybee'},
+    {emoji:'💊', label:'oxalic acid varroa', query:'oxalic acid varroa'}
+];
+
+        function getScholarKeywords() {
+            try {
+                const saved = localStorage.getItem('scholarKeywords');
+                return saved ? JSON.parse(saved) : [...SCHOLAR_DEFAULT];
+            } catch(e) { return [...SCHOLAR_DEFAULT]; }
+        }
+
+        function saveScholarKeywords(kws) {
+            localStorage.setItem('scholarKeywords', JSON.stringify(kws));
+        }
+
+        function renderScholarList() {
+            const list = document.getElementById('scholar-list');
+            if(!list) return;
+            const kws = getScholarKeywords();
+            if(kws.length === 0) {
+                list.innerHTML = '<p style="color:var(--tx-sub);font-size:0.85rem;">검색어가 없습니다.</p>';
+                return;
+            }
+            list.innerHTML = kws.map((kw, i) =>
+                `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg-input);border-radius:8px;margin-bottom:6px;">
+                    <span style="color:var(--tx-main);font-size:0.85rem;">${kw.emoji} ${kw.label}</span>
+                    <button onclick="deleteScholarKeyword(${i})" style="background:rgba(185,28,28,0.3);color:#f87171;border:none;border-radius:6px;padding:4px 10px;font-size:0.78rem;cursor:pointer;font-weight:700;">삭제</button>
+                </div>`
+            ).join('');
+        }
+
+        function addScholarKeyword() {
+            const input = document.getElementById('scholar-input');
+            const val = input.value.trim();
+            if(!val) { showToast('⚠️ 검색어를 입력해주세요'); return; }
+            const kws = getScholarKeywords();
+            kws.push({emoji:'🔬', label:val, query:val});
+            saveScholarKeywords(kws);
+            renderScholarList();
+            renderScholarButtons();
+            input.value = '';
+            showToast('✅ 검색어가 추가되었습니다');
+        }
+
+        function deleteScholarKeyword(index) {
+            const kws = getScholarKeywords();
+            if(!confirm(`[${kws[index].label}] 검색어를 삭제할까요?`)) return;
+            kws.splice(index, 1);
+            saveScholarKeywords(kws);
+            renderScholarList();
+            renderScholarButtons();
+            showToast('✅ 검색어가 삭제되었습니다');
+        }
+
+        function resetScholarKeywords() {
+            if(!confirm('기본 검색어 목록으로 초기화할까요?')) return;
+            localStorage.removeItem('scholarKeywords');
+            renderScholarList();
+            renderScholarButtons();
+            showToast('✅ 기본값으로 초기화되었습니다');
+        }
+
+        function renderScholarButtons() {
+            const container = document.getElementById('scholar-buttons-container');
+            if(!container) return;
+            const kws = getScholarKeywords();
+            container.innerHTML = kws.map(kw =>
+                `<button onclick="openScholar('${kw.query}')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">${kw.emoji} ${kw.label}</button>`
+            ).join('');
+        }
+
+
+        function showOnboardingGuide() {
+            const overlay = document.createElement('div');
+            overlay.id = 'onboarding-overlay';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            overlay.innerHTML = `
+                <div style="background:var(--bg-card);border:2px solid rgba(255,179,0,0.4);border-radius:20px;padding:28px 22px;max-width:360px;width:100%;text-align:center;">
+                    <div style="font-size:3rem;margin-bottom:12px;">🐝</div>
+                    <h2 style="color:var(--tx-gold);font-size:1.3rem;font-weight:900;margin-bottom:8px;">BEE MASTER에 오신 것을 환영합니다!</h2>
+                    <p style="color:var(--tx-sub);font-size:0.88rem;line-height:1.6;margin-bottom:20px;">시작하기 전에 먼저 <b style="color:var(--tx-amber);">봉장 설정</b>을 해주세요.<br>봉장을 등록해야 일지 작성과 모든 기능을 사용할 수 있습니다.</p>
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <button onclick="closeOnboarding(); switchView('apiary-settings',true);" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;border:none;border-radius:12px;padding:14px;font-size:1rem;font-weight:900;cursor:pointer;">⚙️ 봉장 설정하러 가기</button>
+                        <button onclick="closeOnboarding();" style="background:rgba(100,100,100,0.2);color:var(--tx-sub);border:none;border-radius:12px;padding:12px;font-size:0.88rem;cursor:pointer;">나중에 설정할게요</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(overlay);
+        }
+
+        function closeOnboarding() {
+            const el = document.getElementById('onboarding-overlay');
+            if(el) el.remove();
         }
 
         function openScholar(query) {
@@ -3983,6 +4096,13 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 console.log('🚀 앱 시작:', type);
                 
                 selectedBeeType = type;
+                // 첫 실행 감지 - 봉장 미설정시 안내
+                const _apiarySettings = JSON.parse(localStorage.getItem('apiarySettings')||'{}');
+                const _hasApiary = Object.values(_apiarySettings).some(v => v === true);
+                const _userInfo = JSON.parse(localStorage.getItem('beeUserInfo')||'{}');
+                if(!_hasApiary && !_userInfo.farmname) {
+                    setTimeout(() => showOnboardingGuide(), 900);
+                }
                 
                 // 스플래시 숨기기
                 const splash = document.getElementById('splash');
@@ -7062,10 +7182,10 @@ function getUserInfo(){
 
         // 설정탭 로드 시 로그인 상태 확인
         function switchSettingsTab(tab) {
-            // 설정 탭 전환 헬퍼
             document.querySelectorAll('.settings-tab').forEach(t => t.style.display = 'none');
             const target = document.getElementById('settings-' + tab);
             if(target) { target.style.display = 'block'; initGdriveUI(); }
+            if(tab === 'custom') renderScholarList();
         }
 
         function initGdriveUI() {
