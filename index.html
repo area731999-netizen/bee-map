@@ -2699,6 +2699,8 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         body.light-mode #view-map .fgps { background: #2563eb !important; color: #ffffff !important; border: 1px solid #1d4ed8 !important; }
 #view-map .fcancel { background: rgba(100,100,100,.2) !important; color: #888 !important; }
 </style>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js"></script>
 </head>
 <body>
 
@@ -3464,6 +3466,16 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
             <!-- ===== 데이터 탭 ===== -->
             <div id="settings-data" class="settings-tab" style="display: none;">
+                <!-- 구글 드라이브 백업 -->
+                <div class="data-section-card" style="border: 2px solid rgba(66,133,244,0.4); margin-bottom:14px;">
+                    <h3 class="data-section-title">☁️ 구글 드라이브 백업</h3>
+                    <div id="gdrive-status" style="color:var(--tx-sub); font-size:0.85rem; margin-bottom:10px;">로그인 필요</div>
+                    <button id="gdrive-login-btn" onclick="gdriveLogin()" class="btn-save w-full" style="background:linear-gradient(135deg,#4285F4,#1a73e8); margin-bottom:8px;">🔑 구글 계정으로 로그인</button>
+                    <button id="gdrive-backup-btn" onclick="gdriveBackup()" class="btn-save w-full" style="background:linear-gradient(135deg,#16a34a,#15803d); margin-bottom:8px; display:none;">☁️ 드라이브에 백업</button>
+                    <button id="gdrive-restore-btn" onclick="gdriveRestore()" class="btn-save w-full" style="background:linear-gradient(135deg,#d97706,#b45309); margin-bottom:8px; display:none;">📥 드라이브에서 복원</button>
+                    <button id="gdrive-logout-btn" onclick="gdriveLogout()" style="width:100%; padding:10px; background:rgba(100,100,100,0.2); color:var(--tx-sub); border-radius:10px; border:none; cursor:pointer; font-size:0.85rem; display:none;">로그아웃</button>
+                    <div id="gdrive-last-backup" style="color:var(--tx-muted); font-size:0.75rem; margin-top:6px; text-align:center;"></div>
+                </div>
                 <div class="data-section-card">
                     <h3 class="data-section-title">💾 데이터 백업/복원</h3>
                     <button onclick="backupData()" class="btn-save w-full" style="margin-bottom: 10px;">📤 데이터 백업 (JSON 다운로드)</button>
@@ -3949,6 +3961,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
         async function fetchWeatherData() {
             try {
+                // 오프라인 체크
+                if(!navigator.onLine) {
+                    loadCachedWeather();
+                    return;
+                }
+
                 // 활성 봉장 위치 우선, 없으면 GPS, 없으면 기본값
                 let lat = 36.9922;
                 let lon = 127.1129;
@@ -3975,7 +3993,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
                 const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m&timezone=Asia/Seoul`;
                 
-                const response = await fetch(url);
+                const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
                 const data = await response.json();
                 
                 if(data && data.current) {
@@ -3983,6 +4001,14 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     const windSpeed = data.current.wind_speed_10m.toFixed(1);
                     
                     todayWeather = { temp, windSpeed, description: '맑음' };
+
+                    // 날씨 캐시 저장
+                    const now = new Date();
+                    localStorage.setItem('weatherCache', JSON.stringify({
+                        temp, windSpeed,
+                        savedAt: now.toLocaleString('ko-KR'),
+                        isCache: false
+                    }));
                     
                     const tempDisplay = document.getElementById('temp-display');
                     if (tempDisplay) tempDisplay.innerText = `${temp}°C`;
@@ -3991,8 +4017,34 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 }
             } catch (error) {
                 console.error('날씨 API 오류:', error);
-                todayWeather = { temp: 15, windSpeed: '2.0', description: '정보 없음' };
+                // 오류 시 캐시 날씨 사용
+                loadCachedWeather();
             }
+        }
+
+        function loadCachedWeather() {
+            try {
+                const cached = JSON.parse(localStorage.getItem('weatherCache') || 'null');
+                if(cached) {
+                    todayWeather = { temp: cached.temp, windSpeed: cached.windSpeed, description: '캐시' };
+                    const tempDisplay = document.getElementById('temp-display');
+                    if(tempDisplay) tempDisplay.innerText = `${cached.temp}°C`;
+                    // 대시보드 날씨 업데이트
+                    const dashTemp = document.getElementById('dash-temp');
+                    if(dashTemp) dashTemp.textContent = cached.temp + '°C';
+                    const dashWind = document.getElementById('dash-wind');
+                    if(dashWind) dashWind.textContent = '풍속 ' + cached.windSpeed + 'm/s (저장된 날씨 · ' + cached.savedAt + ')';
+                    updateInspectionGuide(cached.temp, cached.windSpeed);
+                } else {
+                    // 캐시도 없으면
+                    const tempDisplay = document.getElementById('temp-display');
+                    if(tempDisplay) tempDisplay.innerText = '--°C';
+                    const dashTemp = document.getElementById('dash-temp');
+                    if(dashTemp) dashTemp.textContent = '--°C';
+                    const dashWind = document.getElementById('dash-wind');
+                    if(dashWind) dashWind.textContent = '오프라인 상태입니다';
+                }
+            } catch(e) {}
         }
 
         function updateInspectionGuide(temp, windSpeed) {
@@ -6671,6 +6723,153 @@ function getUserInfo(){
         }
 
         // ===== 백업/복원/리셋 =====
+
+        // ====== 구글 드라이브 백업 ======
+        const GDRIVE_CLIENT_ID = '235367504863-v2dm6hhjufuk5ef2onlg3740a25bnjik.apps.googleusercontent.com';
+        const GDRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
+        const GDRIVE_FOLDER_NAME = 'BeeMaster_Backup';
+        let gdriveToken = null;
+
+        function gdriveLogin() {
+            const client = google.accounts.oauth2.initTokenClient({
+                client_id: GDRIVE_CLIENT_ID,
+                scope: GDRIVE_SCOPES,
+                callback: (resp) => {
+                    if(resp.error) { showToast('❌ 로그인 실패: ' + resp.error); return; }
+                    gdriveToken = resp.access_token;
+                    localStorage.setItem('gdrive_token', gdriveToken);
+                    gdriveUpdateUI(true);
+                    showToast('✅ 구글 로그인 성공!');
+                }
+            });
+            client.requestAccessToken();
+        }
+
+        function gdriveLogout() {
+            gdriveToken = null;
+            localStorage.removeItem('gdrive_token');
+            gdriveUpdateUI(false);
+            showToast('로그아웃 완료');
+        }
+
+        function gdriveUpdateUI(loggedIn) {
+            document.getElementById('gdrive-login-btn').style.display = loggedIn ? 'none' : 'block';
+            document.getElementById('gdrive-backup-btn').style.display = loggedIn ? 'block' : 'none';
+            document.getElementById('gdrive-restore-btn').style.display = loggedIn ? 'block' : 'none';
+            document.getElementById('gdrive-logout-btn').style.display = loggedIn ? 'block' : 'none';
+            const statusEl = document.getElementById('gdrive-status');
+            if(statusEl) statusEl.textContent = loggedIn ? '✅ 로그인됨' : '로그인 필요';
+            // 마지막 백업 시간
+            const last = localStorage.getItem('gdrive_last_backup');
+            const lastEl = document.getElementById('gdrive-last-backup');
+            if(lastEl && last) lastEl.textContent = '마지막 백업: ' + last;
+        }
+
+        async function gdriveGetOrCreateFolder() {
+            // 폴더 검색
+            const searchRes = await fetch(
+                `https://www.googleapis.com/drive/v3/files?q=name='${GDRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+                { headers: { Authorization: 'Bearer ' + gdriveToken } }
+            );
+            const searchData = await searchRes.json();
+            if(searchData.files && searchData.files.length > 0) return searchData.files[0].id;
+            // 폴더 생성
+            const createRes = await fetch('https://www.googleapis.com/drive/v3/files', {
+                method: 'POST',
+                headers: { Authorization: 'Bearer ' + gdriveToken, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: GDRIVE_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' })
+            });
+            const folder = await createRes.json();
+            return folder.id;
+        }
+
+        async function gdriveBackup() {
+            if(!gdriveToken) { gdriveLogin(); return; }
+            try {
+                showToast('☁️ 백업 중...');
+                const data = gatherAllData();
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], {type: 'application/json'});
+                const folderId = await gdriveGetOrCreateFolder();
+                const now = new Date();
+                const fname = `beemaster_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}_${String(now.getDate()).padStart(2,'0')}.json`;
+
+                // 기존 같은 이름 파일 삭제
+                const searchRes = await fetch(
+                    `https://www.googleapis.com/drive/v3/files?q=name='${fname}' and '${folderId}' in parents and trashed=false`,
+                    { headers: { Authorization: 'Bearer ' + gdriveToken } }
+                );
+                const searchData = await searchRes.json();
+                if(searchData.files && searchData.files.length > 0) {
+                    await fetch(`https://www.googleapis.com/drive/v3/files/${searchData.files[0].id}`, {
+                        method: 'DELETE', headers: { Authorization: 'Bearer ' + gdriveToken }
+                    });
+                }
+
+                // 파일 업로드
+                const meta = { name: fname, parents: [folderId] };
+                const form = new FormData();
+                form.append('metadata', new Blob([JSON.stringify(meta)], {type:'application/json'}));
+                form.append('file', blob);
+                const uploadRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+                    method: 'POST',
+                    headers: { Authorization: 'Bearer ' + gdriveToken },
+                    body: form
+                });
+                if(uploadRes.ok) {
+                    const dateStr = now.toLocaleString('ko-KR');
+                    localStorage.setItem('gdrive_last_backup', dateStr);
+                    const lastEl = document.getElementById('gdrive-last-backup');
+                    if(lastEl) lastEl.textContent = '마지막 백업: ' + dateStr;
+                    showToast('✅ 드라이브 백업 완료!');
+                } else {
+                    showToast('❌ 백업 실패. 다시 시도해주세요.');
+                }
+            } catch(e) {
+                console.error(e);
+                if(e.message && e.message.includes('401')) { gdriveToken = null; gdriveLogin(); }
+                else showToast('❌ 백업 오류: ' + e.message);
+            }
+        }
+
+        async function gdriveRestore() {
+            if(!gdriveToken) { gdriveLogin(); return; }
+            try {
+                const folderId = await gdriveGetOrCreateFolder();
+                // 파일 목록 조회 (최신순)
+                const listRes = await fetch(
+                    `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents and trashed=false&orderBy=createdTime desc&pageSize=10`,
+                    { headers: { Authorization: 'Bearer ' + gdriveToken } }
+                );
+                const listData = await listRes.json();
+                if(!listData.files || listData.files.length === 0) {
+                    showToast('❌ 백업 파일이 없습니다.');
+                    return;
+                }
+                // 가장 최근 파일 복원
+                const latest = listData.files[0];
+                if(!confirm(`"${latest.name}" 파일로 복원하시겠습니까?\n현재 데이터가 덮어씌워집니다.`)) return;
+                const fileRes = await fetch(
+                    `https://www.googleapis.com/drive/v3/files/${latest.id}?alt=media`,
+                    { headers: { Authorization: 'Bearer ' + gdriveToken } }
+                );
+                const restored = await fileRes.json();
+                restoreAllData(restored);
+                showToast('✅ 복원 완료! 앱을 새로고침합니다.');
+                setTimeout(() => location.reload(), 1500);
+            } catch(e) {
+                console.error(e);
+                showToast('❌ 복원 오류: ' + e.message);
+            }
+        }
+
+        // 설정탭 로드 시 로그인 상태 확인
+        function initGdriveUI() {
+            const saved = localStorage.getItem('gdrive_token');
+            if(saved) { gdriveToken = saved; gdriveUpdateUI(true); }
+            else gdriveUpdateUI(false);
+        }
+
         function backupData() {
             var backup = {
                 beeData: localStorage.getItem('beeData'),
