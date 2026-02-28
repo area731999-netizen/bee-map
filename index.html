@@ -2775,15 +2775,18 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         <div id="view-calendar" class="view-group">
             
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px;">
-                <button onclick="switchView('diary', true)" style="background: linear-gradient(135deg, #A0522D 0%, #7A3B1E 100%); color: #FFF8E1; padding: 16px 6px; border-radius: 14px; font-size: 15px; font-weight: 900; border: none; box-shadow: 0 4px 14px rgba(100,50,10,0.35); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; touch-action: manipulation;">
-                    <span style="font-size:1.6rem;">✍️</span>일지작성
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                <button onclick="switchView('diary', true)" style="background: linear-gradient(135deg, #A0522D 0%, #7A3B1E 100%); color: #FFF8E1; padding: 18px 6px; border-radius: 14px; font-size: 15px; font-weight: 900; border: none; box-shadow: 0 4px 14px rgba(100,50,10,0.35); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; touch-action: manipulation;">
+                    <span style="font-size:1.8rem;">✍️</span>일지작성
                 </button>
-                <button onclick="switchView('disease-history', true)" style="background: linear-gradient(135deg, #A0522D 0%, #7A3B1E 100%); color: #FFF8E1; padding: 16px 6px; border-radius: 14px; font-size: 15px; font-weight: 900; border: none; box-shadow: 0 4px 14px rgba(100,50,10,0.35); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; touch-action: manipulation;">
-                    <span style="font-size:1.6rem;">📋</span>방역조회
+                <button onclick="switchView('disease', true)" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #ffffff; padding: 18px 6px; border-radius: 14px; font-size: 15px; font-weight: 900; border: none; box-shadow: 0 4px 14px rgba(220,38,38,0.35); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; touch-action: manipulation;">
+                    <span style="font-size:1.8rem;">🛡️</span>방역작성
                 </button>
-                <button onclick="switchView('personal-schedule', true)" style="background: linear-gradient(135deg, #A0522D 0%, #7A3B1E 100%); color: #FFF8E1; padding: 16px 6px; border-radius: 14px; font-size: 15px; font-weight: 900; border: none; box-shadow: 0 4px 14px rgba(100,50,10,0.35); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; touch-action: manipulation;">
-                    <span style="font-size:1.6rem;">📅</span>일정
+                <button onclick="switchView('disease-history', true)" style="background: linear-gradient(135deg, #b45309 0%, #92400e 100%); color: #ffffff; padding: 18px 6px; border-radius: 14px; font-size: 15px; font-weight: 900; border: none; box-shadow: 0 4px 14px rgba(180,83,9,0.35); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; touch-action: manipulation;">
+                    <span style="font-size:1.8rem;">📋</span>방역조회
+                </button>
+                <button onclick="switchView('personal-schedule', true)" style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: #ffffff; padding: 18px 6px; border-radius: 14px; font-size: 15px; font-weight: 900; border: none; box-shadow: 0 4px 14px rgba(124,58,237,0.35); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; touch-action: manipulation;">
+                    <span style="font-size:1.8rem;">📅</span>일정
                 </button>
             </div>
 
@@ -2807,14 +2810,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <!-- 날씨 카드 -->
             <div class="input-row" style="margin-bottom:12px;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-                    <span style="color:var(--tx-gold); font-weight:800; font-size:1rem;">🌤️ 오늘 날씨</span>
+                    <span style="color:var(--tx-gold); font-weight:800; font-size:1rem;">🌤️ 봉장별 날씨</span>
                     <span id="dash-date" style="color:var(--tx-sub); font-size:0.8rem;"></span>
                 </div>
-                <div style="display:flex; align-items:center; gap:16px;">
-                    <div id="dash-temp" style="font-size:2.5rem; font-weight:900; color:var(--tx-gold);">--°C</div>
-                    <div>
-                        <div id="dash-apiary-name" style="color:var(--tx-main); font-weight:700; font-size:0.9rem;"></div>
-                        <div id="dash-wind" style="color:var(--tx-sub); font-size:0.8rem; margin-top:2px;"></div>
+                <div id="dash-weather-cards" style="display:grid; grid-template-columns: repeat(2,1fr); gap:8px;">
+                    <div style="background:var(--bg-input);border-radius:10px;padding:12px;text-align:center;">
+                        <div style="color:var(--tx-sub);font-size:0.8rem;">불러오는 중...</div>
                     </div>
                 </div>
             </div>
@@ -2828,7 +2829,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <!-- 봉장별 현황 -->
             <div class="input-row" style="margin-bottom:12px;">
                 <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">🏠 봉장 현황</div>
-                <div id="dash-apiaries" style="display:grid; grid-template-columns: repeat(2,1fr); gap:8px;"></div>
+                <div id="dash-apiaries" style="display:grid; grid-template-columns: repeat(3,1fr); gap:8px;"></div>
             </div>
 
             <!-- 최근 일지 -->
@@ -2857,10 +2858,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 <div id="selected-works-display" class="flex flex-wrap"></div>
             </div>
 
-            <button onclick="switchView('disease', true)" class="btn-dis">
-                <span>💊 방제 처리를 했나요?</span>
-                <span id="dis-status">입력 ▶</span>
-            </button>
+
 
             <div class="input-row">
                 <span class="input-label">📝 상세 메모</span>
@@ -2951,7 +2949,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
             <div class="input-row">
                 <label class="input-label">📝 상세 기록</label>
-                <textarea id="disease-memo" class="field" style="height: 140px; resize: vertical;" placeholder="방제 상세 내용을 기록하세요...&#10;예: 벌통 번호, 처리량, 특이사항 등"></textarea>
+                <div style="position: relative;">
+                    <textarea id="disease-memo" class="field" style="height: 140px; resize: vertical; padding-right: 80px;" placeholder="방제 상세 내용을 기록하세요...&#10;예: 벌통 번호, 처리량, 특이사항 등" onfocus="insertDiseaseWeather()"></textarea>
+                    <button class="voice-btn" onclick="startVoiceMemo(this, 'disease-memo')">🎤 음성</button>
+                </div>
             </div>
 
             <div class="input-row">
@@ -3592,7 +3593,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         let selectedBeeType = '양봉';
         let weatherInserted = false;
         let todayWeather = null;
-        let viewHistory = ['calendar'];
+        let viewHistory = ['dashboard'];
         let personalSchedules = JSON.parse(localStorage.getItem('personalSchedules')) || [];
         let calLocFilter = 'all';      // 달력 전용
         let diseaseLocFilter = 'all';  // 방역 전용
@@ -3739,27 +3740,67 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 const el = document.getElementById('dash-date');
                 if(el) el.textContent = dateStr + ' (' + ['일','월','화','수','목','금','토'][today.getDay()] + ')';
 
-                // 날씨
-                const tempEl = document.getElementById('dash-temp');
-                const windEl = document.getElementById('dash-wind');
-                const apiaryEl = document.getElementById('dash-apiary-name');
-                if(todayWeather && tempEl) {
-                    tempEl.textContent = todayWeather.temp + '°C';
-                    if(windEl) windEl.textContent = '풍속 ' + todayWeather.windSpeed + 'm/s';
-                }
-                // 선택된 봉장명
-                if(apiaryEl) {
-                    try {
-                        const u = JSON.parse(localStorage.getItem('beeUserInfo')||'{}');
-                        apiaryEl.textContent = (u.farmname || '') + ' ' + (selectedApiaryLoc || '');
-                    } catch(e){}
+                // 봉장별 날씨 카드
+                const weatherCardsEl = document.getElementById('dash-weather-cards');
+                if(weatherCardsEl) {
+                    const locs = JSON.parse(localStorage.getItem('apiaryLocations')||'{}');
+                    const activeApiaries = getActiveApiaries();
+                    
+                    // GPS 등록된 봉장만 필터
+                    const apiariesWithGPS = activeApiaries.filter(loc => locs[loc] && locs[loc].lat);
+                    
+                    if(apiariesWithGPS.length === 0) {
+                        // GPS 없으면 현재 날씨 하나만 표시
+                        weatherCardsEl.innerHTML = `<div style="background:var(--bg-input);border-radius:10px;padding:12px;grid-column:span 2;display:flex;align-items:center;gap:12px;">
+                            <div style="font-size:2rem;font-weight:900;color:var(--tx-gold);">${todayWeather ? todayWeather.temp+'°C' : '--°C'}</div>
+                            <div style="color:var(--tx-sub);font-size:0.8rem;">📍 GPS 미등록<br>${todayWeather ? '풍속 '+todayWeather.windSpeed+'m/s' : '날씨 로딩 중'}</div>
+                        </div>`;
+                    } else {
+                        // 봉장별 날씨 동시 호출
+                        weatherCardsEl.innerHTML = apiariesWithGPS.map(loc => {
+                            const icon = loc.includes('이동') ? '🚚' : '🏠';
+                            return `<div id="weather-card-${loc.replace(/\s/g,'_')}" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px;text-align:center;">
+                                <div style="font-size:1rem;">${icon}</div>
+                                <div style="font-weight:800;font-size:0.78rem;color:var(--tx-main);margin:2px 0;">${getDisplayName(loc)}</div>
+                                <div style="font-size:1.6rem;font-weight:900;color:var(--tx-gold);">--°C</div>
+                                <div style="font-size:0.7rem;color:var(--tx-sub);">불러오는 중...</div>
+                            </div>`;
+                        }).join('');
+                        
+                        // 봉장 수에 따라 그리드 조정
+                        const cnt = apiariesWithGPS.length;
+                        weatherCardsEl.style.gridTemplateColumns = cnt === 1 ? '1fr' : cnt === 3 ? '1fr' : 'repeat(2,1fr)';
+
+                        // 각 봉장 날씨 비동기 호출
+                        apiariesWithGPS.forEach(loc => {
+                            const coord = locs[loc];
+                            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coord.lat}&longitude=${coord.lng}&current=temperature_2m,wind_speed_10m&timezone=Asia/Seoul`,
+                                { signal: AbortSignal.timeout(5000) })
+                            .then(r => r.json())
+                            .then(data => {
+                                if(data && data.current) {
+                                    const temp = Math.round(data.current.temperature_2m);
+                                    const wind = data.current.wind_speed_10m.toFixed(1);
+                                    const card = document.getElementById('weather-card-' + loc.replace(/\s/g,'_'));
+                                    if(card) {
+                                        card.querySelector('div:nth-child(3)').textContent = temp + '°C';
+                                        card.querySelector('div:nth-child(4)').textContent = '풍속 ' + wind + 'm/s';
+                                    }
+                                }
+                            })
+                            .catch(() => {
+                                const card = document.getElementById('weather-card-' + loc.replace(/\s/g,'_'));
+                                if(card) card.querySelector('div:nth-child(4)').textContent = '오프라인';
+                            });
+                        });
+                    }
                 }
 
                 // 봉장 현황
                 const apiaryContainer = document.getElementById('dash-apiaries');
                 if(apiaryContainer) {
                     const active = getActiveApiaries();
-                    const dbData = JSON.parse(localStorage.getItem('beeDB')||'{}');
+                    const dbData = JSON.parse(localStorage.getItem('beeData')||'{}');
                     apiaryContainer.innerHTML = active.map(loc => {
                         const icon = loc.includes('이동') ? '🚚' : '🏠';
                         const keys = Object.keys(dbData).filter(k => {
@@ -3775,32 +3816,41 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     }).join('');
                 }
 
-                // 방역 현황
+                // 방역 현황 - 전체 목록 + 다음 예정일
                 const diseaseEl = document.getElementById('dash-disease');
                 if(diseaseEl) {
                     const logs = JSON.parse(localStorage.getItem('diseaseLogs')||'[]');
                     if(logs.length > 0) {
-                        const last = logs[logs.length-1];
-                        const lastDate = last.dateStr || '';
-                        // 다음 방역일 계산 (마지막 방역일 + 7일 기본)
-                        const parts = lastDate.split('-');
-                        let nextDate = '';
+                        const sorted = logs.slice().sort((a,b) => (b.dateStr||'').localeCompare(a.dateStr||''));
+                        const last = sorted[0];
+                        // 다음 방역일 계산
+                        let nextHTML = '';
+                        const parts = (last.dateStr||'').split('-');
                         if(parts.length === 3) {
-                            const d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-                            d.setDate(d.getDate() + 7);
+                            let d;
+                            if(last.alarmKey) {
+                                const ap = last.alarmKey.split('-');
+                                d = new Date(parseInt(ap[0]), parseInt(ap[1])-1, parseInt(ap[2]));
+                            } else {
+                                d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+                                d.setDate(d.getDate() + 7);
+                            }
                             const diff = Math.ceil((d - today) / (1000*60*60*24));
-                            nextDate = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                            const nextDate = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
                             const dday = diff === 0 ? 'D-Day' : diff > 0 ? 'D-'+diff : 'D+'+Math.abs(diff);
-                            diseaseEl.innerHTML = `
-                                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-input);border-radius:8px;margin-bottom:6px;">
-                                    <span style="color:var(--tx-sub);font-size:0.82rem;">마지막 방역</span>
-                                    <span style="color:var(--tx-main);font-weight:700;">${lastDate} · ${last.diseaseTypeName||last.diseaseType||'방역'}</span>
-                                </div>
-                                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:${diff<=3?'rgba(239,68,68,0.12)':'var(--bg-input)'};border-radius:8px;border:${diff<=3?'1px solid rgba(239,68,68,0.3)':'1px solid var(--bd-card)'};">
-                                    <span style="color:var(--tx-sub);font-size:0.82rem;">다음 방역 예정</span>
-                                    <span style="color:${diff<=3?'#ef4444':'var(--tx-main)'};font-weight:800;">${nextDate} <span style="font-size:0.85rem;">(${dday})</span></span>
-                                </div>`;
+                            nextHTML = `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:${diff<=3?'rgba(239,68,68,0.12)':'rgba(99,102,241,0.08)'};border-radius:8px;border:${diff<=3?'1px solid rgba(239,68,68,0.3)':'1px solid var(--bd-card)'};margin-bottom:8px;">
+                                <span style="color:var(--tx-sub);font-size:0.82rem;">🔔 다음 방역 예정</span>
+                                <span style="color:${diff<=3?'#ef4444':'var(--tx-main)'};font-weight:800;">${nextDate} (${dday})</span>
+                            </div>`;
                         }
+                        // 전체 방역 목록 (최신 5개)
+                        const listHTML = sorted.slice(0,5).map(log => 
+                            `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 8px;background:var(--bg-input);border-radius:8px;margin-bottom:5px;">
+                                <span style="color:var(--tx-main);font-weight:700;font-size:0.82rem;">${log.dateStr||''}</span>
+                                <span style="color:var(--tx-sub);font-size:0.78rem;">${log.location||''} · ${log.diseaseTypeName||log.diseaseType||'방역'}</span>
+                            </div>`
+                        ).join('');
+                        diseaseEl.innerHTML = nextHTML + listHTML;
                     } else {
                         diseaseEl.innerHTML = '<span style="color:var(--tx-sub);">방역 기록이 없습니다.</span>';
                     }
@@ -3809,16 +3859,24 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 // 최근 일지
                 const recentEl = document.getElementById('dash-recent');
                 if(recentEl) {
-                    const db = JSON.parse(localStorage.getItem('beeDB')||'{}');
-                    const allKeys = Object.keys(db).filter(k => db[k].records && db[k].records.length > 0).sort().reverse().slice(0,4);
+                    const db = JSON.parse(localStorage.getItem('beeData')||'{}');
+                    const allKeys = Object.keys(db).filter(k => db[k].records && db[k].records.length > 0).sort().reverse().slice(0,5);
                     if(allKeys.length > 0) {
                         recentEl.innerHTML = allKeys.map(key => {
                             const recs = db[key].records;
-                            const works = recs[0]?.works?.slice(0,2).join(', ') || '기록';
-                            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-input);border-radius:8px;margin-bottom:6px;cursor:pointer;" onclick="handleDayClick('${key}', null); switchView('calendar',true);">
-                                <span style="color:var(--tx-main);font-weight:700;">${key}</span>
-                                <span style="color:var(--tx-sub);font-size:0.82rem;">${works} ${recs.length > 1 ? '+' + (recs.length-1) + '건' : ''}</span>
-                            </div>`;
+                            // 날짜별 모든 기록 각각 나열
+                            return recs.map(rec => {
+                                const workArr = rec.works || rec.work || [];
+                                const works = Array.isArray(workArr) ? workArr.join(', ') : (workArr || '기록');
+                                const loc = rec.location || rec.loc || '';
+                                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-input);border-radius:8px;margin-bottom:5px;cursor:pointer;" onclick="handleDayClick('${key}', null); switchView('calendar',true);">
+                                    <div>
+                                        <span style="color:var(--tx-main);font-weight:700;">${key}</span>
+                                        ${loc ? `<span style="color:var(--tx-sub);font-size:0.75rem;margin-left:6px;">${loc}</span>` : ''}
+                                    </div>
+                                    <span style="color:var(--tx-sub);font-size:0.82rem;">${works||'기록'}</span>
+                                </div>`;
+                            }).join('');
                         }).join('');
                     } else {
                         recentEl.innerHTML = '<span style="color:var(--tx-sub);">최근 일지가 없습니다.</span>';
@@ -3881,13 +3939,11 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 } else {
                     console.log('양봉 모드 진입');
                     
-                    // 달력 화면 활성화
-                    const calendarView = document.getElementById('view-calendar');
-                    if(calendarView) {
-                        calendarView.classList.add('view-active');
-                        console.log('✓ 달력 화면 활성화됨');
-                    } else {
-                        console.error('❌ 달력 화면을 찾을 수 없음');
+                    // 홈 대시보드 활성화
+                    const dashboardView = document.getElementById('view-dashboard');
+                    if(dashboardView) {
+                        dashboardView.classList.add('view-active');
+                        console.log('✓ 홈 대시보드 활성화됨');
                     }
                     
                     // 하단 네비게이션 표시
@@ -3897,15 +3953,18 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                         console.log('✓ 하단 네비게이션 표시됨');
                     }
                     
-                    viewHistory = ['calendar'];
-                    currentActiveView = 'calendar';
+                    viewHistory = ['dashboard'];
+                    currentActiveView = 'dashboard';
+                    
+                    // 대시보드 데이터 갱신
+                    setTimeout(() => updateDashboard(), 300);
                     
                     // 네비게이션 상태 초기화
                     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                    const navCalendar = document.getElementById('nav-calendar');
-                    if(navCalendar) {
-                        navCalendar.classList.add('active');
-                        console.log('✓ 달력 네비게이션 활성화됨');
+                    const navHome = document.getElementById('nav-home');
+                    if(navHome) {
+                        navHome.classList.add('active');
+                        console.log('✓ 홈력 네비게이션 활성화됨');
                     }
                     
                     // 렌더링 (약간의 지연을 주어 DOM이 준비되도록)
@@ -4078,6 +4137,27 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             `;
         }
 
+
+        function insertDiseaseWeather() {
+            const memoField = document.getElementById('disease-memo');
+            if (!memoField || memoField.value.trim().length > 0) return;
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+            if (todayWeather) {
+                const weatherText = `[${dateStr} 방제일지] ${todayWeather.temp}°C / 풍속 ${todayWeather.windSpeed}m/s\n\n`;
+                memoField.value = weatherText;
+                memoField.setSelectionRange(weatherText.length, weatherText.length);
+            } else {
+                fetchWeatherData().then(() => {
+                    if (todayWeather && memoField.value.trim().length === 0) {
+                        const weatherText = `[${dateStr} 방제일지] ${todayWeather.temp}°C / 풍속 ${todayWeather.windSpeed}m/s\n\n`;
+                        memoField.value = weatherText;
+                        memoField.setSelectionRange(weatherText.length, weatherText.length);
+                    }
+                });
+            }
+        }
+
         function insertWeather() {
             const memoField = document.getElementById('main-memo');
             if (weatherInserted || memoField.value.trim().length > 0) return;
@@ -4090,6 +4170,16 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 memoField.value = weatherText;
                 weatherInserted = true;
                 memoField.setSelectionRange(weatherText.length, weatherText.length);
+            } else {
+                // 날씨 아직 로딩 중이면 재시도
+                fetchWeatherData().then(() => {
+                    if (todayWeather && !weatherInserted && memoField.value.trim().length === 0) {
+                        const weatherText = `[${dateStr} 작업일지] ${todayWeather.temp}°C / ${todayWeather.description} / 풍속 ${todayWeather.windSpeed}m/s\n\n`;
+                        memoField.value = weatherText;
+                        weatherInserted = true;
+                        memoField.setSelectionRange(weatherText.length, weatherText.length);
+                    }
+                });
             }
         }
 
@@ -5028,6 +5118,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 showToast('✅ 방역일지가 삭제되었습니다');
                 renderDiseaseHistory();
                 renderCalendar();
+                // 달력 날짜 상세 화면도 갱신
+                if(currentActiveView === 'calendar' && log.dateStr) {
+                    showDayWithSchedule(log.dateStr);
+                }
                 
             } catch(error) {
                 console.error('삭제 오류:', error);
@@ -5746,6 +5840,8 @@ function saveSettingsAll(){
   showToast('✅ 모든 설정이 저장되었습니다!');
   // 봉장 버튼 즉시 갱신
   try { loadApiarySettings(); renderLocationButtons(); renderLocationFilters(); } catch(e) {}
+  // 저장 후 홈 대시보드로 이동
+  setTimeout(() => { goHome(); }, 800);
 }
 
 function saveUserInfo(){
@@ -6097,10 +6193,11 @@ function getUserInfo(){
             
             showToast('✅ 일지가 저장되었습니다!');
             
-            // 달력 화면으로 전환
+            // 달력 화면으로 전환 + 홈 대시보드 갱신
             setTimeout(() => {
                 renderCalendar();
                 switchView('calendar', true);
+                try { updateDashboard(); } catch(e) {}
             }, 300);
         }
 
@@ -8347,8 +8444,8 @@ function getUserInfo(){
             },
             'nosema': {
                 medicines: ['푸마길린'],
-                details: { '푸마길린': ['분말'] },
-                methods: { '푸마길린': ['사양'] }
+                details: { '푸마길린': [] },
+                methods: { '푸마길린': ['분말처리'] }
             }
         };
 
@@ -8429,8 +8526,8 @@ function getUserInfo(){
             const detailSelect = document.getElementById('medicine-detail-select');
             const methodSelect = document.getElementById('medicine-method');
             
-            // ★ 옥시테트라사이클린: 약품상세 없이 처리방법만 표시
-            if(medicine === '옥시테트라사이클린') {
+            // ★ 옥시테트라사이클린, 푸마길린: 약품상세 없이 처리방법만 표시
+            if(medicine === '옥시테트라사이클린' || medicine === '푸마길린') {
                 if(detailRow) detailRow.style.display = 'none';
                 methodSelect.innerHTML = '<option value="">선택하세요</option>';
                 if(methods) {
@@ -8506,7 +8603,10 @@ function getUserInfo(){
             // 방제 기록 저장
             if(!diseaseLogs) diseaseLogs = [];
             
-            const diseaseTypeName = document.querySelector('#disease-type option:checked')?.text || diseaseType;
+            // 직접입력인 경우 입력값 사용
+            const customNameVal = document.getElementById('disease-custom-name')?.value.trim() || '';
+            const selectedOptionText = document.querySelector('#disease-type option:checked')?.text || diseaseType;
+            const diseaseTypeName = (diseaseType === 'direct' && customNameVal) ? customNameVal : selectedOptionText;
             const medicineName = medicine || '미기재';
             const detailName = document.getElementById('medicine-detail-select')?.value || '';
             const methodName = document.getElementById('medicine-method')?.value || '';
@@ -8545,14 +8645,10 @@ function getUserInfo(){
             document.getElementById('disease-loc-select').value = selectedDiseaseApiaryLoc;
             
             // 방제 저장 후 → 일지 입력 화면으로 돌아가기
+            // 방제 저장 후 → 달력으로 이동
             setTimeout(() => {
-                // 일지 화면의 방제 버튼에 완료 표시
-                const disStatus = document.getElementById('dis-status');
-                if(disStatus) {
-                    disStatus.textContent = '✅ 저장됨';
-                    disStatus.style.color = '#4ade80';
-                }
-                switchView('diary', false);
+                switchView('calendar', false);
+                renderCalendar();
             }, 300);
         }
 
@@ -8824,7 +8920,7 @@ function getUserInfo(){
             }
         }
 
-        function startVoiceMemo(button) {
+        function startVoiceMemo(button, targetId) {
             // 브라우저 지원 확인
             if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
                 showToast('❌ 이 브라우저는 음성 인식을 지원하지 않습니다');
@@ -8861,9 +8957,12 @@ function getUserInfo(){
 
                 rec.onresult = function(event) {
                     const transcript = event.results[0][0].transcript;
-                    // 현재 버튼 근처의 textarea 찾기
-                    const container = button.closest('div[style]') || button.parentElement;
-                    const textarea = container ? container.querySelector('textarea') : document.getElementById('main-memo');
+                    // targetId 우선, 없으면 근처 textarea 탐색
+                    let textarea = targetId ? document.getElementById(targetId) : null;
+                    if(!textarea) {
+                        const container = button.closest('div[style]') || button.parentElement;
+                        textarea = container ? container.querySelector('textarea') : document.getElementById('main-memo');
+                    }
                     if(textarea) {
                         textarea.value = (textarea.value ? textarea.value + ' ' : '') + transcript;
                     }
@@ -9101,11 +9200,12 @@ document.addEventListener('click', function(e) {
 
     var action = btn.getAttribute('data-action') || '';
     var idx    = parseInt(btn.getAttribute('data-index') || '-1', 10);
-    var key    = btn.getAttribute('data-key') || '';
+    var key    = btn.getAttribute('data-key') || btn.getAttribute('data-date') || '';
 
     try {
         switch (action) {
             case 'deleteRecord':
+                if(!key) { showToast('⚠️ 날짜 정보가 없습니다. 다시 시도해주세요.'); break; }
                 deleteDayRecord(key, idx); break;
             case 'editRecord':
                 editDayRecord(key, idx); break;
