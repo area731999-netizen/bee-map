@@ -2828,13 +2828,19 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
             <!-- 방역 현황 -->
             <div class="input-row" style="margin-bottom:12px;">
-                <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">🛡️ 방역 현황</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                    <span style="color:var(--tx-gold); font-weight:800; font-size:1rem;">🛡️ 방역 현황</span>
+                    <button onclick="switchView('disease',true)" style="background:rgba(220,38,38,0.15);color:#f87171;border:1px solid rgba(220,38,38,0.3);border-radius:8px;padding:5px 12px;font-size:0.8rem;font-weight:700;cursor:pointer;">+ 방역</button>
+                </div>
                 <div id="dash-disease" style="color:var(--tx-sub); font-size:0.9rem;">방역 기록이 없습니다.</div>
             </div>
 
             <!-- 최근 일지 -->
             <div class="input-row" style="margin-bottom:12px;">
-                <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">📝 최근 일지</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                    <span style="color:var(--tx-gold); font-weight:800; font-size:1rem;">📝 최근 일지</span>
+                    <button onclick="switchView('diary',true)" style="background:rgba(255,179,0,0.15);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.3);border-radius:8px;padding:5px 12px;font-size:0.8rem;font-weight:700;cursor:pointer;">+ 일지</button>
+                </div>
                 <div id="dash-recent" style="color:var(--tx-sub); font-size:0.9rem;">최근 일지가 없습니다.</div>
             </div>
 
