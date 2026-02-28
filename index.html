@@ -2800,6 +2800,42 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div id="record-list" class="mt-8 space-y-4 pb-24"></div>
         </div>
 
+        <!-- 홈 대시보드 -->
+        <div id="view-dashboard" class="view-group" style="padding-bottom: 120px;">
+            <!-- 날씨 카드 -->
+            <div class="input-row" style="margin-bottom:12px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                    <span style="color:var(--tx-gold); font-weight:800; font-size:1rem;">🌤️ 오늘 날씨</span>
+                    <span id="dash-date" style="color:var(--tx-sub); font-size:0.8rem;"></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:16px;">
+                    <div id="dash-temp" style="font-size:2.5rem; font-weight:900; color:var(--tx-gold);">--°C</div>
+                    <div>
+                        <div id="dash-apiary-name" style="color:var(--tx-main); font-weight:700; font-size:0.9rem;"></div>
+                        <div id="dash-wind" style="color:var(--tx-sub); font-size:0.8rem; margin-top:2px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 방역 현황 -->
+            <div class="input-row" style="margin-bottom:12px;">
+                <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">🛡️ 방역 현황</div>
+                <div id="dash-disease" style="color:var(--tx-sub); font-size:0.9rem;">방역 기록이 없습니다.</div>
+            </div>
+
+            <!-- 봉장별 현황 -->
+            <div class="input-row" style="margin-bottom:12px;">
+                <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">🏠 봉장 현황</div>
+                <div id="dash-apiaries" style="display:grid; grid-template-columns: repeat(2,1fr); gap:8px;"></div>
+            </div>
+
+            <!-- 최근 일지 -->
+            <div class="input-row" style="margin-bottom:12px;">
+                <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">📝 최근 일지</div>
+                <div id="dash-recent" style="color:var(--tx-sub); font-size:0.9rem;">최근 일지가 없습니다.</div>
+            </div>
+        </div>
+
         <!-- 일지 입력 화면 -->
         <div id="view-diary" class="view-group" style="padding-bottom: 200px;">
             <div class="input-row">
@@ -3683,8 +3719,110 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         }
 
         // ==================== 앱 시작 함수 ====================
+
+        function updateDashboard() {
+            try {
+                const today = new Date();
+                const dateStr = today.getFullYear() + '.' + String(today.getMonth()+1).padStart(2,'0') + '.' + String(today.getDate()).padStart(2,'0');
+                const el = document.getElementById('dash-date');
+                if(el) el.textContent = dateStr + ' (' + ['일','월','화','수','목','금','토'][today.getDay()] + ')';
+
+                // 날씨
+                const tempEl = document.getElementById('dash-temp');
+                const windEl = document.getElementById('dash-wind');
+                const apiaryEl = document.getElementById('dash-apiary-name');
+                if(todayWeather && tempEl) {
+                    tempEl.textContent = todayWeather.temp + '°C';
+                    if(windEl) windEl.textContent = '풍속 ' + todayWeather.windSpeed + 'm/s';
+                }
+                // 선택된 봉장명
+                if(apiaryEl) {
+                    try {
+                        const u = JSON.parse(localStorage.getItem('beeUserInfo')||'{}');
+                        apiaryEl.textContent = (u.farmname || '') + ' ' + (selectedApiaryLoc || '');
+                    } catch(e){}
+                }
+
+                // 봉장 현황
+                const apiaryContainer = document.getElementById('dash-apiaries');
+                if(apiaryContainer) {
+                    const active = getActiveApiaries();
+                    const dbData = JSON.parse(localStorage.getItem('beeDB')||'{}');
+                    apiaryContainer.innerHTML = active.map(loc => {
+                        const icon = loc.includes('이동') ? '🚚' : '🏠';
+                        const keys = Object.keys(dbData).filter(k => {
+                            const d = dbData[k];
+                            return d.records && d.records.some(r => r.location === loc || r.loc === loc);
+                        });
+                        const lastDate = keys.sort().reverse()[0] || '';
+                        return `<div style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px;text-align:center;">
+                            <div style="font-size:1.4rem;">${icon}</div>
+                            <div style="font-weight:800;font-size:0.82rem;color:var(--tx-main);margin-top:4px;">${getDisplayName(loc)}</div>
+                            <div style="font-size:0.72rem;color:var(--tx-sub);margin-top:2px;">${lastDate ? '최근: '+lastDate : '기록없음'}</div>
+                        </div>`;
+                    }).join('');
+                }
+
+                // 방역 현황
+                const diseaseEl = document.getElementById('dash-disease');
+                if(diseaseEl) {
+                    const logs = JSON.parse(localStorage.getItem('diseaseLogs')||'[]');
+                    if(logs.length > 0) {
+                        const last = logs[logs.length-1];
+                        const lastDate = last.dateStr || '';
+                        // 다음 방역일 계산 (마지막 방역일 + 7일 기본)
+                        const parts = lastDate.split('-');
+                        let nextDate = '';
+                        if(parts.length === 3) {
+                            const d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+                            d.setDate(d.getDate() + 7);
+                            const diff = Math.ceil((d - today) / (1000*60*60*24));
+                            nextDate = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                            const dday = diff === 0 ? 'D-Day' : diff > 0 ? 'D-'+diff : 'D+'+Math.abs(diff);
+                            diseaseEl.innerHTML = `
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-input);border-radius:8px;margin-bottom:6px;">
+                                    <span style="color:var(--tx-sub);font-size:0.82rem;">마지막 방역</span>
+                                    <span style="color:var(--tx-main);font-weight:700;">${lastDate} · ${last.diseaseTypeName||last.diseaseType||'방역'}</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:${diff<=3?'rgba(239,68,68,0.12)':'var(--bg-input)'};border-radius:8px;border:${diff<=3?'1px solid rgba(239,68,68,0.3)':'1px solid var(--bd-card)'};">
+                                    <span style="color:var(--tx-sub);font-size:0.82rem;">다음 방역 예정</span>
+                                    <span style="color:${diff<=3?'#ef4444':'var(--tx-main)'};font-weight:800;">${nextDate} <span style="font-size:0.85rem;">(${dday})</span></span>
+                                </div>`;
+                        }
+                    } else {
+                        diseaseEl.innerHTML = '<span style="color:var(--tx-sub);">방역 기록이 없습니다.</span>';
+                    }
+                }
+
+                // 최근 일지
+                const recentEl = document.getElementById('dash-recent');
+                if(recentEl) {
+                    const db = JSON.parse(localStorage.getItem('beeDB')||'{}');
+                    const allKeys = Object.keys(db).filter(k => db[k].records && db[k].records.length > 0).sort().reverse().slice(0,4);
+                    if(allKeys.length > 0) {
+                        recentEl.innerHTML = allKeys.map(key => {
+                            const recs = db[key].records;
+                            const works = recs[0]?.works?.slice(0,2).join(', ') || '기록';
+                            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-input);border-radius:8px;margin-bottom:6px;cursor:pointer;" onclick="handleDayClick('${key}', null); switchView('calendar',true);">
+                                <span style="color:var(--tx-main);font-weight:700;">${key}</span>
+                                <span style="color:var(--tx-sub);font-size:0.82rem;">${works} ${recs.length > 1 ? '+' + (recs.length-1) + '건' : ''}</span>
+                            </div>`;
+                        }).join('');
+                    } else {
+                        recentEl.innerHTML = '<span style="color:var(--tx-sub);">최근 일지가 없습니다.</span>';
+                    }
+                }
+            } catch(e) { console.error('대시보드 오류:', e); }
+        }
+
         function goHome() {
-            // 대문으로 돌아가기
+            switchView('dashboard', true);
+            // 대시보드 데이터 갱신
+            updateDashboard();
+        }
+        
+        function goToSplash() {
+            // 대문으로 돌아가기 (뒤로가기 버튼용)
             document.getElementById('main-app').style.display = 'none';
             document.getElementById('splash').style.display = 'flex';
             document.querySelector('.bottom-nav').style.display = 'none';
