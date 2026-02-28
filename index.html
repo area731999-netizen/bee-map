@@ -2820,6 +2820,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 </div>
             </div>
 
+            <!-- 오늘의 일정 -->
+            <div class="input-row" style="margin-bottom:12px;">
+                <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">📅 오늘의 일정</div>
+                <div id="dash-today" style="color:var(--tx-sub); font-size:0.9rem;">오늘 일정이 없습니다.</div>
+            </div>
+
             <!-- 방역 현황 -->
             <div class="input-row" style="margin-bottom:12px;">
                 <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">🛡️ 방역 현황</div>
@@ -2830,6 +2836,27 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div class="input-row" style="margin-bottom:12px;">
                 <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">📝 최근 일지</div>
                 <div id="dash-recent" style="color:var(--tx-sub); font-size:0.9rem;">최근 일지가 없습니다.</div>
+            </div>
+
+            <!-- 학술 검색 -->
+            <div class="input-row" style="margin-bottom:80px;">
+                <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">🔬 양봉 학술검색</div>
+                <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:8px;">
+                    <button onclick="openScholar('honeybee')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🐝 honeybee</button>
+                    <button onclick="openScholar('varroa mite')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🦠 varroa mite</button>
+                    <button onclick="openScholar('vespa velutina')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🐝 vespa velutina</button>
+                    <button onclick="openScholar('honeybee nutrition')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🌸 honeybee nutrition</button>
+                    <button onclick="openScholar('nosema apis')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🦠 nosema apis</button>
+                    <button onclick="openScholar('nosema ceranae')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🦠 nosema ceranae</button>
+                    <button onclick="openScholar('colony collapse disorder')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🌿 colony collapse</button>
+                    <button onclick="openScholar('honeybee winter survival')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🌡️ winter survival</button>
+                    <button onclick="openScholar('tracheal mite honeybee')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🐛 tracheal mite</button>
+                    <button onclick="openScholar('queen bee behavior')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">👑 queen bee behavior</button>
+                    <button onclick="openScholar('pollination honeybee')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🌺 pollination</button>
+                    <button onclick="openScholar('pesticide honeybee')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🌿 pesticide</button>
+                    <button onclick="openScholar('climate change honeybee')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">🌡️ climate change</button>
+                    <button onclick="openScholar('oxalic acid varroa')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px 6px;color:var(--tx-main);font-size:0.78rem;font-weight:700;cursor:pointer;text-align:center;">💊 oxalic acid varroa</button>
+                </div>
             </div>
         </div>
 
@@ -3813,6 +3840,56 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
                 // 봉장현황은 날씨카드에 통합됨
 
+                // 오늘의 일정
+                const todayEl = document.getElementById('dash-today');
+                if(todayEl) {
+                    const todayKey = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate();
+                    const todayKeyPad = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+                    let todayItems = [];
+
+                    // 개인일정
+                    const schedules = JSON.parse(localStorage.getItem('personalSchedules')||'[]');
+                    schedules.forEach(s => {
+                        if(s.date === todayKeyPad || s.date === todayKey) {
+                            todayItems.push(`<div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;margin-bottom:5px;">
+                                <span style="font-size:1.1rem;">📅</span>
+                                <span style="color:var(--tx-main);font-weight:700;font-size:0.85rem;">${s.title||'개인일정'}</span>
+                            </div>`);
+                        }
+                    });
+
+                    // 방역 알림 예정
+                    const dLogs = JSON.parse(localStorage.getItem('diseaseLogs')||'[]');
+                    dLogs.forEach(log => {
+                        if(log.alarmKey === todayKey || log.alarmKey === todayKeyPad) {
+                            todayItems.push(`<div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:8px;margin-bottom:5px;">
+                                <span style="font-size:1.1rem;">🛡️</span>
+                                <span style="color:#ef4444;font-weight:700;font-size:0.85rem;">방역 예정 · ${log.location||''} · ${log.diseaseTypeName||log.diseaseType||'방역'}</span>
+                            </div>`);
+                        }
+                    });
+
+                    // 왕대 출방
+                    const beeData = JSON.parse(localStorage.getItem('beeData')||'{}');
+                    if(beeData[todayKey] && beeData[todayKey].isQueen) {
+                        todayItems.push(`<div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);border-radius:8px;margin-bottom:5px;">
+                            <span style="font-size:1.1rem;">👑</span>
+                            <span style="color:var(--tx-gold);font-weight:700;font-size:0.85rem;">왕대 출방 예정일</span>
+                        </div>`);
+                    }
+
+                    // 오늘 일지
+                    if(beeData[todayKey] && beeData[todayKey].records && beeData[todayKey].records.length > 0) {
+                        const recs = beeData[todayKey].records;
+                        todayItems.push(`<div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);border-radius:8px;margin-bottom:5px;">
+                            <span style="font-size:1.1rem;">📔</span>
+                            <span style="color:var(--tx-green);font-weight:700;font-size:0.85rem;">오늘 일지 ${recs.length}건 작성됨</span>
+                        </div>`);
+                    }
+
+                    todayEl.innerHTML = todayItems.length > 0 ? todayItems.join('') : '<span style="color:var(--tx-sub);">오늘 일정이 없습니다.</span>';
+                }
+
                 // 방역 현황 - 전체 목록 + 다음 예정일
                 const diseaseEl = document.getElementById('dash-disease');
                 if(diseaseEl) {
@@ -3880,6 +3957,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     }
                 }
             } catch(e) { console.error('대시보드 오류:', e); }
+        }
+
+        function openScholar(query) {
+            const encoded = encodeURIComponent(query);
+            const url = 'https://scholar.google.com/scholar?q=' + encoded + '&scisbd=1&as_ylo=' + new Date().getFullYear();
+            window.open(url, '_blank');
         }
 
         function goHome() {
