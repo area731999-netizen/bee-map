@@ -2727,7 +2727,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 <div id="selected-type-text" style="color:var(--tx-amber);font-size:12px;font-weight:800;letter-spacing:0.5px;">선택: 양봉</div>
                 <div style="font-weight:800;font-size:15px;color:#ffffff;">
                     <span id="current-date">2026.02.05</span>
-                    <span style="color:var(--tx-gold);margin-left:6px;" id="temp-display">--°C</span>
+                    <span style="color:var(--tx-gold);margin-left:6px;" id="temp-display">--°C</span><span id="weather-source-badge" style="display:none;font-size:0.55rem;margin-left:4px;padding:1px 4px;border-radius:4px;background:rgba(59,130,246,0.25);color:#60a5fa;font-weight:700;vertical-align:middle;"></span>
                 </div>
             </div>
             <div style="display:flex;gap:5px;align-items:center;flex-shrink:0;">
@@ -3843,6 +3843,19 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                                 if(result) {
                                     card.querySelector('div:nth-child(3)').textContent = result.temp + '°C';
                                     card.querySelector('div:nth-child(4)').textContent = '풍속 ' + result.windSpeed + 'm/s';
+                                    const srcEl = card.querySelector('div:nth-child(5)');
+                                    if(srcEl) srcEl.dataset.source = result.source || '';
+                                    // 출처 표시 추가
+                                    let sourceEl = card.querySelector('.weather-source');
+                                    if(!sourceEl) {
+                                        sourceEl = document.createElement('div');
+                                        sourceEl.className = 'weather-source';
+                                        sourceEl.style.cssText = 'font-size:0.6rem;margin-top:2px;padding:1px 5px;border-radius:4px;display:inline-block;';
+                                        card.appendChild(sourceEl);
+                                    }
+                                    sourceEl.textContent = result.source || '';
+                                    sourceEl.style.background = result.source === '기상청' ? 'rgba(59,130,246,0.2)' : 'rgba(156,163,175,0.2)';
+                                    sourceEl.style.color = result.source === '기상청' ? '#60a5fa' : 'var(--tx-sub)';
                                 } else {
                                     card.querySelector('div:nth-child(4)').textContent = '오프라인';
                                 }
@@ -4131,7 +4144,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     if(item.category === 'T1H') temp = parseFloat(item.obsrValue);
                     if(item.category === 'WSD') wind = parseFloat(item.obsrValue);
                 });
-                if(temp !== null) return {temp: Math.round(temp), windSpeed: wind ? wind.toFixed(1) : '--'};
+                if(temp !== null) return {temp: Math.round(temp), windSpeed: wind ? wind.toFixed(1) : '--', source: '기상청'};
             } catch(e) {
                 console.warn('기상청 API 실패, Open-Meteo 대체:', e);
             }
@@ -4139,7 +4152,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             try {
                 const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,wind_speed_10m&timezone=Asia/Seoul`, {signal: AbortSignal.timeout(5000)});
                 const data = await res.json();
-                if(data?.current) return {temp: Math.round(data.current.temperature_2m), windSpeed: data.current.wind_speed_10m.toFixed(1)};
+                if(data?.current) return {temp: Math.round(data.current.temperature_2m), windSpeed: data.current.wind_speed_10m.toFixed(1), source: '예보'};
             } catch(e2) {}
             return null;
         }
@@ -4329,7 +4342,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     const temp = result.temp;
                     const windSpeed = result.windSpeed;
                     
-                    todayWeather = { temp, windSpeed, description: '맑음' };
+                    todayWeather = { temp, windSpeed, description: '맑음', source: result.source || '' };
 
                     // 날씨 캐시 저장
                     const now = new Date();
@@ -4341,6 +4354,13 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     
                     const tempDisplay = document.getElementById('temp-display');
                     if (tempDisplay) tempDisplay.innerText = `${temp}°C`;
+                    const srcBadge = document.getElementById('weather-source-badge');
+                    if(srcBadge && result) {
+                        srcBadge.textContent = result.source || '';
+                        srcBadge.style.display = result.source ? 'inline' : 'none';
+                        srcBadge.style.background = result.source === '기상청' ? 'rgba(59,130,246,0.25)' : 'rgba(156,163,175,0.2)';
+                        srcBadge.style.color = result.source === '기상청' ? '#60a5fa' : 'var(--tx-sub)';
+                    }
                     
                     updateInspectionGuide(temp, windSpeed);
                 }
