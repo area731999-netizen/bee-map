@@ -4866,11 +4866,42 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 return;
             }
             
+            const oldRecord = db[key].records[recordIndex];
+            const hadQueen = oldRecord.works && oldRecord.works.includes('왕대이충');
+            const hasQueen = worksArray.includes('왕대이충');
+
             // 해당 인덱스의 기록만 수정
             db[key].records[recordIndex].works = worksArray;
             db[key].records[recordIndex].memo = memo;
             db[key].records[recordIndex].timestamp = new Date().toISOString();
-            
+
+            // 왕대이충이 제거된 경우 → 11일 후 이벤트 삭제
+            // (단, 같은 날 다른 기록에 왕대이충이 없을 때만)
+            if(hadQueen && !hasQueen) {
+                const stillHasQueen = db[key].records.some(function(r, i) {
+                    return i !== recordIndex && r.works && r.works.includes('왕대이충');
+                });
+                if(!stillHasQueen) {
+                    const parts = key.split('-');
+                    const qDate = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+                    qDate.setDate(qDate.getDate() + 11);
+                    const qKey = qDate.getFullYear() + '-' + (qDate.getMonth()+1) + '-' + qDate.getDate();
+                    if(db[qKey]) {
+                        db[qKey].isQueen = false;
+                        if(!db[qKey].records?.length && !db[qKey].isDiseaseAlarm) delete db[qKey];
+                    }
+                }
+            }
+            // 왕대이충이 새로 추가된 경우 → 11일 후 이벤트 생성
+            if(!hadQueen && hasQueen) {
+                const parts = key.split('-');
+                const qDate = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+                qDate.setDate(qDate.getDate() + 11);
+                const qKey = qDate.getFullYear() + '-' + (qDate.getMonth()+1) + '-' + qDate.getDate();
+                if(!db[qKey]) db[qKey] = {};
+                db[qKey].isQueen = true;
+            }
+
             localStorage.setItem('beeData', JSON.stringify(db));
             
             showToast('✅ 기록이 수정되었습니다');
@@ -4891,22 +4922,24 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             }
             
             // 왕대이충 작업이 있는 경우 11일 후 출방 이벤트 삭제
+            // (단, 같은 날 다른 봉장 기록에도 왕대이충이 없을 때만)
             if(record.works && record.works.includes('왕대이충')) {
-                const parts = key.split('-');
-                const recordDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-                const queenDate = new Date(recordDate);
-                queenDate.setDate(queenDate.getDate() + 11);
-                
-                const qy = queenDate.getFullYear();
-                const qm = queenDate.getMonth() + 1;
-                const qd = queenDate.getDate();
-                const queenKey = qy + '-' + qm + '-' + qd;
-                
-                if(db[queenKey]) {
-                    db[queenKey].isQueen = false;
-                    if(!db[queenKey].records || db[queenKey].records.length === 0) {
-                        if(!db[queenKey].isDiseaseAlarm) {
-                            delete db[queenKey];
+                const remainingQueenOnDate = db[key].records.filter(function(r, i) {
+                    return i !== recordIndex && r.works && r.works.includes('왕대이충');
+                });
+                if(remainingQueenOnDate.length === 0) {
+                    const parts = key.split('-');
+                    const recordDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                    const queenDate = new Date(recordDate);
+                    queenDate.setDate(queenDate.getDate() + 11);
+                    const qy = queenDate.getFullYear();
+                    const qm = queenDate.getMonth() + 1;
+                    const qd = queenDate.getDate();
+                    const queenKey = qy + '-' + qm + '-' + qd;
+                    if(db[queenKey]) {
+                        db[queenKey].isQueen = false;
+                        if(!db[queenKey].records || db[queenKey].records.length === 0) {
+                            if(!db[queenKey].isDiseaseAlarm) delete db[queenKey];
                         }
                     }
                 }
