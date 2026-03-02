@@ -1210,12 +1210,21 @@
         <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:16px;">🏺 벌통 위치 등록</div>
         <label class="input-label">🏺 벌통 번호</label>
         <select class="field" id="reg-hive-num"></select>
-        <label class="input-label">📍 현재 GPS 좌표</label>
-        <div style="display:flex;gap:8px;margin-bottom:12px;">
-            <input type="text" class="field" id="reg-lat" placeholder="위도" style="margin-bottom:0;flex:1;" readonly>
-            <input type="text" class="field" id="reg-lng" placeholder="경도" style="margin-bottom:0;flex:1;" readonly>
+        <label class="input-label">📍 좌표 입력 <span style="font-size:0.72rem;color:var(--tx-sub);font-weight:400;">(GPS 자동 또는 직접 입력 가능)</span></label>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <div style="flex:1;">
+                <div style="font-size:0.72rem;color:var(--tx-sub);margin-bottom:3px;">위도 (예: 36.123456)</div>
+                <input type="number" class="field" id="reg-lat" placeholder="36.123456" style="margin-bottom:0;" step="0.000001">
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:0.72rem;color:var(--tx-sub);margin-bottom:3px;">경도 (예: 127.123456)</div>
+                <input type="number" class="field" id="reg-lng" placeholder="127.123456" style="margin-bottom:0;" step="0.000001">
+            </div>
         </div>
-        <button class="btn-sm" onclick="getGPSForRegister()" style="width:100%;margin-bottom:14px;">🛰️ GPS로 현재 위치 가져오기</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+            <button class="btn-sm" onclick="getGPSForRegister()">🛰️ GPS 자동입력</button>
+            <button class="btn-sm" onclick="setRandomLocation()">🎲 테스트 위치</button>
+        </div>
         <label class="input-label">📝 위치 메모 (선택)</label>
         <input type="text" class="field" id="reg-memo" placeholder="예: ○○산 북쪽 계곡 입구">
         <label class="input-label">🔒 공개 설정</label>
@@ -2024,6 +2033,15 @@ function renderRegisterHiveSelect() {
     const activeHives = Object.keys(DB.hives).filter(k => DB.hives[k].active);
     sel.innerHTML = activeHives.map(h => `<option value="${h}">${h}</option>`).join('') ||
         '<option value="">활성화된 벌통이 없습니다</option>';
+}
+
+function setRandomLocation() {
+    // 한국 산간 지역 기준 임의 좌표 (테스트용)
+    const baseLat = 36.0 + Math.random() * 2;
+    const baseLng = 127.0 + Math.random() * 2;
+    document.getElementById('reg-lat').value = baseLat.toFixed(6);
+    document.getElementById('reg-lng').value = baseLng.toFixed(6);
+    showToast('🎲 테스트용 임의 위치 입력됨');
 }
 
 function getGPSForRegister() {
