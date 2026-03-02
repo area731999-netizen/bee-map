@@ -14,11 +14,12 @@
     <style>
         /* ========== 기본 설정 ========== */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body { height: 100%; margin: 0; }
+        html, body { height: 100%; margin: 0; overflow: hidden; }
         body {
             background: linear-gradient(135deg, #0f0a06 0%, #1c1208 100%);
             color: #e8e0d0;
             font-family: 'Noto Sans KR', sans-serif;
+            font-size: 18px;
             overflow-x: hidden;
             transition: background 0.3s, color 0.3s;
         }
@@ -150,20 +151,19 @@
 
         /* ========== 공통 레이아웃 ========== */
         .hidden { display: none !important; }
-        #main-app { display: none; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; overflow: hidden; }
+        #main-app { display: none; position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 600px; height: 100%; }
 
         .top-bar {
-            padding: 12px 16px;
-            background: rgba(10, 6, 2, 0.85);
-            /* backdrop-filter: blur(12px); */
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 56px;
+            padding: 0 16px;
+            background: rgba(10, 6, 2, 0.95);
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
             z-index: 6000;
-            flex-shrink: 0;
         }
         .top-bar-title {
             font-family: 'Gowun Batang', serif;
@@ -178,7 +178,7 @@
             color: var(--tx-gold);
             border-radius: 10px;
             padding: 8px 14px;
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
@@ -190,23 +190,22 @@
             color: var(--tx-gold);
             border-radius: 10px;
             padding: 8px 10px;
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         /* ========== 뷰 시스템 ========== */
-        .view { display: none; flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; padding-bottom: 80px; position: relative; z-index: 1; -webkit-overflow-scrolling: touch; }
-        .view.active { display: block; flex: 1; min-height: 0; }
+        .view { display: none; }
+        .view.active { display: block; position: absolute; top: 56px; bottom: 70px; left: 0; right: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding-bottom: 16px; }
 
         /* ========== 하단 네비게이션 ========== */
         .bottom-nav {
-            position: fixed;
+            position: absolute;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0;
+            right: 0;
             width: 100%;
-            max-width: 600px;
             background: rgba(10, 6, 2, 0.95);
             /* backdrop-filter: blur(20px); */
             border-top: 1px solid var(--border);
@@ -227,8 +226,8 @@
             cursor: pointer;
             transition: all 0.2s;
             color: var(--tx-sub);
-            font-size: 0.65rem;
-            font-weight: 600;
+            font-size: 0.72rem;
+            font-weight: 700;
             min-width: 56px;
         }
         .nav-item .nav-icon { font-size: 1.5rem; }
@@ -246,8 +245,8 @@
             margin: 12px 16px;
         }
         .card-title {
-            font-size: 0.85rem;
-            font-weight: 800;
+            font-size: 1rem;
+            font-weight: 900;
             color: var(--tx-gold);
             margin-bottom: 12px;
             display: flex;
@@ -277,7 +276,7 @@
         .hive-card.status-warn { border-color: rgba(255,152,0,0.5); }
         .hive-card.status-danger { border-color: rgba(244,67,54,0.5); }
         .hive-card .hive-num {
-            font-size: 0.68rem;
+            font-size: 0.78rem;
             font-weight: 900;
             color: var(--tx-main);
             display: block;
@@ -311,8 +310,8 @@
         select.field { appearance: none; }
         .input-label {
             display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
+            font-size: 0.92rem;
+            font-weight: 800;
             color: var(--tx-gold);
             margin-bottom: 6px;
         }
@@ -372,8 +371,8 @@
         .tab-btn {
             padding: 8px 18px;
             border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
+            font-size: 1rem;
+            font-weight: 800;
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.2s;
@@ -402,14 +401,14 @@
             margin-bottom: 8px;
         }
         .record-type-badge {
-            font-size: 0.72rem;
+            font-size: 0.82rem;
             font-weight: 800;
-            padding: 3px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
             background: rgba(212,160,23,0.2);
             color: var(--tx-gold);
         }
-        .record-date { font-size: 0.75rem; color: var(--tx-sub); }
+        .record-date { font-size: 0.85rem; color: var(--tx-sub); }
 
         /* ========== 가계부 ========== */
         .acc-summary {
@@ -425,7 +424,7 @@
             padding: 14px 10px;
             text-align: center;
         }
-        .acc-box .acc-label { font-size: 0.72rem; color: var(--tx-sub); margin-bottom: 4px; }
+        .acc-box .acc-label { font-size: 0.85rem; color: var(--tx-sub); margin-bottom: 4px; }
         .acc-box .acc-amount { font-size: 1rem; font-weight: 900; }
         .acc-box.income .acc-amount { color: #4caf50; }
         .acc-box.expense .acc-amount { color: #f44336; }
@@ -450,7 +449,7 @@
             border: none;
             border-radius: 50%;
             width: 24px; height: 24px;
-            font-size: 14px;
+            font-size: 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -638,8 +637,8 @@
         }
         .acc-item:last-child { border-bottom: none; }
         .acc-item-left { display: flex; flex-direction: column; gap: 2px; }
-        .acc-item-name { font-size: 0.9rem; font-weight: 700; color: var(--tx-main); }
-        .acc-item-sub { font-size: 0.75rem; color: var(--tx-sub); }
+        .acc-item-name { font-size: 1rem; font-weight: 800; color: var(--tx-main); }
+        .acc-item-sub { font-size: 0.85rem; color: var(--tx-sub); }
         .acc-item-amount { font-size: 1rem; font-weight: 900; }
         .acc-item-amount.income { color: #4caf50; }
         .acc-item-amount.expense { color: #f44336; }
@@ -673,12 +672,65 @@
             align-items: center;
         }
         .section-title {
-            font-size: 0.9rem;
-            font-weight: 800;
+            font-size: 1rem;
+            font-weight: 900;
             color: var(--tx-gold);
         }
 
-        /* ========== 애니메이션 ========== */
+        /* ========== 달력 ========== */
+        .cal-cell {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            min-height: 72px;
+            padding: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+        }
+        .cal-cell:active, .cal-cell.selected {
+            border-color: var(--tx-gold);
+            background: rgba(212,160,23,0.12);
+        }
+        .cal-cell.today { border-color: var(--tx-gold); border-width: 2px; }
+        .cal-cell.other-month { opacity: 0.35; }
+        .cal-cell .cal-date {
+            font-size: 1.1rem;
+            font-weight: 900;
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+        .cal-cell.sunday .cal-date { color: #f44336; }
+        .cal-cell.saturday .cal-date { color: #2196F3; }
+        .cal-cell .cal-dots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+        .cal-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .cal-event-item {
+            background: var(--bg-card);
+            border-left: 3px solid var(--tx-gold);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            font-size: 1rem;
+        }
+
+        /* 7탭일때 네비 아이템 크기 축소 */
+        .bottom-nav .nav-item {
+            min-width: 44px;
+            padding: 6px 4px !important;
+            font-size: 0.82rem !important;
+            font-weight: 900 !important;
+        }
+        .bottom-nav .nav-item .nav-icon { font-size: 1.6rem; }
+
+
         @keyframes slideUp {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
@@ -695,7 +747,7 @@
             color: var(--tx-sub);
         }
         .empty-state .empty-icon { font-size: 3rem; margin-bottom: 10px; }
-        .empty-state p { font-size: 0.9rem; }
+        .empty-state p { font-size: 1rem; }
 
         /* ========== 오프라인 배지 ========== */
         .offline-badge {
@@ -750,8 +802,8 @@
                 <div class="weather-desc" id="home-weather-desc">날씨 불러오는 중...</div>
             </div>
             <div style="text-align:right;">
-                <div style="font-size:0.72rem;color:var(--tx-sub);" id="home-date"></div>
-                <div style="font-size:0.72rem;color:var(--tx-sub);" id="home-lunar"></div>
+                <div style="font-size:0.85rem;color:var(--tx-sub);" id="home-date"></div>
+                <div style="font-size:0.85rem;color:var(--tx-sub);" id="home-lunar"></div>
             </div>
         </div>
 
@@ -937,7 +989,7 @@
         </div>
 
         <!-- 범례 -->
-        <div style="margin:0 16px;display:flex;gap:10px;font-size:0.75rem;color:var(--tx-sub);flex-wrap:wrap;padding:8px 0;">
+        <div style="margin:0 16px;display:flex;gap:10px;font-size:0.88rem;color:var(--tx-sub);flex-wrap:wrap;padding:8px 0;">
             <span>🟢 정상통</span>
             <span>🟡 주의통</span>
             <span>🔴 위험통</span>
@@ -989,35 +1041,35 @@
                 <div id="sacbrood-checklist" style="display:none;margin-bottom:14px;">
                     <label class="input-label">🔴 낭충봉아부패병 증상 체크리스트</label>
                     <div style="background:rgba(244,67,54,0.08);border:1px solid rgba(244,67,54,0.25);border-radius:12px;padding:12px;">
-                        <p style="font-size:0.75rem;color:var(--tx-sub);margin:0 0 10px;">해당되는 증상을 모두 선택하세요</p>
+                        <p style="font-size:0.88rem;color:var(--tx-sub);margin:0 0 10px;">해당되는 증상을 모두 선택하세요</p>
                         <div style="display:grid;gap:8px;">
                             <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
                                 <input type="checkbox" id="sym-larva" style="width:18px;height:18px;flex-shrink:0;">
-                                <span style="font-size:0.85rem;color:var(--tx-main);">🐛 유충 사체 발견 (자루 모양)</span>
+                                <span style="font-size:1rem;color:var(--tx-main);">🐛 유충 사체 발견 (자루 모양)</span>
                             </label>
                             <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
                                 <input type="checkbox" id="sym-entrance" style="width:18px;height:18px;flex-shrink:0;">
-                                <span style="font-size:0.85rem;color:var(--tx-main);">🚪 소문 주변 오염 (죽은 유충)</span>
+                                <span style="font-size:1rem;color:var(--tx-main);">🚪 소문 주변 오염 (죽은 유충)</span>
                             </label>
                             <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
                                 <input type="checkbox" id="sym-color" style="width:18px;height:18px;flex-shrink:0;">
-                                <span style="font-size:0.85rem;color:var(--tx-main);">🟤 번데기 색깔 변화 (갈색/흑색)</span>
+                                <span style="font-size:1rem;color:var(--tx-main);">🟤 번데기 색깔 변화 (갈색/흑색)</span>
                             </label>
                             <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
                                 <input type="checkbox" id="sym-capped" style="width:18px;height:18px;flex-shrink:0;">
-                                <span style="font-size:0.85rem;color:var(--tx-main);">🕳️ 봉개 함몰/천공 발견</span>
+                                <span style="font-size:1rem;color:var(--tx-main);">🕳️ 봉개 함몰/천공 발견</span>
                             </label>
                             <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
                                 <input type="checkbox" id="sym-smell" style="width:18px;height:18px;flex-shrink:0;">
-                                <span style="font-size:0.85rem;color:var(--tx-main);">👃 이상한 냄새 발생</span>
+                                <span style="font-size:1rem;color:var(--tx-main);">👃 이상한 냄새 발생</span>
                             </label>
                             <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
                                 <input type="checkbox" id="sym-population" style="width:18px;height:18px;flex-shrink:0;">
-                                <span style="font-size:0.85rem;color:var(--tx-main);">📉 봉군 세력 급감</span>
+                                <span style="font-size:1rem;color:var(--tx-main);">📉 봉군 세력 급감</span>
                             </label>
                             <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
                                 <input type="checkbox" id="sym-cleaning" style="width:18px;height:18px;flex-shrink:0;">
-                                <span style="font-size:0.85rem;color:var(--tx-main);">🧹 일벌의 청소 행동 증가</span>
+                                <span style="font-size:1rem;color:var(--tx-main);">🧹 일벌의 청소 행동 증가</span>
                             </label>
                         </div>
                         <div id="sacbrood-severity" style="margin-top:10px;padding:8px;border-radius:8px;text-align:center;font-size:0.82rem;font-weight:800;display:none;"></div>
@@ -1090,10 +1142,12 @@
     <!-- ===== 가계부 뷰 ===== -->
     <div id="view-account" class="view">
         <!-- 월 선택 -->
-        <div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:14px 16px;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 16px;">
+            <button class="btn-sm" onclick="changeYear(-1)" style="padding:8px 10px;">◀◀</button>
             <button class="btn-sm" onclick="changeMonth(-1)">◀</button>
-            <span id="acc-month-label" style="font-size:1rem;font-weight:900;color:var(--tx-gold);">2026년 1월</span>
+            <span id="acc-month-label" style="font-size:1rem;font-weight:900;color:var(--tx-gold);min-width:110px;text-align:center;">2026년 1월</span>
             <button class="btn-sm" onclick="changeMonth(1)">▶</button>
+            <button class="btn-sm" onclick="changeYear(1)" style="padding:8px 10px;">▶▶</button>
         </div>
 
         <!-- 요약 -->
@@ -1148,9 +1202,10 @@
                     <input type="number" class="field" id="sugar-kg" placeholder="예: 20" step="0.5" min="0">
                     <label class="input-label">💧 사양 방식</label>
                     <select class="field" id="sugar-method">
-                        <option value="1:1">1:1 (봄/가을 자극)</option>
-                        <option value="2:1">2:1 (월동 준비)</option>
-                        <option value="직접급여">설탕 직접 급여</option>
+                        <option value="1:1">1:1 희석 (봄/가을 자극)</option>
+                        <option value="2:1">2:1 희석 (월동 준비)</option>
+                        <option value="직접급여">직접 급여</option>
+                        <option value="화분대용">화분 대용 사료</option>
                     </select>
                 </div>
 
@@ -1165,6 +1220,14 @@
                 <!-- 메모 -->
                 <label class="input-label">📝 메모</label>
                 <input type="text" class="field" id="acc-memo" placeholder="선택 입력">
+
+                <!-- 수입 시 고객 정보 -->
+                <div id="customer-fields" style="display:none;">
+                    <label class="input-label">👤 구매자 (고객관리 연동)</label>
+                    <input type="text" class="field" id="acc-customer" placeholder="구매자 이름">
+                    <label class="input-label">📱 연락처</label>
+                    <input type="text" class="field" id="acc-customer-phone" placeholder="010-0000-0000">
+                </div>
 
                 <button class="btn-primary" onclick="saveAccount()">💾 저장</button>
             </div>
@@ -1283,6 +1346,68 @@
         </div>
     </div>
 
+    <!-- ===== 고객관리 뷰 ===== -->
+    <div id="view-customer" class="view">
+        <div style="padding:14px 16px 4px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:1rem;font-weight:900;color:var(--tx-gold);">👤 고객 목록</span>
+            <button class="btn-sm" onclick="showAddCustomerModal()">+ 직접 추가</button>
+        </div>
+        <!-- 검색 -->
+        <div style="padding:8px 16px;">
+            <input type="text" class="field" id="customer-search" placeholder="🔍 이름 또는 연락처 검색" oninput="renderCustomerList()" style="margin-bottom:0;">
+        </div>
+        <!-- 요약 -->
+        <div id="customer-summary" style="margin:0 16px 8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;"></div>
+        <!-- 목록 -->
+        <div id="customer-list" style="margin:0 16px;"></div>
+    </div>
+
+    <!-- ===== 달력 뷰 ===== -->
+    <div id="view-calendar" class="view">
+        <!-- 월 이동 헤더 -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 16px 4px;">
+            <button class="btn-sm" onclick="calChangeYear(-1)" style="padding:8px 10px;">◀◀</button>
+            <button class="btn-sm" onclick="calChangeMonth(-1)">◀</button>
+            <span id="cal-title" style="font-size:1rem;font-weight:900;color:var(--tx-gold);min-width:110px;text-align:center;"></span>
+            <button class="btn-sm" onclick="calChangeMonth(1)">▶</button>
+            <button class="btn-sm" onclick="calChangeYear(1)" style="padding:8px 10px;">▶▶</button>
+        </div>
+
+        <!-- 범례 -->
+        <div style="display:flex;gap:10px;padding:6px 16px;flex-wrap:wrap;font-size:0.82rem;">
+            <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:50%;background:#4caf50;display:inline-block;"></span>일지</span>
+            <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:50%;background:#f44336;display:inline-block;"></span>방역</span>
+            <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:50%;background:#2196F3;display:inline-block;"></span>일정</span>
+            <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:50%;background:#ff9800;display:inline-block;"></span>채밀</span>
+            <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:50%;background:#9c27b0;display:inline-block;"></span>분봉</span>
+            <span style="display:flex;align-items:center;gap:3px;"><span style="font-size:0.9rem;">🌱</span><span style="color:#e91e63;font-weight:800;">절기</span></span>
+        </div>
+
+        <!-- 달력 그리드 -->
+        <div style="margin:0 12px;">
+            <!-- 요일 헤더 -->
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;">
+                <div style="text-align:center;font-size:0.72rem;font-weight:800;color:#f44336;padding:4px 0;">일</div>
+                <div style="text-align:center;font-size:0.72rem;font-weight:800;color:var(--tx-sub);padding:4px 0;">월</div>
+                <div style="text-align:center;font-size:0.72rem;font-weight:800;color:var(--tx-sub);padding:4px 0;">화</div>
+                <div style="text-align:center;font-size:0.72rem;font-weight:800;color:var(--tx-sub);padding:4px 0;">수</div>
+                <div style="text-align:center;font-size:0.72rem;font-weight:800;color:var(--tx-sub);padding:4px 0;">목</div>
+                <div style="text-align:center;font-size:0.72rem;font-weight:800;color:var(--tx-sub);padding:4px 0;">금</div>
+                <div style="text-align:center;font-size:0.72rem;font-weight:800;color:#2196F3;padding:4px 0;">토</div>
+            </div>
+            <!-- 날짜 셀 -->
+            <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;"></div>
+        </div>
+
+        <!-- 선택된 날짜 이벤트 -->
+        <div id="cal-day-events" style="margin:10px 16px 0;"></div>
+
+        <!-- 일정 추가 버튼 -->
+        <div style="padding:10px 16px;">
+            <button class="btn-primary" onclick="showAddScheduleModal()">+ 개인 일정 추가</button>
+        </div>
+    </div>
+
     <!-- ===== 하단 네비게이션 ===== -->
     <nav class="bottom-nav" id="bottom-nav">
         <div class="nav-item active" id="nav-home" onclick="switchView('home')">
@@ -1292,6 +1417,10 @@
         <div class="nav-item" id="nav-diary" onclick="switchView('diary')">
             <span class="nav-icon">📔</span>
             <span>일지</span>
+        </div>
+        <div class="nav-item" id="nav-calendar" onclick="switchView('calendar')">
+            <span class="nav-icon">📅</span>
+            <span>달력</span>
         </div>
         <div class="nav-item" id="nav-map" onclick="switchView('map')">
             <span class="nav-icon">🗺️</span>
@@ -1305,11 +1434,64 @@
             <span class="nav-icon">💰</span>
             <span>가계부</span>
         </div>
+        <div class="nav-item" id="nav-customer" onclick="switchView('customer')">
+            <span class="nav-icon">👤</span>
+            <span>고객</span>
+        </div>
         <div class="nav-item" id="nav-settings" onclick="switchView('settings')">
             <span class="nav-icon">⚙️</span>
             <span>설정</span>
         </div>
     </nav>
+</div>
+
+<!-- ===== 고객 추가 모달 ===== -->
+<div class="modal-overlay" id="customer-add-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:14px;">👤 고객 추가</div>
+        <label class="input-label">이름</label>
+        <input type="text" class="field" id="new-customer-name" placeholder="고객 이름">
+        <label class="input-label">📱 연락처</label>
+        <input type="text" class="field" id="new-customer-phone" placeholder="010-0000-0000">
+        <label class="input-label">📝 메모</label>
+        <input type="text" class="field" id="new-customer-memo" placeholder="주소, 특이사항 등">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <button class="btn-sm" onclick="closeModal('customer-add-modal')">취소</button>
+            <button class="btn-primary" onclick="saveNewCustomer()" style="margin:0;">저장</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 고객 상세 모달 ===== -->
+<div class="modal-overlay" id="customer-detail-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div id="customer-detail-content"></div>
+        <button class="btn-sm" onclick="closeModal('customer-detail-modal')" style="width:100%;margin-top:8px;">닫기</button>
+    </div>
+</div>
+
+<!-- ===== 개인 일정 추가 모달 ===== -->
+<div class="modal-overlay" id="schedule-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:14px;">📅 일정 추가</div>
+        <label class="input-label">📅 날짜</label>
+        <input type="date" class="field" id="sch-date">
+        <label class="input-label">📝 일정 제목</label>
+        <input type="text" class="field" id="sch-title" placeholder="예: 꿀 채취, 약제 처리, 벌통 점검">
+        <label class="input-label">🏺 관련 벌통 (선택)</label>
+        <select class="field" id="sch-hive">
+            <option value="">전체 공통</option>
+        </select>
+        <label class="input-label">📝 메모 (선택)</label>
+        <input type="text" class="field" id="sch-memo" placeholder="상세 내용">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <button class="btn-sm" onclick="closeModal('schedule-modal')">취소</button>
+            <button class="btn-primary" onclick="saveSchedule()" style="margin:0;">저장</button>
+        </div>
+    </div>
 </div>
 
 <!-- ===== 벌통 등록 모달 ===== -->
@@ -1396,8 +1578,7 @@ function saveDB() {
 function enterApp() {
     document.getElementById('splash').style.display = 'none';
     const app = document.getElementById('main-app');
-    app.style.display = 'flex';
-    app.style.flexDirection = 'column';
+    app.style.display = 'block';
     initDB();
     initDateFields();
     renderAll();
@@ -1626,6 +1807,384 @@ function dismissSwarmAlert(id) {
     checkSwarmAlerts();
     showToast('알림 확인 처리됨');
 }
+// ==================== 24절기 ====================
+// 연도별 절기 날짜 (한국 기준, 2024~2027)
+const SOLAR_TERMS = {
+    2024: {
+        '2024-02-04':'입춘🌱','2024-02-19':'우수','2024-03-05':'경칩🐸','2024-03-20':'춘분',
+        '2024-04-04':'청명🌸','2024-04-19':'곡우','2024-05-05':'입하🌿','2024-05-20':'소만',
+        '2024-06-05':'망종🌾','2024-06-21':'하지☀️','2024-07-06':'소서','2024-07-22':'대서🔥',
+        '2024-08-07':'입추🍂','2024-08-22':'처서','2024-09-07':'백로🍁','2024-09-22':'추분',
+        '2024-10-08':'한로','2024-10-23':'상강','2024-11-07':'입동❄️','2024-11-22':'소설',
+        '2024-12-07':'대설⛄','2024-12-21':'동지☃️','2024-01-06':'소한','2024-01-20':'대한'
+    },
+    2025: {
+        '2025-01-05':'소한❄️','2025-01-20':'대한','2025-02-03':'입춘🌱','2025-02-18':'우수',
+        '2025-03-05':'경칩🐸','2025-03-20':'춘분','2025-04-04':'청명🌸','2025-04-20':'곡우',
+        '2025-05-05':'입하🌿','2025-05-21':'소만','2025-06-05':'망종🌾','2025-06-21':'하지☀️',
+        '2025-07-07':'소서','2025-07-22':'대서🔥','2025-08-07':'입추🍂','2025-08-23':'처서',
+        '2025-09-07':'백로🍁','2025-09-23':'추분','2025-10-08':'한로','2025-10-23':'상강',
+        '2025-11-07':'입동❄️','2025-11-22':'소설','2025-12-07':'대설⛄','2025-12-22':'동지☃️'
+    },
+    2026: {
+        '2026-01-05':'소한❄️','2026-01-20':'대한','2026-02-04':'입춘🌱','2026-02-19':'우수',
+        '2026-03-06':'경칩🐸','2026-03-21':'춘분','2026-04-05':'청명🌸','2026-04-20':'곡우',
+        '2026-05-05':'입하🌿','2026-05-21':'소만','2026-06-06':'망종🌾','2026-06-21':'하지☀️',
+        '2026-07-07':'소서','2026-07-23':'대서🔥','2026-08-07':'입추🍂','2026-08-23':'처서',
+        '2026-09-08':'백로🍁','2026-09-23':'추분','2026-10-08':'한로','2026-10-23':'상강',
+        '2026-11-07':'입동❄️','2026-11-22':'소설','2026-12-07':'대설⛄','2026-12-22':'동지☃️'
+    },
+    2027: {
+        '2027-01-05':'소한❄️','2027-01-20':'대한','2027-02-03':'입춘🌱','2027-02-18':'우수',
+        '2027-03-06':'경칩🐸','2027-03-21':'춘분','2027-04-05':'청명🌸','2027-04-20':'곡우',
+        '2027-05-06':'입하🌿','2027-05-21':'소만','2027-06-06':'망종🌾','2027-06-21':'하지☀️',
+        '2027-07-07':'소서','2027-07-23':'대서🔥','2027-08-07':'입추🍂','2027-08-23':'처서',
+        '2027-09-08':'백로🍁','2027-09-23':'추분','2027-10-08':'한로','2027-10-24':'상강',
+        '2027-11-07':'입동❄️','2027-11-22':'소설','2027-12-07':'대설⛄','2027-12-22':'동지☃️'
+    }
+};
+
+function getSolarTerm(dateStr) {
+    const year = parseInt(dateStr.slice(0,4));
+    const terms = SOLAR_TERMS[year] || {};
+    return terms[dateStr] || null;
+}
+
+// ==================== 달력 ====================
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-based
+let calSelectedDate = null;
+
+// 개인 일정 저장 구조: DB.schedules = [{id, date, title, memo, hiveNum}]
+if (!DB.schedules) DB.schedules = [];
+
+function calChangeMonth(dir) {
+    calMonth += dir;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    if (calMonth < 0) { calMonth = 11; calYear--; }
+    renderCalendar();
+}
+
+function renderCalendar() {
+    // 타이틀
+    document.getElementById('cal-title').textContent = `${calYear}년 ${calMonth + 1}월`;
+
+    const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=일
+    const lastDate = new Date(calYear, calMonth + 1, 0).getDate();
+    const today = new Date().toISOString().split('T')[0];
+
+    // 이벤트 날짜 맵 생성
+    const eventMap = buildCalEventMap();
+
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+
+    // 이전달 빈칸
+    for (let i = 0; i < firstDay; i++) {
+        const prevDate = new Date(calYear, calMonth, -firstDay + i + 1);
+        const cell = createCalCell(prevDate, eventMap, true);
+        grid.appendChild(cell);
+    }
+
+    // 이번달 날짜
+    for (let d = 1; d <= lastDate; d++) {
+        const date = new Date(calYear, calMonth, d);
+        const cell = createCalCell(date, eventMap, false);
+        grid.appendChild(cell);
+    }
+
+    // 다음달 빈칸 (6줄 맞추기)
+    const totalCells = grid.children.length;
+    const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+    for (let i = 1; i <= remaining; i++) {
+        const date = new Date(calYear, calMonth + 1, i);
+        const cell = createCalCell(date, eventMap, true);
+        grid.appendChild(cell);
+    }
+
+    // 오늘 날짜 선택
+    if (!calSelectedDate) calSelectedDate = today;
+    renderDayEvents(calSelectedDate);
+    highlightSelected();
+}
+
+function createCalCell(date, eventMap, otherMonth) {
+    const dateStr = date.toISOString().split('T')[0];
+    const today = new Date().toISOString().split('T')[0];
+    const day = date.getDay();
+
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell' +
+        (otherMonth ? ' other-month' : '') +
+        (dateStr === today ? ' today' : '') +
+        (day === 0 ? ' sunday' : day === 6 ? ' saturday' : '');
+    cell.dataset.date = dateStr;
+    cell.onclick = () => { calSelectedDate = dateStr; renderDayEvents(dateStr); highlightSelected(); };
+
+    // 날짜 숫자
+    const dateEl = document.createElement('div');
+    dateEl.className = 'cal-date';
+    dateEl.textContent = date.getDate();
+    cell.appendChild(dateEl);
+
+    // 절기 표시
+    const term = getSolarTerm(dateStr);
+    if (term && !otherMonth) {
+        const termEl = document.createElement('div');
+        termEl.style.cssText = 'font-size:0.65rem;font-weight:900;color:#e91e63;line-height:1;margin-bottom:2px;white-space:nowrap;overflow:hidden;';
+        termEl.textContent = term;
+        cell.appendChild(termEl);
+        cell.style.borderColor = 'rgba(233,30,99,0.4)';
+    }
+
+    // 이벤트 점
+    const events = eventMap[dateStr] || [];
+    if (events.length > 0) {
+        const dots = document.createElement('div');
+        dots.className = 'cal-dots';
+        const colors = [...new Set(events.map(e => e.color))].slice(0, 4);
+        colors.forEach(c => {
+            const dot = document.createElement('div');
+            dot.className = 'cal-dot';
+            dot.style.background = c;
+            dots.appendChild(dot);
+        });
+        cell.appendChild(dots);
+    }
+
+    return cell;
+}
+
+function buildCalEventMap() {
+    const map = {};
+
+    const addEvent = (dateStr, color, type, label, hiveNum) => {
+        if (!map[dateStr]) map[dateStr] = [];
+        map[dateStr].push({ color, type, label, hiveNum });
+    };
+
+    // 일지 (초록)
+    DB.diaries.forEach(r => {
+        const typeLabel = { observe:'관찰', swarm:'분봉', capture:'포획', harvest:'채밀' };
+        const color = r.type === 'harvest' ? '#ff9800' : r.type === 'swarm' ? '#9c27b0' : '#4caf50';
+        addEvent(r.date, color, r.type, `${typeLabel[r.type]||r.type} - ${r.hiveNum}`, r.hiveNum);
+    });
+
+    // 방역 (빨강)
+    DB.diseases.forEach(r => {
+        addEvent(r.date, '#f44336', 'disease', `방역: ${r.diseaseType} - ${r.hiveNum}`, r.hiveNum);
+    });
+
+    // 개인 일정 (파랑)
+    (DB.schedules || []).forEach(r => {
+        addEvent(r.date, '#2196F3', 'schedule', r.title, '');
+    });
+
+    // 분봉 알림 (보라)
+    (DB.swarmAlerts || []).filter(a => !a.dismissed).forEach(a => {
+        addEvent(a.alertDate, '#9c27b0', 'swarm-alert', `🐝 분봉주의 - ${a.hiveNum}`, a.hiveNum);
+    });
+
+    return map;
+}
+
+function renderDayEvents(dateStr) {
+    const container = document.getElementById('cal-day-events');
+    const eventMap = buildCalEventMap();
+    const events = eventMap[dateStr] || [];
+
+    const d = new Date(dateStr);
+    const label = `${d.getMonth()+1}월 ${d.getDate()}일`;
+    const term = getSolarTerm(dateStr);
+    const termBadge = term ? `<span style="background:rgba(233,30,99,0.15);color:#e91e63;font-weight:900;padding:2px 8px;border-radius:20px;font-size:0.88rem;margin-left:6px;">${term}</span>` : '';
+
+    if (events.length === 0) {
+        container.innerHTML = `
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;">
+                <div style="font-size:0.95rem;font-weight:800;color:var(--tx-gold);margin-bottom:6px;">${label}${termBadge}</div>
+                <div style="font-size:0.9rem;color:var(--tx-sub);">등록된 일정이 없습니다</div>
+            </div>`;
+        return;
+    }
+
+    const colorLabel = { observe:'🔍 관찰', swarm:'🐝 분봉', capture:'📦 포획', harvest:'🍯 채밀',
+        disease:'💊 방역', schedule:'📅 일정', 'swarm-alert':'🐝 분봉주의' };
+
+    container.innerHTML = `
+        <div style="font-size:0.95rem;font-weight:800;color:var(--tx-gold);margin-bottom:6px;padding:0 2px;">${label}${termBadge} · ${events.length}건</div>
+        ${events.map(e => `
+            <div class="cal-event-item" style="border-left-color:${e.color};">
+                <div style="font-size:0.78rem;font-weight:800;color:${e.color};">${colorLabel[e.type]||e.type}</div>
+                <div style="font-size:0.85rem;color:var(--tx-main);margin-top:2px;">${e.label}</div>
+                ${e.hiveNum ? `<div style="font-size:0.72rem;color:var(--tx-sub);">🏺 ${e.hiveNum}</div>` : ''}
+            </div>
+        `).join('')}`;
+}
+
+function highlightSelected() {
+    document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('selected'));
+    const sel = document.querySelector(`.cal-cell[data-date="${calSelectedDate}"]`);
+    if (sel) sel.classList.add('selected');
+}
+
+// ==================== 개인 일정 추가 모달 ====================
+function showAddScheduleModal() {
+    const today = new Date().toISOString().split('T')[0];
+    const date = calSelectedDate || today;
+    document.getElementById('sch-date').value = date;
+    document.getElementById('sch-title').value = '';
+    document.getElementById('sch-memo').value = '';
+    document.getElementById('sch-hive').value = '';
+    document.getElementById('schedule-modal').classList.add('show');
+}
+
+function saveSchedule() {
+    const title = document.getElementById('sch-title').value.trim();
+    if (!title) { showToast('일정 제목을 입력하세요'); return; }
+    if (!DB.schedules) DB.schedules = [];
+    DB.schedules.push({
+        id: Date.now(),
+        date: document.getElementById('sch-date').value,
+        title,
+        memo: document.getElementById('sch-memo').value,
+        hiveNum: document.getElementById('sch-hive').value
+    });
+    saveDB();
+    closeModal('schedule-modal');
+    showToast('📅 일정 추가됨');
+    renderCalendar();
+}
+
+function deleteSchedule(id) {
+    if (!confirm('일정을 삭제하시겠어요?')) return;
+    DB.schedules = (DB.schedules || []).filter(s => s.id !== id);
+    saveDB();
+    renderCalendar();
+    showToast('삭제됨');
+}
+
+// ==================== 고객 관리 ====================
+function renderCustomerList() {
+    if (!DB.customers) DB.customers = [];
+    const search = (document.getElementById('customer-search')?.value || '').toLowerCase();
+    let customers = [...DB.customers].sort((a, b) => b.totalAmount - a.totalAmount);
+    if (search) customers = customers.filter(c =>
+        c.name.includes(search) || (c.phone || '').includes(search)
+    );
+
+    // 요약
+    const summary = document.getElementById('customer-summary');
+    if (summary) {
+        const total = DB.customers.length;
+        const totalAmt = DB.customers.reduce((s, c) => s + (c.totalAmount || 0), 0);
+        const topCustomer = DB.customers.sort((a, b) => b.totalAmount - a.totalAmount)[0];
+        summary.innerHTML = `
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
+                <div style="font-size:0.8rem;color:var(--tx-sub);">총 고객</div>
+                <div style="font-size:1.3rem;font-weight:900;color:var(--tx-gold);">${total}명</div>
+            </div>
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
+                <div style="font-size:0.8rem;color:var(--tx-sub);">총 매출</div>
+                <div style="font-size:1rem;font-weight:900;color:#4caf50;">${formatMoney(totalAmt)}원</div>
+            </div>
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
+                <div style="font-size:0.8rem;color:var(--tx-sub);">단골 고객</div>
+                <div style="font-size:1rem;font-weight:900;color:var(--tx-amber);">${topCustomer ? topCustomer.name : '-'}</div>
+            </div>`;
+    }
+
+    const container = document.getElementById('customer-list');
+    if (!container) return;
+
+    if (customers.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">👤</div><p>등록된 고객이 없습니다<br>수입 기록 시 구매자를 입력하면<br>자동으로 등록됩니다</p></div>';
+        return;
+    }
+
+    container.innerHTML = customers.map(c => `
+        <div class="record-card" onclick="showCustomerDetail(${c.id})" style="cursor:pointer;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <div style="font-size:1rem;font-weight:900;color:var(--tx-main);">👤 ${c.name}</div>
+                    <div style="font-size:0.85rem;color:var(--tx-sub);">${c.phone || '연락처 없음'} · 구매 ${c.purchases || 1}회</div>
+                    <div style="font-size:0.82rem;color:var(--tx-sub);">최근: ${c.lastDate || '-'}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:1rem;font-weight:900;color:#4caf50;">+${formatMoney(c.totalAmount || 0)}원</div>
+                    <button class="btn-danger" style="padding:4px 10px;font-size:0.75rem;margin-top:4px;" onclick="event.stopPropagation();deleteCustomer(${c.id})">삭제</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showCustomerDetail(id) {
+    const c = DB.customers.find(c => c.id === id);
+    if (!c) return;
+    // 해당 고객 구매 내역
+    const purchases = DB.accounts.filter(a => a.customerName === c.name && a.type === 'income')
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+    document.getElementById('customer-detail-content').innerHTML = `
+        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:14px;">👤 ${c.name}</div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;">
+            <div style="font-size:0.9rem;margin-bottom:6px;">📱 ${c.phone || '연락처 없음'}</div>
+            <div style="font-size:0.9rem;margin-bottom:6px;">📅 첫 거래: ${c.firstDate || '-'}</div>
+            <div style="font-size:0.9rem;margin-bottom:6px;">📅 최근 거래: ${c.lastDate || '-'}</div>
+            <div style="font-size:0.9rem;margin-bottom:6px;">🛒 총 구매: ${c.purchases || 1}회</div>
+            <div style="font-size:1rem;font-weight:900;color:#4caf50;">💰 총 금액: ${formatMoney(c.totalAmount || 0)}원</div>
+            ${c.memo ? `<div style="font-size:0.88rem;color:var(--tx-sub);margin-top:6px;">📝 ${c.memo}</div>` : ''}
+        </div>
+        <div style="font-size:0.9rem;font-weight:800;color:var(--tx-amber);margin-bottom:8px;">구매 내역 (${purchases.length}건)</div>
+        ${purchases.map(p => `
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;">
+                <div style="display:flex;justify-content:space-between;">
+                    <span style="font-size:0.9rem;font-weight:700;">${p.category}</span>
+                    <span style="font-size:0.9rem;font-weight:900;color:#4caf50;">+${formatMoney(p.amount)}원</span>
+                </div>
+                <div style="font-size:0.82rem;color:var(--tx-sub);">${p.date}${p.memo ? ' · ' + p.memo : ''}</div>
+            </div>
+        `).join('') || '<div style="font-size:0.88rem;color:var(--tx-sub);text-align:center;padding:10px;">내역 없음</div>'}
+    `;
+    document.getElementById('customer-detail-modal').classList.add('show');
+}
+
+function showAddCustomerModal() {
+    document.getElementById('new-customer-name').value = '';
+    document.getElementById('new-customer-phone').value = '';
+    document.getElementById('new-customer-memo').value = '';
+    document.getElementById('customer-add-modal').classList.add('show');
+}
+
+function saveNewCustomer() {
+    const name = document.getElementById('new-customer-name').value.trim();
+    if (!name) { showToast('이름을 입력하세요'); return; }
+    if (!DB.customers) DB.customers = [];
+    if (DB.customers.find(c => c.name === name)) { showToast('이미 등록된 고객입니다'); return; }
+    DB.customers.push({
+        id: Date.now(),
+        name,
+        phone: document.getElementById('new-customer-phone').value.trim(),
+        memo: document.getElementById('new-customer-memo').value.trim(),
+        firstDate: new Date().toISOString().split('T')[0],
+        lastDate: new Date().toISOString().split('T')[0],
+        totalAmount: 0,
+        purchases: 0
+    });
+    saveDB();
+    closeModal('customer-add-modal');
+    renderCustomerList();
+    showToast('👤 고객 추가됨');
+}
+
+function deleteCustomer(id) {
+    if (!confirm('이 고객을 삭제하시겠어요?')) return;
+    DB.customers = DB.customers.filter(c => c.id !== id);
+    saveDB();
+    renderCustomerList();
+    showToast('삭제됨');
+}
+
 function goBackToMain() {
     if (confirm('BEE MASTER 메인으로 돌아가시겠어요?')) {
         window.location.href = 'index.html';
@@ -1642,6 +2201,8 @@ function initDateFields() {
 }
 
 function renderAll() {
+    if (!DB.schedules) DB.schedules = [];
+    if (!DB.customers) DB.customers = [];
     renderHiveGrid();
     renderHiveSelects();
     renderHiveManage();
@@ -1653,6 +2214,13 @@ function renderAll() {
     renderAccList();
     renderHiveLocationList();
     syncAccCategories();
+    // 일정 모달 벌통 옵션 업데이트
+    const schHive = document.getElementById('sch-hive');
+    if (schHive) {
+        const activeHives = Object.keys(DB.hives).filter(k => DB.hives[k].active);
+        schHive.innerHTML = `<option value="">전체 공통</option>` +
+            activeHives.map(h => `<option value="${h}">${h}</option>`).join('');
+    }
 }
 
 // ==================== 뷰 전환 ====================
@@ -2117,6 +2685,8 @@ function selectAccType(type, btn) {
     document.getElementById('acc-expense-btn').classList.remove('active');
     document.getElementById('acc-income-btn').classList.remove('active');
     btn.classList.add('active');
+    // 수입일 때만 고객 필드 표시
+    document.getElementById('customer-fields').style.display = type === 'income' ? 'block' : 'none';
     updateAccCategories();
 }
 
@@ -2140,6 +2710,18 @@ function renderAccHiveSelect() {
     document.getElementById('acc-hive').innerHTML =
         `<option value="">전체 공통</option>` +
         activeHives.map(h => `<option value="${h}">${h}</option>`).join('');
+}
+
+function changeYear(dir) {
+    accYear += dir;
+    document.getElementById('acc-month-label').textContent = `${accYear}년 ${accMonth}월`;
+    renderAccMonth();
+    renderAccList();
+}
+
+function calChangeYear(dir) {
+    calYear += dir;
+    renderCalendar();
 }
 
 function changeMonth(dir) {
@@ -2174,6 +2756,9 @@ function saveAccount() {
     const amount = document.getElementById('acc-amount').value;
     if (!amount) { showToast('금액을 입력하세요'); return; }
 
+    const customerName = document.getElementById('acc-customer')?.value.trim() || '';
+    const customerPhone = document.getElementById('acc-customer-phone')?.value.trim() || '';
+
     const record = {
         id: Date.now(),
         type: currentAccType,
@@ -2184,8 +2769,32 @@ function saveAccount() {
         memo: document.getElementById('acc-memo').value,
         sugarKg: category === '설탕' ? document.getElementById('sugar-kg').value : '',
         sugarMethod: category === '설탕' ? document.getElementById('sugar-method').value : '',
+        customerName,
+        customerPhone,
         savedAt: new Date().toISOString()
     };
+
+    // 고객 정보가 있으면 고객 DB에도 저장
+    if (customerName) {
+        if (!DB.customers) DB.customers = [];
+        const existing = DB.customers.find(c => c.name === customerName);
+        if (existing) {
+            existing.lastDate = record.date;
+            existing.totalAmount = (existing.totalAmount || 0) + Number(amount);
+            existing.purchases = (existing.purchases || 0) + 1;
+            if (customerPhone) existing.phone = customerPhone;
+        } else {
+            DB.customers.push({
+                id: Date.now() + 1,
+                name: customerName,
+                phone: customerPhone,
+                firstDate: record.date,
+                lastDate: record.date,
+                totalAmount: Number(amount),
+                purchases: 1
+            });
+        }
+    }
 
     DB.accounts.push(record);
     saveDB();
@@ -2194,8 +2803,12 @@ function saveAccount() {
     document.getElementById('acc-memo').value = '';
     document.getElementById('acc-category').value = '';
     document.getElementById('sugar-fields').style.display = 'none';
+    if (document.getElementById('acc-customer')) document.getElementById('acc-customer').value = '';
+    if (document.getElementById('acc-customer-phone')) document.getElementById('acc-customer-phone').value = '';
     renderAccMonth();
     renderAccList();
+    // 저장 후 내역 탭으로 자동 이동
+    switchAccTab('list', document.querySelector('.tab-btn[onclick*="list"]'));
 }
 
 function renderAccList(filterType = 'all') {
@@ -2388,7 +3001,7 @@ function renderMapMarkers() {
         const hive = DB.hives[name] || {};
         const color = hive.status === 'danger' ? '#f44336' : hive.status === 'warn' ? '#ff9800' : '#4caf50';
         L.circleMarker([loc.lat, loc.lng], {
-            color, fillColor: color, fillOpacity: 0.8, radius: 10, weight: 2
+            color, fillColor: color, fillOpacity: 0.85, radius: 6, weight: 2
         }).addTo(markerLayer).bindPopup(`
             <b>🏺 ${name}</b><br>
             ${hive.status === 'danger' ? '🔴 위험' : hive.status === 'warn' ? '🟡 주의' : '🟢 정상'}<br>
@@ -2885,12 +3498,17 @@ window.switchView = function(name) {
         if (!mapInstance) {
             setTimeout(initMap, 100);
         } else {
-            // 이미 로드된 경우 크기 재계산
             setTimeout(() => mapInstance.invalidateSize(), 150);
         }
     }
     if (name === 'settings') {
         setTimeout(renderAllSettingLists, 50);
+    }
+    if (name === 'customer') {
+        setTimeout(renderCustomerList, 50);
+    }
+    if (name === 'calendar') {
+        setTimeout(renderCalendar, 50);
     }
 };
 
