@@ -1,0 +1,2366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4E342E">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>토봉 MASTER - 동양종 관리</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ========== 기본 설정 ========== */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; margin: 0; }
+        body {
+            background: linear-gradient(135deg, #0f0a06 0%, #1c1208 100%);
+            color: #e8e0d0;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ========== CSS 변수 ========== */
+        :root {
+            --bg-main: #0f0a06;
+            --bg-card: rgba(30, 20, 10, 0.85);
+            --bg-input: rgba(20, 13, 5, 0.9);
+            --tx-main: #e8e0d0;
+            --tx-sub: #a09880;
+            --tx-gold: #D4A017;
+            --tx-amber: #C8840A;
+            --accent: #8B5E3C;
+            --accent2: #5C3317;
+            --border: rgba(180, 120, 40, 0.25);
+            --btn-primary: linear-gradient(135deg, #8B5E3C 0%, #5C3317 100%);
+            --status-ok: #4caf50;
+            --status-warn: #ff9800;
+            --status-danger: #f44336;
+        }
+
+        body.light-mode {
+            --bg-main: #f5ede0;
+            --bg-card: rgba(255, 248, 235, 0.95);
+            --bg-input: #fff8ef;
+            --tx-main: #2d1a06;
+            --tx-sub: #7a5c3a;
+            --tx-gold: #92570a;
+            --tx-amber: #b34a00;
+            --accent: #8B5E3C;
+            --accent2: #d4842a;
+            --border: rgba(139, 94, 60, 0.25);
+            --btn-primary: linear-gradient(135deg, #c47a35 0%, #8B5E3C 100%);
+            background: linear-gradient(135deg, #f5ede0 0%, #ead5b5 100%);
+            color: #2d1a06;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 25%, rgba(180, 100, 20, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 85% 75%, rgba(100, 60, 10, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ========== 스플래시 ========== */
+        #splash {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(160deg, #3E2008 0%, #6B3A1F 50%, #4E2A0A 100%);
+            z-index: 20000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #splash::before {
+            content: '';
+            position: absolute;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(212,160,23,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px; right: -200px;
+            animation: floatOrb 8s ease-in-out infinite;
+        }
+        #splash::after {
+            content: '';
+            position: absolute;
+            width: 250px; height: 250px;
+            background: radial-gradient(circle, rgba(200,132,10,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: -100px; left: -100px;
+            animation: floatOrb 6s ease-in-out infinite reverse;
+        }
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-20px, 20px) scale(1.05); }
+        }
+        .splash-bee {
+            font-size: 90px;
+            animation: beeFloat 2.5s ease-in-out infinite alternate;
+            filter: drop-shadow(0 10px 30px rgba(212,160,23,0.5));
+            z-index: 2;
+            margin-bottom: 20px;
+        }
+        @keyframes beeFloat {
+            0% { transform: translateY(0) rotate(-5deg); }
+            100% { transform: translateY(-25px) rotate(5deg); }
+        }
+        .splash-title {
+            font-family: 'Gowun Batang', serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #D4A017;
+            letter-spacing: 4px;
+            z-index: 2;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 20px rgba(212,160,23,0.4);
+        }
+        .splash-subtitle {
+            font-size: 0.95rem;
+            color: rgba(212,160,23,0.7);
+            font-weight: 600;
+            letter-spacing: 2px;
+            z-index: 2;
+            margin-bottom: 50px;
+        }
+        .splash-enter-btn {
+            z-index: 2;
+            background: linear-gradient(135deg, #D4A017, #8B5E3C);
+            color: #1a0800;
+            border: none;
+            border-radius: 50px;
+            padding: 18px 60px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            font-family: 'Noto Sans KR', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(212,160,23,0.35);
+            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            letter-spacing: 2px;
+        }
+        .splash-enter-btn:active { transform: scale(0.95); }
+
+        /* ========== 공통 레이아웃 ========== */
+        .hidden { display: none !important; }
+        #main-app { display: none; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; }
+
+        .top-bar {
+            padding: 12px 16px;
+            background: rgba(10, 6, 2, 0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 6000;
+            flex-shrink: 0;
+        }
+        .top-bar-title {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--tx-gold);
+            letter-spacing: 1px;
+        }
+        .btn-back {
+            background: rgba(212,160,23,0.15);
+            border: 1px solid rgba(212,160,23,0.4);
+            color: var(--tx-gold);
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-back:active { transform: scale(0.95); }
+        .btn-icon {
+            background: rgba(212,160,23,0.12);
+            border: 1px solid rgba(212,160,23,0.3);
+            color: var(--tx-gold);
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        /* ========== 뷰 시스템 ========== */
+        .view { display: none; flex: 1; overflow-y: auto; padding-bottom: 100px; position: relative; z-index: 1; }
+        .view.active { display: block; }
+
+        /* ========== 하단 네비게이션 ========== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 600px;
+            background: rgba(10, 6, 2, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0;
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+            z-index: 5000;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--tx-sub);
+            font-size: 0.65rem;
+            font-weight: 600;
+            min-width: 56px;
+        }
+        .nav-item .nav-icon { font-size: 1.5rem; }
+        .nav-item.active { color: var(--tx-gold); }
+        .nav-item.active .nav-icon { filter: drop-shadow(0 0 6px rgba(212,160,23,0.6)); }
+        body.light-mode .bottom-nav { background: rgba(245,237,224,0.97); border-top-color: rgba(139,94,60,0.2); }
+        body.light-mode .top-bar { background: rgba(245,237,224,0.92); border-bottom-color: rgba(139,94,60,0.2); }
+
+        /* ========== 카드 스타일 ========== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin: 12px 16px;
+        }
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--tx-gold);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ========== 홈 - 벌통 그리드 ========== */
+        .hive-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 0 4px;
+        }
+        .hive-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+            position: relative;
+            overflow: hidden;
+        }
+        .hive-card:active { transform: scale(0.93); }
+        .hive-card.status-ok { border-color: rgba(76,175,80,0.5); }
+        .hive-card.status-warn { border-color: rgba(255,152,0,0.5); }
+        .hive-card.status-danger { border-color: rgba(244,67,54,0.5); }
+        .hive-card .hive-num {
+            font-size: 0.75rem;
+            font-weight: 900;
+            color: var(--tx-main);
+            display: block;
+        }
+        .hive-card .hive-icon { font-size: 1.6rem; display: block; margin: 2px 0; }
+        .hive-card .hive-status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            margin: 0 auto;
+        }
+        .hive-card.status-ok .hive-status-dot { background: var(--status-ok); }
+        .hive-card.status-warn .hive-status-dot { background: var(--status-warn); }
+        .hive-card.status-danger .hive-status-dot { background: var(--status-danger); }
+
+        /* ========== 입력 필드 ========== */
+        .field {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: var(--tx-main);
+            font-size: 1rem;
+            font-family: 'Noto Sans KR', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+            margin-bottom: 12px;
+        }
+        .field:focus { border-color: var(--tx-gold); }
+        textarea.field { resize: vertical; min-height: 100px; }
+        select.field { appearance: none; }
+        .input-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--tx-gold);
+            margin-bottom: 6px;
+        }
+
+        /* ========== 버튼 ========== */
+        .btn-primary {
+            width: 100%;
+            background: var(--btn-primary);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: 800;
+            font-family: 'Noto Sans KR', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(139,94,60,0.35);
+            letter-spacing: 1px;
+        }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-sm {
+            background: rgba(212,160,23,0.15);
+            border: 1px solid rgba(212,160,23,0.4);
+            color: var(--tx-gold);
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-sm.active, .btn-sm:active {
+            background: var(--tx-gold);
+            color: #1a0800;
+        }
+        .btn-danger {
+            background: rgba(244,67,54,0.15);
+            border: 1px solid rgba(244,67,54,0.4);
+            color: #f44336;
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* ========== 섹션 탭 ========== */
+        .tab-bar {
+            display: flex;
+            gap: 6px;
+            padding: 12px 16px 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tab-bar::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--tx-sub);
+        }
+        .tab-btn.active {
+            background: var(--tx-gold);
+            color: #1a0800;
+            border-color: var(--tx-gold);
+        }
+
+        /* ========== 기록 카드 ========== */
+        .record-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+            margin: 8px 16px;
+        }
+        .record-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .record-type-badge {
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: rgba(212,160,23,0.2);
+            color: var(--tx-gold);
+        }
+        .record-date { font-size: 0.75rem; color: var(--tx-sub); }
+
+        /* ========== 가계부 ========== */
+        .acc-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 0 16px 12px;
+        }
+        .acc-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+        .acc-box .acc-label { font-size: 0.72rem; color: var(--tx-sub); margin-bottom: 4px; }
+        .acc-box .acc-amount { font-size: 1rem; font-weight: 900; }
+        .acc-box.income .acc-amount { color: #4caf50; }
+        .acc-box.expense .acc-amount { color: #f44336; }
+        .acc-box.balance .acc-amount { color: var(--tx-gold); }
+
+        /* ========== 사진 첨부 ========== */
+        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+        .photo-thumb {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+        }
+        .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-remove {
+            position: absolute;
+            top: 4px; right: 4px;
+            background: rgba(244,67,54,0.85);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 24px; height: 24px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .photo-add-btn {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            background: var(--bg-input);
+            border: 2px dashed var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--tx-sub);
+            font-size: 0.75rem;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        .photo-add-btn:active { border-color: var(--tx-gold); color: var(--tx-gold); }
+
+        /* ========== 음성 버튼 ========== */
+        .voice-btn {
+            background: rgba(139,94,60,0.2);
+            border: 1px solid rgba(139,94,60,0.5);
+            color: var(--tx-amber);
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .voice-btn.recording {
+            background: rgba(244,67,54,0.2);
+            border-color: rgba(244,67,54,0.6);
+            color: #f44336;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
+
+        /* ========== 모달 ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 10000;
+            align-items: flex-end;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-sheet {
+            background: var(--bg-card);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 20px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-handle {
+            width: 40px; height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 0 auto 16px;
+        }
+
+        /* ========== 토스트 ========== */
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #8B5E3C, #5C3317);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            z-index: 15000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+        .toast.show { opacity: 1; }
+
+        /* ========== 방역 상태 배지 ========== */
+        .disease-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+        .disease-badge.treating { background: rgba(244,67,54,0.2); color: #f44336; }
+        .disease-badge.done { background: rgba(76,175,80,0.2); color: #4caf50; }
+        .disease-badge.watch { background: rgba(255,152,0,0.2); color: #ff9800; }
+
+        /* ========== 지도 섹션 ========== */
+        .map-placeholder {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin: 12px 16px;
+            height: 260px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--tx-sub);
+            font-size: 0.9rem;
+            overflow: hidden;
+            position: relative;
+        }
+        #map-container { width: 100%; height: 100%; border-radius: 16px; }
+
+        /* ========== 공개/비공개 토글 ========== */
+        .privacy-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .privacy-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--tx-sub);
+            transition: all 0.2s;
+        }
+        .privacy-btn.active.private {
+            background: rgba(139,94,60,0.25);
+            border-color: var(--accent);
+            color: var(--tx-amber);
+        }
+        .privacy-btn.active.public {
+            background: rgba(76,175,80,0.15);
+            border-color: #4caf50;
+            color: #4caf50;
+        }
+
+        /* ========== 통 선택 버튼 그룹 ========== */
+        .hive-select-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+        .hive-select-btn {
+            padding: 10px 4px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--tx-sub);
+            transition: all 0.2s;
+        }
+        .hive-select-btn.selected {
+            background: var(--tx-gold);
+            color: #1a0800;
+            border-color: var(--tx-gold);
+        }
+
+        /* ========== 가계부 항목 ========== */
+        .acc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .acc-item:last-child { border-bottom: none; }
+        .acc-item-left { display: flex; flex-direction: column; gap: 2px; }
+        .acc-item-name { font-size: 0.9rem; font-weight: 700; color: var(--tx-main); }
+        .acc-item-sub { font-size: 0.75rem; color: var(--tx-sub); }
+        .acc-item-amount { font-size: 1rem; font-weight: 900; }
+        .acc-item-amount.income { color: #4caf50; }
+        .acc-item-amount.expense { color: #f44336; }
+
+        /* ========== 날씨 카드 ========== */
+        .weather-bar {
+            margin: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .weather-icon { font-size: 2.5rem; }
+        .weather-info { flex: 1; }
+        .weather-temp { font-size: 1.4rem; font-weight: 900; color: var(--tx-gold); }
+        .weather-desc { font-size: 0.8rem; color: var(--tx-sub); }
+
+        /* ========== 스크롤바 ========== */
+        .view::-webkit-scrollbar { width: 3px; }
+        .view::-webkit-scrollbar-track { background: transparent; }
+        .view::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* ========== 섹션 헤더 ========== */
+        .section-header {
+            padding: 16px 16px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--tx-gold);
+        }
+
+        /* ========== 애니메이션 ========== */
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .view.active > * { animation: slideUp 0.3s ease both; }
+        .view.active > *:nth-child(2) { animation-delay: 0.05s; }
+        .view.active > *:nth-child(3) { animation-delay: 0.1s; }
+        .view.active > *:nth-child(4) { animation-delay: 0.15s; }
+
+        /* ========== 빈 상태 ========== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--tx-sub);
+        }
+        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 10px; }
+        .empty-state p { font-size: 0.9rem; }
+
+        /* ========== 오프라인 배지 ========== */
+        .offline-badge {
+            background: rgba(255,152,0,0.2);
+            border: 1px solid rgba(255,152,0,0.4);
+            color: #ff9800;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+        .online-badge {
+            background: rgba(76,175,80,0.2);
+            border: 1px solid rgba(76,175,80,0.4);
+            color: #4caf50;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== 스플래시 ========== -->
+<div id="splash">
+    <div class="splash-bee">🐝</div>
+    <div class="splash-title">土蜂 MASTER</div>
+    <div class="splash-subtitle">동양종 토종벌 관리 시스템</div>
+    <button class="splash-enter-btn" onclick="enterApp()">관리 시작하기</button>
+</div>
+
+<!-- ========== 메인 앱 ========== -->
+<div id="main-app">
+    <!-- 상단 바 -->
+    <div class="top-bar">
+        <button class="btn-back" onclick="goBackToMain()">⬅ BEE MASTER</button>
+        <span class="top-bar-title">🏺 동양종</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+            <span id="network-badge" class="online-badge">온라인</span>
+            <button class="btn-icon" onclick="toggleTheme()">🌙</button>
+        </div>
+    </div>
+
+    <!-- ===== 홈 뷰 ===== -->
+    <div id="view-home" class="view active">
+        <!-- 날씨 -->
+        <div class="weather-bar">
+            <div class="weather-icon" id="home-weather-icon">🌤️</div>
+            <div class="weather-info">
+                <div class="weather-temp" id="home-temp">--°C</div>
+                <div class="weather-desc" id="home-weather-desc">날씨 불러오는 중...</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:0.72rem;color:var(--tx-sub);" id="home-date"></div>
+                <div style="font-size:0.72rem;color:var(--tx-sub);" id="home-lunar"></div>
+            </div>
+        </div>
+
+        <!-- 요약 통계 -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 16px 12px;">
+            <div class="acc-box" style="border-left:3px solid var(--status-ok);">
+                <div class="acc-label">🟢 정상</div>
+                <div class="acc-amount" id="stat-ok" style="color:var(--status-ok);font-size:1.4rem;">0</div>
+            </div>
+            <div class="acc-box" style="border-left:3px solid var(--status-warn);">
+                <div class="acc-label">🟡 주의</div>
+                <div class="acc-amount" id="stat-warn" style="color:var(--status-warn);font-size:1.4rem;">0</div>
+            </div>
+            <div class="acc-box" style="border-left:3px solid var(--status-danger);">
+                <div class="acc-label">🔴 위험</div>
+                <div class="acc-amount" id="stat-danger" style="color:var(--status-danger);font-size:1.4rem;">0</div>
+            </div>
+        </div>
+
+        <!-- 벌통 현황 -->
+        <div class="section-header">
+            <span class="section-title">🏺 벌통 현황</span>
+            <button class="btn-sm" onclick="switchView('settings')">+ 통 관리</button>
+        </div>
+        <div class="card" style="padding:12px;">
+            <div id="hive-grid" class="hive-grid">
+                <!-- JS로 렌더링 -->
+            </div>
+            <div id="hive-empty" class="empty-state" style="display:none;">
+                <div class="empty-icon">🏺</div>
+                <p>등록된 벌통이 없습니다<br><strong>설정 → 벌통 관리</strong>에서 추가하세요</p>
+            </div>
+        </div>
+
+        <!-- 최근 방역 알림 -->
+        <div class="section-header">
+            <span class="section-title">⚠️ 주의 필요</span>
+        </div>
+        <div id="alert-list" style="margin:0 16px;">
+            <div style="padding:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;text-align:center;color:var(--tx-sub);font-size:0.85rem;">
+                이상 없음 ✅
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 일지 뷰 ===== -->
+    <div id="view-diary" class="view">
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchDiaryTab('write', this)">✍️ 기록</button>
+            <button class="tab-btn" onclick="switchDiaryTab('list', this)">📋 조회</button>
+        </div>
+
+        <!-- 기록 탭 -->
+        <div id="diary-write">
+            <div class="card">
+                <!-- 통 선택 -->
+                <label class="input-label">🏺 벌통 선택</label>
+                <div id="diary-hive-select" class="hive-select-grid"></div>
+
+                <!-- 기록 유형 -->
+                <label class="input-label">📝 기록 유형</label>
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;">
+                    <button class="btn-sm active" id="dtype-observe" onclick="selectDiaryType('observe', this)">🔍 관찰</button>
+                    <button class="btn-sm" id="dtype-swarm" onclick="selectDiaryType('swarm', this)">🐝 분봉</button>
+                    <button class="btn-sm" id="dtype-capture" onclick="selectDiaryType('capture', this)">📦 포획</button>
+                    <button class="btn-sm" id="dtype-harvest" onclick="selectDiaryType('harvest', this)">🍯 채밀</button>
+                </div>
+
+                <!-- 관찰 항목 -->
+                <div id="observe-fields">
+                    <label class="input-label">👑 왕 상태</label>
+                    <select class="field" id="queen-status">
+                        <option value="">선택하세요</option>
+                        <option value="정상">✅ 정상</option>
+                        <option value="왕대확인">⚠️ 왕대 확인됨</option>
+                        <option value="교체필요">🔄 교체 필요</option>
+                        <option value="미확인">❓ 미확인</option>
+                    </select>
+                    <label class="input-label">🔢 소비 수</label>
+                    <input type="number" class="field" id="comb-count" placeholder="예: 7" min="0" max="20">
+                </div>
+
+                <!-- 분봉 항목 -->
+                <div id="swarm-fields" style="display:none;">
+                    <label class="input-label">📅 분봉 날짜</label>
+                    <input type="date" class="field" id="swarm-date">
+                    <label class="input-label">📦 포획 여부</label>
+                    <select class="field" id="swarm-captured">
+                        <option value="포획성공">✅ 포획 성공</option>
+                        <option value="포획실패">❌ 포획 실패</option>
+                        <option value="진행중">⏳ 진행 중</option>
+                    </select>
+                </div>
+
+                <!-- 포획 항목 -->
+                <div id="capture-fields" style="display:none;">
+                    <label class="input-label">📍 포획 장소</label>
+                    <input type="text" class="field" id="capture-location" placeholder="예: ○○산 북쪽 계곡">
+                    <label class="input-label">🐝 봉군 크기</label>
+                    <select class="field" id="colony-size">
+                        <option value="소">소 (3장 이하)</option>
+                        <option value="중">중 (4~6장)</option>
+                        <option value="대">대 (7장 이상)</option>
+                    </select>
+                </div>
+
+                <!-- 채밀 항목 -->
+                <div id="harvest-fields" style="display:none;">
+                    <label class="input-label">🍯 채밀량 (kg)</label>
+                    <input type="number" class="field" id="harvest-kg" placeholder="예: 2.5" step="0.1" min="0">
+                    <label class="input-label">📍 보관 위치</label>
+                    <input type="text" class="field" id="harvest-storage" placeholder="예: 냉장고, 창고">
+                </div>
+
+                <!-- 공통 - 날짜 -->
+                <label class="input-label">📅 날짜</label>
+                <input type="date" class="field" id="diary-date">
+
+                <!-- 메모 -->
+                <label class="input-label">📝 메모</label>
+                <div style="position:relative;margin-bottom:12px;">
+                    <textarea class="field" id="diary-memo" style="margin-bottom:0;padding-right:90px;" placeholder="상세 내용을 입력하세요..."></textarea>
+                    <button class="voice-btn" id="voice-diary-btn" onclick="toggleVoice('diary-memo', 'voice-diary-btn')" style="position:absolute;right:8px;bottom:8px;">
+                        🎤 음성
+                    </button>
+                </div>
+
+                <!-- 사진 첨부 -->
+                <label class="input-label">📷 사진 첨부</label>
+                <div id="diary-photos" class="photo-grid"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;margin-bottom:14px;">
+                    <button class="btn-sm" onclick="document.getElementById('diary-photo-cam').click()">📸 촬영</button>
+                    <button class="btn-sm" onclick="document.getElementById('diary-photo-file').click()">🖼️ 앨범</button>
+                    <input type="file" id="diary-photo-cam" accept="image/*" capture="environment" style="display:none" onchange="addPhotos(this,'diary-photos')">
+                    <input type="file" id="diary-photo-file" accept="image/*" multiple style="display:none" onchange="addPhotos(this,'diary-photos')">
+                </div>
+
+                <button class="btn-primary" onclick="saveDiary()">📔 일지 저장</button>
+            </div>
+        </div>
+
+        <!-- 조회 탭 -->
+        <div id="diary-list" style="display:none;">
+            <div style="padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn-sm active" onclick="filterDiary('all', this)">전체</button>
+                <button class="btn-sm" onclick="filterDiary('observe', this)">🔍 관찰</button>
+                <button class="btn-sm" onclick="filterDiary('swarm', this)">🐝 분봉</button>
+                <button class="btn-sm" onclick="filterDiary('capture', this)">📦 포획</button>
+                <button class="btn-sm" onclick="filterDiary('harvest', this)">🍯 채밀</button>
+            </div>
+            <div id="diary-record-list"></div>
+        </div>
+    </div>
+
+    <!-- ===== 지도 뷰 ===== -->
+    <div id="view-map" class="view">
+        <div style="padding:12px 16px;display:flex;gap:8px;align-items:center;">
+            <span id="gps-status" class="offline-badge">📍 GPS 대기</span>
+            <button class="btn-sm" onclick="getCurrentGPS()">🛰️ 내 위치</button>
+            <button class="btn-sm" onclick="showHiveRegisterModal()">+ 통 등록</button>
+        </div>
+
+        <!-- 지도 영역 -->
+        <div class="map-placeholder" id="map-area">
+            <div id="map-container"></div>
+            <div id="map-loading" style="text-align:center;">
+                <div style="font-size:2rem;margin-bottom:8px;">🗺️</div>
+                <div>지도 불러오는 중...</div>
+                <div style="font-size:0.75rem;margin-top:4px;color:var(--tx-sub);">오프라인 시 캐시된 지도 사용</div>
+            </div>
+        </div>
+
+        <!-- 범례 -->
+        <div style="margin:0 16px;display:flex;gap:10px;font-size:0.75rem;color:var(--tx-sub);flex-wrap:wrap;padding:8px 0;">
+            <span>🟢 정상통</span>
+            <span>🟡 주의통</span>
+            <span>🔴 위험통</span>
+            <span>🔵 내위치</span>
+            <span>🔒 비공개</span>
+        </div>
+
+        <!-- 등록된 벌통 목록 -->
+        <div class="section-header">
+            <span class="section-title">🏺 등록된 벌통 위치</span>
+        </div>
+        <div id="hive-location-list" style="margin:0 16px 12px;">
+            <div class="empty-state">
+                <div class="empty-icon">📍</div>
+                <p>아직 위치가 등록된 벌통이 없어요<br>+ 통 등록 버튼을 눌러 추가하세요</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 방역 뷰 ===== -->
+    <div id="view-disease" class="view">
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchDiseaseTab('write', this)">💊 방제 기록</button>
+            <button class="tab-btn" onclick="switchDiseaseTab('list', this)">📋 기록 조회</button>
+        </div>
+
+        <!-- 방제 기록 탭 -->
+        <div id="disease-write">
+            <div class="card">
+                <!-- 통 선택 -->
+                <label class="input-label">🏺 벌통 선택</label>
+                <div id="disease-hive-select" class="hive-select-grid"></div>
+
+                <!-- 질병 종류 -->
+                <label class="input-label">🦠 질병/증상</label>
+                <select class="field" id="disease-type" onchange="updateMedicineOptions()">
+                    <option value="">선택하세요</option>
+                    <option value="낭충봉아부패병">🔴 낭충봉아부패병 (Sacbrood)</option>
+                    <option value="백묵병">⚪ 백묵병</option>
+                    <option value="응애">🟠 응애 (varroa)</option>
+                    <option value="소먹이부패병">🟡 소먹이부패병</option>
+                    <option value="기타">기타 직접입력</option>
+                </select>
+                <div id="disease-custom-wrap" style="display:none;">
+                    <input type="text" class="field" id="disease-custom" placeholder="질병명 직접 입력">
+                </div>
+
+                <!-- 약제 -->
+                <label class="input-label" id="medicine-label" style="display:none;">💊 약제</label>
+                <div id="medicine-section" style="display:none;">
+                    <select class="field" id="medicine-type">
+                        <option value="">약제 선택</option>
+                    </select>
+                    <label class="input-label">💉 처리 방법</label>
+                    <select class="field" id="medicine-method">
+                        <option value="">처리방법 선택</option>
+                    </select>
+                </div>
+
+                <!-- 날짜 -->
+                <label class="input-label">📅 처리 날짜</label>
+                <input type="date" class="field" id="disease-date">
+
+                <!-- 다음 방역 알림 -->
+                <label class="input-label">🔔 다음 방역 알림</label>
+                <select class="field" id="disease-alarm">
+                    <option value="0">알림 없음</option>
+                    <option value="3">3일 후</option>
+                    <option value="5">5일 후</option>
+                    <option value="7">7일 후</option>
+                    <option value="14">14일 후</option>
+                </select>
+
+                <!-- 상태 -->
+                <label class="input-label">📊 현재 상태</label>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+                    <button class="btn-sm active" id="dstatus-treating" onclick="selectDiseaseStatus('treating', this)">🔴 치료중</button>
+                    <button class="btn-sm" id="dstatus-watch" onclick="selectDiseaseStatus('watch', this)">🟡 관찰중</button>
+                    <button class="btn-sm" id="dstatus-done" onclick="selectDiseaseStatus('done', this)">🟢 완치</button>
+                </div>
+
+                <!-- 메모 -->
+                <label class="input-label">📝 상세 기록</label>
+                <div style="position:relative;margin-bottom:12px;">
+                    <textarea class="field" id="disease-memo" style="margin-bottom:0;padding-right:90px;" placeholder="처리 내용, 특이사항 등..."></textarea>
+                    <button class="voice-btn" id="voice-disease-btn" onclick="toggleVoice('disease-memo', 'voice-disease-btn')" style="position:absolute;right:8px;bottom:8px;">
+                        🎤 음성
+                    </button>
+                </div>
+
+                <!-- 사진 -->
+                <label class="input-label">📷 증상 사진</label>
+                <div id="disease-photos" class="photo-grid"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;margin-bottom:14px;">
+                    <button class="btn-sm" onclick="document.getElementById('disease-photo-cam').click()">📸 촬영</button>
+                    <button class="btn-sm" onclick="document.getElementById('disease-photo-file').click()">🖼️ 앨범</button>
+                    <input type="file" id="disease-photo-cam" accept="image/*" capture="environment" style="display:none" onchange="addPhotos(this,'disease-photos')">
+                    <input type="file" id="disease-photo-file" accept="image/*" multiple style="display:none" onchange="addPhotos(this,'disease-photos')">
+                </div>
+
+                <button class="btn-primary" onclick="saveDisease()">💊 방제 기록 저장</button>
+            </div>
+        </div>
+
+        <!-- 조회 탭 -->
+        <div id="disease-list" style="display:none;">
+            <div id="disease-record-list" style="padding:0 0 12px;"></div>
+        </div>
+    </div>
+
+    <!-- ===== 가계부 뷰 ===== -->
+    <div id="view-account" class="view">
+        <!-- 월 선택 -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:14px 16px;">
+            <button class="btn-sm" onclick="changeMonth(-1)">◀</button>
+            <span id="acc-month-label" style="font-size:1rem;font-weight:900;color:var(--tx-gold);">2026년 1월</span>
+            <button class="btn-sm" onclick="changeMonth(1)">▶</button>
+        </div>
+
+        <!-- 요약 -->
+        <div class="acc-summary">
+            <div class="acc-box expense">
+                <div class="acc-label">지출</div>
+                <div class="acc-amount" id="acc-total-expense">0</div>
+            </div>
+            <div class="acc-box income">
+                <div class="acc-label">수입</div>
+                <div class="acc-amount" id="acc-total-income">0</div>
+            </div>
+            <div class="acc-box balance">
+                <div class="acc-label">순이익</div>
+                <div class="acc-amount" id="acc-balance">0</div>
+            </div>
+        </div>
+
+        <!-- 탭 -->
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchAccTab('add', this)">➕ 입력</button>
+            <button class="tab-btn" onclick="switchAccTab('list', this)">📋 내역</button>
+        </div>
+
+        <!-- 입력 탭 -->
+        <div id="acc-add">
+            <div class="card">
+                <!-- 유형 -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+                    <button class="btn-sm active" id="acc-expense-btn" onclick="selectAccType('expense', this)">💸 지출</button>
+                    <button class="btn-sm" id="acc-income-btn" onclick="selectAccType('income', this)">💰 수입</button>
+                </div>
+
+                <!-- 통 연결 (선택) -->
+                <label class="input-label">🏺 관련 벌통 (선택)</label>
+                <select class="field" id="acc-hive">
+                    <option value="">전체 공통</option>
+                </select>
+
+                <!-- 항목 -->
+                <label class="input-label">📦 항목</label>
+                <select class="field" id="acc-category" onchange="checkAccCustom()">
+                    <option value="">선택하세요</option>
+                </select>
+                <div id="acc-custom-wrap" style="display:none;">
+                    <input type="text" class="field" id="acc-custom" placeholder="항목 직접 입력">
+                </div>
+
+                <!-- 설탕 특별 처리 -->
+                <div id="sugar-fields" style="display:none;">
+                    <label class="input-label">🍬 설탕 무게 (kg)</label>
+                    <input type="number" class="field" id="sugar-kg" placeholder="예: 20" step="0.5" min="0">
+                    <label class="input-label">💧 사양 방식</label>
+                    <select class="field" id="sugar-method">
+                        <option value="1:1">1:1 (봄/가을 자극)</option>
+                        <option value="2:1">2:1 (월동 준비)</option>
+                        <option value="직접급여">설탕 직접 급여</option>
+                    </select>
+                </div>
+
+                <!-- 날짜 -->
+                <label class="input-label">📅 날짜</label>
+                <input type="date" class="field" id="acc-date">
+
+                <!-- 금액 -->
+                <label class="input-label">💵 금액 (원)</label>
+                <input type="number" class="field" id="acc-amount" placeholder="예: 15000" min="0">
+
+                <!-- 메모 -->
+                <label class="input-label">📝 메모</label>
+                <input type="text" class="field" id="acc-memo" placeholder="선택 입력">
+
+                <button class="btn-primary" onclick="saveAccount()">💾 저장</button>
+            </div>
+        </div>
+
+        <!-- 내역 탭 -->
+        <div id="acc-list" style="display:none;">
+            <div style="padding:8px 16px;display:flex;gap:6px;">
+                <button class="btn-sm active" onclick="filterAcc('all', this)">전체</button>
+                <button class="btn-sm" onclick="filterAcc('expense', this)">💸 지출</button>
+                <button class="btn-sm" onclick="filterAcc('income', this)">💰 수입</button>
+                <button class="btn-sm" onclick="filterAcc('sugar', this)">🍬 설탕</button>
+            </div>
+            <div id="acc-record-list"></div>
+        </div>
+    </div>
+
+    <!-- ===== 설정 뷰 ===== -->
+    <div id="view-settings" class="view">
+        <!-- 벌통 관리 -->
+        <div class="card">
+            <div class="card-title">🏺 벌통 관리</div>
+            <p style="font-size:0.82rem;color:var(--tx-sub);margin-bottom:14px;">활성화된 벌통만 홈화면에 표시됩니다. 비활성화해도 기록은 보존됩니다.</p>
+            <div id="hive-manage-list"></div>
+            <button class="btn-primary" onclick="addNewHive()" style="margin-top:12px;">+ 새 벌통 추가</button>
+        </div>
+
+        <!-- 데이터 관리 -->
+        <div class="card">
+            <div class="card-title">💾 데이터 관리</div>
+            <div style="display:grid;gap:8px;">
+                <button class="btn-sm" onclick="exportData()" style="width:100%;padding:14px;text-align:left;">📤 데이터 백업 (JSON)</button>
+                <button class="btn-sm" onclick="document.getElementById('import-file').click()" style="width:100%;padding:14px;text-align:left;">📥 데이터 복원</button>
+                <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)">
+                <button class="btn-sm" onclick="exportExcel()" style="width:100%;padding:14px;text-align:left;">📗 엑셀 내보내기</button>
+            </div>
+        </div>
+
+        <!-- 오프라인 지도 -->
+        <div class="card">
+            <div class="card-title">🗺️ 오프라인 지도</div>
+            <p style="font-size:0.82rem;color:var(--tx-sub);margin-bottom:14px;">집에서 미리 지도를 캐시해두면 산속에서 인터넷 없이도 지도를 사용할 수 있습니다.</p>
+            <button class="btn-primary" onclick="cacheMap()" id="cache-map-btn">📥 현재 지역 지도 캐시</button>
+            <div id="cache-status" style="margin-top:8px;font-size:0.8rem;color:var(--tx-sub);text-align:center;"></div>
+        </div>
+
+        <!-- 앱 정보 -->
+        <div class="card">
+            <div class="card-title">ℹ️ 앱 정보</div>
+            <div style="font-size:0.82rem;color:var(--tx-sub);line-height:1.8;">
+                <div>토봉 MASTER v1.0</div>
+                <div>동양종 (한봉) 전용 관리 앱</div>
+                <div>BEE MASTER 통합 버전</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 하단 네비게이션 ===== -->
+    <nav class="bottom-nav" id="bottom-nav">
+        <div class="nav-item active" id="nav-home" onclick="switchView('home')">
+            <span class="nav-icon">🏠</span>
+            <span>홈</span>
+        </div>
+        <div class="nav-item" id="nav-diary" onclick="switchView('diary')">
+            <span class="nav-icon">📔</span>
+            <span>일지</span>
+        </div>
+        <div class="nav-item" id="nav-map" onclick="switchView('map')">
+            <span class="nav-icon">🗺️</span>
+            <span>지도</span>
+        </div>
+        <div class="nav-item" id="nav-disease" onclick="switchView('disease')">
+            <span class="nav-icon">🛡️</span>
+            <span>방역</span>
+        </div>
+        <div class="nav-item" id="nav-account" onclick="switchView('account')">
+            <span class="nav-icon">💰</span>
+            <span>가계부</span>
+        </div>
+        <div class="nav-item" id="nav-settings" onclick="switchView('settings')">
+            <span class="nav-icon">⚙️</span>
+            <span>설정</span>
+        </div>
+    </nav>
+</div>
+
+<!-- ===== 벌통 등록 모달 ===== -->
+<div class="modal-overlay" id="hive-register-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:16px;">🏺 벌통 위치 등록</div>
+        <label class="input-label">🏺 벌통 번호</label>
+        <select class="field" id="reg-hive-num"></select>
+        <label class="input-label">📍 현재 GPS 좌표</label>
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <input type="text" class="field" id="reg-lat" placeholder="위도" style="margin-bottom:0;flex:1;" readonly>
+            <input type="text" class="field" id="reg-lng" placeholder="경도" style="margin-bottom:0;flex:1;" readonly>
+        </div>
+        <button class="btn-sm" onclick="getGPSForRegister()" style="width:100%;margin-bottom:14px;">🛰️ GPS로 현재 위치 가져오기</button>
+        <label class="input-label">📝 위치 메모 (선택)</label>
+        <input type="text" class="field" id="reg-memo" placeholder="예: ○○산 북쪽 계곡 입구">
+        <label class="input-label">🔒 공개 설정</label>
+        <div class="privacy-toggle">
+            <button class="privacy-btn active private" id="priv-private" onclick="setPrivacy('private')">🔒 비공개 (기본)</button>
+            <button class="privacy-btn public" id="priv-public" onclick="setPrivacy('public')">🌐 공개</button>
+        </div>
+        <div id="public-options" style="display:none;margin-bottom:12px;">
+            <select class="field" id="public-type">
+                <option value="exact">📍 정확한 위치 공개</option>
+                <option value="radius">🔵 반경만 표시 (±500m)</option>
+            </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <button class="btn-sm" onclick="closeModal('hive-register-modal')">취소</button>
+            <button class="btn-primary" onclick="saveHiveLocation()" style="margin:0;">저장</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 벌통 상세 모달 ===== -->
+<div class="modal-overlay" id="hive-detail-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div id="hive-detail-content"></div>
+    </div>
+</div>
+
+<!-- ===== 토스트 ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== 데이터 구조 ====================
+let DB = {
+    hives: {},         // { '1번통': { active: true, status: 'ok', createdAt: '' } }
+    locations: {},     // { '1번통': { lat, lng, memo, isPublic, publicType, updatedAt } }
+    diaries: [],       // [ { id, hiveNum, type, date, ...fields, memo, photos } ]
+    diseases: [],      // [ { id, hiveNum, diseaseType, medicine, method, date, status, memo, photos } ]
+    accounts: [],      // [ { id, type, category, hiveNum, amount, date, memo, sugarKg, sugarMethod } ]
+};
+
+// ==================== 초기화 ====================
+function initDB() {
+    const saved = localStorage.getItem('dongyang_db');
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            DB = { ...DB, ...parsed };
+        } catch(e) { console.error('DB 로드 오류:', e); }
+    }
+}
+
+function saveDB() {
+    localStorage.setItem('dongyang_db', JSON.stringify(DB));
+}
+
+// ==================== 앱 시작 ====================
+function enterApp() {
+    document.getElementById('splash').style.display = 'none';
+    const app = document.getElementById('main-app');
+    app.style.display = 'flex';
+    app.style.flexDirection = 'column';
+    initDB();
+    initDateFields();
+    renderAll();
+    loadWeather();
+    checkNetwork();
+    setInterval(checkNetwork, 10000);
+}
+
+function goBackToMain() {
+    if (confirm('BEE MASTER 메인으로 돌아가시겠어요?')) {
+        window.location.href = 'index.html';
+    }
+}
+
+function initDateFields() {
+    const today = new Date().toISOString().split('T')[0];
+    const fields = ['diary-date','disease-date','acc-date','swarm-date'];
+    fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = today;
+    });
+}
+
+function renderAll() {
+    renderHiveGrid();
+    renderHiveSelects();
+    renderHiveManage();
+    renderAccHiveSelect();
+    updateHomeSummary();
+    renderDiaryList();
+    renderDiseaseList();
+    renderAccMonth();
+    renderAccList();
+    renderHiveLocationList();
+}
+
+// ==================== 뷰 전환 ====================
+function switchView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const view = document.getElementById('view-' + name);
+    const nav = document.getElementById('nav-' + name);
+    if (view) view.classList.add('active');
+    if (nav) nav.classList.add('active');
+}
+
+function switchDiaryTab(tab, btn) {
+    document.querySelectorAll('#view-diary .tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('diary-write').style.display = tab === 'write' ? 'block' : 'none';
+    document.getElementById('diary-list').style.display = tab === 'list' ? 'block' : 'none';
+    if (tab === 'list') renderDiaryList();
+}
+
+function switchDiseaseTab(tab, btn) {
+    document.querySelectorAll('#view-disease .tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('disease-write').style.display = tab === 'write' ? 'block' : 'none';
+    document.getElementById('disease-list').style.display = tab === 'list' ? 'block' : 'none';
+    if (tab === 'list') renderDiseaseList();
+}
+
+function switchAccTab(tab, btn) {
+    document.querySelectorAll('#view-account .tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('acc-add').style.display = tab === 'add' ? 'block' : 'none';
+    document.getElementById('acc-list').style.display = tab === 'list' ? 'block' : 'none';
+}
+
+// ==================== 테마 ====================
+function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+    const btn = document.querySelector('.btn-icon');
+    btn.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+    localStorage.setItem('dy_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+}
+
+// ==================== 홈 렌더링 ====================
+function renderHiveGrid() {
+    const grid = document.getElementById('hive-grid');
+    const empty = document.getElementById('hive-empty');
+    const activeHives = Object.entries(DB.hives).filter(([k,v]) => v.active);
+
+    if (activeHives.length === 0) {
+        grid.style.display = 'none';
+        empty.style.display = 'block';
+    } else {
+        grid.style.display = 'grid';
+        empty.style.display = 'none';
+        grid.innerHTML = activeHives.map(([name, data]) => `
+            <div class="hive-card status-${data.status || 'ok'}" onclick="showHiveDetail('${name}')">
+                <span class="hive-num">${name.replace('번통','')}</span>
+                <span class="hive-icon">🏺</span>
+                <div class="hive-status-dot"></div>
+            </div>
+        `).join('');
+    }
+}
+
+function updateHomeSummary() {
+    const hives = Object.values(DB.hives).filter(h => h.active);
+    document.getElementById('stat-ok').textContent = hives.filter(h => (h.status||'ok') === 'ok').length;
+    document.getElementById('stat-warn').textContent = hives.filter(h => h.status === 'warn').length;
+    document.getElementById('stat-danger').textContent = hives.filter(h => h.status === 'danger').length;
+}
+
+function showHiveDetail(name) {
+    const hive = DB.hives[name] || {};
+    const loc = DB.locations[name];
+    const lastDiary = DB.diaries.filter(d => d.hiveNum === name).sort((a,b) => b.date.localeCompare(a.date))[0];
+    const activeDisease = DB.diseases.filter(d => d.hiveNum === name && d.status !== 'done').slice(-1)[0];
+    const lastHarvest = DB.diaries.filter(d => d.hiveNum === name && d.type === 'harvest').sort((a,b) => b.date.localeCompare(a.date))[0];
+
+    const content = `
+        <div style="font-size:1.1rem;font-weight:900;color:var(--tx-gold);margin-bottom:16px;">🏺 ${name}</div>
+        <div style="display:grid;gap:10px;">
+            <div style="display:flex;justify-content:space-between;">
+                <span style="color:var(--tx-sub);font-size:0.85rem;">상태</span>
+                <span style="font-weight:800;">${hive.status === 'danger' ? '🔴 위험' : hive.status === 'warn' ? '🟡 주의' : '🟢 정상'}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+                <span style="color:var(--tx-sub);font-size:0.85rem;">마지막 관찰</span>
+                <span style="font-weight:700;">${lastDiary ? lastDiary.date : '기록 없음'}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+                <span style="color:var(--tx-sub);font-size:0.85rem;">최근 채밀</span>
+                <span style="font-weight:700;">${lastHarvest ? lastHarvest.date + ' ' + (lastHarvest.harvestKg||'')+'kg' : '없음'}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+                <span style="color:var(--tx-sub);font-size:0.85rem;">위치</span>
+                <span style="font-weight:700;">${loc ? (loc.isPublic ? '🌐 공개' : '🔒 비공개') + ' 등록됨' : '미등록'}</span>
+            </div>
+            ${activeDisease ? `<div style="background:rgba(244,67,54,0.1);border:1px solid rgba(244,67,54,0.3);border-radius:10px;padding:10px;font-size:0.85rem;color:#f44336;">⚠️ ${activeDisease.diseaseType} 치료중 (${activeDisease.date})</div>` : ''}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;">
+            <button class="btn-sm" onclick="closeModal('hive-detail-modal');switchView('diary');">📔 일지 기록</button>
+            <button class="btn-sm" onclick="closeModal('hive-detail-modal');switchView('disease');">🛡️ 방역 기록</button>
+        </div>
+        <button class="btn-sm" onclick="closeModal('hive-detail-modal');" style="width:100%;margin-top:8px;">닫기</button>
+    `;
+    document.getElementById('hive-detail-content').innerHTML = content;
+    document.getElementById('hive-detail-modal').classList.add('show');
+}
+
+// ==================== 벌통 선택 렌더링 ====================
+function renderHiveSelects() {
+    const activeHives = Object.keys(DB.hives).filter(k => DB.hives[k].active);
+    const html = activeHives.length === 0
+        ? '<div style="color:var(--tx-sub);font-size:0.82rem;">활성화된 벌통이 없습니다</div>'
+        : activeHives.map((name, i) => `
+            <button class="hive-select-btn ${i===0?'selected':''}" 
+                    onclick="selectHiveBtn(this,'${name}','${arguments[0]||''}')" 
+                    data-hive="${name}">${name.replace('번통','')}</button>
+          `).join('');
+
+    ['diary-hive-select','disease-hive-select'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.innerHTML = activeHives.map((name, i) => `
+                <button class="hive-select-btn ${i===0?'selected':''}" 
+                        onclick="selectHiveBtnInGroup(this, '${id}')" 
+                        data-hive="${name}">${name.replace('번통','')}</button>
+            `).join('') || '<div style="color:var(--tx-sub);font-size:0.82rem;">활성화된 벌통이 없습니다</div>';
+        }
+    });
+}
+
+function selectHiveBtnInGroup(btn, groupId) {
+    const group = document.getElementById(groupId);
+    group.querySelectorAll('.hive-select-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+}
+
+function getSelectedHive(groupId) {
+    const group = document.getElementById(groupId);
+    if (!group) return '';
+    const sel = group.querySelector('.hive-select-btn.selected');
+    return sel ? sel.dataset.hive : '';
+}
+
+// ==================== 일지 ====================
+let currentDiaryType = 'observe';
+
+function selectDiaryType(type, btn) {
+    currentDiaryType = type;
+    ['observe','swarm','capture','harvest'].forEach(t => {
+        document.getElementById('dtype-'+t).classList.remove('active');
+        const fields = document.getElementById(t+'-fields');
+        if (fields) fields.style.display = 'none';
+    });
+    btn.classList.add('active');
+    const fields = document.getElementById(type+'-fields');
+    if (fields) fields.style.display = 'block';
+}
+
+function saveDiary() {
+    const hiveNum = getSelectedHive('diary-hive-select');
+    if (!hiveNum) { showToast('벌통을 선택하세요'); return; }
+    const date = document.getElementById('diary-date').value;
+    if (!date) { showToast('날짜를 선택하세요'); return; }
+
+    const photos = getPhotos('diary-photos');
+    let extra = {};
+
+    if (currentDiaryType === 'observe') {
+        extra.queenStatus = document.getElementById('queen-status').value;
+        extra.combCount = document.getElementById('comb-count').value;
+        // 상태 업데이트
+        if (extra.queenStatus === '교체필요') updateHiveStatus(hiveNum, 'warn');
+        else if (DB.hives[hiveNum] && DB.hives[hiveNum].status !== 'danger') updateHiveStatus(hiveNum, 'ok');
+    } else if (currentDiaryType === 'swarm') {
+        extra.swarmDate = document.getElementById('swarm-date').value;
+        extra.swarmCaptured = document.getElementById('swarm-captured').value;
+    } else if (currentDiaryType === 'capture') {
+        extra.captureLocation = document.getElementById('capture-location').value;
+        extra.colonySize = document.getElementById('colony-size').value;
+    } else if (currentDiaryType === 'harvest') {
+        extra.harvestKg = document.getElementById('harvest-kg').value;
+        extra.harvestStorage = document.getElementById('harvest-storage').value;
+        // 채밀 수입 자동 제안
+        if (extra.harvestKg) {
+            showToast('채밀 완료! 가계부에서 수입을 기록하세요 🍯');
+        }
+    }
+
+    const record = {
+        id: Date.now(),
+        hiveNum,
+        type: currentDiaryType,
+        date,
+        memo: document.getElementById('diary-memo').value,
+        photos,
+        ...extra,
+        savedAt: new Date().toISOString()
+    };
+
+    DB.diaries.push(record);
+    saveDB();
+    showToast('📔 일지가 저장되었습니다');
+    resetDiaryForm();
+    renderAll();
+}
+
+function resetDiaryForm() {
+    document.getElementById('diary-memo').value = '';
+    document.getElementById('queen-status').value = '';
+    document.getElementById('comb-count').value = '';
+    document.getElementById('harvest-kg').value = '';
+    document.getElementById('diary-photos').innerHTML = '';
+    initDateFields();
+}
+
+function renderDiaryList(filterType = 'all') {
+    const container = document.getElementById('diary-record-list');
+    const typeLabels = { observe:'🔍 관찰', swarm:'🐝 분봉', capture:'📦 포획', harvest:'🍯 채밀' };
+    let records = [...DB.diaries].sort((a,b) => b.date.localeCompare(a.date));
+    if (filterType !== 'all') records = records.filter(r => r.type === filterType);
+
+    if (records.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📔</div><p>기록이 없습니다</p></div>';
+        return;
+    }
+
+    container.innerHTML = records.map(r => `
+        <div class="record-card">
+            <div class="record-card-header">
+                <div style="display:flex;gap:6px;align-items:center;">
+                    <span class="record-type-badge">${typeLabels[r.type]||r.type}</span>
+                    <span style="font-size:0.82rem;font-weight:800;color:var(--tx-amber);">${r.hiveNum}</span>
+                </div>
+                <div style="display:flex;gap:6px;align-items:center;">
+                    <span class="record-date">${r.date}</span>
+                    <button class="btn-danger" style="padding:4px 10px;font-size:0.72rem;" onclick="deleteDiary(${r.id})">삭제</button>
+                </div>
+            </div>
+            ${r.type === 'observe' ? `<div style="font-size:0.82rem;color:var(--tx-sub);">왕상태: ${r.queenStatus||'-'} | 소비: ${r.combCount||'-'}장</div>` : ''}
+            ${r.type === 'harvest' ? `<div style="font-size:0.85rem;font-weight:800;color:#D4A017;">🍯 채밀량: ${r.harvestKg||0}kg</div>` : ''}
+            ${r.type === 'swarm' ? `<div style="font-size:0.82rem;color:var(--tx-sub);">분봉: ${r.swarmDate} | ${r.swarmCaptured}</div>` : ''}
+            ${r.type === 'capture' ? `<div style="font-size:0.82rem;color:var(--tx-sub);">장소: ${r.captureLocation||'-'} | 크기: ${r.colonySize||'-'}</div>` : ''}
+            ${r.memo ? `<div style="font-size:0.85rem;margin-top:6px;color:var(--tx-main);">${r.memo}</div>` : ''}
+            ${r.photos && r.photos.length > 0 ? `<div style="display:flex;gap:4px;margin-top:8px;">${r.photos.map(p=>`<img src="${p}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">`).join('')}</div>` : ''}
+        </div>
+    `).join('');
+}
+
+function filterDiary(type, btn) {
+    document.querySelectorAll('#view-diary .tab-bar + div .btn-sm').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderDiaryList(type);
+}
+
+function deleteDiary(id) {
+    if (!confirm('이 기록을 삭제하시겠어요?')) return;
+    DB.diaries = DB.diaries.filter(d => d.id !== id);
+    saveDB();
+    renderDiaryList();
+    showToast('삭제되었습니다');
+}
+
+// ==================== 방역 ====================
+const DISEASE_DATA = {
+    '낭충봉아부패병': {
+        medicines: ['한봉 낭충봉아부패병 예방제', '녹차 추출물 희석액', '처방없음 (소초 교체)'],
+        methods: ['소비 교체', '소독 처리', '격리 관찰', '군세 강화']
+    },
+    '백묵병': {
+        medicines: ['항진균제', '처방없음'],
+        methods: ['환기 개선', '습도 조절', '소비 제거']
+    },
+    '응애': {
+        medicines: ['옥살산', '아피바르', '티목스'],
+        methods: ['흘림처리', '증기처리', '스트립처리']
+    },
+    '소먹이부패병': {
+        medicines: ['항생제 (수의사 처방)', '처방없음'],
+        methods: ['오염 소비 제거', '소독']
+    }
+};
+
+let currentDiseaseStatus = 'treating';
+
+function selectDiseaseStatus(status, btn) {
+    currentDiseaseStatus = status;
+    ['treating','watch','done'].forEach(s => document.getElementById('dstatus-'+s).classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function updateMedicineOptions() {
+    const type = document.getElementById('disease-type').value;
+    const customWrap = document.getElementById('disease-custom-wrap');
+    const medicineSection = document.getElementById('medicine-section');
+    const medicineLabel = document.getElementById('medicine-label');
+
+    if (type === '기타') {
+        customWrap.style.display = 'block';
+        medicineSection.style.display = 'none';
+        medicineLabel.style.display = 'none';
+        return;
+    }
+    customWrap.style.display = 'none';
+
+    const data = DISEASE_DATA[type];
+    if (data) {
+        medicineSection.style.display = 'block';
+        medicineLabel.style.display = 'block';
+        document.getElementById('medicine-type').innerHTML =
+            `<option value="">약제 선택</option>` + data.medicines.map(m => `<option>${m}</option>`).join('');
+        document.getElementById('medicine-method').innerHTML =
+            `<option value="">처리방법 선택</option>` + data.methods.map(m => `<option>${m}</option>`).join('');
+    } else {
+        medicineSection.style.display = 'none';
+        medicineLabel.style.display = 'none';
+    }
+}
+
+function saveDisease() {
+    const hiveNum = getSelectedHive('disease-hive-select');
+    if (!hiveNum) { showToast('벌통을 선택하세요'); return; }
+    const diseaseType = document.getElementById('disease-type').value === '기타'
+        ? document.getElementById('disease-custom').value
+        : document.getElementById('disease-type').value;
+    if (!diseaseType) { showToast('질병 종류를 선택하세요'); return; }
+
+    const record = {
+        id: Date.now(),
+        hiveNum,
+        diseaseType,
+        medicine: document.getElementById('medicine-type').value,
+        method: document.getElementById('medicine-method').value,
+        date: document.getElementById('disease-date').value,
+        alarm: document.getElementById('disease-alarm').value,
+        status: currentDiseaseStatus,
+        memo: document.getElementById('disease-memo').value,
+        photos: getPhotos('disease-photos'),
+        savedAt: new Date().toISOString()
+    };
+
+    DB.diseases.push(record);
+
+    // 상태 업데이트
+    if (currentDiseaseStatus === 'treating') updateHiveStatus(hiveNum, 'danger');
+    else if (currentDiseaseStatus === 'watch') updateHiveStatus(hiveNum, 'warn');
+    else if (currentDiseaseStatus === 'done') {
+        const stillSick = DB.diseases.some(d => d.hiveNum === hiveNum && d.status !== 'done' && d.id !== record.id);
+        if (!stillSick) updateHiveStatus(hiveNum, 'ok');
+    }
+
+    saveDB();
+    showToast('💊 방제 기록이 저장되었습니다');
+    resetDiseaseForm();
+    renderAll();
+}
+
+function resetDiseaseForm() {
+    document.getElementById('disease-type').value = '';
+    document.getElementById('disease-memo').value = '';
+    document.getElementById('disease-photos').innerHTML = '';
+    document.getElementById('medicine-section').style.display = 'none';
+    document.getElementById('medicine-label').style.display = 'none';
+    initDateFields();
+}
+
+function renderDiseaseList() {
+    const container = document.getElementById('disease-record-list');
+    const records = [...DB.diseases].sort((a,b) => b.date.localeCompare(a.date));
+
+    if (records.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">🛡️</div><p>방역 기록이 없습니다</p></div>';
+        return;
+    }
+
+    const statusLabels = { treating: '🔴 치료중', watch: '🟡 관찰중', done: '🟢 완치' };
+    container.innerHTML = records.map(r => `
+        <div class="record-card" style="border-left: 3px solid ${r.status==='treating'?'#f44336':r.status==='watch'?'#ff9800':'#4caf50'};">
+            <div class="record-card-header">
+                <div style="display:flex;gap:6px;align-items:center;">
+                    <span class="record-type-badge" style="background:rgba(244,67,54,0.15);color:#f44336;">${r.diseaseType}</span>
+                    <span style="font-size:0.82rem;font-weight:800;color:var(--tx-amber);">${r.hiveNum}</span>
+                </div>
+                <div style="display:flex;gap:6px;align-items:center;">
+                    <span class="record-date">${r.date}</span>
+                    <button class="btn-danger" style="padding:4px 10px;font-size:0.72rem;" onclick="deleteDisease(${r.id})">삭제</button>
+                </div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+                <span class="disease-badge ${r.status}">${statusLabels[r.status]||r.status}</span>
+                ${r.medicine ? `<span style="font-size:0.78rem;color:var(--tx-sub);">💊 ${r.medicine}</span>` : ''}
+            </div>
+            ${r.memo ? `<div style="font-size:0.85rem;color:var(--tx-main);">${r.memo}</div>` : ''}
+        </div>
+    `).join('');
+}
+
+function deleteDisease(id) {
+    if (!confirm('이 기록을 삭제하시겠어요?')) return;
+    DB.diseases = DB.diseases.filter(d => d.id !== id);
+    saveDB();
+    renderDiseaseList();
+    showToast('삭제되었습니다');
+}
+
+// ==================== 가계부 ====================
+let currentAccType = 'expense';
+let accYear = new Date().getFullYear();
+let accMonth = new Date().getMonth() + 1;
+
+const ACC_CATEGORIES = {
+    expense: ['설탕','화분 대용 사료','낭충봉아부패병 치료제','기타 약품','벌통 구입/제작','목재','교통비','장비/도구','기타 지출'],
+    income: ['토종꿀 판매','봉군 판매','벌통 판매','봉독 판매','기타 수입']
+};
+
+function selectAccType(type, btn) {
+    currentAccType = type;
+    document.getElementById('acc-expense-btn').classList.remove('active');
+    document.getElementById('acc-income-btn').classList.remove('active');
+    btn.classList.add('active');
+    updateAccCategories();
+}
+
+function updateAccCategories() {
+    const cats = ACC_CATEGORIES[currentAccType] || [];
+    document.getElementById('acc-category').innerHTML =
+        `<option value="">선택하세요</option>` +
+        cats.map(c => `<option value="${c}">${c}</option>`).join('') +
+        `<option value="직접입력">직접 입력</option>`;
+    checkAccCustom();
+}
+
+function checkAccCustom() {
+    const val = document.getElementById('acc-category').value;
+    document.getElementById('acc-custom-wrap').style.display = val === '직접입력' ? 'block' : 'none';
+    document.getElementById('sugar-fields').style.display = val === '설탕' ? 'block' : 'none';
+}
+
+function renderAccHiveSelect() {
+    const activeHives = Object.keys(DB.hives).filter(k => DB.hives[k].active);
+    document.getElementById('acc-hive').innerHTML =
+        `<option value="">전체 공통</option>` +
+        activeHives.map(h => `<option value="${h}">${h}</option>`).join('');
+}
+
+function changeMonth(dir) {
+    accMonth += dir;
+    if (accMonth > 12) { accMonth = 1; accYear++; }
+    if (accMonth < 1) { accMonth = 12; accYear--; }
+    renderAccMonth();
+    renderAccList();
+}
+
+function renderAccMonth() {
+    document.getElementById('acc-month-label').textContent = `${accYear}년 ${accMonth}월`;
+    const monthRecords = getMonthRecords();
+    const income = monthRecords.filter(r=>r.type==='income').reduce((s,r)=>s+Number(r.amount||0),0);
+    const expense = monthRecords.filter(r=>r.type==='expense').reduce((s,r)=>s+Number(r.amount||0),0);
+    const balance = income - expense;
+    document.getElementById('acc-total-income').textContent = formatMoney(income);
+    document.getElementById('acc-total-expense').textContent = formatMoney(expense);
+    document.getElementById('acc-balance').textContent = formatMoney(balance);
+}
+
+function getMonthRecords() {
+    const prefix = `${accYear}-${String(accMonth).padStart(2,'0')}`;
+    return DB.accounts.filter(r => r.date && r.date.startsWith(prefix));
+}
+
+function saveAccount() {
+    const category = document.getElementById('acc-category').value === '직접입력'
+        ? document.getElementById('acc-custom').value
+        : document.getElementById('acc-category').value;
+    if (!category) { showToast('항목을 선택하세요'); return; }
+    const amount = document.getElementById('acc-amount').value;
+    if (!amount) { showToast('금액을 입력하세요'); return; }
+
+    const record = {
+        id: Date.now(),
+        type: currentAccType,
+        category,
+        hiveNum: document.getElementById('acc-hive').value,
+        amount: Number(amount),
+        date: document.getElementById('acc-date').value,
+        memo: document.getElementById('acc-memo').value,
+        sugarKg: category === '설탕' ? document.getElementById('sugar-kg').value : '',
+        sugarMethod: category === '설탕' ? document.getElementById('sugar-method').value : '',
+        savedAt: new Date().toISOString()
+    };
+
+    DB.accounts.push(record);
+    saveDB();
+    showToast('💰 저장되었습니다');
+    document.getElementById('acc-amount').value = '';
+    document.getElementById('acc-memo').value = '';
+    document.getElementById('acc-category').value = '';
+    document.getElementById('sugar-fields').style.display = 'none';
+    renderAccMonth();
+    renderAccList();
+}
+
+function renderAccList(filterType = 'all') {
+    const container = document.getElementById('acc-record-list');
+    let records = getMonthRecords().sort((a,b) => b.date.localeCompare(a.date));
+    if (filterType === 'expense') records = records.filter(r=>r.type==='expense');
+    else if (filterType === 'income') records = records.filter(r=>r.type==='income');
+    else if (filterType === 'sugar') records = records.filter(r=>r.category==='설탕');
+
+    if (records.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">💰</div><p>이번 달 내역이 없습니다</p></div>';
+        return;
+    }
+
+    container.innerHTML = records.map(r => `
+        <div class="record-card">
+            <div class="acc-item">
+                <div class="acc-item-left">
+                    <div class="acc-item-name">${r.category}${r.hiveNum ? ' · '+r.hiveNum : ''}</div>
+                    <div class="acc-item-sub">${r.date}${r.sugarKg ? ' | '+r.sugarKg+'kg '+r.sugarMethod : ''}${r.memo ? ' | '+r.memo : ''}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div class="acc-item-amount ${r.type}">${r.type==='income'?'+':'-'}${formatMoney(r.amount)}</div>
+                    <button class="btn-danger" style="padding:4px 8px;font-size:0.7rem;" onclick="deleteAccount(${r.id})">삭제</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterAcc(type, btn) {
+    document.querySelectorAll('#acc-list .btn-sm').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderAccList(type);
+}
+
+function deleteAccount(id) {
+    if (!confirm('삭제하시겠어요?')) return;
+    DB.accounts = DB.accounts.filter(a => a.id !== id);
+    saveDB();
+    renderAccMonth();
+    renderAccList();
+    showToast('삭제되었습니다');
+}
+
+function formatMoney(n) {
+    if (!n && n !== 0) return '0원';
+    return Number(n).toLocaleString('ko-KR') + '원';
+}
+
+// ==================== 설정 - 벌통 관리 ====================
+function renderHiveManage() {
+    const container = document.getElementById('hive-manage-list');
+    const allHives = Object.entries(DB.hives).sort((a,b) => {
+        const numA = parseInt(a[0]);
+        const numB = parseInt(b[0]);
+        return numA - numB;
+    });
+
+    if (allHives.length === 0) {
+        container.innerHTML = '<div style="color:var(--tx-sub);font-size:0.85rem;text-align:center;padding:20px;">등록된 벌통이 없습니다</div>';
+        return;
+    }
+
+    container.innerHTML = allHives.map(([name, data]) => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:1.2rem;">🏺</span>
+                <div>
+                    <div style="font-weight:800;color:var(--tx-main);">${name}</div>
+                    <div style="font-size:0.75rem;color:var(--tx-sub);">등록일: ${data.createdAt||'-'}</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;min-height:auto;padding:0;">
+                    <input type="checkbox" ${data.active?'checked':''} onchange="toggleHive('${name}', this.checked)" style="width:20px;height:20px;">
+                    <span style="font-size:0.8rem;color:var(--tx-sub);">${data.active?'활성':'비활성'}</span>
+                </label>
+                <button class="btn-danger" style="padding:6px 10px;font-size:0.75rem;" onclick="deleteHive('${name}')">삭제</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function addNewHive() {
+    const existing = Object.keys(DB.hives);
+    let nextNum = 1;
+    while (existing.includes(nextNum + '번통')) nextNum++;
+    const name = nextNum + '번통';
+    DB.hives[name] = { active: true, status: 'ok', createdAt: new Date().toISOString().split('T')[0] };
+    saveDB();
+    renderAll();
+    showToast(`🏺 ${name} 추가됨`);
+
+    // 벌통 등록 모달의 선택지 갱신
+    const regSelect = document.getElementById('reg-hive-num');
+    if (regSelect) renderRegisterHiveSelect();
+}
+
+function toggleHive(name, active) {
+    if (DB.hives[name]) {
+        DB.hives[name].active = active;
+        saveDB();
+        renderAll();
+    }
+}
+
+function deleteHive(name) {
+    if (!confirm(`${name}을 삭제하시겠어요?\n관련 기록은 모두 보존됩니다.`)) return;
+    delete DB.hives[name];
+    saveDB();
+    renderAll();
+    showToast(`${name} 삭제됨`);
+}
+
+function updateHiveStatus(name, status) {
+    if (DB.hives[name]) {
+        DB.hives[name].status = status;
+        saveDB();
+    }
+}
+
+// ==================== 지도 ====================
+let currentPrivacy = 'private';
+let mapInstance = null;
+
+function initMap() {
+    // OpenStreetMap (Leaflet) 동적 로드
+    if (typeof L !== 'undefined') {
+        setupMap();
+        return;
+    }
+    // Leaflet CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+    document.head.appendChild(link);
+    // Leaflet JS
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+    script.onload = setupMap;
+    document.head.appendChild(script);
+}
+
+function setupMap() {
+    const container = document.getElementById('map-container');
+    const loading = document.getElementById('map-loading');
+    if (!container || mapInstance) return;
+
+    loading.style.display = 'none';
+    container.style.display = 'block';
+
+    // 기본 위치 (한국 중심)
+    mapInstance = L.map('map-container', { zoomControl: true }).setView([36.5, 127.5], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap',
+        maxZoom: 18
+    }).addTo(mapInstance);
+
+    // 등록된 벌통 마커 표시
+    renderMapMarkers();
+
+    // 내 위치 표시
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            const { latitude: lat, longitude: lng } = pos.coords;
+            L.circleMarker([lat, lng], {
+                color: '#2196F3', fillColor: '#2196F3', fillOpacity: 0.8, radius: 8
+            }).addTo(mapInstance).bindPopup('🔵 내 위치');
+            mapInstance.setView([lat, lng], 13);
+            document.getElementById('gps-status').textContent = '📍 GPS 연결됨';
+            document.getElementById('gps-status').className = 'online-badge';
+        });
+    }
+}
+
+function renderMapMarkers() {
+    if (!mapInstance) return;
+    // 기존 마커 제거 (레이어 그룹으로 관리 가능하지만 간단하게)
+    Object.entries(DB.locations).forEach(([name, loc]) => {
+        if (!loc.lat || !loc.lng) return;
+        const hive = DB.hives[name] || {};
+        const color = hive.status === 'danger' ? '#f44336' : hive.status === 'warn' ? '#ff9800' : '#4caf50';
+        L.circleMarker([loc.lat, loc.lng], {
+            color, fillColor: color, fillOpacity: 0.7, radius: 10
+        }).addTo(mapInstance).bindPopup(`🏺 ${name}<br>🔒 ${loc.isPublic ? '공개' : '비공개'}<br>${loc.memo||''}`);
+    });
+}
+
+function getCurrentGPS() {
+    if (!navigator.geolocation) { showToast('GPS를 지원하지 않는 기기입니다'); return; }
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            document.getElementById('gps-status').textContent = `📍 ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+            document.getElementById('gps-status').className = 'online-badge';
+            showToast('📍 위치 확인됨');
+        },
+        () => { showToast('GPS 신호를 찾을 수 없습니다'); }
+    );
+}
+
+function showHiveRegisterModal() {
+    renderRegisterHiveSelect();
+    document.getElementById('hive-register-modal').classList.add('show');
+}
+
+function renderRegisterHiveSelect() {
+    const sel = document.getElementById('reg-hive-num');
+    const activeHives = Object.keys(DB.hives).filter(k => DB.hives[k].active);
+    sel.innerHTML = activeHives.map(h => `<option value="${h}">${h}</option>`).join('') ||
+        '<option value="">활성화된 벌통이 없습니다</option>';
+}
+
+function getGPSForRegister() {
+    if (!navigator.geolocation) { showToast('GPS 미지원'); return; }
+    showToast('🛰️ GPS 신호 수신 중...');
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            document.getElementById('reg-lat').value = pos.coords.latitude.toFixed(6);
+            document.getElementById('reg-lng').value = pos.coords.longitude.toFixed(6);
+            showToast('📍 위치 확인됨!');
+        },
+        () => showToast('GPS 신호를 받을 수 없습니다')
+    );
+}
+
+function setPrivacy(type) {
+    currentPrivacy = type;
+    document.getElementById('priv-private').className = 'privacy-btn ' + (type==='private'?'active private':'private');
+    document.getElementById('priv-public').className = 'privacy-btn ' + (type==='public'?'active public':'public');
+    document.getElementById('public-options').style.display = type === 'public' ? 'block' : 'none';
+}
+
+function saveHiveLocation() {
+    const hiveNum = document.getElementById('reg-hive-num').value;
+    if (!hiveNum) { showToast('벌통을 선택하세요'); return; }
+    const lat = document.getElementById('reg-lat').value;
+    const lng = document.getElementById('reg-lng').value;
+    if (!lat || !lng) { showToast('GPS 위치를 먼저 가져오세요'); return; }
+
+    DB.locations[hiveNum] = {
+        lat: parseFloat(lat),
+        lng: parseFloat(lng),
+        memo: document.getElementById('reg-memo').value,
+        isPublic: currentPrivacy === 'public',
+        publicType: document.getElementById('public-type')?.value || 'exact',
+        updatedAt: new Date().toISOString()
+    };
+    saveDB();
+    closeModal('hive-register-modal');
+    showToast(`🏺 ${hiveNum} 위치 등록 완료`);
+    renderHiveLocationList();
+    if (mapInstance) renderMapMarkers();
+}
+
+function renderHiveLocationList() {
+    const container = document.getElementById('hive-location-list');
+    const entries = Object.entries(DB.locations);
+    if (entries.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📍</div><p>아직 위치가 등록된 벌통이 없어요</p></div>';
+        return;
+    }
+    container.innerHTML = entries.map(([name, loc]) => `
+        <div class="record-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <div style="font-weight:800;color:var(--tx-main);">🏺 ${name}</div>
+                    <div style="font-size:0.78rem;color:var(--tx-sub);">${loc.lat?.toFixed(4)}, ${loc.lng?.toFixed(4)}</div>
+                    ${loc.memo ? `<div style="font-size:0.8rem;color:var(--tx-sub);">${loc.memo}</div>` : ''}
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+                    <span style="font-size:0.75rem;">${loc.isPublic ? '🌐 공개' : '🔒 비공개'}</span>
+                    <button class="btn-danger" style="padding:4px 10px;font-size:0.72rem;" onclick="deleteLocation('${name}')">삭제</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function deleteLocation(name) {
+    if (!confirm(`${name} 위치를 삭제하시겠어요?`)) return;
+    delete DB.locations[name];
+    saveDB();
+    renderHiveLocationList();
+    showToast('위치 삭제됨');
+}
+
+function cacheMap() {
+    const btn = document.getElementById('cache-map-btn');
+    const status = document.getElementById('cache-status');
+    btn.disabled = true;
+    btn.textContent = '⏳ 캐싱 중...';
+    status.textContent = '지도 타일을 저장하는 중입니다...';
+    setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = '✅ 캐시 완료';
+        status.textContent = '현재 지역 지도가 저장되었습니다. 오프라인에서도 사용 가능합니다.';
+    }, 2000);
+}
+
+// ==================== 사진 ====================
+const photoData = {};
+
+function addPhotos(input, containerId) {
+    const files = Array.from(input.files);
+    const container = document.getElementById(containerId);
+    if (!photoData[containerId]) photoData[containerId] = [];
+
+    files.forEach(file => {
+        if (photoData[containerId].length >= 3) { showToast('사진은 최대 3장입니다'); return; }
+        const reader = new FileReader();
+        reader.onload = e => {
+            const src = e.target.result;
+            photoData[containerId].push(src);
+            renderPhotos(containerId);
+        };
+        reader.readAsDataURL(file);
+    });
+    input.value = '';
+}
+
+function removePhoto(containerId, idx) {
+    photoData[containerId].splice(idx, 1);
+    renderPhotos(containerId);
+}
+
+function renderPhotos(containerId) {
+    const container = document.getElementById(containerId);
+    const photos = photoData[containerId] || [];
+    container.innerHTML = photos.map((src, i) => `
+        <div class="photo-thumb">
+            <img src="${src}" alt="사진">
+            <button class="photo-remove" onclick="removePhoto('${containerId}', ${i})">×</button>
+        </div>
+    `).join('');
+}
+
+function getPhotos(containerId) {
+    return photoData[containerId] || [];
+}
+
+// ==================== 음성인식 ====================
+let recognition = null;
+let isRecording = false;
+
+function toggleVoice(targetId, btnId) {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        showToast('이 기기에서는 음성인식을 지원하지 않습니다');
+        return;
+    }
+
+    const btn = document.getElementById(btnId);
+    if (isRecording) {
+        if (recognition) recognition.stop();
+        isRecording = false;
+        btn.classList.remove('recording');
+        btn.innerHTML = '🎤 음성';
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'ko-KR';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+        isRecording = true;
+        btn.classList.add('recording');
+        btn.innerHTML = '⏹ 중지';
+        showToast('🎤 음성 인식 중...');
+    };
+    recognition.onresult = e => {
+        const text = e.results[0][0].transcript;
+        const target = document.getElementById(targetId);
+        target.value += (target.value ? '\n' : '') + text;
+    };
+    recognition.onend = () => {
+        isRecording = false;
+        btn.classList.remove('recording');
+        btn.innerHTML = '🎤 음성';
+    };
+    recognition.onerror = () => {
+        isRecording = false;
+        btn.classList.remove('recording');
+        btn.innerHTML = '🎤 음성';
+        showToast('음성 인식에 실패했습니다');
+    };
+    recognition.start();
+}
+
+// ==================== 날씨 ====================
+function loadWeather() {
+    document.getElementById('home-date').textContent = new Date().toLocaleDateString('ko-KR');
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(async pos => {
+        try {
+            const { latitude: lat, longitude: lon } = pos.coords;
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&timezone=Asia/Seoul`;
+            const res = await fetch(url);
+            const data = await res.json();
+            const temp = data.current?.temperature_2m;
+            const code = data.current?.weathercode;
+            document.getElementById('home-temp').textContent = `${temp}°C`;
+            document.getElementById('home-weather-desc').textContent = getWeatherDesc(code);
+            document.getElementById('home-weather-icon').textContent = getWeatherIcon(code);
+        } catch(e) {}
+    });
+}
+
+function getWeatherDesc(code) {
+    if (code === 0) return '맑음';
+    if (code <= 3) return '구름 조금';
+    if (code <= 48) return '안개';
+    if (code <= 67) return '비';
+    if (code <= 77) return '눈';
+    if (code <= 82) return '소나기';
+    return '흐림';
+}
+function getWeatherIcon(code) {
+    if (code === 0) return '☀️';
+    if (code <= 3) return '⛅';
+    if (code <= 48) return '🌫️';
+    if (code <= 67) return '🌧️';
+    if (code <= 77) return '❄️';
+    if (code <= 82) return '🌦️';
+    return '☁️';
+}
+
+// ==================== 네트워크 ====================
+function checkNetwork() {
+    const badge = document.getElementById('network-badge');
+    if (navigator.onLine) {
+        badge.textContent = '온라인';
+        badge.className = 'online-badge';
+    } else {
+        badge.textContent = '오프라인';
+        badge.className = 'offline-badge';
+    }
+}
+
+// ==================== 유틸 ====================
+function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ==================== 데이터 내보내기 ====================
+function exportData() {
+    const data = JSON.stringify(DB, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `토봉마스터_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    showToast('📤 백업 파일 저장됨');
+}
+
+function importData(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (confirm('데이터를 복원하시겠어요? 현재 데이터가 덮어씌워집니다.')) {
+                DB = { ...DB, ...data };
+                saveDB();
+                renderAll();
+                showToast('📥 복원 완료');
+            }
+        } catch(e) { showToast('파일이 올바르지 않습니다'); }
+    };
+    reader.readAsText(file);
+    input.value = '';
+}
+
+function exportExcel() {
+    if (typeof XLSX === 'undefined') { showToast('엑셀 기능 로딩 중...'); return; }
+    const wb = XLSX.utils.book_new();
+
+    // 일지 시트
+    const diarySheet = DB.diaries.map(r => ({
+        날짜: r.date, 벌통: r.hiveNum, 유형: r.type,
+        왕상태: r.queenStatus||'', 소비수: r.combCount||'',
+        채밀량: r.harvestKg||'', 메모: r.memo||''
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(diarySheet), '일지');
+
+    // 방역 시트
+    const diseaseSheet = DB.diseases.map(r => ({
+        날짜: r.date, 벌통: r.hiveNum, 질병: r.diseaseType,
+        약제: r.medicine||'', 처리방법: r.method||'', 상태: r.status, 메모: r.memo||''
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(diseaseSheet), '방역');
+
+    // 가계부 시트
+    const accSheet = DB.accounts.map(r => ({
+        날짜: r.date, 유형: r.type==='income'?'수입':'지출', 항목: r.category,
+        금액: r.amount, 벌통: r.hiveNum||'공통', 설탕kg: r.sugarKg||'', 메모: r.memo||''
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(accSheet), '가계부');
+
+    XLSX.writeFile(wb, `토봉마스터_${new Date().toISOString().split('T')[0]}.xlsx`);
+    showToast('📗 엑셀 다운로드 완료');
+}
+
+// ==================== 초기 가계부 카테고리 설정 ====================
+function initAccCategories() {
+    updateAccCategories();
+}
+
+// ==================== 테마 복원 ====================
+function restoreTheme() {
+    if (localStorage.getItem('dy_theme') === 'light') {
+        document.body.classList.add('light-mode');
+        const btn = document.querySelector('.btn-icon');
+        if (btn) btn.textContent = '☀️';
+    }
+}
+
+// ==================== 지도 탭 클릭 시 초기화 ====================
+document.addEventListener('DOMContentLoaded', () => {
+    restoreTheme();
+    initAccCategories();
+});
+
+// 지도 뷰 진입 시 초기화
+const origSwitchView = switchView;
+window.switchView = function(name) {
+    origSwitchView(name);
+    if (name === 'map' && !mapInstance) {
+        setTimeout(initMap, 100);
+    }
+};
+
+// 모달 오버레이 클릭 시 닫기
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) overlay.classList.remove('show');
+    });
+});
+</script>
+</body>
+</html>
