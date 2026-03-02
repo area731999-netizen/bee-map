@@ -14,7 +14,7 @@
     <style>
         /* ========== 기본 설정 ========== */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body { height: 100%; margin: 0; }
+        html, body { height: 100%; margin: 0; overflow: hidden; }
         body {
             background: linear-gradient(135deg, #0f0a06 0%, #1c1208 100%);
             color: #e8e0d0;
@@ -196,7 +196,7 @@
         }
 
         /* ========== 뷰 시스템 ========== */
-        .view { display: none; flex: 1; overflow-y: auto; padding-bottom: 100px; position: relative; z-index: 1; }
+        .view { display: none; height: calc(100vh - 55px - 70px); overflow-y: auto; overflow-x: hidden; padding-bottom: 20px; position: relative; z-index: 1; -webkit-overflow-scrolling: touch; }
         .view.active { display: block; }
 
         /* ========== 하단 네비게이션 ========== */
@@ -255,18 +255,17 @@
             gap: 6px;
         }
 
-        /* ========== 홈 - 벌통 그리드 ========== */
         .hive-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            padding: 0 4px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            padding: 0 2px;
         }
         .hive-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px 6px;
+            border-radius: 10px;
+            padding: 7px 4px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
@@ -278,14 +277,14 @@
         .hive-card.status-warn { border-color: rgba(255,152,0,0.5); }
         .hive-card.status-danger { border-color: rgba(244,67,54,0.5); }
         .hive-card .hive-num {
-            font-size: 0.75rem;
+            font-size: 0.68rem;
             font-weight: 900;
             color: var(--tx-main);
             display: block;
         }
-        .hive-card .hive-icon { font-size: 1.6rem; display: block; margin: 2px 0; }
+        .hive-card .hive-icon { font-size: 1.3rem; display: block; margin: 1px 0; }
         .hive-card .hive-status-dot {
-            width: 8px; height: 8px;
+            width: 6px; height: 6px;
             border-radius: 50%;
             margin: 0 auto;
         }
@@ -563,18 +562,16 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             margin: 12px 16px;
-            height: 260px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            color: var(--tx-sub);
-            font-size: 0.9rem;
+            height: 360px;
+            min-height: 360px;
+            max-height: 360px;
+            flex-shrink: 0;
+            display: block;
             overflow: hidden;
             position: relative;
         }
-        #map-container { width: 100%; height: 100%; border-radius: 16px; }
+        #map-container { width: 100%; height: 100%; border-radius: 16px; display: none; }
+        #map-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; color: var(--tx-sub); font-size: 0.9rem; }
 
         /* ========== 공개/비공개 토글 ========== */
         .privacy-toggle {
@@ -735,7 +732,7 @@
 <div id="main-app">
     <!-- 상단 바 -->
     <div class="top-bar">
-        <button class="btn-back" onclick="goBackToMain()">⬅ BEE MASTER</button>
+        <button class="btn-back" id="top-back-btn" onclick="handleBackBtn()">⬅ BEE MASTER</button>
         <span class="top-bar-title">🏺 동양종</span>
         <div style="display:flex;gap:6px;align-items:center;">
             <span id="network-badge" class="online-badge">온라인</span>
@@ -835,6 +832,17 @@
                     </select>
                     <label class="input-label">🔢 소비 수</label>
                     <input type="number" class="field" id="comb-count" placeholder="예: 7" min="0" max="20">
+                    <label class="input-label">🚪 도거 여부</label>
+                    <select class="field" id="escape-status" onchange="checkEscape()">
+                        <option value="정상">✅ 정상 (도거 없음)</option>
+                        <option value="도거위험">⚠️ 도거 징후 있음</option>
+                        <option value="도거발생">🚨 도거 발생</option>
+                        <option value="도거후재입봉">🔄 도거 후 재입봉</option>
+                    </select>
+                    <div id="escape-detail" style="display:none;">
+                        <label class="input-label">📝 도거 상세</label>
+                        <input type="text" class="field" id="escape-memo-detail" placeholder="도거 원인, 시각, 방향 등">
+                    </div>
                 </div>
 
                 <!-- 분봉 항목 -->
@@ -911,9 +919,10 @@
 
     <!-- ===== 지도 뷰 ===== -->
     <div id="view-map" class="view">
-        <div style="padding:12px 16px;display:flex;gap:8px;align-items:center;">
+        <div style="padding:12px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             <span id="gps-status" class="offline-badge">📍 GPS 대기</span>
             <button class="btn-sm" onclick="getCurrentGPS()">🛰️ 내 위치</button>
+            <button class="btn-sm" onclick="showAllHivesOnMap()">🗺️ 전체보기</button>
             <button class="btn-sm" onclick="showHiveRegisterModal()">+ 통 등록</button>
         </div>
 
@@ -974,6 +983,45 @@
                 </select>
                 <div id="disease-custom-wrap" style="display:none;">
                     <input type="text" class="field" id="disease-custom" placeholder="질병명 직접 입력">
+                </div>
+
+                <!-- 낭충봉아부패병 증상 체크리스트 -->
+                <div id="sacbrood-checklist" style="display:none;margin-bottom:14px;">
+                    <label class="input-label">🔴 낭충봉아부패병 증상 체크리스트</label>
+                    <div style="background:rgba(244,67,54,0.08);border:1px solid rgba(244,67,54,0.25);border-radius:12px;padding:12px;">
+                        <p style="font-size:0.75rem;color:var(--tx-sub);margin:0 0 10px;">해당되는 증상을 모두 선택하세요</p>
+                        <div style="display:grid;gap:8px;">
+                            <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
+                                <input type="checkbox" id="sym-larva" style="width:18px;height:18px;flex-shrink:0;">
+                                <span style="font-size:0.85rem;color:var(--tx-main);">🐛 유충 사체 발견 (자루 모양)</span>
+                            </label>
+                            <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
+                                <input type="checkbox" id="sym-entrance" style="width:18px;height:18px;flex-shrink:0;">
+                                <span style="font-size:0.85rem;color:var(--tx-main);">🚪 소문 주변 오염 (죽은 유충)</span>
+                            </label>
+                            <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
+                                <input type="checkbox" id="sym-color" style="width:18px;height:18px;flex-shrink:0;">
+                                <span style="font-size:0.85rem;color:var(--tx-main);">🟤 번데기 색깔 변화 (갈색/흑색)</span>
+                            </label>
+                            <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
+                                <input type="checkbox" id="sym-capped" style="width:18px;height:18px;flex-shrink:0;">
+                                <span style="font-size:0.85rem;color:var(--tx-main);">🕳️ 봉개 함몰/천공 발견</span>
+                            </label>
+                            <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
+                                <input type="checkbox" id="sym-smell" style="width:18px;height:18px;flex-shrink:0;">
+                                <span style="font-size:0.85rem;color:var(--tx-main);">👃 이상한 냄새 발생</span>
+                            </label>
+                            <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
+                                <input type="checkbox" id="sym-population" style="width:18px;height:18px;flex-shrink:0;">
+                                <span style="font-size:0.85rem;color:var(--tx-main);">📉 봉군 세력 급감</span>
+                            </label>
+                            <label style="display:flex;align-items:center;gap:10px;min-height:auto;padding:6px;background:var(--bg-card);border-radius:8px;cursor:pointer;">
+                                <input type="checkbox" id="sym-cleaning" style="width:18px;height:18px;flex-shrink:0;">
+                                <span style="font-size:0.85rem;color:var(--tx-main);">🧹 일벌의 청소 행동 증가</span>
+                            </label>
+                        </div>
+                        <div id="sacbrood-severity" style="margin-top:10px;padding:8px;border-radius:8px;text-align:center;font-size:0.82rem;font-weight:800;display:none;"></div>
+                    </div>
                 </div>
 
                 <!-- 약제 -->
@@ -1144,6 +1192,67 @@
             <button class="btn-primary" onclick="addNewHive()" style="margin-top:12px;">+ 새 벌통 추가</button>
         </div>
 
+        <!-- 일지 항목 관리 -->
+        <div class="card">
+            <div class="card-title">📔 일지 항목 관리</div>
+            <!-- 관찰 작업 항목 -->
+            <div style="margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span style="font-size:0.82rem;font-weight:800;color:var(--tx-amber);">🔍 관찰 왕 상태 항목</span>
+                </div>
+                <div id="queen-status-list"></div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <input type="text" class="field" id="new-queen-item" placeholder="새 항목 입력" style="margin-bottom:0;flex:1;">
+                    <button class="btn-sm" onclick="addSettingItem('queenItems','new-queen-item','queen-status-list','queen-status')">추가</button>
+                </div>
+            </div>
+            <!-- 도거 상태 항목 -->
+            <div style="margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span style="font-size:0.82rem;font-weight:800;color:var(--tx-amber);">🚪 도거 상태 항목</span>
+                </div>
+                <div id="escape-status-list"></div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <input type="text" class="field" id="new-escape-item" placeholder="새 항목 입력" style="margin-bottom:0;flex:1;">
+                    <button class="btn-sm" onclick="addSettingItem('escapeItems','new-escape-item','escape-status-list','escape-status')">추가</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 방역 항목 관리 -->
+        <div class="card">
+            <div class="card-title">🛡️ 방역 항목 관리</div>
+            <div style="margin-bottom:16px;">
+                <div style="font-size:0.82rem;font-weight:800;color:var(--tx-amber);margin-bottom:8px;">🦠 질병 종류</div>
+                <div id="disease-type-list"></div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <input type="text" class="field" id="new-disease-item" placeholder="새 질병 추가" style="margin-bottom:0;flex:1;">
+                    <button class="btn-sm" onclick="addSettingItem('diseaseItems','new-disease-item','disease-type-list','disease-type')">추가</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 가계부 항목 관리 -->
+        <div class="card">
+            <div class="card-title">💰 가계부 항목 관리</div>
+            <div style="margin-bottom:16px;">
+                <div style="font-size:0.82rem;font-weight:800;color:var(--tx-amber);margin-bottom:8px;">💸 지출 항목</div>
+                <div id="expense-items-list"></div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <input type="text" class="field" id="new-expense-item" placeholder="새 지출 항목" style="margin-bottom:0;flex:1;">
+                    <button class="btn-sm" onclick="addSettingItem('expenseItems','new-expense-item','expense-items-list',null)">추가</button>
+                </div>
+            </div>
+            <div>
+                <div style="font-size:0.82rem;font-weight:800;color:var(--tx-amber);margin-bottom:8px;">💰 수입 항목</div>
+                <div id="income-items-list"></div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <input type="text" class="field" id="new-income-item" placeholder="새 수입 항목" style="margin-bottom:0;flex:1;">
+                    <button class="btn-sm" onclick="addSettingItem('incomeItems','new-income-item','income-items-list',null)">추가</button>
+                </div>
+            </div>
+        </div>
+
         <!-- 데이터 관리 -->
         <div class="card">
             <div class="card-title">💾 데이터 관리</div>
@@ -1207,9 +1316,11 @@
 <div class="modal-overlay" id="hive-register-modal">
     <div class="modal-sheet">
         <div class="modal-handle"></div>
-        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:16px;">🏺 벌통 위치 등록</div>
+        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:12px;">🏺 벌통 위치 등록</div>
+        <!-- 상태 안내 배너 -->
+        <div id="reg-status-banner" style="display:none;padding:8px 12px;border-radius:10px;font-size:0.8rem;font-weight:700;margin-bottom:12px;"></div>
         <label class="input-label">🏺 벌통 번호</label>
-        <select class="field" id="reg-hive-num"></select>
+        <select class="field" id="reg-hive-num" onchange="onHiveSelectChange()"></select>
         <label class="input-label">📍 좌표 입력 <span style="font-size:0.72rem;color:var(--tx-sub);font-weight:400;">(GPS 자동 또는 직접 입력 가능)</span></label>
         <div style="display:flex;gap:8px;margin-bottom:8px;">
             <div style="flex:1;">
@@ -1291,10 +1402,230 @@ function enterApp() {
     initDateFields();
     renderAll();
     loadWeather();
-    checkNetwork();
-    setInterval(checkNetwork, 10000);
+    updateNetworkBadge();
+    checkSwarmAlerts();
+    setInterval(checkSwarmAlerts, 60000); // 1분마다 알림 체크
 }
 
+// ==================== 뒤로가기 ====================
+let viewHistory = ['home'];
+
+function handleBackBtn() {
+    const btn = document.getElementById('top-back-btn');
+    if (viewHistory.length > 1) {
+        viewHistory.pop();
+        const prev = viewHistory[viewHistory.length - 1];
+        // 히스토리 없이 직접 전환 (루프 방지)
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const view = document.getElementById('view-' + prev);
+        const nav = document.getElementById('nav-' + prev);
+        if (view) view.classList.add('active');
+        if (nav) nav.classList.add('active');
+        updateBackBtn();
+    } else {
+        goBackToMain();
+    }
+}
+
+function updateBackBtn() {
+    const btn = document.getElementById('top-back-btn');
+    if (!btn) return;
+    btn.textContent = viewHistory.length > 1 ? '⬅ 이전' : '⬅ BEE MASTER';
+}
+
+// ==================== 도거 체크 ====================
+function checkEscape() {
+    const val = document.getElementById('escape-status').value;
+    const detail = document.getElementById('escape-detail');
+    detail.style.display = (val === '도거발생' || val === '도거위험') ? 'block' : 'none';
+}
+
+// ==================== 설정 항목 관리 ====================
+// 기본 항목 정의
+const DEFAULT_SETTINGS = {
+    queenItems: ['정상', '왕대확인', '교체필요', '미확인'],
+    escapeItems: ['정상 (도거 없음)', '도거 징후 있음', '도거 발생', '도거 후 재입봉'],
+    diseaseItems: ['낭충봉아부패병', '백묵병', '응애', '소먹이부패병'],
+    expenseItems: ['설탕','화분 대용 사료','낭충봉아부패병 치료제','기타 약품','벌통 구입/제작','목재','교통비','장비/도구'],
+    incomeItems: ['토종꿀 판매','봉군 판매','벌통 판매','봉독 판매']
+};
+
+function getSettingItems(key) {
+    const saved = localStorage.getItem('dy_settings_' + key);
+    return saved ? JSON.parse(saved) : [...DEFAULT_SETTINGS[key]];
+}
+
+function saveSettingItems(key, items) {
+    localStorage.setItem('dy_settings_' + key, JSON.stringify(items));
+}
+
+function renderSettingList(key, containerId, selectId) {
+    const items = getSettingItems(key);
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = items.map((item, i) => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:0.88rem;color:var(--tx-main);">${item}</span>
+            <div style="display:flex;gap:6px;">
+                <button class="btn-sm" onclick="editSettingItem('${key}','${containerId}','${selectId||''}',${i})" style="padding:4px 10px;font-size:0.72rem;">수정</button>
+                <button class="btn-danger" onclick="deleteSettingItem('${key}','${containerId}','${selectId||''}',${i})" style="padding:4px 10px;font-size:0.72rem;">삭제</button>
+            </div>
+        </div>
+    `).join('');
+    // 연결된 select 업데이트
+    if (selectId) updateSelectOptions(key, selectId);
+    // 가계부 카테고리 업데이트
+    if (key === 'expenseItems' || key === 'incomeItems') syncAccCategories();
+}
+
+function addSettingItem(key, inputId, containerId, selectId) {
+    const input = document.getElementById(inputId);
+    const val = input.value.trim();
+    if (!val) { showToast('항목을 입력하세요'); return; }
+    const items = getSettingItems(key);
+    if (items.includes(val)) { showToast('이미 있는 항목입니다'); return; }
+    items.push(val);
+    saveSettingItems(key, items);
+    input.value = '';
+    renderSettingList(key, containerId, selectId);
+    showToast('✅ 항목 추가됨');
+}
+
+function deleteSettingItem(key, containerId, selectId, idx) {
+    if (!confirm('이 항목을 삭제하시겠어요?')) return;
+    const items = getSettingItems(key);
+    items.splice(idx, 1);
+    saveSettingItems(key, items);
+    renderSettingList(key, containerId, selectId);
+    showToast('삭제됨');
+}
+
+function editSettingItem(key, containerId, selectId, idx) {
+    const items = getSettingItems(key);
+    const newVal = prompt('항목 수정:', items[idx]);
+    if (!newVal || !newVal.trim()) return;
+    items[idx] = newVal.trim();
+    saveSettingItems(key, items);
+    renderSettingList(key, containerId, selectId);
+    showToast('✅ 수정됨');
+}
+
+function updateSelectOptions(key, selectId) {
+    const sel = document.getElementById(selectId);
+    if (!sel) return;
+    const items = getSettingItems(key);
+    if (key === 'queenItems') {
+        sel.innerHTML = `<option value="">선택하세요</option>` +
+            items.map(i => `<option value="${i}">${i}</option>`).join('');
+    } else if (key === 'escapeItems') {
+        sel.innerHTML = items.map(i => `<option value="${i}">${i}</option>`).join('');
+    } else if (key === 'diseaseItems') {
+        sel.innerHTML = `<option value="">선택하세요</option>` +
+            items.map(i => `<option value="${i}">${i}</option>`).join('') +
+            `<option value="기타">기타 직접입력</option>`;
+    }
+}
+
+function syncAccCategories() {
+    ACC_CATEGORIES.expense = getSettingItems('expenseItems');
+    ACC_CATEGORIES.income = getSettingItems('incomeItems');
+    updateAccCategories();
+}
+
+function renderAllSettingLists() {
+    renderSettingList('queenItems', 'queen-status-list', 'queen-status');
+    renderSettingList('escapeItems', 'escape-status-list', 'escape-status');
+    renderSettingList('diseaseItems', 'disease-type-list', 'disease-type');
+    renderSettingList('expenseItems', 'expense-items-list', null);
+    renderSettingList('incomeItems', 'income-items-list', null);
+}
+
+// ==================== 분봉 예측 알림 ====================
+function scheduleSwarmAlert(hiveNum, observeDate) {
+    // 왕대 확인 시 7~10일 후 분봉 주의 알림 예약
+    const baseDate = new Date(observeDate);
+    const alertDate = new Date(baseDate);
+    alertDate.setDate(alertDate.getDate() + 7);
+
+    if (!DB.swarmAlerts) DB.swarmAlerts = [];
+    // 동일 통 기존 알림 제거
+    DB.swarmAlerts = DB.swarmAlerts.filter(a => a.hiveNum !== hiveNum);
+    DB.swarmAlerts.push({
+        id: Date.now(),
+        hiveNum,
+        observeDate,
+        alertDate: alertDate.toISOString().split('T')[0],
+        alertDate10: new Date(baseDate.setDate(baseDate.getDate() + 10)).toISOString().split('T')[0],
+        dismissed: false
+    });
+    saveDB();
+
+    // 브라우저 알림 권한 요청
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+}
+
+function checkSwarmAlerts() {
+    if (!DB.swarmAlerts) return;
+    const today = new Date().toISOString().split('T')[0];
+    const alertList = document.getElementById('alert-list');
+    const activeAlerts = DB.swarmAlerts.filter(a => !a.dismissed && a.alertDate <= today && a.alertDate10 >= today);
+
+    if (activeAlerts.length === 0) {
+        // 기존 분봉 알림 카드 제거하고 기본 메시지 유지
+        const existingAlerts = alertList.querySelectorAll('.swarm-alert-card');
+        existingAlerts.forEach(el => el.remove());
+        if (alertList.children.length === 0) {
+            alertList.innerHTML = '<div style="padding:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;text-align:center;color:var(--tx-sub);font-size:0.85rem;">이상 없음 ✅</div>';
+        }
+        return;
+    }
+
+    // 알림 카드 삽입
+    alertList.innerHTML = '';
+    activeAlerts.forEach(alert => {
+        const daysSince = Math.floor((new Date(today) - new Date(alert.observeDate)) / 86400000);
+        const card = document.createElement('div');
+        card.className = 'swarm-alert-card';
+        card.style.cssText = 'background:rgba(255,152,0,0.1);border:2px solid rgba(255,152,0,0.5);border-radius:14px;padding:14px;margin-bottom:8px;';
+        card.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div>
+                    <div style="font-size:0.95rem;font-weight:900;color:#ff9800;">🐝 분봉 주의! - ${alert.hiveNum}</div>
+                    <div style="font-size:0.8rem;color:var(--tx-sub);margin-top:4px;">왕대 확인 후 ${daysSince}일째 · 분봉 예상기간 (7~10일)</div>
+                    <div style="font-size:0.8rem;color:var(--tx-sub);">관찰일: ${alert.observeDate} | 알림기간: ${alert.alertDate} ~ ${alert.alertDate10}</div>
+                </div>
+                <button onclick="dismissSwarmAlert(${alert.id})" style="background:transparent;border:none;color:var(--tx-sub);font-size:1.2rem;cursor:pointer;padding:0 4px;">✕</button>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+                <button class="btn-sm" onclick="switchView('diary')" style="flex:1;">📔 일지 기록</button>
+                <button class="btn-sm" onclick="dismissSwarmAlert(${alert.id})" style="flex:1;">✅ 확인완료</button>
+            </div>
+        `;
+        alertList.appendChild(card);
+    });
+
+    // 브라우저 푸시 알림
+    if ('Notification' in window && Notification.permission === 'granted') {
+        activeAlerts.filter(a => a.alertDate === today).forEach(alert => {
+            new Notification(`🐝 분봉 주의 - ${alert.hiveNum}`, {
+                body: '왕대 확인 7일째입니다. 분봉 준비를 확인하세요!',
+                icon: '🐝'
+            });
+        });
+    }
+}
+
+function dismissSwarmAlert(id) {
+    if (!DB.swarmAlerts) return;
+    const alert = DB.swarmAlerts.find(a => a.id === id);
+    if (alert) alert.dismissed = true;
+    saveDB();
+    checkSwarmAlerts();
+    showToast('알림 확인 처리됨');
+}
 function goBackToMain() {
     if (confirm('BEE MASTER 메인으로 돌아가시겠어요?')) {
         window.location.href = 'index.html';
@@ -1321,6 +1652,7 @@ function renderAll() {
     renderAccMonth();
     renderAccList();
     renderHiveLocationList();
+    syncAccCategories();
 }
 
 // ==================== 뷰 전환 ====================
@@ -1494,9 +1826,17 @@ function saveDiary() {
     if (currentDiaryType === 'observe') {
         extra.queenStatus = document.getElementById('queen-status').value;
         extra.combCount = document.getElementById('comb-count').value;
+        extra.escapeStatus = document.getElementById('escape-status').value;
+        extra.escapeMemo = document.getElementById('escape-memo-detail').value;
         // 상태 업데이트
-        if (extra.queenStatus === '교체필요') updateHiveStatus(hiveNum, 'warn');
+        if (extra.escapeStatus === '도거발생') updateHiveStatus(hiveNum, 'danger');
+        else if (extra.queenStatus === '교체필요' || extra.escapeStatus === '도거위험') updateHiveStatus(hiveNum, 'warn');
         else if (DB.hives[hiveNum] && DB.hives[hiveNum].status !== 'danger') updateHiveStatus(hiveNum, 'ok');
+        // ② 왕대 확인 시 분봉 알림 자동 예약
+        if (extra.queenStatus === '왕대확인') {
+            scheduleSwarmAlert(hiveNum, date);
+            showToast('🐝 분봉 주의 알림이 예약되었습니다 (7~10일 후)');
+        }
     } else if (currentDiaryType === 'swarm') {
         extra.swarmDate = document.getElementById('swarm-date').value;
         extra.swarmCaptured = document.getElementById('swarm-captured').value;
@@ -1562,7 +1902,7 @@ function renderDiaryList(filterType = 'all') {
                     <button class="btn-danger" style="padding:4px 10px;font-size:0.72rem;" onclick="deleteDiary(${r.id})">삭제</button>
                 </div>
             </div>
-            ${r.type === 'observe' ? `<div style="font-size:0.82rem;color:var(--tx-sub);">왕상태: ${r.queenStatus||'-'} | 소비: ${r.combCount||'-'}장</div>` : ''}
+            ${r.type === 'observe' ? `<div style="font-size:0.82rem;color:var(--tx-sub);">왕상태: ${r.queenStatus||'-'} | 소비: ${r.combCount||'-'}장 | 도거: ${r.escapeStatus||'정상'}</div>` : ''}
             ${r.type === 'harvest' ? `<div style="font-size:0.85rem;font-weight:800;color:#D4A017;">🍯 채밀량: ${r.harvestKg||0}kg</div>` : ''}
             ${r.type === 'swarm' ? `<div style="font-size:0.82rem;color:var(--tx-sub);">분봉: ${r.swarmDate} | ${r.swarmCaptured}</div>` : ''}
             ${r.type === 'capture' ? `<div style="font-size:0.82rem;color:var(--tx-sub);">장소: ${r.captureLocation||'-'} | 크기: ${r.colonySize||'-'}</div>` : ''}
@@ -1619,6 +1959,19 @@ function updateMedicineOptions() {
     const customWrap = document.getElementById('disease-custom-wrap');
     const medicineSection = document.getElementById('medicine-section');
     const medicineLabel = document.getElementById('medicine-label');
+    const sacbroodChecklist = document.getElementById('sacbrood-checklist');
+
+    // 낭충봉아부패병 체크리스트 표시/숨김
+    sacbroodChecklist.style.display = type === '낭충봉아부패병' ? 'block' : 'none';
+
+    // 체크리스트 변경 시 심각도 자동 판정
+    if (type === '낭충봉아부패병') {
+        ['sym-larva','sym-entrance','sym-color','sym-capped','sym-smell','sym-population','sym-cleaning']
+            .forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.onchange = updateSacbroodSeverity;
+            });
+    }
 
     if (type === '기타') {
         customWrap.style.display = 'block';
@@ -1639,6 +1992,27 @@ function updateMedicineOptions() {
     } else {
         medicineSection.style.display = 'none';
         medicineLabel.style.display = 'none';
+    }
+}
+
+function updateSacbroodSeverity() {
+    const symptoms = ['sym-larva','sym-entrance','sym-color','sym-capped','sym-smell','sym-population','sym-cleaning'];
+    const checked = symptoms.filter(id => document.getElementById(id)?.checked).length;
+    const severityEl = document.getElementById('sacbrood-severity');
+    if (checked === 0) { severityEl.style.display = 'none'; return; }
+    severityEl.style.display = 'block';
+    if (checked >= 5) {
+        severityEl.style.background = 'rgba(244,67,54,0.2)';
+        severityEl.style.color = '#f44336';
+        severityEl.textContent = `🚨 심각 (${checked}개 증상) - 즉시 격리 및 전문가 상담 필요`;
+    } else if (checked >= 3) {
+        severityEl.style.background = 'rgba(255,152,0,0.2)';
+        severityEl.style.color = '#ff9800';
+        severityEl.textContent = `⚠️ 중증 (${checked}개 증상) - 적극적 치료 필요`;
+    } else {
+        severityEl.style.background = 'rgba(255,235,59,0.2)';
+        severityEl.style.color = '#f9a825';
+        severityEl.textContent = `🔍 초기 의심 (${checked}개 증상) - 지속 관찰 필요`;
     }
 }
 
@@ -1998,17 +2372,41 @@ function setupMap() {
     }
 }
 
+let markerLayer = null;
+
 function renderMapMarkers() {
     if (!mapInstance) return;
-    // 기존 마커 제거 (레이어 그룹으로 관리 가능하지만 간단하게)
+    // 기존 마커 레이어 제거
+    if (markerLayer) mapInstance.removeLayer(markerLayer);
+    markerLayer = L.layerGroup().addTo(mapInstance);
+
     Object.entries(DB.locations).forEach(([name, loc]) => {
         if (!loc.lat || !loc.lng) return;
         const hive = DB.hives[name] || {};
         const color = hive.status === 'danger' ? '#f44336' : hive.status === 'warn' ? '#ff9800' : '#4caf50';
         L.circleMarker([loc.lat, loc.lng], {
-            color, fillColor: color, fillOpacity: 0.7, radius: 10
-        }).addTo(mapInstance).bindPopup(`🏺 ${name}<br>🔒 ${loc.isPublic ? '공개' : '비공개'}<br>${loc.memo||''}`);
+            color, fillColor: color, fillOpacity: 0.8, radius: 10, weight: 2
+        }).addTo(markerLayer).bindPopup(`
+            <b>🏺 ${name}</b><br>
+            ${hive.status === 'danger' ? '🔴 위험' : hive.status === 'warn' ? '🟡 주의' : '🟢 정상'}<br>
+            ${loc.isPublic ? '🌐 공개' : '🔒 비공개'}<br>
+            ${loc.memo ? '📝 ' + loc.memo : ''}
+        `);
     });
+}
+
+function showAllHivesOnMap() {
+    if (!mapInstance) { showToast('지도를 먼저 로드하세요'); return; }
+    const locs = Object.values(DB.locations).filter(l => l.lat && l.lng);
+    if (locs.length === 0) { showToast('등록된 위치가 없습니다'); return; }
+
+    // 모든 마커가 보이도록 bounds 계산
+    const bounds = L.latLngBounds(locs.map(l => [l.lat, l.lng]));
+    mapInstance.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+
+    // 지도 상단으로 스크롤
+    scrollMapIntoView();
+    showToast(`🗺️ 벌통 ${locs.length}개 위치 표시`);
 }
 
 function getCurrentGPS() {
@@ -2023,16 +2421,66 @@ function getCurrentGPS() {
     );
 }
 
+function onHiveSelectChange() {
+    const hiveNum = document.getElementById('reg-hive-num').value;
+    const banner = document.getElementById('reg-status-banner');
+    const existing = DB.locations[hiveNum];
+
+    if (existing) {
+        // 이미 등록된 통 → 기존 좌표 불러오기
+        document.getElementById('reg-lat').value = existing.lat;
+        document.getElementById('reg-lng').value = existing.lng;
+        document.getElementById('reg-memo').value = existing.memo || '';
+        setPrivacy(existing.isPublic ? 'public' : 'private');
+        banner.style.display = 'block';
+        banner.style.background = 'rgba(255,152,0,0.15)';
+        banner.style.border = '1px solid rgba(255,152,0,0.4)';
+        banner.style.color = '#ff9800';
+        banner.textContent = `⚠️ 이미 위치가 등록된 벌통입니다. 저장하면 기존 위치가 수정됩니다.`;
+    } else {
+        // 미등록 통 → 폼 초기화
+        document.getElementById('reg-lat').value = '';
+        document.getElementById('reg-lng').value = '';
+        document.getElementById('reg-memo').value = '';
+        banner.style.display = 'block';
+        banner.style.background = 'rgba(76,175,80,0.12)';
+        banner.style.border = '1px solid rgba(76,175,80,0.3)';
+        banner.style.color = '#4caf50';
+        banner.textContent = `🆕 새 위치를 등록합니다. GPS 또는 테스트 위치 버튼을 눌러 좌표를 입력하세요.`;
+    }
+}
+
 function showHiveRegisterModal() {
+    // 폼 초기화
+    document.getElementById('reg-lat').value = '';
+    document.getElementById('reg-lng').value = '';
+    document.getElementById('reg-memo').value = '';
+    document.getElementById('reg-status-banner').style.display = 'none';
+    // 비공개로 초기화
+    setPrivacy('private');
     renderRegisterHiveSelect();
     document.getElementById('hive-register-modal').classList.add('show');
+    // 배너 초기 상태 표시
+    setTimeout(onHiveSelectChange, 50);
 }
 
 function renderRegisterHiveSelect() {
     const sel = document.getElementById('reg-hive-num');
     const activeHives = Object.keys(DB.hives).filter(k => DB.hives[k].active);
-    sel.innerHTML = activeHives.map(h => `<option value="${h}">${h}</option>`).join('') ||
-        '<option value="">활성화된 벌통이 없습니다</option>';
+
+    if (activeHives.length === 0) {
+        sel.innerHTML = '<option value="">활성화된 벌통이 없습니다 (설정에서 추가)</option>';
+        return;
+    }
+
+    sel.innerHTML = activeHives.map(h => {
+        const hasLoc = !!DB.locations[h];
+        return `<option value="${h}">${h} ${hasLoc ? '📍 (위치 있음 - 덮어쓰기)' : '🆕 (미등록)'}</option>`;
+    }).join('');
+
+    // 미등록 통 자동 선택 (있으면)
+    const unregistered = activeHives.find(h => !DB.locations[h]);
+    if (unregistered) sel.value = unregistered;
 }
 
 function setRandomLocation() {
@@ -2064,27 +2512,96 @@ function setPrivacy(type) {
     document.getElementById('public-options').style.display = type === 'public' ? 'block' : 'none';
 }
 
+// ==================== ③ 오프라인 위치 저장 ====================
+let offlineLocationQueue = JSON.parse(localStorage.getItem('dy_offline_locations') || '[]');
+
+function scrollMapIntoView() {
+    // .view 컨테이너 자체의 scrollTop을 0으로 (지도 탭 최상단으로 이동)
+    const mapView = document.getElementById('view-map');
+    if (mapView) mapView.scrollTop = 0;
+    // Leaflet 지도 크기 재계산 (스크롤 후 타일 깨짐 방지)
+    setTimeout(() => { if (mapInstance) mapInstance.invalidateSize(); }, 300);
+}
+
+function saveOfflineLocationQueue() {
+    localStorage.setItem('dy_offline_locations', JSON.stringify(offlineLocationQueue));
+}
+
 function saveHiveLocation() {
     const hiveNum = document.getElementById('reg-hive-num').value;
     if (!hiveNum) { showToast('벌통을 선택하세요'); return; }
     const lat = document.getElementById('reg-lat').value;
     const lng = document.getElementById('reg-lng').value;
-    if (!lat || !lng) { showToast('GPS 위치를 먼저 가져오세요'); return; }
+    if (!lat || !lng) { showToast('좌표를 입력하거나 GPS를 가져오세요'); return; }
 
-    DB.locations[hiveNum] = {
+    const locationData = {
+        hiveNum,
         lat: parseFloat(lat),
         lng: parseFloat(lng),
         memo: document.getElementById('reg-memo').value,
         isPublic: currentPrivacy === 'public',
         publicType: document.getElementById('public-type')?.value || 'exact',
-        updatedAt: new Date().toISOString()
+        savedAt: new Date().toISOString(),
+        synced: navigator.onLine
     };
+
+    // 오프라인이어도 즉시 로컬 저장
+    DB.locations[hiveNum] = { ...locationData, updatedAt: locationData.savedAt };
     saveDB();
+
+    if (!navigator.onLine) {
+        // 오프라인 큐에 추가 → 귀가 후 자동 동기화
+        offlineLocationQueue = offlineLocationQueue.filter(q => q.hiveNum !== hiveNum);
+        offlineLocationQueue.push(locationData);
+        saveOfflineLocationQueue();
+        showToast('📴 오프라인 저장! 귀가 후 자동 동기화됩니다');
+    } else {
+        showToast(`🏺 ${hiveNum} 위치 등록 완료`);
+    }
+
     closeModal('hive-register-modal');
-    showToast(`🏺 ${hiveNum} 위치 등록 완료`);
+    renderHiveLocationList();
+    updateNetworkBadge();
+    if (mapInstance) {
+        renderMapMarkers();
+        // 등록한 벌통 위치로 지도 이동
+        mapInstance.setView([locationData.lat, locationData.lng], 13);
+        setTimeout(() => mapInstance.invalidateSize(), 300);
+    }
+    // 지도 상단으로 자동 스크롤
+    scrollMapIntoView();
+}
+
+function syncOfflineLocations() {
+    if (!navigator.onLine || offlineLocationQueue.length === 0) return;
+    const count = offlineLocationQueue.length;
+    offlineLocationQueue.forEach(loc => {
+        DB.locations[loc.hiveNum] = { ...loc, synced: true, updatedAt: new Date().toISOString() };
+    });
+    offlineLocationQueue = [];
+    saveOfflineLocationQueue();
+    saveDB();
     renderHiveLocationList();
     if (mapInstance) renderMapMarkers();
+    showToast(`☁️ ${count}건 위치 데이터 동기화 완료!`);
+    updateNetworkBadge();
 }
+
+function updateNetworkBadge() {
+    const badge = document.getElementById('network-badge');
+    if (!badge) return;
+    if (!navigator.onLine) {
+        const pending = offlineLocationQueue.length;
+        badge.textContent = pending > 0 ? `📴 오프라인 (${pending}건 대기)` : '📴 오프라인';
+        badge.className = 'offline-badge';
+    } else {
+        badge.textContent = offlineLocationQueue.length > 0 ? '🔄 동기화중' : '온라인';
+        badge.className = 'online-badge';
+    }
+}
+
+window.addEventListener('online', () => { updateNetworkBadge(); setTimeout(syncOfflineLocations, 500); });
+window.addEventListener('offline', () => { updateNetworkBadge(); });
 
 function renderHiveLocationList() {
     const container = document.getElementById('hive-location-list');
@@ -2103,6 +2620,7 @@ function renderHiveLocationList() {
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
                     <span style="font-size:0.75rem;">${loc.isPublic ? '🌐 공개' : '🔒 비공개'}</span>
+                    <span style="font-size:0.7rem;">${loc.synced===false ? '📴 미동기' : '☁️ 저장됨'}</span>
                     <button class="btn-danger" style="padding:4px 10px;font-size:0.72rem;" onclick="deleteLocation('${name}')">삭제</button>
                 </div>
             </div>
@@ -2261,17 +2779,6 @@ function getWeatherIcon(code) {
 }
 
 // ==================== 네트워크 ====================
-function checkNetwork() {
-    const badge = document.getElementById('network-badge');
-    if (navigator.onLine) {
-        badge.textContent = '온라인';
-        badge.className = 'online-badge';
-    } else {
-        badge.textContent = '오프라인';
-        badge.className = 'offline-badge';
-    }
-}
-
 // ==================== 유틸 ====================
 function closeModal(id) {
     document.getElementById(id).classList.remove('show');
@@ -2367,9 +2874,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // 지도 뷰 진입 시 초기화
 const origSwitchView = switchView;
 window.switchView = function(name) {
+    viewHistory.push(name);
+    if (viewHistory.length > 10) viewHistory.shift();
     origSwitchView(name);
-    if (name === 'map' && !mapInstance) {
-        setTimeout(initMap, 100);
+    updateBackBtn();
+    if (name === 'map') {
+        if (!mapInstance) {
+            setTimeout(initMap, 100);
+        } else {
+            // 이미 로드된 경우 크기 재계산
+            setTimeout(() => mapInstance.invalidateSize(), 150);
+        }
+    }
+    if (name === 'settings') {
+        setTimeout(renderAllSettingLists, 50);
     }
 };
 
