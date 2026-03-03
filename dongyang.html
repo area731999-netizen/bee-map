@@ -157,6 +157,7 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 56px;
+            z-index: 9999;
             padding: 0 16px;
             background: rgba(10, 6, 2, 0.95);
             display: flex;
@@ -197,7 +198,7 @@
 
         /* ========== 뷰 시스템 ========== */
         .view { display: none; }
-        .view.active { display: block; position: absolute; top: 56px; bottom: 70px; left: 0; right: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding-bottom: 16px; }
+        .view.active { display: block; position: absolute; top: 56px; bottom: 80px; left: 0; right: 0; overflow-y: scroll; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y; padding-bottom: 20px; }
 
         /* ========== 하단 네비게이션 ========== */
         .bottom-nav {
@@ -206,15 +207,14 @@
             left: 0;
             right: 0;
             width: 100%;
+            height: 80px;
             background: rgba(10, 6, 2, 0.95);
-            /* backdrop-filter: blur(20px); */
             border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 8px 0;
-            padding-bottom: max(8px, env(safe-area-inset-bottom));
-            z-index: 5000;
+            padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+            z-index: 9000;
         }
         .nav-item {
             display: flex;
@@ -228,7 +228,7 @@
             color: var(--tx-sub);
             font-size: 0.72rem;
             font-weight: 700;
-            min-width: 56px;
+            min-width: 40px;
         }
         .nav-item .nav-icon { font-size: 1.5rem; }
         .nav-item.active { color: var(--tx-gold); }
@@ -362,29 +362,34 @@
         /* ========== 섹션 탭 ========== */
         .tab-bar {
             display: flex;
-            gap: 6px;
-            padding: 12px 16px 0;
+            gap: 8px;
+            padding: 14px 16px 0;
             overflow-x: auto;
             scrollbar-width: none;
         }
         .tab-bar::-webkit-scrollbar { display: none; }
         .tab-btn {
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 1rem;
-            font-weight: 800;
+            flex: 1;
+            padding: 13px 10px;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 900;
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.2s;
             background: var(--bg-card);
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
             color: var(--tx-sub);
+            text-align: center;
+            letter-spacing: 0.5px;
         }
         .tab-btn.active {
             background: var(--tx-gold);
             color: #1a0800;
             border-color: var(--tx-gold);
+            box-shadow: 0 3px 10px rgba(212,160,23,0.35);
         }
+        .tab-btn:active { transform: scale(0.97); }
 
         /* ========== 기록 카드 ========== */
         .record-card {
@@ -789,6 +794,7 @@
         <div style="display:flex;gap:6px;align-items:center;">
             <span id="network-badge" class="online-badge">온라인</span>
             <button class="btn-icon" onclick="toggleTheme()">🌙</button>
+            <button class="btn-icon" onclick="switchView('settings')" style="font-size:1.3rem;">⚙️</button>
         </div>
     </div>
 
@@ -849,14 +855,22 @@
         </div>
     </div>
 
-    <!-- ===== 일지 뷰 ===== -->
-    <div id="view-diary" class="view">
-        <div class="tab-bar">
-            <button class="tab-btn active" onclick="switchDiaryTab('write', this)">✍️ 기록</button>
-            <button class="tab-btn" onclick="switchDiaryTab('list', this)">📋 조회</button>
+    <!-- ===== 기록 뷰 (일지 + 방역 통합) ===== -->
+    <div id="view-record" class="view">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:2px solid var(--border);">
+            <button id="record-tab-diary" onclick="switchRecordTab('diary', this)"
+                style="padding:13px 0;font-size:0.92rem;font-weight:800;border:none;background:var(--bg-card);color:var(--tx-sub);border-bottom:3px solid transparent;cursor:pointer;transition:all 0.2s;">📔 일지</button>
+            <button id="record-tab-disease" onclick="switchRecordTab('disease', this)"
+                style="padding:13px 0;font-size:0.92rem;font-weight:800;border:none;background:var(--bg-card);color:var(--tx-sub);border-bottom:3px solid transparent;cursor:pointer;transition:all 0.2s;">🛡️ 방역</button>
+            <button id="record-tab-list-main" onclick="switchRecordTab('list', this)"
+                style="padding:13px 0;font-size:0.92rem;font-weight:800;border:none;background:var(--bg-card);color:var(--tx-sub);border-bottom:3px solid transparent;cursor:pointer;transition:all 0.2s;">📋 내역</button>
         </div>
+        <div id="record-diary-content">
 
-        <!-- 기록 탭 -->
+    <!-- ===== 일지 뷰 ===== -->
+    <div id="view-diary" style="display:block;">
+
+        <!-- 작성 탭 -->
         <div id="diary-write">
             <div class="card">
                 <!-- 통 선택 -->
@@ -957,64 +971,12 @@
         </div>
 
         <!-- 조회 탭 -->
-        <div id="diary-list" style="display:none;">
-            <div style="padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap;">
-                <button class="btn-sm active" onclick="filterDiary('all', this)">전체</button>
-                <button class="btn-sm" onclick="filterDiary('observe', this)">🔍 관찰</button>
-                <button class="btn-sm" onclick="filterDiary('swarm', this)">🐝 분봉</button>
-                <button class="btn-sm" onclick="filterDiary('capture', this)">📦 포획</button>
-                <button class="btn-sm" onclick="filterDiary('harvest', this)">🍯 채밀</button>
-            </div>
-            <div id="diary-record-list"></div>
-        </div>
-    </div>
-
-    <!-- ===== 지도 뷰 ===== -->
-    <div id="view-map" class="view">
-        <div style="padding:12px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <span id="gps-status" class="offline-badge">📍 GPS 대기</span>
-            <button class="btn-sm" onclick="getCurrentGPS()">🛰️ 내 위치</button>
-            <button class="btn-sm" onclick="showAllHivesOnMap()">🗺️ 전체보기</button>
-            <button class="btn-sm" onclick="showHiveRegisterModal()">+ 통 등록</button>
-        </div>
-
-        <!-- 지도 영역 -->
-        <div class="map-placeholder" id="map-area">
-            <div id="map-container"></div>
-            <div id="map-loading" style="text-align:center;">
-                <div style="font-size:2rem;margin-bottom:8px;">🗺️</div>
-                <div>지도 불러오는 중...</div>
-                <div style="font-size:0.75rem;margin-top:4px;color:var(--tx-sub);">오프라인 시 캐시된 지도 사용</div>
-            </div>
-        </div>
-
-        <!-- 범례 -->
-        <div style="margin:0 16px;display:flex;gap:10px;font-size:0.88rem;color:var(--tx-sub);flex-wrap:wrap;padding:8px 0;">
-            <span>🟢 정상통</span>
-            <span>🟡 주의통</span>
-            <span>🔴 위험통</span>
-            <span>🔵 내위치</span>
-            <span>🔒 비공개</span>
-        </div>
-
-        <!-- 등록된 벌통 목록 -->
-        <div class="section-header">
-            <span class="section-title">🏺 등록된 벌통 위치</span>
-        </div>
-        <div id="hive-location-list" style="margin:0 16px 12px;">
-            <div class="empty-state">
-                <div class="empty-icon">📍</div>
-                <p>아직 위치가 등록된 벌통이 없어요<br>+ 통 등록 버튼을 눌러 추가하세요</p>
-            </div>
-        </div>
-    </div>
+    </div><!-- end view-diary -->
+        </div><!-- end record-diary-content -->
+        <div id="record-disease-content" style="display:none;">
 
     <!-- ===== 방역 뷰 ===== -->
-    <div id="view-disease" class="view">
-        <div class="tab-bar">
-            <button class="tab-btn active" onclick="switchDiseaseTab('write', this)">💊 방제 기록</button>
-            <button class="tab-btn" onclick="switchDiseaseTab('list', this)">📋 기록 조회</button>
-        </div>
+    <div id="view-disease" style="display:block;">
 
         <!-- 방제 기록 탭 -->
         <div id="disease-write">
@@ -1029,9 +991,10 @@
                     <option value="">선택하세요</option>
                     <option value="낭충봉아부패병">🔴 낭충봉아부패병 (Sacbrood)</option>
                     <option value="백묵병">⚪ 백묵병</option>
-                    <option value="응애">🟠 응애 (varroa)</option>
-                    <option value="소먹이부패병">🟡 소먹이부패병</option>
-                    <option value="기타">기타 직접입력</option>
+                    <option value="소충">🟤 소충 (부채명나방 유충)</option>
+                    <option value="미국부저병">🟡 미국부저병 (AFB)</option>
+                    <option value="유럽부저병">🟠 유럽부저병 (EFB)</option>
+                    <option value="직접입력">✏️ 직접입력</option>
                 </select>
                 <div id="disease-custom-wrap" style="display:none;">
                     <input type="text" class="field" id="disease-custom" placeholder="질병명 직접 입력">
@@ -1079,13 +1042,19 @@
                 <!-- 약제 -->
                 <label class="input-label" id="medicine-label" style="display:none;">💊 약제</label>
                 <div id="medicine-section" style="display:none;">
-                    <select class="field" id="medicine-type">
+                    <select class="field" id="medicine-type" onchange="checkMedicineCustom()">
                         <option value="">약제 선택</option>
                     </select>
+                    <div id="medicine-custom-wrap" style="display:none;">
+                        <input type="text" class="field" id="medicine-custom" placeholder="약제명 직접 입력">
+                    </div>
                     <label class="input-label">💉 처리 방법</label>
-                    <select class="field" id="medicine-method">
+                    <select class="field" id="medicine-method" onchange="checkMethodCustom()">
                         <option value="">처리방법 선택</option>
                     </select>
+                    <div id="method-custom-wrap" style="display:none;">
+                        <input type="text" class="field" id="method-custom" placeholder="처리방법 직접 입력">
+                    </div>
                 </div>
 
                 <!-- 날짜 -->
@@ -1133,43 +1102,97 @@
             </div>
         </div>
 
-        <!-- 조회 탭 -->
-        <div id="disease-list" style="display:none;">
-            <div id="disease-record-list" style="padding:0 0 12px;"></div>
+    </div>
+
+    </div><!-- end view-disease -->
+        </div><!-- end record-disease-content -->
+
+        <!-- 내역 탭 컨텐츠 -->
+        <div id="record-list-content" style="display:none;">
+            <!-- 일지 내역 -->
+            <div id="record-list-diary-section">
+                <div style="padding:12px 16px 4px;font-size:0.9rem;font-weight:900;color:var(--tx-gold);">📔 일지 내역</div>
+                <div style="padding:0 16px 4px;display:flex;gap:6px;flex-wrap:wrap;">
+                    <button class="btn-sm active" onclick="filterDiary('all', this)">전체</button>
+                    <button class="btn-sm" onclick="filterDiary('observe', this)">🔍 관찰</button>
+                    <button class="btn-sm" onclick="filterDiary('swarm', this)">🐝 분봉</button>
+                    <button class="btn-sm" onclick="filterDiary('capture', this)">📦 포획</button>
+                    <button class="btn-sm" onclick="filterDiary('harvest', this)">🍯 채밀</button>
+                </div>
+                <div style="padding:4px 16px 8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <select class="field" id="diary-filter-hive" onchange="applyDiaryFilter()" style="margin:0;">
+                        <option value="">🏺 전체 벌통</option>
+                    </select>
+                    <button class="btn-sm" onclick="resetDiaryFilter()" style="font-size:0.78rem;">🔄 초기화</button>
+                </div>
+                <div style="padding:0 16px 4px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div><label style="font-size:0.75rem;color:var(--tx-sub);">시작일</label>
+                    <input type="date" class="field" id="diary-filter-start" style="margin:0;" onchange="applyDiaryFilter()"></div>
+                    <div><label style="font-size:0.75rem;color:var(--tx-sub);">종료일</label>
+                    <input type="date" class="field" id="diary-filter-end" style="margin:0;" onchange="applyDiaryFilter()"></div>
+                </div>
+                <div id="diary-record-list" style="padding:0 0 8px;"></div>
+            </div>
+            <!-- 방역 내역 -->
+            <div id="record-list-disease-section">
+                <div style="padding:12px 16px 4px;font-size:0.9rem;font-weight:900;color:var(--tx-gold);">🛡️ 방역 내역</div>
+                <div style="padding:0 16px 4px;display:flex;gap:6px;flex-wrap:wrap;">
+                    <button class="btn-sm active" onclick="filterDiseaseList('all', this)">전체</button>
+                    <button class="btn-sm" onclick="filterDiseaseList('treating', this)">🔴 치료중</button>
+                    <button class="btn-sm" onclick="filterDiseaseList('watch', this)">🟡 관찰중</button>
+                    <button class="btn-sm" onclick="filterDiseaseList('done', this)">🟢 완치</button>
+                </div>
+                <div style="padding:4px 16px 8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <select class="field" id="disease-filter-hive" onchange="applyDiseaseFilter()" style="margin:0;">
+                        <option value="">🏺 전체 벌통</option>
+                    </select>
+                    <button class="btn-sm" onclick="resetDiseaseFilter()" style="font-size:0.78rem;">🔄 초기화</button>
+                </div>
+                <div style="padding:0 16px 4px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div><label style="font-size:0.75rem;color:var(--tx-sub);">시작일</label>
+                    <input type="date" class="field" id="disease-filter-start" style="margin:0;" onchange="applyDiseaseFilter()"></div>
+                    <div><label style="font-size:0.75rem;color:var(--tx-sub);">종료일</label>
+                    <input type="date" class="field" id="disease-filter-end" style="margin:0;" onchange="applyDiseaseFilter()"></div>
+                </div>
+                <div id="disease-record-list" style="padding:0 0 12px;"></div>
+            </div>
+        </div>
+
+    </div><!-- end view-record -->
+
+    <!-- ===== 지도 뷰 ===== -->
+    <div id="view-map" class="view">
+        <div style="padding:12px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span id="gps-status" class="offline-badge">📍 GPS 대기</span>
+            <button class="btn-sm" onclick="getCurrentGPS()">🛰️ 내 위치</button>
+            <button class="btn-sm" onclick="showAllHivesOnMap()">🗺️ 전체보기</button>
+            <button class="btn-sm" onclick="showHiveRegisterModal()">+ 통 등록</button>
+        </div>
+        <div class="map-placeholder" id="map-area">
+            <div id="map-container"></div>
+            <div id="map-loading" style="text-align:center;">
+                <div style="font-size:2rem;margin-bottom:8px;">🗺️</div>
+                <div>지도 불러오는 중...</div>
+                <div style="font-size:0.75rem;margin-top:4px;color:var(--tx-sub);">오프라인 시 캐시된 지도 사용</div>
+            </div>
+        </div>
+        <div style="margin:0 16px;display:flex;gap:10px;font-size:0.88rem;color:var(--tx-sub);flex-wrap:wrap;padding:8px 0;">
+            <span>🟢 정상통</span><span>🟡 주의통</span><span>🔴 위험통</span><span>🔵 내위치</span><span>🔒 비공개</span>
+        </div>
+        <div class="section-header"><span class="section-title">🏺 등록된 벌통 위치</span></div>
+        <div id="hive-location-list" style="margin:0 16px 12px;">
+            <div class="empty-state"><div class="empty-icon">📍</div><p>아직 위치가 등록된 벌통이 없어요<br>+ 통 등록 버튼을 눌러 추가하세요</p></div>
         </div>
     </div>
 
     <!-- ===== 가계부 뷰 ===== -->
     <div id="view-account" class="view">
-        <!-- 월 선택 -->
-        <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 16px;">
-            <button class="btn-sm" onclick="changeYear(-1)" style="padding:8px 10px;">◀◀</button>
-            <button class="btn-sm" onclick="changeMonth(-1)">◀</button>
-            <span id="acc-month-label" style="font-size:1rem;font-weight:900;color:var(--tx-gold);min-width:110px;text-align:center;">2026년 1월</span>
-            <button class="btn-sm" onclick="changeMonth(1)">▶</button>
-            <button class="btn-sm" onclick="changeYear(1)" style="padding:8px 10px;">▶▶</button>
-        </div>
-
-        <!-- 요약 -->
-        <div class="acc-summary">
-            <div class="acc-box expense">
-                <div class="acc-label">지출</div>
-                <div class="acc-amount" id="acc-total-expense">0</div>
-            </div>
-            <div class="acc-box income">
-                <div class="acc-label">수입</div>
-                <div class="acc-amount" id="acc-total-income">0</div>
-            </div>
-            <div class="acc-box balance">
-                <div class="acc-label">순이익</div>
-                <div class="acc-amount" id="acc-balance">0</div>
-            </div>
-        </div>
 
         <!-- 탭 -->
         <div class="tab-bar">
             <button class="tab-btn active" onclick="switchAccTab('add', this)">➕ 입력</button>
             <button class="tab-btn" onclick="switchAccTab('list', this)">📋 내역</button>
+            <button class="tab-btn" onclick="switchAccTab('customer', this)">👤 고객</button>
         </div>
 
         <!-- 입력 탭 -->
@@ -1197,25 +1220,27 @@
                 </div>
 
                 <!-- 설탕 특별 처리 -->
-                <div id="sugar-fields" style="display:none;">
+<div id="sugar-fields" style="display:none;">
                     <label class="input-label">🍬 설탕 무게 (kg)</label>
                     <input type="number" class="field" id="sugar-kg" placeholder="예: 20" step="0.5" min="0">
-                    <label class="input-label">💧 사양 방식</label>
-                    <select class="field" id="sugar-method">
-                        <option value="1:1">1:1 희석 (봄/가을 자극)</option>
-                        <option value="2:1">2:1 희석 (월동 준비)</option>
-                        <option value="직접급여">직접 급여</option>
-                        <option value="화분대용">화분 대용 사료</option>
-                    </select>
                 </div>
 
                 <!-- 날짜 -->
                 <label class="input-label">📅 날짜</label>
                 <input type="date" class="field" id="acc-date">
 
-                <!-- 금액 -->
-                <label class="input-label">💵 금액 (원)</label>
-                <input type="number" class="field" id="acc-amount" placeholder="예: 15000" min="0">
+                <!-- 수량 × 단가 자동계산 -->
+                <label class="input-label">🔢 수량 × 단가 (원)</label>
+                <div style="display:grid;grid-template-columns:1fr auto 1fr auto;gap:6px;align-items:center;margin-bottom:8px;">
+                    <input type="number" class="field" id="acc-qty" placeholder="수량" min="1" step="1" oninput="calcAccAmount()" style="margin-bottom:0;">
+                    <span style="font-size:1.1rem;font-weight:900;color:var(--tx-sub);text-align:center;">×</span>
+                    <input type="number" class="field" id="acc-unit-price" placeholder="단가" min="0" oninput="calcAccAmount()" style="margin-bottom:0;">
+                    <span style="font-size:1rem;font-weight:700;color:var(--tx-sub);">원</span>
+                </div>
+
+                <!-- 금액 (자동계산 또는 직접입력) -->
+                <label class="input-label">💵 금액 (원) <span id="calc-badge" style="font-size:0.75rem;color:#4caf50;font-weight:700;display:none;">✅ 자동계산됨</span></label>
+                <input type="number" class="field" id="acc-amount" placeholder="직접 입력 또는 위에서 자동계산" min="0" oninput="clearCalcBadge()">
 
                 <!-- 메모 -->
                 <label class="input-label">📝 메모</label>
@@ -1235,13 +1260,84 @@
 
         <!-- 내역 탭 -->
         <div id="acc-list" style="display:none;">
-            <div style="padding:8px 16px;display:flex;gap:6px;">
+            <!-- 기간 모드 선택 -->
+            <div style="padding:10px 16px 4px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+                <button class="btn-sm active" id="acc-mode-month" onclick="setAccMode('month',this)">📅 월별</button>
+                <button class="btn-sm" id="acc-mode-year" onclick="setAccMode('year',this)">📆 연도별</button>
+                <button class="btn-sm" id="acc-mode-range" onclick="setAccMode('range',this)">🗓️ 기간지정</button>
+            </div>
+            <!-- 월 이동 -->
+            <div id="acc-nav-month" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 16px;">
+                <button class="btn-sm" onclick="changeYear(-1)" style="padding:8px 10px;">◀◀</button>
+                <button class="btn-sm" onclick="changeMonth(-1)">◀</button>
+                <span id="acc-month-label" style="font-size:1rem;font-weight:900;color:var(--tx-gold);min-width:110px;text-align:center;">2026년 1월</span>
+                <button class="btn-sm" onclick="changeMonth(1)">▶</button>
+                <button class="btn-sm" onclick="changeYear(1)" style="padding:8px 10px;">▶▶</button>
+            </div>
+            <!-- 연도 이동 -->
+            <div id="acc-nav-year" style="display:none;align-items:center;justify-content:center;gap:8px;padding:6px 16px;">
+                <button class="btn-sm" onclick="changeYear(-1)">◀</button>
+                <span id="acc-year-label" style="font-size:1rem;font-weight:900;color:var(--tx-gold);min-width:80px;text-align:center;">2026년</span>
+                <button class="btn-sm" onclick="changeYear(1)">▶</button>
+            </div>
+            <!-- 기간 지정 -->
+            <div id="acc-nav-range" style="display:none;padding:6px 16px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div>
+                        <label style="font-size:0.78rem;color:var(--tx-sub);">시작일</label>
+                        <input type="date" class="field" id="acc-range-start" style="margin:0;" onchange="applyAccRange()">
+                    </div>
+                    <div>
+                        <label style="font-size:0.78rem;color:var(--tx-sub);">종료일</label>
+                        <input type="date" class="field" id="acc-range-end" style="margin:0;" onchange="applyAccRange()">
+                    </div>
+                </div>
+                <div id="acc-range-label" style="text-align:center;font-size:0.85rem;font-weight:900;color:var(--tx-gold);margin-top:6px;"></div>
+            </div>
+            <!-- 요약 -->
+            <div class="acc-summary">
+                <div class="acc-box expense">
+                    <div class="acc-label">지출</div>
+                    <div class="acc-amount" id="acc-total-expense">0</div>
+                </div>
+                <div class="acc-box income">
+                    <div class="acc-label">수입</div>
+                    <div class="acc-amount" id="acc-total-income">0</div>
+                </div>
+                <div class="acc-box balance">
+                    <div class="acc-label">순이익</div>
+                    <div class="acc-amount" id="acc-balance">0</div>
+                </div>
+            </div>
+            <!-- 내역 필터 -->
+            <div style="padding:4px 16px 8px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;">
                 <button class="btn-sm active" onclick="filterAcc('all', this)">전체</button>
                 <button class="btn-sm" onclick="filterAcc('expense', this)">💸 지출</button>
                 <button class="btn-sm" onclick="filterAcc('income', this)">💰 수입</button>
-                <button class="btn-sm" onclick="filterAcc('sugar', this)">🍬 설탕</button>
+                <button class="btn-sm" onclick="filterAcc('monthly', this)">📊 월별</button>
             </div>
             <div id="acc-record-list"></div>
+            <div id="acc-monthly-content" style="display:none;padding:8px 16px;"></div>
+        </div>
+
+        <!-- 고객 탭 (가계부 내) -->
+        <div id="acc-customer-tab" style="display:none;">
+            <div style="padding:14px 16px 4px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:1rem;font-weight:900;color:var(--tx-gold);">👤 고객 목록</span>
+                <button class="btn-sm" onclick="showAddCustomerModal()">+ 직접 추가</button>
+            </div>
+            <div style="padding:6px 16px;">
+                <input type="text" class="field" id="customer-search" placeholder="🔍 이름 또는 연락처 검색" oninput="renderCustomerList()" style="margin-bottom:0;">
+            </div>
+            <div style="padding:6px 16px;display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="btn-sm active" id="csort-amount" onclick="setCustomerSort('amount',this)">💰 금액순</button>
+                <button class="btn-sm" id="csort-count" onclick="setCustomerSort('count',this)">🔄 구매횟수</button>
+                <button class="btn-sm" id="csort-recent" onclick="setCustomerSort('recent',this)">📅 최근순</button>
+                <button class="btn-sm" id="csort-name" onclick="setCustomerSort('name',this)">가나다순</button>
+            </div>
+            <div style="padding:4px 16px 6px;display:flex;gap:6px;flex-wrap:wrap;" id="customer-category-filter"></div>
+            <div id="customer-summary" style="margin:0 16px 8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;"></div>
+            <div id="customer-list" style="margin:0 16px;"></div>
         </div>
     </div>
 
@@ -1346,31 +1442,19 @@
         </div>
     </div>
 
-    <!-- ===== 고객관리 뷰 ===== -->
-    <div id="view-customer" class="view">
-        <div style="padding:14px 16px 4px;display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:1rem;font-weight:900;color:var(--tx-gold);">👤 고객 목록</span>
-            <button class="btn-sm" onclick="showAddCustomerModal()">+ 직접 추가</button>
-        </div>
-        <!-- 검색 -->
-        <div style="padding:8px 16px;">
-            <input type="text" class="field" id="customer-search" placeholder="🔍 이름 또는 연락처 검색" oninput="renderCustomerList()" style="margin-bottom:0;">
-        </div>
-        <!-- 요약 -->
-        <div id="customer-summary" style="margin:0 16px 8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;"></div>
-        <!-- 목록 -->
-        <div id="customer-list" style="margin:0 16px;"></div>
-    </div>
-
     <!-- ===== 달력 뷰 ===== -->
     <div id="view-calendar" class="view">
-        <!-- 월 이동 헤더 -->
-        <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 16px 4px;">
-            <button class="btn-sm" onclick="calChangeYear(-1)" style="padding:8px 10px;">◀◀</button>
-            <button class="btn-sm" onclick="calChangeMonth(-1)">◀</button>
-            <span id="cal-title" style="font-size:1rem;font-weight:900;color:var(--tx-gold);min-width:110px;text-align:center;"></span>
-            <button class="btn-sm" onclick="calChangeMonth(1)">▶</button>
-            <button class="btn-sm" onclick="calChangeYear(1)" style="padding:8px 10px;">▶▶</button>
+        <!-- 월 이동 헤더 + 일정추가 버튼 -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 4px;gap:8px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+                <button class="btn-sm" onclick="calChangeYear(-1)" style="padding:7px 9px;">◀◀</button>
+                <button class="btn-sm" onclick="calChangeMonth(-1)">◀</button>
+                <span id="cal-title" style="font-size:1rem;font-weight:900;color:var(--tx-gold);min-width:100px;text-align:center;"></span>
+                <button class="btn-sm" onclick="calChangeMonth(1)">▶</button>
+                <button class="btn-sm" onclick="calChangeYear(1)" style="padding:7px 9px;">▶▶</button>
+                <button onclick="goToday()" style="padding:6px 10px;font-size:0.8rem;font-weight:900;background:#4caf50;color:#fff;border:none;border-radius:20px;cursor:pointer;">오늘</button>
+            </div>
+            <button onclick="showAddScheduleModal()" style="padding:10px 18px;font-size:0.95rem;font-weight:900;background:linear-gradient(135deg,#2196F3,#1565C0);color:#fff;border:none;border-radius:24px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(33,150,243,0.4);">📅 + 일정추가</button>
         </div>
 
         <!-- 범례 -->
@@ -1402,10 +1486,6 @@
         <!-- 선택된 날짜 이벤트 -->
         <div id="cal-day-events" style="margin:10px 16px 0;"></div>
 
-        <!-- 일정 추가 버튼 -->
-        <div style="padding:10px 16px;">
-            <button class="btn-primary" onclick="showAddScheduleModal()">+ 개인 일정 추가</button>
-        </div>
     </div>
 
     <!-- ===== 하단 네비게이션 ===== -->
@@ -1414,9 +1494,9 @@
             <span class="nav-icon">🏠</span>
             <span>홈</span>
         </div>
-        <div class="nav-item" id="nav-diary" onclick="switchView('diary')">
-            <span class="nav-icon">📔</span>
-            <span>일지</span>
+        <div class="nav-item" id="nav-record" onclick="switchView('record')">
+            <span class="nav-icon">📝</span>
+            <span>기록</span>
         </div>
         <div class="nav-item" id="nav-calendar" onclick="switchView('calendar')">
             <span class="nav-icon">📅</span>
@@ -1426,23 +1506,74 @@
             <span class="nav-icon">🗺️</span>
             <span>지도</span>
         </div>
-        <div class="nav-item" id="nav-disease" onclick="switchView('disease')">
-            <span class="nav-icon">🛡️</span>
-            <span>방역</span>
-        </div>
         <div class="nav-item" id="nav-account" onclick="switchView('account')">
             <span class="nav-icon">💰</span>
             <span>가계부</span>
         </div>
-        <div class="nav-item" id="nav-customer" onclick="switchView('customer')">
-            <span class="nav-icon">👤</span>
-            <span>고객</span>
-        </div>
-        <div class="nav-item" id="nav-settings" onclick="switchView('settings')">
-            <span class="nav-icon">⚙️</span>
-            <span>설정</span>
-        </div>
     </nav>
+</div>
+
+<!-- ===== 가계부 수정 모달 ===== -->
+<div class="modal-overlay" id="acc-edit-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <span style="font-size:1rem;font-weight:900;color:var(--tx-gold);">✏️ 내역 수정</span>
+            <span id="edit-acc-type-label" style="font-size:0.85rem;font-weight:800;background:rgba(212,160,23,0.15);padding:4px 12px;border-radius:20px;color:var(--tx-gold);"></span>
+        </div>
+        <input type="hidden" id="edit-acc-id">
+        <label class="input-label">📅 날짜</label>
+        <input type="date" class="field" id="edit-acc-date">
+        <label class="input-label">📦 항목</label>
+        <input type="text" class="field" id="edit-acc-category" placeholder="항목명">
+        <label class="input-label">🏺 관련 벌통</label>
+        <select class="field" id="edit-acc-hive">
+            <option value="">전체 공통</option>
+        </select>
+        <label class="input-label">🔢 수량 × 단가</label>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-bottom:8px;">
+            <input type="number" class="field" id="edit-acc-qty" placeholder="수량" oninput="calcEditAmount()" style="margin-bottom:0;">
+            <span style="text-align:center;font-weight:900;color:var(--tx-sub);">×</span>
+            <input type="number" class="field" id="edit-acc-unit" placeholder="단가" oninput="calcEditAmount()" style="margin-bottom:0;">
+        </div>
+        <label class="input-label">💵 금액 (원)</label>
+        <input type="number" class="field" id="edit-acc-amount" placeholder="금액">
+        <div id="edit-sugar-wrap" style="display:none;">
+            <label class="input-label">🍬 설탕 무게 (kg)</label>
+            <input type="number" class="field" id="edit-sugar-kg" placeholder="kg" step="0.5">
+        </div>
+        <label class="input-label">📝 메모</label>
+        <input type="text" class="field" id="edit-acc-memo" placeholder="메모">
+        <div id="edit-customer-wrap" style="display:none;">
+            <label class="input-label">👤 구매자</label>
+            <input type="text" class="field" id="edit-acc-customer" placeholder="구매자 이름">
+            <label class="input-label">📱 연락처</label>
+            <input type="text" class="field" id="edit-acc-phone" placeholder="010-0000-0000">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <button class="btn-sm" onclick="closeModal('acc-edit-modal')">취소</button>
+            <button class="btn-primary" onclick="updateAccount()" style="margin:0;">저장</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 고객 수정 모달 ===== -->
+<div class="modal-overlay" id="customer-edit-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:14px;">👤 고객 정보 수정</div>
+        <input type="hidden" id="edit-customer-id">
+        <label class="input-label">이름</label>
+        <input type="text" class="field" id="edit-customer-name" placeholder="고객 이름">
+        <label class="input-label">📱 연락처</label>
+        <input type="text" class="field" id="edit-customer-phone" placeholder="010-0000-0000">
+        <label class="input-label">📝 메모</label>
+        <input type="text" class="field" id="edit-customer-memo" placeholder="주소, 특이사항 등">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <button class="btn-sm" onclick="closeModal('customer-edit-modal')">취소</button>
+            <button class="btn-primary" onclick="saveCustomerEdit()" style="margin:0;">저장</button>
+        </div>
+    </div>
 </div>
 
 <!-- ===== 고객 추가 모달 ===== -->
@@ -1472,21 +1603,102 @@
     </div>
 </div>
 
+<!-- ===== 위치 수정 모달 ===== -->
+<div class="modal-overlay" id="loc-edit-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:14px;">📍 위치 수정</div>
+        <input type="hidden" id="loc-edit-target">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:12px;">
+            <span style="font-size:0.88rem;color:var(--tx-sub);">벌통: </span>
+            <span id="loc-edit-name" style="font-weight:900;color:var(--tx-amber);"></span>
+        </div>
+        <label class="input-label">위도</label>
+        <input type="number" class="field" id="loc-edit-lat" placeholder="예: 36.1234" step="0.0001">
+        <label class="input-label">경도</label>
+        <input type="number" class="field" id="loc-edit-lng" placeholder="예: 127.5678" step="0.0001">
+        <label class="input-label">메모 (선택)</label>
+        <input type="text" class="field" id="loc-edit-memo" placeholder="위치 메모">
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:14px;cursor:pointer;">
+            <input type="checkbox" id="loc-edit-public" style="width:18px;height:18px;">
+            <span style="font-size:0.9rem;color:var(--tx-main);">🌐 위치 공개</span>
+        </label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <button class="btn-sm" onclick="closeModal('loc-edit-modal')">취소</button>
+            <button class="btn-primary" onclick="saveLocationEdit()" style="margin:0;">저장</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 달력 방역 수정 모달 ===== -->
+<div class="modal-overlay" id="cal-disease-edit-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:14px;">💊 방역 기록 수정</div>
+        <input type="hidden" id="cal-disease-edit-id">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:10px;">
+            <span style="font-size:0.88rem;color:var(--tx-sub);">벌통: </span>
+            <span id="cal-disease-edit-hive" style="font-weight:900;color:var(--tx-amber);"></span>
+        </div>
+        <label class="input-label">📅 날짜</label>
+        <input type="date" class="field" id="cal-disease-edit-date">
+        <label class="input-label">🦠 질병/증상</label>
+        <input type="text" class="field" id="cal-disease-edit-type" placeholder="질병명">
+        <label class="input-label">💊 약제</label>
+        <input type="text" class="field" id="cal-disease-edit-medicine" placeholder="약제명">
+        <label class="input-label">📝 메모</label>
+        <input type="text" class="field" id="cal-disease-edit-memo" placeholder="메모">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <button class="btn-sm" onclick="closeModal('cal-disease-edit-modal')">취소</button>
+            <button class="btn-primary" onclick="saveCalDiseaseEdit()" style="margin:0;">저장</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 달력 일지 수정 모달 ===== -->
+<div class="modal-overlay" id="cal-diary-edit-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:14px;">✏️ 일지 수정</div>
+        <input type="hidden" id="cal-diary-edit-id">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:10px;">
+            <span id="cal-diary-edit-type" style="font-weight:900;color:var(--tx-amber);"></span>
+            &nbsp;·&nbsp;
+            <span id="cal-diary-edit-hive" style="font-weight:800;color:var(--tx-main);"></span>
+        </div>
+        <label class="input-label">📅 날짜</label>
+        <input type="date" class="field" id="cal-diary-edit-date">
+        <label class="input-label">📝 메모</label>
+        <input type="text" class="field" id="cal-diary-edit-memo" placeholder="메모">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <button class="btn-sm" onclick="closeModal('cal-diary-edit-modal')">취소</button>
+            <button class="btn-primary" onclick="saveCalDiaryEdit()" style="margin:0;">저장</button>
+        </div>
+    </div>
+</div>
+
 <!-- ===== 개인 일정 추가 모달 ===== -->
 <div class="modal-overlay" id="schedule-modal">
     <div class="modal-sheet">
         <div class="modal-handle"></div>
-        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:14px;">📅 일정 추가</div>
+        <div id="sch-modal-title" style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:14px;">📅 일정 추가</div>
+        <input type="hidden" id="sch-edit-id" value="">
         <label class="input-label">📅 날짜</label>
         <input type="date" class="field" id="sch-date">
         <label class="input-label">📝 일정 제목</label>
-        <input type="text" class="field" id="sch-title" placeholder="예: 꿀 채취, 약제 처리, 벌통 점검">
+        <div style="position:relative;margin-bottom:12px;">
+            <input type="text" class="field" id="sch-title" placeholder="예: 꿀 채취, 약제 처리, 벌통 점검" style="margin-bottom:0;padding-right:80px;">
+            <button id="sch-title-voice-btn" class="btn-voice" onclick="toggleVoice('sch-title','sch-title-voice-btn')" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:4px 10px;font-size:0.78rem;">🎤 음성</button>
+        </div>
         <label class="input-label">🏺 관련 벌통 (선택)</label>
         <select class="field" id="sch-hive">
             <option value="">전체 공통</option>
         </select>
         <label class="input-label">📝 메모 (선택)</label>
-        <input type="text" class="field" id="sch-memo" placeholder="상세 내용">
+        <div style="position:relative;margin-bottom:12px;">
+            <input type="text" class="field" id="sch-memo" placeholder="상세 내용" style="margin-bottom:0;padding-right:80px;">
+            <button id="sch-memo-voice-btn" class="btn-voice" onclick="toggleVoice('sch-memo','sch-memo-voice-btn')" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:4px 10px;font-size:0.78rem;">🎤 음성</button>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
             <button class="btn-sm" onclick="closeModal('schedule-modal')">취소</button>
             <button class="btn-primary" onclick="saveSchedule()" style="margin:0;">저장</button>
@@ -1557,6 +1769,9 @@ let DB = {
     diaries: [],       // [ { id, hiveNum, type, date, ...fields, memo, photos } ]
     diseases: [],      // [ { id, hiveNum, diseaseType, medicine, method, date, status, memo, photos } ]
     accounts: [],      // [ { id, type, category, hiveNum, amount, date, memo, sugarKg, sugarMethod } ]
+    schedules: [],     // [ { id, date, title, memo, hiveNum } ]
+    swarmAlerts: [],   // [ { id, hiveNum, alertDate, dismissed } ]
+    customers: [],     // [ { id, name, phone, ... } ]
 };
 
 // ==================== 초기화 ====================
@@ -1627,7 +1842,7 @@ function checkEscape() {
 const DEFAULT_SETTINGS = {
     queenItems: ['정상', '왕대확인', '교체필요', '미확인'],
     escapeItems: ['정상 (도거 없음)', '도거 징후 있음', '도거 발생', '도거 후 재입봉'],
-    diseaseItems: ['낭충봉아부패병', '백묵병', '응애', '소먹이부패병'],
+    diseaseItems: ['낭충봉아부패병', '백묵병', '소충', '미국부저병', '유럽부저병'],
     expenseItems: ['설탕','화분 대용 사료','낭충봉아부패병 치료제','기타 약품','벌통 구입/제작','목재','교통비','장비/도구'],
     incomeItems: ['토종꿀 판매','봉군 판매','벌통 판매','봉독 판매']
 };
@@ -1736,8 +1951,8 @@ function scheduleSwarmAlert(hiveNum, observeDate) {
         id: Date.now(),
         hiveNum,
         observeDate,
-        alertDate: alertDate.toISOString().split('T')[0],
-        alertDate10: new Date(baseDate.setDate(baseDate.getDate() + 10)).toISOString().split('T')[0],
+        alertDate: toLocalDateStr(alertDate),
+        alertDate10: toLocalDateStr(new Date(baseDate.setDate(baseDate.getDate() + 10))),
         dismissed: false
     });
     saveDB();
@@ -1749,54 +1964,148 @@ function scheduleSwarmAlert(hiveNum, observeDate) {
 }
 
 function checkSwarmAlerts() {
-    if (!DB.swarmAlerts) return;
-    const today = new Date().toISOString().split('T')[0];
+    const today = toLocalDateStr(new Date());
     const alertList = document.getElementById('alert-list');
-    const activeAlerts = DB.swarmAlerts.filter(a => !a.dismissed && a.alertDate <= today && a.alertDate10 >= today);
+    if (!alertList) return;
 
-    if (activeAlerts.length === 0) {
-        // 기존 분봉 알림 카드 제거하고 기본 메시지 유지
-        const existingAlerts = alertList.querySelectorAll('.swarm-alert-card');
-        existingAlerts.forEach(el => el.remove());
-        if (alertList.children.length === 0) {
-            alertList.innerHTML = '<div style="padding:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;text-align:center;color:var(--tx-sub);font-size:0.85rem;">이상 없음 ✅</div>';
-        }
+    let cards = '';
+
+    // ① 분봉 주의 알림
+    const swarmAlerts = (DB.swarmAlerts || []).filter(a => !a.dismissed && a.alertDate <= today && a.alertDate10 >= today);
+    swarmAlerts.forEach(alert => {
+        const daysSince = Math.floor((new Date(today) - new Date(alert.observeDate)) / 86400000);
+        cards += `
+            <div class="swarm-alert-card" style="background:rgba(255,152,0,0.1);border:2px solid rgba(255,152,0,0.5);border-radius:14px;padding:14px;margin-bottom:8px;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div>
+                        <div style="font-size:0.95rem;font-weight:900;color:#ff9800;">🐝 분봉 주의! - ${alert.hiveNum}</div>
+                        <div style="font-size:0.82rem;color:var(--tx-sub);margin-top:4px;">왕대 확인 후 ${daysSince}일째 · 분봉 예상기간 (7~10일)</div>
+                        <div style="font-size:0.8rem;color:var(--tx-sub);">알림기간: ${alert.alertDate} ~ ${alert.alertDate10}</div>
+                    </div>
+                    <button onclick="dismissSwarmAlert(${alert.id})" style="background:transparent;border:none;color:var(--tx-sub);font-size:1.2rem;cursor:pointer;padding:0 4px;">✕</button>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:10px;">
+                    <button class="btn-sm" onclick="switchView('diary')" style="flex:1;">📔 일지 기록</button>
+                    <button class="btn-sm" onclick="dismissSwarmAlert(${alert.id})" style="flex:1;">✅ 확인완료</button>
+                </div>
+            </div>`;
+    });
+
+    // ② 방역 치료중 통
+    const treating = DB.diseases.filter(d => d.status === 'treating');
+    // 통별로 최신 1건만
+    const treatingByHive = {};
+    treating.forEach(d => {
+        if (!treatingByHive[d.hiveNum] || d.date > treatingByHive[d.hiveNum].date)
+            treatingByHive[d.hiveNum] = d;
+    });
+    Object.values(treatingByHive).forEach(d => {
+        const days = Math.floor((new Date(today) - new Date(d.date)) / 86400000);
+        cards += `
+            <div style="background:rgba(244,67,54,0.1);border:2px solid rgba(244,67,54,0.4);border-radius:14px;padding:14px;margin-bottom:8px;">
+                <div style="font-size:0.95rem;font-weight:900;color:#f44336;">💊 방역 치료중 - ${d.hiveNum}</div>
+                <div style="font-size:0.82rem;color:var(--tx-sub);margin-top:4px;">질병: ${d.diseaseType || '미상'} | 처리일: ${d.date} (${days}일째)</div>
+                ${d.medicine ? `<div style="font-size:0.82rem;color:var(--tx-sub);">약제: ${d.medicine}</div>` : ''}
+                <div style="margin-top:8px;">
+                    <button class="btn-sm" onclick="switchView('disease')" style="width:100%;">💊 방역 탭으로 이동</button>
+                </div>
+            </div>`;
+    });
+
+    // ③ 방역 관찰중 통
+    const watching = DB.diseases.filter(d => d.status === 'watch');
+    const watchByHive = {};
+    watching.forEach(d => {
+        if (!watchByHive[d.hiveNum] || d.date > watchByHive[d.hiveNum].date)
+            watchByHive[d.hiveNum] = d;
+    });
+    Object.values(watchByHive).forEach(d => {
+        // 치료중과 같은 통이면 스킵
+        if (treatingByHive[d.hiveNum]) return;
+        const days = Math.floor((new Date(today) - new Date(d.date)) / 86400000);
+        cards += `
+            <div style="background:rgba(255,152,0,0.08);border:1px solid rgba(255,152,0,0.35);border-radius:14px;padding:14px;margin-bottom:8px;">
+                <div style="font-size:0.95rem;font-weight:900;color:#ff9800;">🔍 방역 관찰중 - ${d.hiveNum}</div>
+                <div style="font-size:0.82rem;color:var(--tx-sub);margin-top:4px;">질병: ${d.diseaseType || '미상'} | 관찰 시작: ${d.date} (${days}일째)</div>
+            </div>`;
+    });
+
+    // ④ 일지 관찰 주의 항목 (도거발생/위험, 왕교체필요, 왕대확인)
+    const warnLabels = {
+        '도거발생':  { icon: '🚨', color: '#f44336', label: '도거 발생' },
+        '도거위험':  { icon: '⚠️', color: '#ff9800', label: '도거 위험' },
+        '교체필요':  { icon: '🔄', color: '#ff9800', label: '여왕벌 교체 필요' },
+        '왕대확인':  { icon: '🔍', color: '#9c27b0', label: '왕대 확인됨' },
+    };
+    // 벌통별 최신 관찰 일지 중 주의 항목 추출
+    const observeDiaries = DB.diaries.filter(d => d.type === 'observe' && (d.queenStatus || d.escapeStatus));
+    const latestByHive = {};
+    observeDiaries.forEach(d => {
+        if (!latestByHive[d.hiveNum] || d.date > latestByHive[d.hiveNum].date)
+            latestByHive[d.hiveNum] = d;
+    });
+    Object.values(latestByHive).forEach(d => {
+        const qw = warnLabels[d.queenStatus];
+        const ew = warnLabels[d.escapeStatus];
+        const warn = ew || qw; // 도거 우선
+        if (!warn) return;
+        const days = Math.floor((new Date(today) - new Date(d.date)) / 86400000);
+        cards += `
+            <div style="background:rgba(${warn.color==='#f44336'?'244,67,54':'255,152,0'},0.08);border:1px solid rgba(${warn.color==='#f44336'?'244,67,54':'255,152,0'},0.35);border-radius:14px;padding:14px;margin-bottom:8px;">
+                <div style="font-size:0.95rem;font-weight:900;color:${warn.color};">${warn.icon} ${warn.label} - ${d.hiveNum}</div>
+                <div style="font-size:0.82rem;color:var(--tx-sub);margin-top:4px;">관찰일: ${d.date} (${days}일 전)</div>
+                ${d.memo ? `<div style="font-size:0.82rem;color:var(--tx-sub);">메모: ${d.memo}</div>` : ''}
+                <div style="margin-top:8px;">
+                    <button class="btn-sm" onclick="switchView('diary')" style="width:100%;">📔 일지 탭으로 이동</button>
+                </div>
+            </div>`;
+    });
+    // ⑤ 방역 재방문 알림 (달력 일정 중 _diseaseAlarm)
+    const diseaseAlarms = (DB.schedules || []).filter(s =>
+        s._diseaseAlarm && s.date >= today
+    ).sort((a, b) => a.date.localeCompare(b.date));
+
+    diseaseAlarms.forEach(s => {
+        const daysLeft = Math.ceil((new Date(s.date) - new Date(today)) / 86400000);
+        const isToday = s.date === today;
+        const color = isToday ? '#f44336' : '#ff9800';
+        cards += `
+            <div style="background:rgba(244,67,54,0.07);border:1px solid rgba(244,67,54,0.3);border-radius:14px;padding:14px;margin-bottom:8px;">
+                <div style="font-size:0.95rem;font-weight:900;color:${color};">🔔 방역 재확인 예정 - ${s._hiveNum}</div>
+                <div style="font-size:0.82rem;color:var(--tx-sub);margin-top:4px;">${s.title.replace('💊 방역 재확인 - ','')}</div>
+                <div style="font-size:0.82rem;color:var(--tx-sub);">${s.date} ${isToday ? '(오늘!)' : `(${daysLeft}일 후)`}</div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <button class="btn-sm" onclick="switchView('disease')" style="flex:1;">💊 방역 탭으로</button>
+                    <button class="btn-sm" onclick="dismissDiseaseAlarm(${s.id})" style="flex:1;">✅ 확인완료</button>
+                </div>
+            </div>`;
+    });
+
+    if (!cards) {
+        alertList.innerHTML = `
+            <div style="padding:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;text-align:center;color:var(--tx-sub);font-size:0.92rem;">
+                이상 없음 ✅
+            </div>`;
         return;
     }
 
-    // 알림 카드 삽입
-    alertList.innerHTML = '';
-    activeAlerts.forEach(alert => {
-        const daysSince = Math.floor((new Date(today) - new Date(alert.observeDate)) / 86400000);
-        const card = document.createElement('div');
-        card.className = 'swarm-alert-card';
-        card.style.cssText = 'background:rgba(255,152,0,0.1);border:2px solid rgba(255,152,0,0.5);border-radius:14px;padding:14px;margin-bottom:8px;';
-        card.innerHTML = `
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                <div>
-                    <div style="font-size:0.95rem;font-weight:900;color:#ff9800;">🐝 분봉 주의! - ${alert.hiveNum}</div>
-                    <div style="font-size:0.8rem;color:var(--tx-sub);margin-top:4px;">왕대 확인 후 ${daysSince}일째 · 분봉 예상기간 (7~10일)</div>
-                    <div style="font-size:0.8rem;color:var(--tx-sub);">관찰일: ${alert.observeDate} | 알림기간: ${alert.alertDate} ~ ${alert.alertDate10}</div>
-                </div>
-                <button onclick="dismissSwarmAlert(${alert.id})" style="background:transparent;border:none;color:var(--tx-sub);font-size:1.2rem;cursor:pointer;padding:0 4px;">✕</button>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:10px;">
-                <button class="btn-sm" onclick="switchView('diary')" style="flex:1;">📔 일지 기록</button>
-                <button class="btn-sm" onclick="dismissSwarmAlert(${alert.id})" style="flex:1;">✅ 확인완료</button>
-            </div>
-        `;
-        alertList.appendChild(card);
-    });
+    alertList.innerHTML = cards;
 
-    // 브라우저 푸시 알림
+    // 브라우저 푸시 알림 (분봉)
     if ('Notification' in window && Notification.permission === 'granted') {
-        activeAlerts.filter(a => a.alertDate === today).forEach(alert => {
+        swarmAlerts.filter(a => a.alertDate === today).forEach(alert => {
             new Notification(`🐝 분봉 주의 - ${alert.hiveNum}`, {
                 body: '왕대 확인 7일째입니다. 분봉 준비를 확인하세요!',
-                icon: '🐝'
             });
         });
     }
+}
+
+function dismissDiseaseAlarm(id) {
+    DB.schedules = (DB.schedules || []).filter(s => s.id !== Number(id));
+    saveDB();
+    checkSwarmAlerts();
+    showToast('방역 알림 확인 처리됨');
 }
 
 function dismissSwarmAlert(id) {
@@ -1851,6 +2160,15 @@ function getSolarTerm(dateStr) {
 }
 
 // ==================== 달력 ====================
+
+// 로컬 시간 기준 YYYY-MM-DD 반환 (toISOString은 UTC 기준으로 한국에서 날짜 밀림 버그 있음)
+function toLocalDateStr(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
 let calYear = new Date().getFullYear();
 let calMonth = new Date().getMonth(); // 0-based
 let calSelectedDate = null;
@@ -1871,7 +2189,7 @@ function renderCalendar() {
 
     const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=일
     const lastDate = new Date(calYear, calMonth + 1, 0).getDate();
-    const today = new Date().toISOString().split('T')[0];
+    const today = toLocalDateStr(new Date());
 
     // 이벤트 날짜 맵 생성
     const eventMap = buildCalEventMap();
@@ -1909,8 +2227,8 @@ function renderCalendar() {
 }
 
 function createCalCell(date, eventMap, otherMonth) {
-    const dateStr = date.toISOString().split('T')[0];
-    const today = new Date().toISOString().split('T')[0];
+    const dateStr = toLocalDateStr(date);
+    const today = toLocalDateStr(new Date());
     const day = date.getDay();
 
     const cell = document.createElement('div');
@@ -1958,31 +2276,34 @@ function createCalCell(date, eventMap, otherMonth) {
 function buildCalEventMap() {
     const map = {};
 
-    const addEvent = (dateStr, color, type, label, hiveNum) => {
+    const addEvent = (dateStr, color, type, label, hiveNum, id) => {
         if (!map[dateStr]) map[dateStr] = [];
-        map[dateStr].push({ color, type, label, hiveNum });
+        map[dateStr].push({ color, type, label, hiveNum, id });
     };
 
     // 일지 (초록)
     DB.diaries.forEach(r => {
         const typeLabel = { observe:'관찰', swarm:'분봉', capture:'포획', harvest:'채밀' };
         const color = r.type === 'harvest' ? '#ff9800' : r.type === 'swarm' ? '#9c27b0' : '#4caf50';
-        addEvent(r.date, color, r.type, `${typeLabel[r.type]||r.type} - ${r.hiveNum}`, r.hiveNum);
+        addEvent(r.date, color, r.type, `${typeLabel[r.type]||r.type} - ${r.hiveNum}`, r.hiveNum, r.id);
     });
 
     // 방역 (빨강)
     DB.diseases.forEach(r => {
-        addEvent(r.date, '#f44336', 'disease', `방역: ${r.diseaseType} - ${r.hiveNum}`, r.hiveNum);
+        if (!r.date) return;
+        const label = r.diseaseType || r.type || '방역';
+        addEvent(r.date, '#f44336', 'disease', `💊 ${label} - ${r.hiveNum || ''}`, r.hiveNum || '', r.id);
     });
 
-    // 개인 일정 (파랑)
+    // 개인 일정 (파랑) / 방역알림 일정 (빨강)
     (DB.schedules || []).forEach(r => {
-        addEvent(r.date, '#2196F3', 'schedule', r.title, '');
+        const color = r._diseaseAlarm ? '#f44336' : '#2196F3';
+        addEvent(r.date, color, r._diseaseAlarm ? 'disease-alarm' : 'schedule', r.title, '', r.id);
     });
 
     // 분봉 알림 (보라)
     (DB.swarmAlerts || []).filter(a => !a.dismissed).forEach(a => {
-        addEvent(a.alertDate, '#9c27b0', 'swarm-alert', `🐝 분봉주의 - ${a.hiveNum}`, a.hiveNum);
+        addEvent(a.alertDate, '#9c27b0', 'swarm-alert', `🐝 분봉주의 - ${a.hiveNum}`, a.hiveNum, a.id);
     });
 
     return map;
@@ -2000,25 +2321,151 @@ function renderDayEvents(dateStr) {
 
     if (events.length === 0) {
         container.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;padding:0 2px;">
+                <div style="font-size:0.95rem;font-weight:800;color:var(--tx-gold);">${label}${termBadge}</div>
+                <button class="btn-sm" onclick="showAddScheduleModal()" style="padding:6px 16px;font-size:0.85rem;font-weight:900;white-space:nowrap;background:#2196F3;color:#fff;border-color:#2196F3;">+ 일정추가</button>
+            </div>
             <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;">
-                <div style="font-size:0.95rem;font-weight:800;color:var(--tx-gold);margin-bottom:6px;">${label}${termBadge}</div>
                 <div style="font-size:0.9rem;color:var(--tx-sub);">등록된 일정이 없습니다</div>
             </div>`;
         return;
     }
 
     const colorLabel = { observe:'🔍 관찰', swarm:'🐝 분봉', capture:'📦 포획', harvest:'🍯 채밀',
-        disease:'💊 방역', schedule:'📅 일정', 'swarm-alert':'🐝 분봉주의' };
+        disease:'💊 방역', schedule:'📅 일정', 'swarm-alert':'🐝 분봉주의', 'disease-alarm':'🔔 방역알림' };
+
+    const getButtons = (e) => {
+        if (e.type === 'swarm-alert') return '';
+        const btnStyle = "padding:4px 10px;font-size:0.78rem;white-space:nowrap;";
+        if (e.type === 'disease-alarm') return `
+            <button class="btn-danger" style="${btnStyle}" onclick="dismissDiseaseAlarm(${e.id})">✅ 확인완료</button>`;
+        if (e.type === 'schedule') return `
+            <button class="btn-sm" style="${btnStyle}" onclick="editCalSchedule(${e.id})">수정</button>
+            <button class="btn-danger" style="${btnStyle}" onclick="deleteCalSchedule(${e.id})">삭제</button>`;
+        if (e.type === 'disease') return `
+            <button class="btn-sm" style="${btnStyle}" onclick="editCalDisease(${e.id})">수정</button>
+            <button class="btn-danger" style="${btnStyle}" onclick="deleteCalDisease(${e.id})">삭제</button>`;
+        return `
+            <button class="btn-sm" style="${btnStyle}" onclick="editCalDiary(${e.id})">수정</button>
+            <button class="btn-danger" style="${btnStyle}" onclick="deleteCalDiary(${e.id})">삭제</button>`;
+    };
 
     container.innerHTML = `
-        <div style="font-size:0.95rem;font-weight:800;color:var(--tx-gold);margin-bottom:6px;padding:0 2px;">${label}${termBadge} · ${events.length}건</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;padding:0 2px;">
+            <div style="font-size:0.95rem;font-weight:800;color:var(--tx-gold);">${label}${termBadge} · ${events.length}건</div>
+            <button class="btn-sm" onclick="showAddScheduleModal()" style="padding:6px 16px;font-size:0.85rem;font-weight:900;white-space:nowrap;background:#2196F3;color:#fff;border-color:#2196F3;">+ 일정추가</button>
+        </div>
         ${events.map(e => `
-            <div class="cal-event-item" style="border-left-color:${e.color};">
-                <div style="font-size:0.78rem;font-weight:800;color:${e.color};">${colorLabel[e.type]||e.type}</div>
-                <div style="font-size:0.85rem;color:var(--tx-main);margin-top:2px;">${e.label}</div>
-                ${e.hiveNum ? `<div style="font-size:0.72rem;color:var(--tx-sub);">🏺 ${e.hiveNum}</div>` : ''}
+            <div class="cal-event-item" style="border-left-color:${e.color};display:flex;align-items:center;gap:8px;padding:8px 10px;">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:0.75rem;font-weight:800;color:${e.color};">${colorLabel[e.type]||e.type}</div>
+                    <div style="font-size:0.88rem;color:var(--tx-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.label}</div>
+                </div>
+                <div style="display:flex;gap:4px;flex-shrink:0;">
+                    ${getButtons(e)}
+                </div>
             </div>
         `).join('')}`;
+}
+
+// ===== 달력 이벤트 수정/삭제 =====
+function deleteCalDiary(id) {
+    if (!confirm('이 일지를 삭제하시겠어요?')) return;
+    const rec = DB.diaries.find(d => d.id === Number(id));
+    DB.diaries = DB.diaries.filter(d => d.id !== Number(id));
+    saveDB();
+    if (rec) recalcHiveStatus(rec.hiveNum);
+    updateHomeSummary();
+    renderCalendar();
+    renderDayEvents(calSelectedDate);
+    showToast('삭제되었습니다');
+}
+
+function deleteCalDisease(id) {
+    if (!confirm('이 방역 기록을 삭제하시겠어요?')) return;
+    const rec = DB.diseases.find(d => d.id === Number(id));
+    DB.diseases = DB.diseases.filter(d => d.id !== Number(id));
+    saveDB();
+    if (rec) recalcHiveStatus(rec.hiveNum);
+    updateHomeSummary();
+    renderCalendar();
+    renderDayEvents(calSelectedDate);
+    checkSwarmAlerts();
+    showToast('삭제되었습니다');
+}
+
+function deleteCalSchedule(id) {
+    if (!confirm('이 일정을 삭제하시겠어요?')) return;
+    DB.schedules = (DB.schedules || []).filter(s => s.id !== Number(id));
+    saveDB();
+    renderCalendar();
+    renderDayEvents(calSelectedDate);
+    showToast('삭제되었습니다');
+}
+
+function editCalDisease(id) {
+    const r = DB.diseases.find(d => d.id === Number(id));
+    if (!r) return;
+    document.getElementById('cal-disease-edit-id').value = id;
+    document.getElementById('cal-disease-edit-date').value = r.date;
+    document.getElementById('cal-disease-edit-type').value = r.diseaseType || '';
+    document.getElementById('cal-disease-edit-medicine').value = r.medicine || '';
+    document.getElementById('cal-disease-edit-memo').value = r.memo || '';
+    document.getElementById('cal-disease-edit-hive').textContent = r.hiveNum || '';
+    document.getElementById('cal-disease-edit-modal').classList.add('show');
+}
+
+function saveCalDiseaseEdit() {
+    const id = Number(document.getElementById('cal-disease-edit-id').value);
+    const idx = DB.diseases.findIndex(d => d.id === id);
+    if (idx === -1) return;
+    DB.diseases[idx].date = document.getElementById('cal-disease-edit-date').value;
+    DB.diseases[idx].diseaseType = document.getElementById('cal-disease-edit-type').value;
+    DB.diseases[idx].medicine = document.getElementById('cal-disease-edit-medicine').value;
+    DB.diseases[idx].memo = document.getElementById('cal-disease-edit-memo').value;
+    saveDB();
+    closeModal('cal-disease-edit-modal');
+    renderCalendar();
+    renderDayEvents(calSelectedDate);
+    showToast('✅ 수정되었습니다');
+}
+
+function editCalDiary(id) {
+    const r = DB.diaries.find(d => d.id === id);
+    if (!r) return;
+    // 일지 탭으로 이동 후 편집 모달 열기
+    document.getElementById('cal-diary-edit-id').value = id;
+    document.getElementById('cal-diary-edit-date').value = r.date;
+    document.getElementById('cal-diary-edit-memo').value = r.memo || '';
+    document.getElementById('cal-diary-edit-hive').textContent = r.hiveNum;
+    document.getElementById('cal-diary-edit-type').textContent =
+        ({observe:'🔍 관찰', swarm:'🐝 분봉', capture:'📦 포획', harvest:'🍯 채밀'}[r.type] || r.type);
+    document.getElementById('cal-diary-edit-modal').classList.add('show');
+}
+
+function saveCalDiaryEdit() {
+    const id = Number(document.getElementById('cal-diary-edit-id').value);
+    const idx = DB.diaries.findIndex(d => d.id === id);
+    if (idx === -1) return;
+    DB.diaries[idx].date = document.getElementById('cal-diary-edit-date').value;
+    DB.diaries[idx].memo = document.getElementById('cal-diary-edit-memo').value;
+    saveDB();
+    closeModal('cal-diary-edit-modal');
+    renderCalendar();
+    renderDayEvents(calSelectedDate);
+    showToast('✅ 수정되었습니다');
+}
+
+function editCalSchedule(id) {
+    const r = (DB.schedules || []).find(s => s.id === id);
+    if (!r) return;
+    document.getElementById('sch-date').value = r.date;
+    document.getElementById('sch-title').value = r.title;
+    document.getElementById('sch-memo').value = r.memo || '';
+    document.getElementById('sch-hive').value = r.hiveNum || '';
+    document.getElementById('sch-edit-id').value = id;
+    document.getElementById('sch-modal-title').textContent = '✏️ 일정 수정';
+    document.getElementById('schedule-modal').classList.add('show');
 }
 
 function highlightSelected() {
@@ -2029,12 +2476,14 @@ function highlightSelected() {
 
 // ==================== 개인 일정 추가 모달 ====================
 function showAddScheduleModal() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = toLocalDateStr(new Date());
     const date = calSelectedDate || today;
     document.getElementById('sch-date').value = date;
     document.getElementById('sch-title').value = '';
     document.getElementById('sch-memo').value = '';
     document.getElementById('sch-hive').value = '';
+    document.getElementById('sch-edit-id').value = '';
+    document.getElementById('sch-modal-title').textContent = '📅 일정 추가';
     document.getElementById('schedule-modal').classList.add('show');
 }
 
@@ -2042,17 +2491,35 @@ function saveSchedule() {
     const title = document.getElementById('sch-title').value.trim();
     if (!title) { showToast('일정 제목을 입력하세요'); return; }
     if (!DB.schedules) DB.schedules = [];
-    DB.schedules.push({
-        id: Date.now(),
-        date: document.getElementById('sch-date').value,
-        title,
-        memo: document.getElementById('sch-memo').value,
-        hiveNum: document.getElementById('sch-hive').value
-    });
+    const editId = Number(document.getElementById('sch-edit-id').value);
+    if (editId) {
+        // 수정
+        const idx = DB.schedules.findIndex(s => s.id === editId);
+        if (idx !== -1) {
+            DB.schedules[idx] = { ...DB.schedules[idx],
+                date: document.getElementById('sch-date').value,
+                title,
+                memo: document.getElementById('sch-memo').value,
+                hiveNum: document.getElementById('sch-hive').value
+            };
+        }
+        showToast('✅ 일정 수정됨');
+    } else {
+        // 신규
+        DB.schedules.push({
+            id: Date.now(),
+            date: document.getElementById('sch-date').value,
+            title,
+            memo: document.getElementById('sch-memo').value,
+            hiveNum: document.getElementById('sch-hive').value
+        });
+        showToast('📅 일정 추가됨');
+    }
+    document.getElementById('sch-edit-id').value = '';
     saveDB();
     closeModal('schedule-modal');
-    showToast('📅 일정 추가됨');
     renderCalendar();
+    if (calSelectedDate) renderDayEvents(calSelectedDate);
 }
 
 function deleteSchedule(id) {
@@ -2064,32 +2531,77 @@ function deleteSchedule(id) {
 }
 
 // ==================== 고객 관리 ====================
+let customerSortBy = 'amount';
+let customerCategoryFilter = '';
+
+function setCustomerSort(by, btn) {
+    customerSortBy = by;
+    document.querySelectorAll('[id^="csort-"]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCustomerList();
+}
+
+function renderCustomerCategoryFilter() {
+    // 수입 항목(꿀, 밀랍 등) 추출
+    const categories = [...new Set(DB.accounts
+        .filter(a => a.type === 'income' && a.customerName)
+        .map(a => a.category))];
+    const el = document.getElementById('customer-category-filter');
+    if (!el) return;
+    el.innerHTML = `<button class="btn-sm ${customerCategoryFilter === '' ? 'active' : ''}" onclick="filterCustomerCategory('',this)">전체</button>` +
+        categories.map(c => `<button class="btn-sm ${customerCategoryFilter === c ? 'active' : ''}" onclick="filterCustomerCategory('${c}',this)">${c}</button>`).join('');
+}
+
+function filterCustomerCategory(cat, btn) {
+    customerCategoryFilter = cat;
+    document.querySelectorAll('#customer-category-filter .btn-sm').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCustomerList();
+}
+
 function renderCustomerList() {
     if (!DB.customers) DB.customers = [];
+    renderCustomerCategoryFilter();
+
     const search = (document.getElementById('customer-search')?.value || '').toLowerCase();
-    let customers = [...DB.customers].sort((a, b) => b.totalAmount - a.totalAmount);
+
+    // 항목별 필터: 해당 항목 구매한 고객만 추출
+    let eligibleNames = null;
+    if (customerCategoryFilter) {
+        eligibleNames = new Set(DB.accounts
+            .filter(a => a.type === 'income' && a.category === customerCategoryFilter && a.customerName)
+            .map(a => a.customerName));
+    }
+
+    let customers = [...DB.customers];
     if (search) customers = customers.filter(c =>
-        c.name.includes(search) || (c.phone || '').includes(search)
-    );
+        c.name.includes(search) || (c.phone || '').includes(search));
+    if (eligibleNames) customers = customers.filter(c => eligibleNames.has(c.name));
+
+    // 정렬
+    if (customerSortBy === 'amount') customers.sort((a, b) => (b.totalAmount||0) - (a.totalAmount||0));
+    else if (customerSortBy === 'count') customers.sort((a, b) => (b.purchases||0) - (a.purchases||0));
+    else if (customerSortBy === 'recent') customers.sort((a, b) => (b.lastDate||'').localeCompare(a.lastDate||''));
+    else if (customerSortBy === 'name') customers.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
 
     // 요약
     const summary = document.getElementById('customer-summary');
     if (summary) {
-        const total = DB.customers.length;
-        const totalAmt = DB.customers.reduce((s, c) => s + (c.totalAmount || 0), 0);
-        const topCustomer = DB.customers.sort((a, b) => b.totalAmount - a.totalAmount)[0];
+        const allC = DB.customers;
+        const totalAmt = allC.reduce((s, c) => s + (c.totalAmount || 0), 0);
+        const topCustomer = [...allC].sort((a, b) => (b.totalAmount||0) - (a.totalAmount||0))[0];
         summary.innerHTML = `
             <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
-                <div style="font-size:0.8rem;color:var(--tx-sub);">총 고객</div>
-                <div style="font-size:1.3rem;font-weight:900;color:var(--tx-gold);">${total}명</div>
+                <div style="font-size:0.82rem;color:var(--tx-sub);">총 고객</div>
+                <div style="font-size:1.3rem;font-weight:900;color:var(--tx-gold);">${allC.length}명</div>
             </div>
             <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
-                <div style="font-size:0.8rem;color:var(--tx-sub);">총 매출</div>
-                <div style="font-size:1rem;font-weight:900;color:#4caf50;">${formatMoney(totalAmt)}원</div>
+                <div style="font-size:0.82rem;color:var(--tx-sub);">총 매출</div>
+                <div style="font-size:0.95rem;font-weight:900;color:#4caf50;">${formatMoney(totalAmt)}원</div>
             </div>
             <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
-                <div style="font-size:0.8rem;color:var(--tx-sub);">단골 고객</div>
-                <div style="font-size:1rem;font-weight:900;color:var(--tx-amber);">${topCustomer ? topCustomer.name : '-'}</div>
+                <div style="font-size:0.82rem;color:var(--tx-sub);">단골</div>
+                <div style="font-size:0.95rem;font-weight:900;color:var(--tx-amber);">${topCustomer ? topCustomer.name : '-'}</div>
             </div>`;
     }
 
@@ -2101,21 +2613,63 @@ function renderCustomerList() {
         return;
     }
 
-    container.innerHTML = customers.map(c => `
+    // 항목별 필터 시 해당 항목 구매금액만 표시
+    container.innerHTML = customers.map((c, idx) => {
+        let displayAmt = c.totalAmount || 0;
+        let displayCount = c.purchases || 0;
+        if (customerCategoryFilter) {
+            const filtered = DB.accounts.filter(a => a.customerName === c.name && a.category === customerCategoryFilter && a.type === 'income');
+            displayAmt = filtered.reduce((s, a) => s + a.amount, 0);
+            displayCount = filtered.length;
+        }
+        const rankBadge = idx === 0 && customerSortBy === 'amount' ? '🥇 ' : idx === 1 && customerSortBy === 'amount' ? '🥈 ' : idx === 2 && customerSortBy === 'amount' ? '🥉 ' : '';
+        return `
         <div class="record-card" onclick="showCustomerDetail(${c.id})" style="cursor:pointer;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
                 <div>
-                    <div style="font-size:1rem;font-weight:900;color:var(--tx-main);">👤 ${c.name}</div>
-                    <div style="font-size:0.85rem;color:var(--tx-sub);">${c.phone || '연락처 없음'} · 구매 ${c.purchases || 1}회</div>
+                    <div style="font-size:1rem;font-weight:900;color:var(--tx-main);">${rankBadge}👤 ${c.name}</div>
+                    <div style="font-size:0.85rem;color:var(--tx-sub);">${c.phone || '연락처 없음'} · 구매 ${displayCount}회</div>
                     <div style="font-size:0.82rem;color:var(--tx-sub);">최근: ${c.lastDate || '-'}</div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:1rem;font-weight:900;color:#4caf50;">+${formatMoney(c.totalAmount || 0)}원</div>
-                    <button class="btn-danger" style="padding:4px 10px;font-size:0.75rem;margin-top:4px;" onclick="event.stopPropagation();deleteCustomer(${c.id})">삭제</button>
+                    <div style="font-size:1rem;font-weight:900;color:#4caf50;">+${formatMoney(displayAmt)}원</div>
+                    <div style="display:flex;gap:6px;margin-top:4px;">
+                        <button class="btn-sm" style="padding:4px 10px;font-size:0.75rem;" onclick="event.stopPropagation();editCustomer(${c.id})">수정</button>
+                        <button class="btn-danger" style="padding:4px 10px;font-size:0.75rem;" onclick="event.stopPropagation();deleteCustomer(${c.id})">삭제</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        </div>`; }).join('');
+}
+
+function editCustomer(id) {
+    const c = DB.customers.find(c => c.id === id);
+    if (!c) return;
+    document.getElementById('edit-customer-id').value = id;
+    document.getElementById('edit-customer-name').value = c.name;
+    document.getElementById('edit-customer-phone').value = c.phone || '';
+    document.getElementById('edit-customer-memo').value = c.memo || '';
+    document.getElementById('customer-edit-modal').classList.add('show');
+}
+
+function saveCustomerEdit() {
+    const id = Number(document.getElementById('edit-customer-id').value);
+    const idx = DB.customers.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    const oldName = DB.customers[idx].name;
+    const newName = document.getElementById('edit-customer-name').value.trim();
+    if (!newName) { showToast('이름을 입력하세요'); return; }
+    // 구매 내역의 customerName도 업데이트
+    if (oldName !== newName) {
+        DB.accounts.forEach(a => { if (a.customerName === oldName) a.customerName = newName; });
+    }
+    DB.customers[idx].name = newName;
+    DB.customers[idx].phone = document.getElementById('edit-customer-phone').value.trim();
+    DB.customers[idx].memo = document.getElementById('edit-customer-memo').value.trim();
+    saveDB();
+    closeModal('customer-edit-modal');
+    renderCustomerList();
+    showToast('✅ 고객 정보 수정됨');
 }
 
 function showCustomerDetail(id) {
@@ -2166,8 +2720,8 @@ function saveNewCustomer() {
         name,
         phone: document.getElementById('new-customer-phone').value.trim(),
         memo: document.getElementById('new-customer-memo').value.trim(),
-        firstDate: new Date().toISOString().split('T')[0],
-        lastDate: new Date().toISOString().split('T')[0],
+        firstDate: toLocalDateStr(new Date()),
+        lastDate: toLocalDateStr(new Date()),
         totalAmount: 0,
         purchases: 0
     });
@@ -2179,7 +2733,7 @@ function saveNewCustomer() {
 
 function deleteCustomer(id) {
     if (!confirm('이 고객을 삭제하시겠어요?')) return;
-    DB.customers = DB.customers.filter(c => c.id !== id);
+    DB.customers = DB.customers.filter(c => c.id !== Number(id));
     saveDB();
     renderCustomerList();
     showToast('삭제됨');
@@ -2192,7 +2746,7 @@ function goBackToMain() {
 }
 
 function initDateFields() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = toLocalDateStr(new Date());
     const fields = ['diary-date','disease-date','acc-date','swarm-date'];
     fields.forEach(id => {
         const el = document.getElementById(id);
@@ -2214,8 +2768,14 @@ function renderAll() {
     renderAccList();
     renderHiveLocationList();
     syncAccCategories();
-    // 일정 모달 벌통 옵션 업데이트
-    const schHive = document.getElementById('sch-hive');
+    checkSwarmAlerts();
+    // 수정 모달 벌통 옵션
+    const editHive = document.getElementById('edit-acc-hive');
+    if (editHive) {
+        const activeHives = Object.keys(DB.hives).filter(k => DB.hives[k].active);
+        editHive.innerHTML = `<option value="">전체 공통</option>` +
+            activeHives.map(h => `<option value="${h}">${h}</option>`).join('');
+    }    const schHive = document.getElementById('sch-hive');
     if (schHive) {
         const activeHives = Object.keys(DB.hives).filter(k => DB.hives[k].active);
         schHive.innerHTML = `<option value="">전체 공통</option>` +
@@ -2227,26 +2787,96 @@ function renderAll() {
 function switchView(name) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+    // diary/disease는 record 뷰로 라우팅
+    if (name === 'diary') {
+        document.getElementById('view-record').classList.add('active');
+        document.getElementById('nav-record').classList.add('active');
+        // 일지 탭 활성화
+        document.getElementById('record-diary-content').style.display = 'block';
+        document.getElementById('record-disease-content').style.display = 'none';
+        document.getElementById('record-tab-diary').classList.add('active');
+        document.getElementById('record-tab-disease').classList.remove('active');
+        return;
+    }
+    if (name === 'disease') {
+        document.getElementById('view-record').classList.add('active');
+        document.getElementById('nav-record').classList.add('active');
+        // 방역 탭 활성화
+        document.getElementById('record-diary-content').style.display = 'none';
+        document.getElementById('record-disease-content').style.display = 'block';
+        document.getElementById('record-tab-diary').classList.remove('active');
+        document.getElementById('record-tab-disease').classList.add('active');
+        return;
+    }
+    // customer → account 뷰의 고객 탭으로
+    if (name === 'customer') {
+        document.getElementById('view-account').classList.add('active');
+        document.getElementById('nav-account').classList.add('active');
+        const btn = document.querySelector('#view-account .tab-btn:nth-child(4)');
+        if (btn) switchAccTab('customer', btn);
+        return;
+    }
+
     const view = document.getElementById('view-' + name);
     const nav = document.getElementById('nav-' + name);
     if (view) view.classList.add('active');
     if (nav) nav.classList.add('active');
 }
 
+function switchRecordTab(tab, btn) {
+    // 탭 스타일 초기화
+    ['record-tab-diary','record-tab-disease','record-tab-list-main'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.style.color = 'var(--tx-sub)'; el.style.borderBottom = '3px solid transparent'; el.style.background = 'var(--bg-card)'; }
+    });
+    // 활성 탭 강조
+    const active = document.getElementById(
+        tab === 'diary' ? 'record-tab-diary' : tab === 'disease' ? 'record-tab-disease' : 'record-tab-list-main'
+    );
+    if (active) { active.style.color = 'var(--tx-gold)'; active.style.borderBottom = '3px solid var(--tx-gold)'; active.style.background = 'var(--bg-main)'; }
+
+    // 컨텐츠 전환
+    document.getElementById('record-diary-content').style.display = tab === 'diary' ? 'block' : 'none';
+    document.getElementById('record-disease-content').style.display = tab === 'disease' ? 'block' : 'none';
+    document.getElementById('record-list-content').style.display = tab === 'list' ? 'block' : 'none';
+
+    if (tab === 'list') {
+        renderDiaryFilterHive();
+        renderDiseaseFilterHive();
+        renderDiaryList();
+        renderDiseaseList();
+    }
+    // 일지/방역 탭 전환 시 작성폼으로 복원
+    if (tab === 'diary') {
+        document.getElementById('diary-write').style.display = 'block';
+    }
+    if (tab === 'disease') {
+        document.getElementById('disease-write').style.display = 'block';
+    }
+}
+
+// 앱 시작 시 첫 탭 활성화
+document.addEventListener('DOMContentLoaded', () => {
+    switchRecordTab('diary', document.getElementById('record-tab-diary'));
+});
+
 function switchDiaryTab(tab, btn) {
-    document.querySelectorAll('#view-diary .tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('diary-write').style.display = tab === 'write' ? 'block' : 'none';
-    document.getElementById('diary-list').style.display = tab === 'list' ? 'block' : 'none';
-    if (tab === 'list') renderDiaryList();
+    const isList = tab === 'list';
+    document.getElementById('diary-write').style.display = isList ? 'none' : 'block';
+    document.getElementById('diary-list').style.display = isList ? 'block' : 'none';
+    const listBtn = document.getElementById('diary-tab-list');
+    if (listBtn) listBtn.style.background = isList ? '#8B5E3C' : '#2196F3';
+    if (isList) { renderDiaryFilterHive(); renderDiaryList(); }
 }
 
 function switchDiseaseTab(tab, btn) {
-    document.querySelectorAll('#view-disease .tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('disease-write').style.display = tab === 'write' ? 'block' : 'none';
-    document.getElementById('disease-list').style.display = tab === 'list' ? 'block' : 'none';
-    if (tab === 'list') renderDiseaseList();
+    const isList = tab === 'list';
+    document.getElementById('disease-write').style.display = isList ? 'none' : 'block';
+    document.getElementById('disease-list').style.display = isList ? 'block' : 'none';
+    const listBtn = document.getElementById('disease-tab-list');
+    if (listBtn) listBtn.style.background = isList ? '#8B5E3C' : '#2196F3';
+    if (isList) { renderDiseaseFilterHive(); renderDiseaseList(); }
 }
 
 function switchAccTab(tab, btn) {
@@ -2254,6 +2884,57 @@ function switchAccTab(tab, btn) {
     btn.classList.add('active');
     document.getElementById('acc-add').style.display = tab === 'add' ? 'block' : 'none';
     document.getElementById('acc-list').style.display = tab === 'list' ? 'block' : 'none';
+    document.getElementById('acc-customer-tab').style.display = tab === 'customer' ? 'block' : 'none';
+    if (tab === 'list') { renderAccMonth(); renderAccList(); }
+    if (tab === 'customer') { renderCustomerCategoryFilter(); renderCustomerList(); }
+}
+
+function renderAccMonthly() {
+    const container = document.getElementById('acc-monthly-content');
+    if (!DB.accounts || DB.accounts.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><p>내역이 없습니다</p></div>';
+        return;
+    }
+
+    // 월별 집계
+    const months = {};
+    DB.accounts.forEach(r => {
+        const ym = r.date ? r.date.slice(0, 7) : null;
+        if (!ym) return;
+        if (!months[ym]) months[ym] = { income: 0, expense: 0 };
+        if (r.type === 'income') months[ym].income += r.amount || 0;
+        else months[ym].expense += r.amount || 0;
+    });
+
+    const sorted = Object.keys(months).sort((a, b) => b.localeCompare(a));
+    if (sorted.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><p>내역이 없습니다</p></div>';
+        return;
+    }
+
+    container.innerHTML = sorted.map(ym => {
+        const { income, expense } = months[ym];
+        const balance = income - expense;
+        const [y, m] = ym.split('-');
+        return `
+        <div class="record-card" style="margin-bottom:8px;">
+            <div style="font-size:0.95rem;font-weight:900;color:var(--tx-gold);margin-bottom:10px;">${y}년 ${parseInt(m)}월</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;">
+                <div style="background:rgba(244,67,54,0.08);border-radius:10px;padding:10px;">
+                    <div style="font-size:0.72rem;color:var(--tx-sub);margin-bottom:4px;">💸 지출</div>
+                    <div style="font-size:0.9rem;font-weight:900;color:#f44336;">-${formatMoney(expense)}원</div>
+                </div>
+                <div style="background:rgba(76,175,80,0.08);border-radius:10px;padding:10px;">
+                    <div style="font-size:0.72rem;color:var(--tx-sub);margin-bottom:4px;">💰 수입</div>
+                    <div style="font-size:0.9rem;font-weight:900;color:#4caf50;">+${formatMoney(income)}원</div>
+                </div>
+                <div style="background:rgba(${balance>=0?'76,175,80':'244,67,54'},0.08);border-radius:10px;padding:10px;">
+                    <div style="font-size:0.72rem;color:var(--tx-sub);margin-bottom:4px;">📈 순이익</div>
+                    <div style="font-size:0.9rem;font-weight:900;color:${balance>=0?'#4caf50':'#f44336'};">${balance>=0?'+':''}${formatMoney(balance)}원</div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
 }
 
 // ==================== 테마 ====================
@@ -2434,8 +3115,19 @@ function saveDiary() {
     DB.diaries.push(record);
     saveDB();
     showToast('📔 일지가 저장되었습니다');
+    const savedHive = hiveNum; // 저장 전 선택된 벌통 기억
     resetDiaryForm();
     renderAll();
+    // 저장 후 상단으로 스크롤
+    const recordView = document.getElementById('view-record');
+    if (recordView) recordView.scrollTop = 0;
+    // 저장 후 선택했던 벌통 유지
+    const grid = document.getElementById('diary-hive-select');
+    if (grid && savedHive) {
+        grid.querySelectorAll('.hive-select-btn').forEach(b => {
+            b.classList.toggle('selected', b.dataset.hive === savedHive);
+        });
+    }
 }
 
 function resetDiaryForm() {
@@ -2447,11 +3139,25 @@ function resetDiaryForm() {
     initDateFields();
 }
 
-function renderDiaryList(filterType = 'all') {
+let diaryFilterType = 'all';
+
+function renderDiaryList() {
     const container = document.getElementById('diary-record-list');
     const typeLabels = { observe:'🔍 관찰', swarm:'🐝 분봉', capture:'📦 포획', harvest:'🍯 채밀' };
     let records = [...DB.diaries].sort((a,b) => b.date.localeCompare(a.date));
-    if (filterType !== 'all') records = records.filter(r => r.type === filterType);
+
+    // 유형 필터
+    if (diaryFilterType !== 'all') records = records.filter(r => r.type === diaryFilterType);
+
+    // 통별 필터
+    const hiveFilter = document.getElementById('diary-filter-hive')?.value || '';
+    if (hiveFilter) records = records.filter(r => r.hiveNum === hiveFilter);
+
+    // 기간 필터
+    const startFilter = document.getElementById('diary-filter-start')?.value || '';
+    const endFilter = document.getElementById('diary-filter-end')?.value || '';
+    if (startFilter) records = records.filter(r => r.date >= startFilter);
+    if (endFilter) records = records.filter(r => r.date <= endFilter);
 
     if (records.length === 0) {
         container.innerHTML = '<div class="empty-state"><div class="empty-icon">📔</div><p>기록이 없습니다</p></div>';
@@ -2481,16 +3187,45 @@ function renderDiaryList(filterType = 'all') {
 }
 
 function filterDiary(type, btn) {
-    document.querySelectorAll('#view-diary .tab-bar + div .btn-sm').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#diary-list .btn-sm').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    renderDiaryList(type);
+    diaryFilterType = type;
+    renderDiaryList();
+}
+
+function renderDiaryFilterHive() {
+    const sel = document.getElementById('diary-filter-hive');
+    if (!sel) return;
+    const hives = Object.keys(DB.hives).filter(k => DB.hives[k].active);
+    sel.innerHTML = `<option value="">🏺 전체 벌통</option>` +
+        hives.map(h => `<option value="${h}">${h}</option>`).join('');
+}
+
+function applyDiaryFilter() { renderDiaryList(); }
+
+function resetDiaryFilter() {
+    diaryFilterType = 'all';
+    document.querySelectorAll('#diary-list .btn-sm').forEach(b => b.classList.remove('active'));
+    const firstBtn = document.querySelector('#diary-list .btn-sm');
+    if (firstBtn) firstBtn.classList.add('active');
+    const hiveEl = document.getElementById('diary-filter-hive');
+    const startEl = document.getElementById('diary-filter-start');
+    const endEl = document.getElementById('diary-filter-end');
+    if (hiveEl) hiveEl.value = '';
+    if (startEl) startEl.value = '';
+    if (endEl) endEl.value = '';
+    renderDiaryList();
 }
 
 function deleteDiary(id) {
     if (!confirm('이 기록을 삭제하시겠어요?')) return;
-    DB.diaries = DB.diaries.filter(d => d.id !== id);
+    const rec = DB.diaries.find(d => d.id === Number(id));
+    DB.diaries = DB.diaries.filter(d => d.id !== Number(id));
     saveDB();
+    // 해당 벌통 상태 재계산
+    if (rec) recalcHiveStatus(rec.hiveNum);
     renderDiaryList();
+    updateHomeSummary();
     showToast('삭제되었습니다');
 }
 
@@ -2504,13 +3239,15 @@ const DISEASE_DATA = {
         medicines: ['항진균제', '처방없음'],
         methods: ['환기 개선', '습도 조절', '소비 제거']
     },
-    '응애': {
-        medicines: ['옥살산', '아피바르', '티목스'],
-        methods: ['흘림처리', '증기처리', '스트립처리']
+    '소충': {
+        medicines: ['유황 훈증', '계피 분말', '처방없음 (소비 교체)'],
+        methods: ['소비 교체', '소독 처리', '격리 관찰']
     },
-    '소먹이부패병': {
-        medicines: ['항생제 (수의사 처방)', '처방없음'],
-        methods: ['오염 소비 제거', '소독']
+    '미국부저병': {
+        medicines: ['옥시테트라사이클린 (수의사 처방)', '처방없음 (소비 소각)'],
+    },
+    '유럽부저병': {
+        medicines: ['옥시테트라사이클린 (수의사 처방)', '처방없음'],
     }
 };
 
@@ -2520,6 +3257,16 @@ function selectDiseaseStatus(status, btn) {
     currentDiseaseStatus = status;
     ['treating','watch','done'].forEach(s => document.getElementById('dstatus-'+s).classList.remove('active'));
     btn.classList.add('active');
+}
+
+function checkMedicineCustom() {
+    const val = document.getElementById('medicine-type').value;
+    document.getElementById('medicine-custom-wrap').style.display = val === '직접입력' ? 'block' : 'none';
+}
+
+function checkMethodCustom() {
+    const val = document.getElementById('medicine-method').value;
+    document.getElementById('method-custom-wrap').style.display = val === '직접입력' ? 'block' : 'none';
 }
 
 function updateMedicineOptions() {
@@ -2541,7 +3288,7 @@ function updateMedicineOptions() {
             });
     }
 
-    if (type === '기타') {
+    if (type === '직접입력') {
         customWrap.style.display = 'block';
         medicineSection.style.display = 'none';
         medicineLabel.style.display = 'none';
@@ -2556,7 +3303,18 @@ function updateMedicineOptions() {
         document.getElementById('medicine-type').innerHTML =
             `<option value="">약제 선택</option>` + data.medicines.map(m => `<option>${m}</option>`).join('');
         document.getElementById('medicine-method').innerHTML =
-            `<option value="">처리방법 선택</option>` + data.methods.map(m => `<option>${m}</option>`).join('');
+            `<option value="">처리방법 선택</option>
+            <option value="분무">분무</option>
+            <option value="사양">사양</option>
+            <option value="분말처리">분말처리</option>
+            <option value="직접입력">✏️ 직접입력</option>`;
+        // 약제에도 직접입력 추가
+        const medSel = document.getElementById('medicine-type');
+        if (!medSel.querySelector('option[value="직접입력"]')) {
+            const opt = document.createElement('option');
+            opt.value = '직접입력'; opt.textContent = '✏️ 직접입력';
+            medSel.appendChild(opt);
+        }
     } else {
         medicineSection.style.display = 'none';
         medicineLabel.style.display = 'none';
@@ -2596,8 +3354,12 @@ function saveDisease() {
         id: Date.now(),
         hiveNum,
         diseaseType,
-        medicine: document.getElementById('medicine-type').value,
-        method: document.getElementById('medicine-method').value,
+        medicine: document.getElementById('medicine-type').value === '직접입력'
+            ? document.getElementById('medicine-custom').value
+            : document.getElementById('medicine-type').value,
+        method: document.getElementById('medicine-method').value === '직접입력'
+            ? document.getElementById('method-custom').value
+            : document.getElementById('medicine-method').value,
         date: document.getElementById('disease-date').value,
         alarm: document.getElementById('disease-alarm').value,
         status: currentDiseaseStatus,
@@ -2607,6 +3369,30 @@ function saveDisease() {
     };
 
     DB.diseases.push(record);
+
+    // 방역 알림 등록 (alarm > 0 이면 N일 후 달력 일정으로 등록)
+    const alarmDays = parseInt(record.alarm);
+    if (alarmDays > 0) {
+        const baseDate = new Date(record.date);
+        baseDate.setDate(baseDate.getDate() + alarmDays);
+        const alarmDateStr = toLocalDateStr(baseDate);
+        if (!DB.schedules) DB.schedules = [];
+        // 같은 벌통 같은 질병 기존 알림 제거 후 새로 등록
+        DB.schedules = DB.schedules.filter(s =>
+            !(s._diseaseAlarm && s._hiveNum === hiveNum && s._diseaseType === record.diseaseType)
+        );
+        DB.schedules.push({
+            id: Date.now() + 1,
+            date: alarmDateStr,
+            title: `💊 방역 재확인 - ${hiveNum} (${record.diseaseType})`,
+            memo: `${record.date} 방제 후 ${alarmDays}일 재방문 알림`,
+            hiveNum,
+            _diseaseAlarm: true,
+            _hiveNum: hiveNum,
+            _diseaseType: record.diseaseType
+        });
+        showToast(`💊 방제 저장 + 📅 ${alarmDateStr} 재방문 알림 등록됨`);
+    }
 
     // 상태 업데이트
     if (currentDiseaseStatus === 'treating') updateHiveStatus(hiveNum, 'danger');
@@ -2618,8 +3404,20 @@ function saveDisease() {
 
     saveDB();
     showToast('💊 방제 기록이 저장되었습니다');
+    const savedDiseaseHive = hiveNum;
     resetDiseaseForm();
     renderAll();
+    if (typeof renderCalendar === 'function') renderCalendar();
+    // 저장 후 뷰 상단으로 스크롤
+    const recordView2 = document.getElementById('view-record');
+    if (recordView2) recordView2.scrollTop = 0;
+    // 저장 후 선택했던 벌통 유지
+    const dGrid = document.getElementById('disease-hive-select');
+    if (dGrid && savedDiseaseHive) {
+        dGrid.querySelectorAll('.hive-select-btn').forEach(b => {
+            b.classList.toggle('selected', b.dataset.hive === savedDiseaseHive);
+        });
+    }
 }
 
 function resetDiseaseForm() {
@@ -2628,19 +3426,42 @@ function resetDiseaseForm() {
     document.getElementById('disease-photos').innerHTML = '';
     document.getElementById('medicine-section').style.display = 'none';
     document.getElementById('medicine-label').style.display = 'none';
+    document.getElementById('sacbrood-checklist').style.display = 'none';
+    document.getElementById('disease-custom-wrap').style.display = 'none';
+    document.getElementById('method-custom-wrap').style.display = 'none';
+    if (document.getElementById('method-custom')) document.getElementById('method-custom').value = '';
+    if (document.getElementById('medicine-custom-wrap')) document.getElementById('medicine-custom-wrap').style.display = 'none';
+    if (document.getElementById('medicine-custom')) document.getElementById('medicine-custom').value = '';
+    // 체크박스 전체 해제
+    document.querySelectorAll('#sacbrood-checklist input[type="checkbox"]').forEach(c => c.checked = false);
     initDateFields();
 }
 
+let diseaseFilterStatus = 'all';
+
 function renderDiseaseList() {
     const container = document.getElementById('disease-record-list');
-    const records = [...DB.diseases].sort((a,b) => b.date.localeCompare(a.date));
+    const statusLabels = { treating: '🔴 치료중', watch: '🟡 관찰중', done: '🟢 완치' };
+    let records = [...DB.diseases].sort((a,b) => b.date.localeCompare(a.date));
+
+    // 상태 필터
+    if (diseaseFilterStatus !== 'all') records = records.filter(r => r.status === diseaseFilterStatus);
+
+    // 통별 필터
+    const hiveFilter = document.getElementById('disease-filter-hive')?.value || '';
+    if (hiveFilter) records = records.filter(r => r.hiveNum === hiveFilter);
+
+    // 기간 필터
+    const startFilter = document.getElementById('disease-filter-start')?.value || '';
+    const endFilter = document.getElementById('disease-filter-end')?.value || '';
+    if (startFilter) records = records.filter(r => r.date >= startFilter);
+    if (endFilter) records = records.filter(r => r.date <= endFilter);
 
     if (records.length === 0) {
         container.innerHTML = '<div class="empty-state"><div class="empty-icon">🛡️</div><p>방역 기록이 없습니다</p></div>';
         return;
     }
 
-    const statusLabels = { treating: '🔴 치료중', watch: '🟡 관찰중', done: '🟢 완치' };
     container.innerHTML = records.map(r => `
         <div class="record-card" style="border-left: 3px solid ${r.status==='treating'?'#f44336':r.status==='watch'?'#ff9800':'#4caf50'};">
             <div class="record-card-header">
@@ -2650,6 +3471,7 @@ function renderDiseaseList() {
                 </div>
                 <div style="display:flex;gap:6px;align-items:center;">
                     <span class="record-date">${r.date}</span>
+                    <button class="btn-sm" style="padding:4px 10px;font-size:0.72rem;" onclick="editDisease(${r.id})">수정</button>
                     <button class="btn-danger" style="padding:4px 10px;font-size:0.72rem;" onclick="deleteDisease(${r.id})">삭제</button>
                 </div>
             </div>
@@ -2662,11 +3484,58 @@ function renderDiseaseList() {
     `).join('');
 }
 
+function filterDiseaseList(status, btn) {
+    document.querySelectorAll('#disease-list .btn-sm').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    diseaseFilterStatus = status;
+    renderDiseaseList();
+}
+
+function renderDiseaseFilterHive() {
+    const sel = document.getElementById('disease-filter-hive');
+    if (!sel) return;
+    const hives = Object.keys(DB.hives).filter(k => DB.hives[k].active);
+    sel.innerHTML = `<option value="">🏺 전체 벌통</option>` +
+        hives.map(h => `<option value="${h}">${h}</option>`).join('');
+}
+
+function applyDiseaseFilter() { renderDiseaseList(); }
+
+function resetDiseaseFilter() {
+    diseaseFilterStatus = 'all';
+    document.querySelectorAll('#disease-list .btn-sm').forEach(b => b.classList.remove('active'));
+    const firstBtn = document.querySelector('#disease-list .btn-sm');
+    if (firstBtn) firstBtn.classList.add('active');
+    const hiveEl = document.getElementById('disease-filter-hive');
+    const startEl = document.getElementById('disease-filter-start');
+    const endEl = document.getElementById('disease-filter-end');
+    if (hiveEl) hiveEl.value = '';
+    if (startEl) startEl.value = '';
+    if (endEl) endEl.value = '';
+    renderDiseaseList();
+}
+
+function editDisease(id) {
+    const r = DB.diseases.find(d => d.id === Number(id));
+    if (!r) return;
+    // cal-disease-edit-modal 재사용
+    document.getElementById('cal-disease-edit-id').value = r.id;
+    document.getElementById('cal-disease-edit-date').value = r.date;
+    document.getElementById('cal-disease-edit-type').value = r.diseaseType || '';
+    document.getElementById('cal-disease-edit-medicine').value = r.medicine || '';
+    document.getElementById('cal-disease-edit-memo').value = r.memo || '';
+    document.getElementById('cal-disease-edit-modal').classList.add('show');
+}
+
 function deleteDisease(id) {
     if (!confirm('이 기록을 삭제하시겠어요?')) return;
-    DB.diseases = DB.diseases.filter(d => d.id !== id);
+    const rec = DB.diseases.find(d => d.id === Number(id));
+    DB.diseases = DB.diseases.filter(d => d.id !== Number(id));
     saveDB();
+    // 해당 벌통 상태 재계산
+    if (rec) recalcHiveStatus(rec.hiveNum);
     renderDiseaseList();
+    updateHomeSummary();
     showToast('삭제되었습니다');
 }
 
@@ -2674,6 +3543,51 @@ function deleteDisease(id) {
 let currentAccType = 'expense';
 let accYear = new Date().getFullYear();
 let accMonth = new Date().getMonth() + 1;
+let accMode = 'month'; // 'month' | 'year' | 'range'
+let accRangeStart = '';
+let accRangeEnd = '';
+
+function setAccMode(mode, btn) {
+    accMode = mode;
+    document.querySelectorAll('[id^="acc-mode-"]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('acc-nav-month').style.display = mode === 'month' ? 'flex' : 'none';
+    document.getElementById('acc-nav-year').style.display = mode === 'year' ? 'flex' : 'none';
+    document.getElementById('acc-nav-range').style.display = mode === 'range' ? 'block' : 'none';
+    if (mode === 'range' && !accRangeStart) {
+        // 기본값: 이번달 1일 ~ 오늘
+        const today = toLocalDateStr(new Date());
+        const firstDay = `${accYear}-${String(accMonth).padStart(2,'0')}-01`;
+        document.getElementById('acc-range-start').value = firstDay;
+        document.getElementById('acc-range-end').value = today;
+        accRangeStart = firstDay;
+        accRangeEnd = today;
+    }
+    renderAccMonth();
+    renderAccList();
+}
+
+function applyAccRange() {
+    accRangeStart = document.getElementById('acc-range-start').value;
+    accRangeEnd = document.getElementById('acc-range-end').value;
+    if (accRangeStart && accRangeEnd) {
+        document.getElementById('acc-range-label').textContent = `${accRangeStart} ~ ${accRangeEnd}`;
+        renderAccMonth();
+        renderAccList();
+    }
+}
+
+function getPeriodRecords() {
+    if (accMode === 'month') {
+        const prefix = `${accYear}-${String(accMonth).padStart(2,'0')}`;
+        return DB.accounts.filter(r => r.date && r.date.startsWith(prefix));
+    } else if (accMode === 'year') {
+        return DB.accounts.filter(r => r.date && r.date.startsWith(String(accYear)));
+    } else if (accMode === 'range' && accRangeStart && accRangeEnd) {
+        return DB.accounts.filter(r => r.date && r.date >= accRangeStart && r.date <= accRangeEnd);
+    }
+    return [];
+}
 
 const ACC_CATEGORIES = {
     expense: ['설탕','화분 대용 사료','낭충봉아부패병 치료제','기타 약품','벌통 구입/제작','목재','교통비','장비/도구','기타 지출'],
@@ -2714,9 +3628,16 @@ function renderAccHiveSelect() {
 
 function changeYear(dir) {
     accYear += dir;
-    document.getElementById('acc-month-label').textContent = `${accYear}년 ${accMonth}월`;
     renderAccMonth();
     renderAccList();
+}
+
+function goToday() {
+    const today = new Date();
+    calYear = today.getFullYear();
+    calMonth = today.getMonth();
+    calSelectedDate = toLocalDateStr(today);
+    renderCalendar();
 }
 
 function calChangeYear(dir) {
@@ -2733,10 +3654,16 @@ function changeMonth(dir) {
 }
 
 function renderAccMonth() {
-    document.getElementById('acc-month-label').textContent = `${accYear}년 ${accMonth}월`;
-    const monthRecords = getMonthRecords();
-    const income = monthRecords.filter(r=>r.type==='income').reduce((s,r)=>s+Number(r.amount||0),0);
-    const expense = monthRecords.filter(r=>r.type==='expense').reduce((s,r)=>s+Number(r.amount||0),0);
+    // 레이블 업데이트
+    if (accMode === 'month') {
+        document.getElementById('acc-month-label').textContent = `${accYear}년 ${accMonth}월`;
+    } else if (accMode === 'year') {
+        if (document.getElementById('acc-year-label'))
+            document.getElementById('acc-year-label').textContent = `${accYear}년`;
+    }
+    const records = getPeriodRecords();
+    const income = records.filter(r=>r.type==='income').reduce((s,r)=>s+Number(r.amount||0),0);
+    const expense = records.filter(r=>r.type==='expense').reduce((s,r)=>s+Number(r.amount||0),0);
     const balance = income - expense;
     document.getElementById('acc-total-income').textContent = formatMoney(income);
     document.getElementById('acc-total-expense').textContent = formatMoney(expense);
@@ -2744,8 +3671,21 @@ function renderAccMonth() {
 }
 
 function getMonthRecords() {
-    const prefix = `${accYear}-${String(accMonth).padStart(2,'0')}`;
-    return DB.accounts.filter(r => r.date && r.date.startsWith(prefix));
+    return getPeriodRecords();
+}
+
+// ==================== 수량×단가 자동계산 ====================
+function calcAccAmount() {
+    const qty = parseFloat(document.getElementById('acc-qty').value) || 0;
+    const unit = parseFloat(document.getElementById('acc-unit-price').value) || 0;
+    if (qty > 0 && unit > 0) {
+        document.getElementById('acc-amount').value = Math.round(qty * unit);
+        document.getElementById('calc-badge').style.display = 'inline';
+    }
+}
+
+function clearCalcBadge() {
+    document.getElementById('calc-badge').style.display = 'none';
 }
 
 function saveAccount() {
@@ -2765,10 +3705,11 @@ function saveAccount() {
         category,
         hiveNum: document.getElementById('acc-hive').value,
         amount: Number(amount),
+        qty: parseFloat(document.getElementById('acc-qty')?.value) || '',
+        unitPrice: parseFloat(document.getElementById('acc-unit-price')?.value) || '',
         date: document.getElementById('acc-date').value,
         memo: document.getElementById('acc-memo').value,
-        sugarKg: category === '설탕' ? document.getElementById('sugar-kg').value : '',
-        sugarMethod: category === '설탕' ? document.getElementById('sugar-method').value : '',
+        sugarKg: category === '설탕' ? (document.getElementById('sugar-kg')?.value || '') : '',
         customerName,
         customerPhone,
         savedAt: new Date().toISOString()
@@ -2802,13 +3743,17 @@ function saveAccount() {
     document.getElementById('acc-amount').value = '';
     document.getElementById('acc-memo').value = '';
     document.getElementById('acc-category').value = '';
+    document.getElementById('acc-qty').value = '';
+    document.getElementById('acc-unit-price').value = '';
+    document.getElementById('calc-badge').style.display = 'none';
     document.getElementById('sugar-fields').style.display = 'none';
     if (document.getElementById('acc-customer')) document.getElementById('acc-customer').value = '';
     if (document.getElementById('acc-customer-phone')) document.getElementById('acc-customer-phone').value = '';
     renderAccMonth();
     renderAccList();
     // 저장 후 내역 탭으로 자동 이동
-    switchAccTab('list', document.querySelector('.tab-btn[onclick*="list"]'));
+    const listBtn = document.querySelector('#view-account .tab-btn:nth-child(2)');
+    if (listBtn) switchAccTab('list', listBtn);
 }
 
 function renderAccList(filterType = 'all') {
@@ -2827,12 +3772,13 @@ function renderAccList(filterType = 'all') {
         <div class="record-card">
             <div class="acc-item">
                 <div class="acc-item-left">
-                    <div class="acc-item-name">${r.category}${r.hiveNum ? ' · '+r.hiveNum : ''}</div>
-                    <div class="acc-item-sub">${r.date}${r.sugarKg ? ' | '+r.sugarKg+'kg '+r.sugarMethod : ''}${r.memo ? ' | '+r.memo : ''}</div>
+                    <div class="acc-item-name">${r.category}${r.hiveNum ? ' · '+r.hiveNum : ''}${r.customerName ? ' · 👤'+r.customerName : ''}</div>
+                    <div class="acc-item-sub">${r.date}${r.qty ? ` | ${r.qty}개 × ${formatMoney(r.unitPrice)}원` : ''}${r.sugarKg ? ' | '+r.sugarKg+'kg' : ''}${r.memo ? ' | '+r.memo : ''}</div>
                 </div>
-                <div style="display:flex;align-items:center;gap:8px;">
+                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                     <div class="acc-item-amount ${r.type}">${r.type==='income'?'+':'-'}${formatMoney(r.amount)}</div>
-                    <button class="btn-danger" style="padding:4px 8px;font-size:0.7rem;" onclick="deleteAccount(${r.id})">삭제</button>
+                    <button class="btn-sm" style="padding:4px 10px;font-size:0.78rem;" onclick="editAccount(${r.id})">수정</button>
+                    <button class="btn-danger" style="padding:4px 10px;font-size:0.78rem;" onclick="deleteAccount(${r.id})">삭제</button>
                 </div>
             </div>
         </div>
@@ -2842,12 +3788,81 @@ function renderAccList(filterType = 'all') {
 function filterAcc(type, btn) {
     document.querySelectorAll('#acc-list .btn-sm').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    renderAccList(type);
+    if (type === 'monthly') {
+        document.getElementById('acc-record-list').style.display = 'none';
+        document.getElementById('acc-monthly-content').style.display = 'block';
+        renderAccMonthly();
+    } else {
+        document.getElementById('acc-record-list').style.display = 'block';
+        document.getElementById('acc-monthly-content').style.display = 'none';
+        renderAccList(type);
+    }
+}
+
+function editAccount(id) {
+    const r = DB.accounts.find(a => a.id === id);
+    if (!r) return;
+    // 모달 필드 채우기
+    document.getElementById('edit-acc-id').value = id;
+    document.getElementById('edit-acc-date').value = r.date;
+    document.getElementById('edit-acc-category').value = r.category;
+    document.getElementById('edit-acc-qty').value = r.qty || '';
+    document.getElementById('edit-acc-unit').value = r.unitPrice || '';
+    document.getElementById('edit-acc-amount').value = r.amount;
+    document.getElementById('edit-acc-memo').value = r.memo || '';
+    document.getElementById('edit-acc-customer').value = r.customerName || '';
+    document.getElementById('edit-acc-phone').value = r.customerPhone || '';
+    document.getElementById('edit-acc-hive').value = r.hiveNum || '';
+    document.getElementById('edit-sugar-kg').value = r.sugarKg || '';
+    document.getElementById('edit-sugar-wrap').style.display = r.category === '설탕' ? 'block' : 'none';
+    document.getElementById('edit-customer-wrap').style.display = r.type === 'income' ? 'block' : 'none';
+    document.getElementById('edit-acc-type-label').textContent = r.type === 'income' ? '💰 수입' : '💸 지출';
+    document.getElementById('acc-edit-modal').classList.add('show');
+}
+
+function calcEditAmount() {
+    const qty = parseFloat(document.getElementById('edit-acc-qty').value) || 0;
+    const unit = parseFloat(document.getElementById('edit-acc-unit').value) || 0;
+    if (qty > 0 && unit > 0) document.getElementById('edit-acc-amount').value = Math.round(qty * unit);
+}
+
+function updateAccount() {
+    const id = Number(document.getElementById('edit-acc-id').value);
+    const idx = DB.accounts.findIndex(a => a.id === id);
+    if (idx === -1) return;
+    const r = DB.accounts[idx];
+    const newAmount = Number(document.getElementById('edit-acc-amount').value);
+    const newCustomer = document.getElementById('edit-acc-customer').value.trim();
+
+    // 고객 totalAmount 재계산 (기존 금액 빼고 새 금액 더하기)
+    if (r.customerName && DB.customers) {
+        const c = DB.customers.find(c => c.name === r.customerName);
+        if (c) c.totalAmount = Math.max(0, (c.totalAmount || 0) - r.amount + newAmount);
+    }
+
+    DB.accounts[idx] = {
+        ...r,
+        date: document.getElementById('edit-acc-date').value,
+        category: document.getElementById('edit-acc-category').value,
+        qty: parseFloat(document.getElementById('edit-acc-qty').value) || '',
+        unitPrice: parseFloat(document.getElementById('edit-acc-unit').value) || '',
+        amount: newAmount,
+        memo: document.getElementById('edit-acc-memo').value,
+        customerName: newCustomer,
+        customerPhone: document.getElementById('edit-acc-phone').value.trim(),
+        hiveNum: document.getElementById('edit-acc-hive').value,
+        sugarKg: document.getElementById('edit-sugar-kg').value,
+    };
+    saveDB();
+    closeModal('acc-edit-modal');
+    renderAccMonth();
+    renderAccList();
+    showToast('✅ 수정되었습니다');
 }
 
 function deleteAccount(id) {
     if (!confirm('삭제하시겠어요?')) return;
-    DB.accounts = DB.accounts.filter(a => a.id !== id);
+    DB.accounts = DB.accounts.filter(a => a.id !== Number(id));
     saveDB();
     renderAccMonth();
     renderAccList();
@@ -2898,7 +3913,7 @@ function addNewHive() {
     let nextNum = 1;
     while (existing.includes(nextNum + '번통')) nextNum++;
     const name = nextNum + '번통';
-    DB.hives[name] = { active: true, status: 'ok', createdAt: new Date().toISOString().split('T')[0] };
+    DB.hives[name] = { active: true, status: 'ok', createdAt: toLocalDateStr(new Date()) };
     saveDB();
     renderAll();
     showToast(`🏺 ${name} 추가됨`);
@@ -2922,6 +3937,35 @@ function deleteHive(name) {
     saveDB();
     renderAll();
     showToast(`${name} 삭제됨`);
+}
+
+// 삭제 후 해당 벌통 상태를 남은 기록 기반으로 재계산
+function recalcHiveStatus(hiveNum) {
+    if (!DB.hives[hiveNum]) return;
+
+    let newStatus = 'ok';
+
+    // 방역: 치료중 → danger, 관찰중 → warn
+    const activeDisease = DB.diseases.filter(d => d.hiveNum === hiveNum && d.status !== 'done');
+    if (activeDisease.some(d => d.status === 'treating')) {
+        newStatus = 'danger';
+    } else if (activeDisease.some(d => d.status === 'watch')) {
+        newStatus = 'warn';
+    } else {
+        // 일지: 가장 최근 관찰 기록 기준
+        const lastDiary = [...DB.diaries]
+            .filter(d => d.hiveNum === hiveNum && d.type === 'observe')
+            .sort((a, b) => b.date.localeCompare(a.date))[0];
+        if (lastDiary) {
+            if (lastDiary.escapeStatus === '도거발생') newStatus = 'danger';
+            else if (lastDiary.queenStatus === '교체필요' || lastDiary.escapeStatus === '도거위험') newStatus = 'warn';
+        }
+    }
+
+    DB.hives[hiveNum].status = newStatus;
+    saveDB();
+    renderHiveGrid();
+    updateHomeSummary();
 }
 
 function updateHiveStatus(name, status) {
@@ -2956,23 +4000,35 @@ function initMap() {
 function setupMap() {
     const container = document.getElementById('map-container');
     const loading = document.getElementById('map-loading');
-    if (!container || mapInstance) return;
+    if (!container) return;
+
+    // 이미 초기화된 경우 크기만 재계산
+    if (mapInstance) {
+        loading.style.display = 'none';
+        container.style.display = 'block';
+        setTimeout(() => mapInstance.invalidateSize(true), 100);
+        return;
+    }
 
     loading.style.display = 'none';
     container.style.display = 'block';
 
-    // 기본 위치 (한국 중심)
-    mapInstance = L.map('map-container', { 
+    mapInstance = L.map('map-container', {
         zoomControl: true,
-        scrollWheelZoom: false  // 마우스 휠은 페이지 스크롤에 양보, Ctrl+휠로 줌
+        scrollWheelZoom: false
     }).setView([36.5, 127.5], 7);
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap',
         maxZoom: 18
     }).addTo(mapInstance);
 
-    // 등록된 벌통 마커 표시
-    renderMapMarkers();
+    // 크기 재계산 후 마커 표시
+    setTimeout(() => {
+        mapInstance.invalidateSize(true);
+        renderMapMarkers();
+    }, 200);
+    setTimeout(() => mapInstance.invalidateSize(true), 500);
 
     // 내 위치 표시
     if (navigator.geolocation) {
@@ -3237,11 +4293,44 @@ function renderHiveLocationList() {
                 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
                     <span style="font-size:0.75rem;">${loc.isPublic ? '🌐 공개' : '🔒 비공개'}</span>
                     <span style="font-size:0.7rem;">${loc.synced===false ? '📴 미동기' : '☁️ 저장됨'}</span>
-                    <button class="btn-danger" style="padding:4px 10px;font-size:0.72rem;" onclick="deleteLocation('${name}')">삭제</button>
+                    <div style="display:flex;gap:4px;">
+                        <button class="btn-sm" style="padding:4px 10px;font-size:0.72rem;" onclick="editLocation('${name}')">수정</button>
+                        <button class="btn-danger" style="padding:4px 10px;font-size:0.72rem;" onclick="deleteLocation('${name}')">삭제</button>
+                    </div>
                 </div>
             </div>
         </div>
     `).join('');
+}
+
+function editLocation(name) {
+    const loc = DB.locations[name];
+    if (!loc) return;
+    document.getElementById('loc-edit-name').textContent = name;
+    document.getElementById('loc-edit-lat').value = loc.lat || '';
+    document.getElementById('loc-edit-lng').value = loc.lng || '';
+    document.getElementById('loc-edit-memo').value = loc.memo || '';
+    document.getElementById('loc-edit-public').checked = loc.isPublic || false;
+    document.getElementById('loc-edit-target').value = name;
+    document.getElementById('loc-edit-modal').classList.add('show');
+}
+
+function saveLocationEdit() {
+    const name = document.getElementById('loc-edit-target').value;
+    const lat = parseFloat(document.getElementById('loc-edit-lat').value);
+    const lng = parseFloat(document.getElementById('loc-edit-lng').value);
+    if (isNaN(lat) || isNaN(lng)) { showToast('올바른 위도/경도를 입력하세요'); return; }
+    DB.locations[name] = {
+        ...DB.locations[name],
+        lat, lng,
+        memo: document.getElementById('loc-edit-memo').value,
+        isPublic: document.getElementById('loc-edit-public').checked,
+        synced: false
+    };
+    saveDB();
+    closeModal('loc-edit-modal');
+    renderHiveLocationList();
+    showToast('✅ 위치 정보가 수정되었습니다');
 }
 
 function deleteLocation(name) {
@@ -3357,21 +4446,86 @@ function toggleVoice(targetId, btnId) {
 }
 
 // ==================== 날씨 ====================
+// 기상청 격자 변환 (위경도 → nx, ny)
+function latLngToGrid(lat, lng) {
+    const RE = 6371.00877, GRID = 5.0, SLAT1 = 30.0, SLAT2 = 60.0;
+    const OLON = 126.0, OLAT = 38.0, XO = 43, YO = 136;
+    const DEGRAD = Math.PI / 180.0;
+    const re = RE / GRID;
+    const slat1 = SLAT1 * DEGRAD, slat2 = SLAT2 * DEGRAD;
+    const olon = OLON * DEGRAD, olat = OLAT * DEGRAD;
+    let sn = Math.tan(Math.PI * 0.25 + slat2 * 0.5) / Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+    sn = Math.log(Math.cos(slat1) / Math.cos(slat2)) / Math.log(sn);
+    let sf = Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+    sf = Math.pow(sf, sn) * Math.cos(slat1) / sn;
+    let ro = Math.tan(Math.PI * 0.25 + olat * 0.5);
+    ro = re * sf / Math.pow(ro, sn);
+    let ra = Math.tan(Math.PI * 0.25 + lat * DEGRAD * 0.5);
+    ra = re * sf / Math.pow(ra, sn);
+    let theta = lng * DEGRAD - olon;
+    if (theta > Math.PI) theta -= 2.0 * Math.PI;
+    if (theta < -Math.PI) theta += 2.0 * Math.PI;
+    theta *= sn;
+    return {
+        nx: Math.floor(ra * Math.sin(theta) + XO + 0.5),
+        ny: Math.floor(ro - ra * Math.cos(theta) + YO + 0.5)
+    };
+}
+
 function loadWeather() {
     document.getElementById('home-date').textContent = new Date().toLocaleDateString('ko-KR');
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation) {
+        document.getElementById('home-weather-desc').textContent = '위치 권한 필요 (HTTPS에서 사용 가능)';
+        return;
+    }
     navigator.geolocation.getCurrentPosition(async pos => {
+        const { latitude: lat, longitude: lon } = pos.coords;
         try {
-            const { latitude: lat, longitude: lon } = pos.coords;
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&timezone=Asia/Seoul`;
-            const res = await fetch(url);
+            const { nx, ny } = latLngToGrid(lat, lon);
+            const now = new Date();
+            const baseDate = now.getFullYear() +
+                String(now.getMonth() + 1).padStart(2, '0') +
+                String(now.getDate()).padStart(2, '0');
+            const h = now.getHours(), m = now.getMinutes();
+            const baseTime = m >= 40
+                ? String(h).padStart(2, '0') + '00'
+                : String(h - 1 < 0 ? 23 : h - 1).padStart(2, '0') + '00';
+            const apiKey = '65f24df2c40acfea34f9867244aa3e3e3834e2e234d69795856ffc3041fe2722';
+            const url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${apiKey}&numOfRows=10&pageNo=1&dataType=JSON&base_date=${baseDate}&base_time=${baseTime}&nx=${nx}&ny=${ny}`;
+            const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
+            const data = await res.json();
+            const items = data?.response?.body?.items?.item || [];
+            let temp = null, sky = null, rain = null;
+            items.forEach(item => {
+                if (item.category === 'T1H') temp = parseFloat(item.obsrValue);
+                if (item.category === 'SKY') sky = parseInt(item.obsrValue);
+                if (item.category === 'PTY') rain = parseInt(item.obsrValue);
+            });
+            if (temp !== null) {
+                const icon = rain > 0 ? (rain === 3 ? '❄️' : '🌧️') : sky <= 1 ? '☀️' : sky <= 3 ? '⛅' : '☁️';
+                const desc = rain > 0 ? (rain === 3 ? '눈' : '비') : sky <= 1 ? '맑음' : sky <= 3 ? '구름 조금' : '흐림';
+                document.getElementById('home-temp').textContent = `${temp}°C`;
+                document.getElementById('home-weather-desc').textContent = `${desc} (기상청)`;
+                document.getElementById('home-weather-icon').textContent = icon;
+                return;
+            }
+        } catch(e) {
+            console.warn('기상청 실패, Open-Meteo 대체:', e);
+        }
+        // 기상청 실패 시 Open-Meteo 폴백
+        try {
+            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&timezone=Asia/Seoul`);
             const data = await res.json();
             const temp = data.current?.temperature_2m;
             const code = data.current?.weathercode;
             document.getElementById('home-temp').textContent = `${temp}°C`;
-            document.getElementById('home-weather-desc').textContent = getWeatherDesc(code);
+            document.getElementById('home-weather-desc').textContent = `${getWeatherDesc(code)} (예보)`;
             document.getElementById('home-weather-icon').textContent = getWeatherIcon(code);
-        } catch(e) {}
+        } catch(e2) {
+            document.getElementById('home-weather-desc').textContent = '날씨 정보를 불러올 수 없습니다';
+        }
+    }, () => {
+        document.getElementById('home-weather-desc').textContent = '📍 위치 권한을 허용하면 날씨 표시됨';
     });
 }
 
@@ -3413,7 +4567,7 @@ function exportData() {
     const blob = new Blob([data], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `토봉마스터_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `토봉마스터_${toLocalDateStr(new Date())}.json`;
     a.click();
     showToast('📤 백업 파일 저장됨');
 }
@@ -3463,7 +4617,7 @@ function exportExcel() {
     }));
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(accSheet), '가계부');
 
-    XLSX.writeFile(wb, `토봉마스터_${new Date().toISOString().split('T')[0]}.xlsx`);
+    XLSX.writeFile(wb, `토봉마스터_${toLocalDateStr(new Date())}.xlsx`);
     showToast('📗 엑셀 다운로드 완료');
 }
 
@@ -3495,11 +4649,17 @@ window.switchView = function(name) {
     origSwitchView(name);
     updateBackBtn();
     if (name === 'map') {
-        if (!mapInstance) {
-            setTimeout(initMap, 100);
-        } else {
-            setTimeout(() => mapInstance.invalidateSize(), 150);
-        }
+        // view가 active된 후 Leaflet이 크기를 제대로 계산하도록 충분한 딜레이
+        setTimeout(() => {
+            if (!mapInstance) {
+                initMap();
+            } else {
+                mapInstance.invalidateSize(true);
+                renderMapMarkers();
+                // 한 번 더 보장
+                setTimeout(() => mapInstance.invalidateSize(true), 300);
+            }
+        }, 150);
     }
     if (name === 'settings') {
         setTimeout(renderAllSettingLists, 50);
