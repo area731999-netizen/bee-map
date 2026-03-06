@@ -7,8 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>토봉 MASTER - 동양종 관리</title>
+    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 
     <style>
@@ -199,6 +201,8 @@
         /* ========== 뷰 시스템 ========== */
         .view { display: none; }
         .view.active { display: block; position: absolute; top: 56px; bottom: 80px; left: 0; right: 0; overflow-y: scroll; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y; padding-bottom: 20px; }
+        /* 기록 뷰는 flex 구조 사용 */
+        #view-record.active { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 0; }
 
         /* ========== 하단 네비게이션 ========== */
         .bottom-nav {
@@ -256,34 +260,40 @@
 
         .hive-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 6px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
             padding: 0 2px;
         }
         .hive-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 7px 4px;
+            border-radius: 12px;
+            padding: 12px 6px 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
             position: relative;
             overflow: hidden;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
         }
         .hive-card:active { transform: scale(0.93); }
         .hive-card.status-ok { border-color: rgba(76,175,80,0.5); }
-        .hive-card.status-warn { border-color: rgba(255,152,0,0.5); }
-        .hive-card.status-danger { border-color: rgba(244,67,54,0.5); }
+        .hive-card.status-warn { border-color: rgba(255,152,0,0.7); background: rgba(255,152,0,0.05); }
+        .hive-card.status-danger { border-color: rgba(244,67,54,0.7); background: rgba(244,67,54,0.05); }
         .hive-card .hive-num {
-            font-size: 0.78rem;
+            font-size: 0.88rem;
             font-weight: 900;
             color: var(--tx-main);
             display: block;
         }
-        .hive-card .hive-icon { font-size: 1.3rem; display: block; margin: 1px 0; }
+        .hive-card .hive-icon { font-size: 1.5rem; display: block; }
         .hive-card .hive-status-dot {
-            width: 6px; height: 6px;
+            width: 8px; height: 8px;
             border-radius: 50%;
             margin: 0 auto;
         }
@@ -338,11 +348,15 @@
             border: 1px solid rgba(212,160,23,0.4);
             color: var(--tx-gold);
             border-radius: 10px;
-            padding: 8px 16px;
+            padding: 10px 16px;
             font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         .btn-sm.active, .btn-sm:active {
             background: var(--tx-gold);
@@ -612,7 +626,12 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 6px;
-            margin-bottom: 14px;
+            margin-bottom: 0;
+            max-height: 160px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding: 2px 2px 4px;
         }
         .hive-select-btn {
             padding: 10px 4px;
@@ -687,11 +706,12 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 8px;
-            min-height: 72px;
-            padding: 4px;
+            min-height: 80px;
+            padding: 5px 4px;
             cursor: pointer;
             transition: all 0.15s;
             position: relative;
+            overflow: hidden;
         }
         .cal-cell:active, .cal-cell.selected {
             border-color: var(--tx-gold);
@@ -700,9 +720,9 @@
         .cal-cell.today { border-color: var(--tx-gold); border-width: 2px; }
         .cal-cell.other-month { opacity: 0.35; }
         .cal-cell .cal-date {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 900;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
             line-height: 1;
         }
         .cal-cell.sunday .cal-date { color: #f44336; }
@@ -710,12 +730,19 @@
         .cal-cell .cal-dots {
             display: flex;
             flex-wrap: wrap;
-            gap: 2px;
+            gap: 1px;
+            margin-top: 2px;
         }
-        .cal-dot {
-            width: 6px; height: 6px;
-            border-radius: 50%;
+        .cal-emoji {
+            font-size: 0.78rem;
+            line-height: 1.2;
             flex-shrink: 0;
+        }
+        .cal-more {
+            font-size: 0.62rem;
+            color: var(--tx-sub);
+            font-weight: 900;
+            line-height: 1;
         }
         .cal-event-item {
             background: var(--bg-card);
@@ -726,14 +753,15 @@
             font-size: 1rem;
         }
 
-        /* 7탭일때 네비 아이템 크기 축소 */
+        /* 6탭 네비 최적화 */
         .bottom-nav .nav-item {
-            min-width: 44px;
-            padding: 6px 4px !important;
-            font-size: 0.82rem !important;
-            font-weight: 900 !important;
+            min-width: 0;
+            flex: 1;
+            padding: 6px 2px !important;
+            font-size: 0.65rem !important;
+            font-weight: 800 !important;
         }
-        .bottom-nav .nav-item .nav-icon { font-size: 1.6rem; }
+        .bottom-nav .nav-item .nav-icon { font-size: 1.35rem; }
 
 
         @keyframes slideUp {
@@ -789,12 +817,11 @@
 <div id="main-app">
     <!-- 상단 바 -->
     <div class="top-bar">
-        <button class="btn-back" id="top-back-btn" onclick="handleBackBtn()">⬅ BEE MASTER</button>
-        <span class="top-bar-title">🏺 동양종</span>
+        <button class="btn-back" id="top-back-btn" onclick="handleBackBtn()" style="visibility:hidden;">⬅ 이전</button>
+        <span class="top-bar-title">🏺 토봉 MASTER</span>
         <div style="display:flex;gap:6px;align-items:center;">
             <span id="network-badge" class="online-badge">온라인</span>
-            <button class="btn-icon" onclick="toggleTheme()">🌙</button>
-            <button class="btn-icon" onclick="switchView('settings')" style="font-size:1.3rem;">⚙️</button>
+            <button class="btn-icon" id="theme-btn" onclick="toggleTheme()">🌙</button>
         </div>
     </div>
 
@@ -815,15 +842,15 @@
 
         <!-- 요약 통계 -->
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 16px 12px;">
-            <div class="acc-box" style="border-left:3px solid var(--status-ok);">
+            <div class="acc-box" style="border-left:3px solid var(--status-ok);cursor:pointer;" onclick="setHiveFilter('ok',document.getElementById('hf-ok'))">
                 <div class="acc-label">🟢 정상</div>
                 <div class="acc-amount" id="stat-ok" style="color:var(--status-ok);font-size:1.4rem;">0</div>
             </div>
-            <div class="acc-box" style="border-left:3px solid var(--status-warn);">
+            <div class="acc-box" style="border-left:3px solid var(--status-warn);cursor:pointer;" onclick="setHiveFilter('warn',document.getElementById('hf-warn'))">
                 <div class="acc-label">🟡 주의</div>
                 <div class="acc-amount" id="stat-warn" style="color:var(--status-warn);font-size:1.4rem;">0</div>
             </div>
-            <div class="acc-box" style="border-left:3px solid var(--status-danger);">
+            <div class="acc-box" style="border-left:3px solid var(--status-danger);cursor:pointer;" onclick="setHiveFilter('danger',document.getElementById('hf-danger'))">
                 <div class="acc-label">🔴 위험</div>
                 <div class="acc-amount" id="stat-danger" style="color:var(--status-danger);font-size:1.4rem;">0</div>
             </div>
@@ -832,15 +859,27 @@
         <!-- 벌통 현황 -->
         <div class="section-header">
             <span class="section-title">🏺 벌통 현황</span>
-            <button class="btn-sm" onclick="switchView('settings')">+ 통 관리</button>
+            <button class="btn-sm" onclick="addNewHive()">+ 통 추가</button>
+        </div>
+        <!-- 벌통 필터 -->
+        <div style="display:flex;gap:6px;padding:0 16px 10px;flex-wrap:wrap;align-items:center;">
+            <button class="btn-sm active" id="hf-all" onclick="setHiveFilter('all',this)" style="min-height:40px;padding:6px 14px;">전체</button>
+            <button class="btn-sm" id="hf-danger" onclick="setHiveFilter('danger',this)" style="min-height:40px;padding:6px 14px;">🔴 위험</button>
+            <button class="btn-sm" id="hf-warn" onclick="setHiveFilter('warn',this)" style="min-height:40px;padding:6px 14px;">🟡 주의</button>
+            <button class="btn-sm" id="hf-ok" onclick="setHiveFilter('ok',this)" style="min-height:40px;padding:6px 14px;">🟢 정상</button>
+            <input type="text" id="hive-search" placeholder="🔍 통 검색" oninput="renderHiveGrid()"
+                style="flex:1;min-width:80px;height:40px;padding:0 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg-card);color:var(--tx-main);font-size:0.85rem;outline:none;">
         </div>
         <div class="card" style="padding:12px;">
-            <div id="hive-grid" class="hive-grid">
-                <!-- JS로 렌더링 -->
-            </div>
-            <div id="hive-empty" class="empty-state" style="display:none;">
-                <div class="empty-icon">🏺</div>
-                <p>등록된 벌통이 없습니다<br><strong>설정 → 벌통 관리</strong>에서 추가하세요</p>
+            <!-- 벌통 2줄(약 200px) 이상이면 스크롤 -->
+            <div style="max-height:220px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-right:2px;">
+                <div id="hive-grid" class="hive-grid">
+                    <!-- JS로 렌더링 -->
+                </div>
+                <div id="hive-empty" class="empty-state" style="display:none;">
+                    <div class="empty-icon">🏺</div>
+                    <p>등록된 벌통이 없습니다<br><strong>설정 → 벌통 관리</strong>에서 추가하세요</p>
+                </div>
             </div>
         </div>
 
@@ -853,11 +892,18 @@
                 이상 없음 ✅
             </div>
         </div>
+
+        <!-- 오늘의 일정 -->
+        <div class="section-header" style="margin-top:8px;">
+            <span class="section-title">📋 오늘의 일정</span>
+        </div>
+        <div id="home-today-schedule" style="margin:0 16px 16px;"></div>
     </div>
 
     <!-- ===== 기록 뷰 (일지 + 방역 통합) ===== -->
     <div id="view-record" class="view">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:2px solid var(--border);">
+        <!-- 탭 바: 스크롤 안됨, 고정 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:2px solid var(--border);flex-shrink:0;background:var(--bg-card);">
             <button id="record-tab-diary" onclick="switchRecordTab('diary', this)"
                 style="padding:13px 0;font-size:0.92rem;font-weight:800;border:none;background:var(--bg-card);color:var(--tx-sub);border-bottom:3px solid transparent;cursor:pointer;transition:all 0.2s;">📔 일지</button>
             <button id="record-tab-disease" onclick="switchRecordTab('disease', this)"
@@ -865,6 +911,8 @@
             <button id="record-tab-list-main" onclick="switchRecordTab('list', this)"
                 style="padding:13px 0;font-size:0.92rem;font-weight:800;border:none;background:var(--bg-card);color:var(--tx-sub);border-bottom:3px solid transparent;cursor:pointer;transition:all 0.2s;">📋 내역</button>
         </div>
+        <!-- 콘텐츠: 독립 스크롤 -->
+        <div id="record-scroll-area" style="flex:1;overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:20px;">
         <div id="record-diary-content">
 
     <!-- ===== 일지 뷰 ===== -->
@@ -875,7 +923,7 @@
             <div class="card">
                 <!-- 통 선택 -->
                 <label class="input-label">🏺 벌통 선택</label>
-                <div id="diary-hive-select" class="hive-select-grid"></div>
+                <div id="diary-hive-select" class="hive-select-grid" style="margin-bottom:14px;"></div>
 
                 <!-- 기록 유형 -->
                 <label class="input-label">📝 기록 유형</label>
@@ -966,7 +1014,7 @@
                     <input type="file" id="diary-photo-file" accept="image/*" multiple style="display:none" onchange="addPhotos(this,'diary-photos')">
                 </div>
 
-                <button class="btn-primary" onclick="saveDiary()">📔 일지 저장</button>
+                <button class="btn-primary" onclick="saveDiary()" style="position:sticky;bottom:0;z-index:10;box-shadow:0 -2px 12px rgba(0,0,0,0.3);">📔 일지 저장</button>
             </div>
         </div>
 
@@ -983,7 +1031,7 @@
             <div class="card">
                 <!-- 통 선택 -->
                 <label class="input-label">🏺 벌통 선택</label>
-                <div id="disease-hive-select" class="hive-select-grid"></div>
+                <div id="disease-hive-select" class="hive-select-grid" style="margin-bottom:14px;"></div>
 
                 <!-- 질병 종류 -->
                 <label class="input-label">🦠 질병/증상</label>
@@ -1098,21 +1146,25 @@
                     <input type="file" id="disease-photo-file" accept="image/*" multiple style="display:none" onchange="addPhotos(this,'disease-photos')">
                 </div>
 
-                <button class="btn-primary" onclick="saveDisease()">💊 방제 기록 저장</button>
+                <button class="btn-primary" onclick="saveDisease()" style="position:sticky;bottom:0;z-index:10;box-shadow:0 -2px 12px rgba(0,0,0,0.3);">💊 방제 기록 저장</button>
             </div>
         </div>
 
-    </div>
-
     </div><!-- end view-disease -->
-        </div><!-- end record-disease-content -->
+    </div><!-- end record-disease-content -->
 
         <!-- 내역 탭 컨텐츠 -->
         <div id="record-list-content" style="display:none;">
+            <!-- 일지/방역 서브탭 -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:2px solid var(--border);background:var(--bg-card);position:sticky;top:0;z-index:10;">
+                <button id="list-sub-diary" onclick="switchListSubTab('diary',this)"
+                    style="padding:11px 0;font-size:0.88rem;font-weight:800;border:none;background:transparent;color:var(--tx-gold);border-bottom:3px solid var(--tx-gold);cursor:pointer;">📔 일지 내역</button>
+                <button id="list-sub-disease" onclick="switchListSubTab('disease',this)"
+                    style="padding:11px 0;font-size:0.88rem;font-weight:800;border:none;background:transparent;color:var(--tx-sub);border-bottom:3px solid transparent;cursor:pointer;">🛡️ 방역 내역</button>
+            </div>
             <!-- 일지 내역 -->
             <div id="record-list-diary-section">
-                <div style="padding:12px 16px 4px;font-size:0.9rem;font-weight:900;color:var(--tx-gold);">📔 일지 내역</div>
-                <div style="padding:0 16px 4px;display:flex;gap:6px;flex-wrap:wrap;">
+                <div style="padding:8px 16px 4px;display:flex;gap:6px;flex-wrap:wrap;">
                     <button class="btn-sm active" onclick="filterDiary('all', this)">전체</button>
                     <button class="btn-sm" onclick="filterDiary('observe', this)">🔍 관찰</button>
                     <button class="btn-sm" onclick="filterDiary('swarm', this)">🐝 분봉</button>
@@ -1134,9 +1186,8 @@
                 <div id="diary-record-list" style="padding:0 0 8px;"></div>
             </div>
             <!-- 방역 내역 -->
-            <div id="record-list-disease-section">
-                <div style="padding:12px 16px 4px;font-size:0.9rem;font-weight:900;color:var(--tx-gold);">🛡️ 방역 내역</div>
-                <div style="padding:0 16px 4px;display:flex;gap:6px;flex-wrap:wrap;">
+            <div id="record-list-disease-section" style="display:none;">
+                <div style="padding:8px 16px 4px;display:flex;gap:6px;flex-wrap:wrap;">
                     <button class="btn-sm active" onclick="filterDiseaseList('all', this)">전체</button>
                     <button class="btn-sm" onclick="filterDiseaseList('treating', this)">🔴 치료중</button>
                     <button class="btn-sm" onclick="filterDiseaseList('watch', this)">🟡 관찰중</button>
@@ -1156,8 +1207,9 @@
                 </div>
                 <div id="disease-record-list" style="padding:0 0 12px;"></div>
             </div>
-        </div>
+        </div><!-- end record-list-content -->
 
+        </div><!-- end record-scroll-area -->
     </div><!-- end view-record -->
 
     <!-- ===== 지도 뷰 ===== -->
@@ -1190,7 +1242,7 @@
 
         <!-- 탭 -->
         <div class="tab-bar">
-            <button class="tab-btn active" onclick="switchAccTab('add', this)">➕ 입력</button>
+            <button class="tab-btn active" onclick="switchAccTab('add', this)">📝 기록</button>
             <button class="tab-btn" onclick="switchAccTab('list', this)">📋 내역</button>
             <button class="tab-btn" onclick="switchAccTab('customer', this)">👤 고객</button>
         </div>
@@ -1412,6 +1464,51 @@
             </div>
         </div>
 
+        <!-- 여왕벌 관리 -->
+        <div class="card">
+            <div class="card-title">👑 여왕벌 관리</div>
+            <p style="font-size:0.82rem;color:var(--tx-sub);margin-bottom:12px;">통별 여왕벌 이력을 기록합니다.</p>
+            <!-- 이벤트 입력 -->
+            <div style="background:var(--bg-main);border-radius:12px;padding:12px;margin-bottom:12px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                    <select class="field" id="queen-hive-select" style="margin:0;">
+                        <option value="">벌통 선택</option>
+                    </select>
+                    <input type="date" class="field" id="queen-date" style="margin:0;">
+                </div>
+                <select class="field" id="queen-event" style="margin-bottom:8px;">
+                    <option value="왕대확인">⚠️ 왕대 확인</option>
+                    <option value="자연분봉">🐝 자연분봉 발생</option>
+                    <option value="왕교체">🔄 왕 교체 완료</option>
+                    <option value="인공분봉">✂️ 인공분봉</option>
+                    <option value="무왕확인">❌ 무왕 확인</option>
+                    <option value="왕정상">✅ 왕 정상 확인</option>
+                </select>
+                <input type="text" class="field" id="queen-memo" placeholder="메모 (선택)" style="margin-bottom:8px;">
+                <button class="btn-primary" onclick="saveQueenEvent()" style="margin:0;">👑 여왕벌 이력 저장</button>
+            </div>
+            <!-- 이력 목록 -->
+            <div id="queen-history-list"></div>
+        </div>
+
+        <!-- 분봉 알림 기간 설정 -->
+        <div class="card">
+            <div class="card-title">🐝 분봉 알림 기간 설정</div>
+            <p style="font-size:0.82rem;color:var(--tx-sub);margin-bottom:12px;">왕대 확인 후 분봉 예상 기간을 설정합니다. (토종벌 기준 7~15일)</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+                <div>
+                    <label style="font-size:0.78rem;color:var(--tx-sub);display:block;margin-bottom:4px;">알림 시작 (일 후)</label>
+                    <input type="number" class="field" id="swarm-alert-start" value="7" min="3" max="20" style="margin:0;">
+                </div>
+                <div>
+                    <label style="font-size:0.78rem;color:var(--tx-sub);display:block;margin-bottom:4px;">알림 종료 (일 후)</label>
+                    <input type="number" class="field" id="swarm-alert-end" value="15" min="5" max="30" style="margin:0;">
+                </div>
+            </div>
+            <button class="btn-primary" onclick="saveSwarmSettings()" style="margin:0;">🐝 분봉 알림 설정 저장</button>
+            <div id="swarm-settings-status" style="margin-top:8px;font-size:0.82rem;color:var(--tx-sub);text-align:center;"></div>
+        </div>
+
         <!-- 데이터 관리 -->
         <div class="card">
             <div class="card-title">💾 데이터 관리</div>
@@ -1433,11 +1530,12 @@
 
         <!-- 앱 정보 -->
         <div class="card">
-            <div class="card-title">ℹ️ 앱 정보</div>
-            <div style="font-size:0.82rem;color:var(--tx-sub);line-height:1.8;">
-                <div>토봉 MASTER v1.0</div>
-                <div>동양종 (한봉) 전용 관리 앱</div>
-                <div>BEE MASTER 통합 버전</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                    <div style="font-size:0.95rem;font-weight:900;color:var(--tx-gold);">🐝 토봉 MASTER</div>
+                    <div style="font-size:0.78rem;color:var(--tx-sub);margin-top:2px;">동양종(한봉) 전용 관리 앱 · v1.0</div>
+                </div>
+                <button class="btn-sm" onclick="showTodayTodo()" style="font-size:0.8rem;">📋 오늘 할 일</button>
             </div>
         </div>
     </div>
@@ -1459,12 +1557,13 @@
 
         <!-- 범례 -->
         <div style="display:flex;gap:10px;padding:6px 16px;flex-wrap:wrap;font-size:0.82rem;">
-            <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:50%;background:#4caf50;display:inline-block;"></span>일지</span>
-            <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:50%;background:#f44336;display:inline-block;"></span>방역</span>
-            <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:50%;background:#2196F3;display:inline-block;"></span>일정</span>
-            <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:50%;background:#ff9800;display:inline-block;"></span>채밀</span>
-            <span style="display:flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:50%;background:#9c27b0;display:inline-block;"></span>분봉</span>
-            <span style="display:flex;align-items:center;gap:3px;"><span style="font-size:0.9rem;">🌱</span><span style="color:#e91e63;font-weight:800;">절기</span></span>
+            <span style="display:flex;align-items:center;gap:3px;">🔍 일지</span>
+            <span style="display:flex;align-items:center;gap:3px;">💊 방역</span>
+            <span style="display:flex;align-items:center;gap:3px;">📅 일정</span>
+            <span style="display:flex;align-items:center;gap:3px;">🍯 채밀</span>
+            <span style="display:flex;align-items:center;gap:3px;">🐝 분봉</span>
+            <span style="display:flex;align-items:center;gap:3px;">🔔 방역알림</span>
+            <span style="display:flex;align-items:center;gap:3px;">🌱<span style="color:#e91e63;font-weight:800;">절기</span></span>
         </div>
 
         <!-- 달력 그리드 -->
@@ -1510,7 +1609,70 @@
             <span class="nav-icon">💰</span>
             <span>가계부</span>
         </div>
+        <div class="nav-item" id="nav-settings" onclick="switchView('settings')">
+            <span class="nav-icon">⚙️</span>
+            <span>설정</span>
+        </div>
     </nav>
+</div>
+
+<!-- ===== 일지 수정 모달 ===== -->
+<div class="modal-overlay" id="diary-edit-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:14px;">✏️ 일지 수정</div>
+        <input type="hidden" id="diary-edit-id">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:12px;">
+            <span id="diary-edit-type" style="font-weight:900;color:var(--tx-amber);"></span>
+            &nbsp;·&nbsp;
+            <span id="diary-edit-hive" style="font-weight:800;color:var(--tx-main);"></span>
+        </div>
+        <label class="input-label">📅 날짜</label>
+        <input type="date" class="field" id="diary-edit-date">
+        <label class="input-label">📝 메모</label>
+        <textarea class="field" id="diary-edit-memo" placeholder="메모" style="min-height:80px;"></textarea>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+            <button class="btn-sm" onclick="closeModal('diary-edit-modal')">취소</button>
+            <button class="btn-primary" onclick="saveDiaryEdit()" style="margin:0;">저장</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 여왕벌 이벤트 수정 모달 ===== -->
+<div class="modal-overlay" id="queen-edit-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:14px;">✏️ 여왕벌 이력 수정</div>
+        <input type="hidden" id="queen-edit-id">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:12px;">
+            <span id="queen-edit-hive" style="font-weight:800;color:var(--tx-amber);"></span>
+            &nbsp;·&nbsp;
+            <span id="queen-edit-event-label" style="font-weight:800;color:var(--tx-main);"></span>
+        </div>
+        <label class="input-label">📅 날짜</label>
+        <input type="date" class="field" id="queen-edit-date">
+        <label class="input-label">📝 메모</label>
+        <input type="text" class="field" id="queen-edit-memo" placeholder="메모">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+            <button class="btn-sm" onclick="closeModal('queen-edit-modal')">취소</button>
+            <button class="btn-primary" onclick="saveQueenEventEdit()" style="margin:0;">저장</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 벌통 이름 수정 모달 ===== -->
+<div class="modal-overlay" id="hive-rename-modal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);margin-bottom:14px;">✏️ 벌통 이름 수정</div>
+        <input type="hidden" id="hive-rename-old">
+        <label class="input-label">🏺 새 이름</label>
+        <input type="text" class="field" id="hive-rename-new" placeholder="예: 1번통">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+            <button class="btn-sm" onclick="closeModal('hive-rename-modal')">취소</button>
+            <button class="btn-primary" onclick="saveHiveRename()" style="margin:0;">저장</button>
+        </div>
+    </div>
 </div>
 
 <!-- ===== 가계부 수정 모달 ===== -->
@@ -1648,6 +1810,12 @@
         <input type="text" class="field" id="cal-disease-edit-medicine" placeholder="약제명">
         <label class="input-label">📝 메모</label>
         <input type="text" class="field" id="cal-disease-edit-memo" placeholder="메모">
+        <label class="input-label">📊 현재 상태</label>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;">
+            <button class="btn-sm" id="cal-dedit-treating" onclick="selectCalDiseaseStatus('treating',this)">🔴 치료중</button>
+            <button class="btn-sm" id="cal-dedit-watch" onclick="selectCalDiseaseStatus('watch',this)">🟡 관찰중</button>
+            <button class="btn-sm" id="cal-dedit-done" onclick="selectCalDiseaseStatus('done',this)">🟢 완치</button>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
             <button class="btn-sm" onclick="closeModal('cal-disease-edit-modal')">취소</button>
             <button class="btn-primary" onclick="saveCalDiseaseEdit()" style="margin:0;">저장</button>
@@ -1758,6 +1926,22 @@
     </div>
 </div>
 
+<!-- ===== 오늘의 할 일 모달 ===== -->
+<div class="modal-overlay" id="today-todo-modal">
+    <div class="modal-sheet" style="max-height:80vh;overflow-y:auto;">
+        <div class="modal-handle"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-size:1rem;font-weight:900;color:var(--tx-gold);">📋 오늘의 할 일</div>
+            <div id="today-date-label" style="font-size:0.82rem;color:var(--tx-sub);"></div>
+        </div>
+        <div id="today-todo-content"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
+            <button class="btn-sm" onclick="closeModal('today-todo-modal')">닫기</button>
+            <button class="btn-primary" onclick="closeModal('today-todo-modal');switchView('record');" style="margin:0;">📔 기록하기</button>
+        </div>
+    </div>
+</div>
+
 <!-- ===== 토스트 ===== -->
 <div class="toast" id="toast"></div>
 
@@ -1772,35 +1956,115 @@ let DB = {
     schedules: [],     // [ { id, date, title, memo, hiveNum } ]
     swarmAlerts: [],   // [ { id, hiveNum, alertDate, dismissed } ]
     customers: [],     // [ { id, name, phone, ... } ]
+    queens: [],        // [ { id, hiveNum, date, event, memo } ] 여왕벌 이력
+    swarmSettings: { alertStart: 7, alertEnd: 15 }, // 분봉 알림 기간 설정
 };
 
 // ==================== 초기화 ====================
-function initDB() {
-    const saved = localStorage.getItem('dongyang_db');
-    if (saved) {
+const IDB_KEY = 'dongyang_db';
+
+function sanitizeDB() {
+    // 모든 배열/객체 방어코드 - 런타임 에러 완전 차단
+    DB.hives       = DB.hives       || {};
+    DB.locations   = DB.locations   || {};
+    DB.diaries     = Array.isArray(DB.diaries)     ? DB.diaries     : [];
+    DB.diseases    = Array.isArray(DB.diseases)    ? DB.diseases    : [];
+    DB.accounts    = Array.isArray(DB.accounts)    ? DB.accounts    : [];
+    DB.schedules   = Array.isArray(DB.schedules)   ? DB.schedules   : [];
+    DB.swarmAlerts = Array.isArray(DB.swarmAlerts) ? DB.swarmAlerts : [];
+    DB.customers   = Array.isArray(DB.customers)   ? DB.customers   : [];
+    DB.queens      = Array.isArray(DB.queens)      ? DB.queens      : [];
+    DB.swarmSettings = DB.swarmSettings || { alertStart: 7, alertEnd: 15 };
+    DB.settings    = DB.settings    || {};
+}
+
+async function initDB() {
+    // localStorage에 저장된 escapeItems 값이 구버전이면 마이그레이션
+    const savedEscape = localStorage.getItem('dy_settings_escapeItems');
+    if (savedEscape) {
         try {
-            const parsed = JSON.parse(saved);
+            const arr = JSON.parse(savedEscape);
+            const migrate = { '정상 (도거 없음)':'정상', '도거 징후 있음':'도거위험', '도거 발생':'도거발생', '도거 후 재입봉':'도거후재입봉' };
+            const migrated = arr.map(v => migrate[v] || v);
+            if (JSON.stringify(arr) !== JSON.stringify(migrated)) {
+                localStorage.setItem('dy_settings_escapeItems', JSON.stringify(migrated));
+            }
+        } catch(e) {}
+    }
+    try {
+        // ① IndexedDB에서 먼저 로드 시도
+        const idbData = await idbKeyval.get(IDB_KEY);
+        if (idbData) {
+            DB = { ...DB, ...idbData };
+            sanitizeDB();
+            return;
+        }
+        // ② IndexedDB에 없으면 localStorage 마이그레이션
+        const legacy = localStorage.getItem('dongyang_db');
+        if (legacy) {
+            const parsed = JSON.parse(legacy);
             DB = { ...DB, ...parsed };
-        } catch(e) { console.error('DB 로드 오류:', e); }
+            sanitizeDB();
+            // IndexedDB로 이전 저장 후 localStorage 정리
+            await idbKeyval.set(IDB_KEY, DB);
+            localStorage.removeItem('dongyang_db');
+            console.log('✅ localStorage → IndexedDB 마이그레이션 완료');
+        } else {
+            sanitizeDB();
+        }
+    } catch(e) {
+        console.error('DB 로드 오류:', e);
+        // IndexedDB 실패 시 localStorage 폴백
+        try {
+            const legacy = localStorage.getItem('dongyang_db');
+            if (legacy) DB = { ...DB, ...JSON.parse(legacy) };
+        } catch(e2) {}
+        sanitizeDB();
     }
 }
 
+// saveDB: 비동기지만 호출부는 그대로 유지 (fire-and-forget)
+let _saveTimer = null;
 function saveDB() {
-    localStorage.setItem('dongyang_db', JSON.stringify(DB));
+    // 디바운스: 200ms 내 연속 호출은 한번만 저장
+    clearTimeout(_saveTimer);
+    _saveTimer = setTimeout(async () => {
+        try {
+            await idbKeyval.set(IDB_KEY, DB);
+        } catch(e) {
+            // IndexedDB 실패 시 localStorage 폴백
+            try {
+                localStorage.setItem('dongyang_db', JSON.stringify(DB));
+                console.warn('IndexedDB 실패, localStorage 폴백');
+            } catch(e2) {
+                showToast('⚠️ 저장 실패! 저장 공간을 확인하세요.');
+            }
+        }
+    }, 200);
 }
 
 // ==================== 앱 시작 ====================
-function enterApp() {
+async function enterApp() {
     document.getElementById('splash').style.display = 'none';
     const app = document.getElementById('main-app');
     app.style.display = 'block';
-    initDB();
+
+    // DB 로드 완료 후 렌더링 (비동기)
+    await initDB();
+
+    // 앱 시작 시 모든 벌통 상태를 실제 기록 기반으로 재계산 (stale 상태 차단)
+    recalcAllHiveStatuses();
+
     initDateFields();
     renderAll();
     loadWeather();
     updateNetworkBadge();
     checkSwarmAlerts();
-    setInterval(checkSwarmAlerts, 60000); // 1분마다 알림 체크
+    setInterval(checkSwarmAlerts, 60000);
+    setTimeout(showTodayTodo, 500);
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
 }
 
 // ==================== 뒤로가기 ====================
@@ -1827,7 +2091,13 @@ function handleBackBtn() {
 function updateBackBtn() {
     const btn = document.getElementById('top-back-btn');
     if (!btn) return;
-    btn.textContent = viewHistory.length > 1 ? '⬅ 이전' : '⬅ BEE MASTER';
+    const currentView = viewHistory[viewHistory.length - 1];
+    if (currentView === 'home' || viewHistory.length <= 1) {
+        btn.style.visibility = 'hidden';
+    } else {
+        btn.style.visibility = 'visible';
+        btn.textContent = '⬅ 이전';
+    }
 }
 
 // ==================== 도거 체크 ====================
@@ -1841,7 +2111,7 @@ function checkEscape() {
 // 기본 항목 정의
 const DEFAULT_SETTINGS = {
     queenItems: ['정상', '왕대확인', '교체필요', '미확인'],
-    escapeItems: ['정상 (도거 없음)', '도거 징후 있음', '도거 발생', '도거 후 재입봉'],
+    escapeItems: ['정상', '도거위험', '도거발생', '도거후재입봉'],
     diseaseItems: ['낭충봉아부패병', '백묵병', '소충', '미국부저병', '유럽부저병'],
     expenseItems: ['설탕','화분 대용 사료','낭충봉아부패병 치료제','기타 약품','벌통 구입/제작','목재','교통비','장비/도구'],
     incomeItems: ['토종꿀 판매','봉군 판매','벌통 판매','봉독 판매']
@@ -1860,18 +2130,17 @@ function renderSettingList(key, containerId, selectId) {
     const items = getSettingItems(key);
     const container = document.getElementById(containerId);
     if (!container) return;
+    const escapeLabels = { '정상':'정상 (도거 없음)', '도거위험':'도거 징후 있음', '도거발생':'도거 발생', '도거후재입봉':'도거 후 재입봉' };
     container.innerHTML = items.map((item, i) => `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
-            <span style="font-size:0.88rem;color:var(--tx-main);">${item}</span>
+            <span style="font-size:0.88rem;color:var(--tx-main);">${key === 'escapeItems' ? (escapeLabels[item] || item) : item}</span>
             <div style="display:flex;gap:6px;">
                 <button class="btn-sm" onclick="editSettingItem('${key}','${containerId}','${selectId||''}',${i})" style="padding:4px 10px;font-size:0.72rem;">수정</button>
                 <button class="btn-danger" onclick="deleteSettingItem('${key}','${containerId}','${selectId||''}',${i})" style="padding:4px 10px;font-size:0.72rem;">삭제</button>
             </div>
         </div>
     `).join('');
-    // 연결된 select 업데이트
     if (selectId) updateSelectOptions(key, selectId);
-    // 가계부 카테고리 업데이트
     if (key === 'expenseItems' || key === 'incomeItems') syncAccCategories();
 }
 
@@ -1915,7 +2184,9 @@ function updateSelectOptions(key, selectId) {
         sel.innerHTML = `<option value="">선택하세요</option>` +
             items.map(i => `<option value="${i}">${i}</option>`).join('');
     } else if (key === 'escapeItems') {
-        sel.innerHTML = items.map(i => `<option value="${i}">${i}</option>`).join('');
+        // value는 항목 그대로, 표시는 이모지 붙여서
+        const escapeLabels = { '정상':'✅ 정상 (도거 없음)', '도거위험':'⚠️ 도거 징후 있음', '도거발생':'🚨 도거 발생', '도거후재입봉':'🔄 도거 후 재입봉' };
+        sel.innerHTML = items.map(i => `<option value="${i}">${escapeLabels[i] || i}</option>`).join('');
     } else if (key === 'diseaseItems') {
         sel.innerHTML = `<option value="">선택하세요</option>` +
             items.map(i => `<option value="${i}">${i}</option>`).join('') +
@@ -1935,32 +2206,250 @@ function renderAllSettingLists() {
     renderSettingList('diseaseItems', 'disease-type-list', 'disease-type');
     renderSettingList('expenseItems', 'expense-items-list', null);
     renderSettingList('incomeItems', 'income-items-list', null);
+    // 여왕벌 관리
+    renderQueenHiveSelect();
+    renderQueenHistory();
+    // 분봉 알림 설정값 복원
+    const ss = DB.swarmSettings || { alertStart: 7, alertEnd: 15 };
+    const saEl = document.getElementById('swarm-alert-start');
+    const seEl = document.getElementById('swarm-alert-end');
+    if (saEl) saEl.value = ss.alertStart;
+    if (seEl) seEl.value = ss.alertEnd;
+    // 여왕벌 날짜 기본값
+    const qd = document.getElementById('queen-date');
+    if (qd && !qd.value) qd.value = toLocalDateStr(new Date());
 }
 
 // ==================== 분봉 예측 알림 ====================
 function scheduleSwarmAlert(hiveNum, observeDate) {
-    // 왕대 확인 시 7~10일 후 분봉 주의 알림 예약
+    const settings = DB.swarmSettings || { alertStart: 7, alertEnd: 15 };
+    const start = parseInt(settings.alertStart) || 7;
+    const end = parseInt(settings.alertEnd) || 15;
+
     const baseDate = new Date(observeDate);
     const alertDate = new Date(baseDate);
-    alertDate.setDate(alertDate.getDate() + 7);
+    alertDate.setDate(alertDate.getDate() + start);
+    const alertDateEnd = new Date(observeDate);
+    alertDateEnd.setDate(alertDateEnd.getDate() + end);
 
     if (!DB.swarmAlerts) DB.swarmAlerts = [];
-    // 동일 통 기존 알림 제거
     DB.swarmAlerts = DB.swarmAlerts.filter(a => a.hiveNum !== hiveNum);
     DB.swarmAlerts.push({
         id: Date.now(),
         hiveNum,
         observeDate,
         alertDate: toLocalDateStr(alertDate),
-        alertDate10: toLocalDateStr(new Date(baseDate.setDate(baseDate.getDate() + 10))),
+        alertDate10: toLocalDateStr(alertDateEnd),
+        alertStart: start,
+        alertEnd: end,
         dismissed: false
     });
     saveDB();
-
-    // 브라우저 알림 권한 요청
     if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
     }
+}
+
+function saveSwarmSettings() {
+    const start = parseInt(document.getElementById('swarm-alert-start').value) || 7;
+    const end = parseInt(document.getElementById('swarm-alert-end').value) || 15;
+    if (start >= end) { showToast('시작일은 종료일보다 작아야 합니다'); return; }
+    DB.swarmSettings = { alertStart: start, alertEnd: end };
+    saveDB();
+    document.getElementById('swarm-settings-status').textContent = `✅ 저장됨: 왕대확인 후 ${start}일 ~ ${end}일 알림`;
+    showToast(`🐝 분봉 알림 ${start}~${end}일로 설정됨`);
+}
+
+// ==================== 여왕벌 관리 ====================
+const QUEEN_EVENT_LABELS = {
+    '왕대확인': '⚠️ 왕대 확인',
+    '자연분봉': '🐝 자연분봉',
+    '왕교체': '🔄 왕 교체',
+    '인공분봉': '✂️ 인공분봉',
+    '무왕확인': '❌ 무왕 확인',
+    '왕정상': '✅ 왕 정상'
+};
+const QUEEN_EVENT_COLORS = {
+    '왕대확인': '#ff9800', '자연분봉': '#9c27b0', '왕교체': '#2196F3',
+    '인공분봉': '#00bcd4', '무왕확인': '#f44336', '왕정상': '#4caf50'
+};
+
+function renderQueenHiveSelect() {
+    const sel = document.getElementById('queen-hive-select');
+    if (!sel) return;
+    const hives = Object.keys(DB.hives).filter(k => DB.hives[k].active).sort();
+    sel.innerHTML = '<option value="">벌통 선택</option>' +
+        hives.map(h => `<option value="${h}">${h}</option>`).join('');
+}
+
+function saveQueenEvent() {
+    const hiveNum = document.getElementById('queen-hive-select').value;
+    if (!hiveNum) { showToast('벌통을 선택하세요'); return; }
+    const date = document.getElementById('queen-date').value;
+    if (!date) { showToast('날짜를 입력하세요'); return; }
+    const event = document.getElementById('queen-event').value;
+    const memo = document.getElementById('queen-memo').value;
+
+    if (!DB.queens) DB.queens = [];
+    DB.queens.push({ id: Date.now(), hiveNum, date, event, memo });
+    saveDB();
+
+    // 왕대확인 시 분봉 알림 자동 예약
+    if (event === '왕대확인') {
+        scheduleSwarmAlert(hiveNum, date);
+        showToast(`👑 저장됨 + 🐝 분봉 알림 예약됨`);
+    } else if (event === '왕교체' || event === '인공분봉') {
+        // 왕 교체/인공분봉 후 분봉 알림 해제
+        if (DB.swarmAlerts) DB.swarmAlerts = DB.swarmAlerts.filter(a => a.hiveNum !== hiveNum || a.dismissed);
+        saveDB();
+        showToast('👑 저장됨 · 분봉 알림 해제');
+    } else {
+        showToast('👑 여왕벌 이력 저장됨');
+    }
+
+    document.getElementById('queen-memo').value = '';
+    document.getElementById('queen-hive-select').value = '';
+    const qd = document.getElementById('queen-date');
+    if (qd) qd.value = toLocalDateStr(new Date());
+    renderQueenHistory();
+    checkSwarmAlerts();
+}
+
+function renderQueenHistory() {
+    const container = document.getElementById('queen-history-list');
+    if (!container) return;
+    if (!DB.queens) DB.queens = [];
+
+    const records = [...DB.queens].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 30);
+    if (records.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:var(--tx-sub);font-size:0.85rem;padding:12px;">이력 없음</div>';
+        return;
+    }
+
+    // 통별로 최신 이벤트 강조
+    const latestByHive = {};
+    DB.queens.forEach(q => {
+        if (!latestByHive[q.hiveNum] || q.date > latestByHive[q.hiveNum].date) latestByHive[q.hiveNum] = q;
+    });
+
+    container.innerHTML = records.map(r => {
+        const isLatest = latestByHive[r.hiveNum]?.id === r.id;
+        const color = QUEEN_EVENT_COLORS[r.event] || '#888';
+        return `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+            <div style="width:4px;height:36px;background:${color};border-radius:2px;flex-shrink:0;"></div>
+            <div style="flex:1;min-width:0;">
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="font-size:0.82rem;font-weight:900;color:var(--tx-amber);">${r.hiveNum}</span>
+                    <span style="font-size:0.8rem;font-weight:800;color:${color};">${QUEEN_EVENT_LABELS[r.event]||r.event}</span>
+                    ${isLatest ? '<span style="font-size:0.7rem;background:rgba(76,175,80,0.15);color:#4caf50;padding:1px 6px;border-radius:10px;font-weight:800;">최신</span>' : ''}
+                </div>
+                <div style="font-size:0.78rem;color:var(--tx-sub);">${r.date}${r.memo ? ' · ' + r.memo : ''}</div>
+            </div>
+            <button class="btn-sm" style="padding:3px 8px;font-size:0.72rem;flex-shrink:0;" onclick="editQueenEvent(${r.id})">수정</button>
+            <button class="btn-danger" style="padding:3px 8px;font-size:0.72rem;flex-shrink:0;" onclick="deleteQueenEvent(${r.id})">삭제</button>
+        </div>`;
+    }).join('');
+}
+
+function deleteQueenEvent(id) {
+    if (!confirm('이 이력을 삭제하시겠어요?')) return;
+    const rec = DB.queens.find(q => q.id === Number(id));
+    DB.queens = DB.queens.filter(q => q.id !== Number(id));
+
+    // 왕대확인 이벤트였으면 같은 통의 분봉 알림도 제거
+    // (단, 같은 통에 다른 왕대확인 이력이 남아있으면 유지)
+    if (rec && rec.event === '왕대확인') {
+        const otherQueenCheck = DB.queens.some(q => q.hiveNum === rec.hiveNum && q.event === '왕대확인');
+        if (!otherQueenCheck) {
+            DB.swarmAlerts = (DB.swarmAlerts || []).filter(a => a.hiveNum !== rec.hiveNum);
+        }
+    }
+
+    saveDB();
+    renderQueenHistory();
+    checkSwarmAlerts();
+    if (typeof renderCalendar === 'function') renderCalendar();
+    showToast('삭제됨');
+}
+
+function renderQueenSummary() {
+    // 홈 화면 벌통 카드에서 최신 여왕벌 상태 표시용
+    if (!DB.queens) return {};
+    const summary = {};
+    DB.queens.forEach(q => {
+        if (!summary[q.hiveNum] || q.date > summary[q.hiveNum].date) summary[q.hiveNum] = q;
+    });
+    return summary;
+}
+
+// ==================== 오늘의 할 일 ====================
+function showTodayTodo() {
+    const today = toLocalDateStr(new Date());
+    const items = [];
+
+    // ① 오늘 만료/기간 내 분봉 주의
+    (DB.swarmAlerts || []).filter(a => !a.dismissed && a.alertDate <= today && a.alertDate10 >= today).forEach(a => {
+        items.push({ icon:'🐝', color:'#ff9800', text:`${a.hiveNum} 분봉 주의 (왕대확인 후 ${Math.floor((new Date(today)-new Date(a.observeDate))/86400000)}일째)`, urgent: true });
+    });
+
+    // ② 치료 중인 방역 통
+    const treatingByHive = {};
+    (DB.diseases || []).filter(d => d.status === 'treating').forEach(d => {
+        if (!treatingByHive[d.hiveNum] || d.date > treatingByHive[d.hiveNum].date) treatingByHive[d.hiveNum] = d;
+    });
+    Object.values(treatingByHive).forEach(d => {
+        const days = Math.floor((new Date(today) - new Date(d.date)) / 86400000);
+        items.push({ icon:'💊', color:'#f44336', text:`${d.hiveNum} 방역 치료 ${days}일째 (${d.diseaseType||''})`, urgent: true });
+    });
+
+    // ③ 오늘 예정된 일정
+    (DB.schedules || []).filter(s => s.date === today).forEach(s => {
+        items.push({ icon: s._diseaseAlarm ? '🔔' : '📅', color:'#2196F3', text: s.title, urgent: s._diseaseAlarm });
+    });
+
+    // ④ 7일 이상 관찰 안 된 통
+    const activeHives = Object.keys(DB.hives).filter(k => DB.hives[k].active);
+    activeHives.forEach(hiveNum => {
+        const lastObs = (DB.diaries || []).filter(d => d.hiveNum === hiveNum && d.type === 'observe').sort((a,b) => b.date.localeCompare(a.date))[0];
+        if (!lastObs) {
+            items.push({ icon:'👀', color:'#9c27b0', text:`${hiveNum} 관찰 기록 없음`, urgent: false });
+        } else {
+            const daysSince = Math.floor((new Date(today) - new Date(lastObs.date)) / 86400000);
+            if (daysSince >= 7) {
+                items.push({ icon:'👀', color:'#9c27b0', text:`${hiveNum} 마지막 관찰 ${daysSince}일 전`, urgent: false });
+            }
+        }
+    });
+
+    // 할 일 없으면 팝업 안 띄움
+    if (items.length === 0) return;
+
+    const content = document.getElementById('today-todo-content');
+    document.getElementById('today-date-label').textContent = today;
+
+    const urgent = items.filter(i => i.urgent);
+    const normal = items.filter(i => !i.urgent);
+
+    let html = '';
+    if (urgent.length > 0) {
+        html += `<div style="font-size:0.8rem;font-weight:900;color:#f44336;margin-bottom:6px;">🚨 긴급</div>`;
+        html += urgent.map(i => `
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(244,67,54,0.07);border-left:3px solid ${i.color};border-radius:8px;margin-bottom:6px;">
+                <span style="font-size:1rem;">${i.icon}</span>
+                <span style="font-size:0.85rem;font-weight:700;color:var(--tx-main);">${i.text}</span>
+            </div>`).join('');
+    }
+    if (normal.length > 0) {
+        html += `<div style="font-size:0.8rem;font-weight:900;color:var(--tx-sub);margin:8px 0 6px;">📌 확인 필요</div>`;
+        html += normal.map(i => `
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg-main);border-left:3px solid ${i.color};border-radius:8px;margin-bottom:6px;">
+                <span style="font-size:1rem;">${i.icon}</span>
+                <span style="font-size:0.85rem;color:var(--tx-main);">${i.text}</span>
+            </div>`).join('');
+    }
+    content.innerHTML = html;
+    document.getElementById('today-todo-modal').classList.add('show');
 }
 
 function checkSwarmAlerts() {
@@ -1974,12 +2463,14 @@ function checkSwarmAlerts() {
     const swarmAlerts = (DB.swarmAlerts || []).filter(a => !a.dismissed && a.alertDate <= today && a.alertDate10 >= today);
     swarmAlerts.forEach(alert => {
         const daysSince = Math.floor((new Date(today) - new Date(alert.observeDate)) / 86400000);
+        const alertStart = alert.alertStart || 7;
+        const alertEnd = alert.alertEnd || 15;
         cards += `
             <div class="swarm-alert-card" style="background:rgba(255,152,0,0.1);border:2px solid rgba(255,152,0,0.5);border-radius:14px;padding:14px;margin-bottom:8px;">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;">
                     <div>
                         <div style="font-size:0.95rem;font-weight:900;color:#ff9800;">🐝 분봉 주의! - ${alert.hiveNum}</div>
-                        <div style="font-size:0.82rem;color:var(--tx-sub);margin-top:4px;">왕대 확인 후 ${daysSince}일째 · 분봉 예상기간 (7~10일)</div>
+                        <div style="font-size:0.82rem;color:var(--tx-sub);margin-top:4px;">왕대 확인 후 ${daysSince}일째 · 분봉 예상기간 (${alertStart}~${alertEnd}일)</div>
                         <div style="font-size:0.8rem;color:var(--tx-sub);">알림기간: ${alert.alertDate} ~ ${alert.alertDate10}</div>
                     </div>
                     <button onclick="dismissSwarmAlert(${alert.id})" style="background:transparent;border:none;color:var(--tx-sub);font-size:1.2rem;cursor:pointer;padding:0 4px;">✕</button>
@@ -2255,18 +2746,31 @@ function createCalCell(date, eventMap, otherMonth) {
         cell.style.borderColor = 'rgba(233,30,99,0.4)';
     }
 
-    // 이벤트 점
+    // 이벤트 이모지
+    const TYPE_EMOJI = {
+        observe: '🔍', swarm: '🐝', capture: '📦', harvest: '🍯',
+        disease: '💊', 'disease-alarm': '🔔', schedule: '📅',
+        'swarm-alert': '🐝'
+    };
     const events = eventMap[dateStr] || [];
     if (events.length > 0) {
         const dots = document.createElement('div');
         dots.className = 'cal-dots';
-        const colors = [...new Set(events.map(e => e.color))].slice(0, 4);
-        colors.forEach(c => {
-            const dot = document.createElement('div');
-            dot.className = 'cal-dot';
-            dot.style.background = c;
-            dots.appendChild(dot);
+        // 중복 타입 제거 후 최대 2개 표시
+        const seen = new Set();
+        const unique = events.filter(e => { if (seen.has(e.type)) return false; seen.add(e.type); return true; });
+        unique.slice(0, 2).forEach(e => {
+            const em = document.createElement('span');
+            em.className = 'cal-emoji';
+            em.textContent = TYPE_EMOJI[e.type] || '📌';
+            dots.appendChild(em);
         });
+        if (unique.length > 2) {
+            const more = document.createElement('span');
+            more.className = 'cal-more';
+            more.textContent = `+${unique.length - 2}`;
+            dots.appendChild(more);
+        }
         cell.appendChild(dots);
     }
 
@@ -2301,9 +2805,13 @@ function buildCalEventMap() {
         addEvent(r.date, color, r._diseaseAlarm ? 'disease-alarm' : 'schedule', r.title, '', r.id);
     });
 
-    // 분봉 알림 (보라)
+    // 분봉 알림 (기간 전체 표시)
     (DB.swarmAlerts || []).filter(a => !a.dismissed).forEach(a => {
-        addEvent(a.alertDate, '#9c27b0', 'swarm-alert', `🐝 분봉주의 - ${a.hiveNum}`, a.hiveNum, a.id);
+        const start = new Date(a.alertDate);
+        const end = new Date(a.alertDate10);
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+            addEvent(toLocalDateStr(new Date(d)), '#9c27b0', 'swarm-alert', `🐝 분봉주의 - ${a.hiveNum}`, a.hiveNum, a.id);
+        }
     });
 
     return map;
@@ -2374,8 +2882,20 @@ function deleteCalDiary(id) {
     const rec = DB.diaries.find(d => d.id === Number(id));
     DB.diaries = DB.diaries.filter(d => d.id !== Number(id));
     saveDB();
-    if (rec) recalcHiveStatus(rec.hiveNum);
+    if (rec) {
+        recalcHiveStatus(rec.hiveNum);
+        if (rec.type === 'observe' && rec.queenStatus === '왕대확인') {
+            const otherCheck = DB.diaries.some(d => d.hiveNum === rec.hiveNum && d.type === 'observe' && d.queenStatus === '왕대확인');
+            const queenCheck = (DB.queens || []).some(q => q.hiveNum === rec.hiveNum && q.event === '왕대확인');
+            if (!otherCheck && !queenCheck) {
+                DB.swarmAlerts = (DB.swarmAlerts || []).filter(a => a.hiveNum !== rec.hiveNum);
+                saveDB();
+            }
+        }
+    }
+    renderHiveGrid();
     updateHomeSummary();
+    checkSwarmAlerts();
     renderCalendar();
     renderDayEvents(calSelectedDate);
     showToast('삭제되었습니다');
@@ -2403,15 +2923,32 @@ function deleteCalSchedule(id) {
     showToast('삭제되었습니다');
 }
 
+let calDiseaseEditStatus = 'treating';
+
+function selectCalDiseaseStatus(status, btn) {
+    calDiseaseEditStatus = status;
+    ['cal-dedit-treating','cal-dedit-watch','cal-dedit-done'].forEach(id => {
+        document.getElementById(id).classList.remove('active');
+    });
+    btn.classList.add('active');
+}
+
 function editCalDisease(id) {
     const r = DB.diseases.find(d => d.id === Number(id));
     if (!r) return;
+    calDiseaseEditStatus = r.status || 'treating';
     document.getElementById('cal-disease-edit-id').value = id;
     document.getElementById('cal-disease-edit-date').value = r.date;
     document.getElementById('cal-disease-edit-type').value = r.diseaseType || '';
     document.getElementById('cal-disease-edit-medicine').value = r.medicine || '';
     document.getElementById('cal-disease-edit-memo').value = r.memo || '';
     document.getElementById('cal-disease-edit-hive').textContent = r.hiveNum || '';
+    // 상태 버튼 초기화
+    ['cal-dedit-treating','cal-dedit-watch','cal-dedit-done'].forEach(btnId => {
+        document.getElementById(btnId).classList.remove('active');
+    });
+    const statusMap = { treating:'cal-dedit-treating', watch:'cal-dedit-watch', done:'cal-dedit-done' };
+    if (statusMap[r.status]) document.getElementById(statusMap[r.status]).classList.add('active');
     document.getElementById('cal-disease-edit-modal').classList.add('show');
 }
 
@@ -2419,11 +2956,14 @@ function saveCalDiseaseEdit() {
     const id = Number(document.getElementById('cal-disease-edit-id').value);
     const idx = DB.diseases.findIndex(d => d.id === id);
     if (idx === -1) return;
+    const hiveNum = DB.diseases[idx].hiveNum;
     DB.diseases[idx].date = document.getElementById('cal-disease-edit-date').value;
     DB.diseases[idx].diseaseType = document.getElementById('cal-disease-edit-type').value;
     DB.diseases[idx].medicine = document.getElementById('cal-disease-edit-medicine').value;
     DB.diseases[idx].memo = document.getElementById('cal-disease-edit-memo').value;
+    DB.diseases[idx].status = calDiseaseEditStatus;
     saveDB();
+    recalcHiveStatus(hiveNum);
     closeModal('cal-disease-edit-modal');
     renderCalendar();
     renderDayEvents(calSelectedDate);
@@ -2597,7 +3137,7 @@ function renderCustomerList() {
             </div>
             <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
                 <div style="font-size:0.82rem;color:var(--tx-sub);">총 매출</div>
-                <div style="font-size:0.95rem;font-weight:900;color:#4caf50;">${formatMoney(totalAmt)}원</div>
+                <div style="font-size:0.95rem;font-weight:900;color:#4caf50;">${formatMoney(totalAmt)}</div>
             </div>
             <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
                 <div style="font-size:0.82rem;color:var(--tx-sub);">단골</div>
@@ -2632,7 +3172,7 @@ function renderCustomerList() {
                     <div style="font-size:0.82rem;color:var(--tx-sub);">최근: ${c.lastDate || '-'}</div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:1rem;font-weight:900;color:#4caf50;">+${formatMoney(displayAmt)}원</div>
+                    <div style="font-size:1rem;font-weight:900;color:#4caf50;">+${formatMoney(displayAmt)}</div>
                     <div style="display:flex;gap:6px;margin-top:4px;">
                         <button class="btn-sm" style="padding:4px 10px;font-size:0.75rem;" onclick="event.stopPropagation();editCustomer(${c.id})">수정</button>
                         <button class="btn-danger" style="padding:4px 10px;font-size:0.75rem;" onclick="event.stopPropagation();deleteCustomer(${c.id})">삭제</button>
@@ -2686,7 +3226,7 @@ function showCustomerDetail(id) {
             <div style="font-size:0.9rem;margin-bottom:6px;">📅 첫 거래: ${c.firstDate || '-'}</div>
             <div style="font-size:0.9rem;margin-bottom:6px;">📅 최근 거래: ${c.lastDate || '-'}</div>
             <div style="font-size:0.9rem;margin-bottom:6px;">🛒 총 구매: ${c.purchases || 1}회</div>
-            <div style="font-size:1rem;font-weight:900;color:#4caf50;">💰 총 금액: ${formatMoney(c.totalAmount || 0)}원</div>
+            <div style="font-size:1rem;font-weight:900;color:#4caf50;">💰 총 금액: ${formatMoney(c.totalAmount || 0)}</div>
             ${c.memo ? `<div style="font-size:0.88rem;color:var(--tx-sub);margin-top:6px;">📝 ${c.memo}</div>` : ''}
         </div>
         <div style="font-size:0.9rem;font-weight:800;color:var(--tx-amber);margin-bottom:8px;">구매 내역 (${purchases.length}건)</div>
@@ -2694,7 +3234,7 @@ function showCustomerDetail(id) {
             <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;">
                 <div style="display:flex;justify-content:space-between;">
                     <span style="font-size:0.9rem;font-weight:700;">${p.category}</span>
-                    <span style="font-size:0.9rem;font-weight:900;color:#4caf50;">+${formatMoney(p.amount)}원</span>
+                    <span style="font-size:0.9rem;font-weight:900;color:#4caf50;">+${formatMoney(p.amount)}</span>
                 </div>
                 <div style="font-size:0.82rem;color:var(--tx-sub);">${p.date}${p.memo ? ' · ' + p.memo : ''}</div>
             </div>
@@ -2792,21 +3332,19 @@ function switchView(name) {
     if (name === 'diary') {
         document.getElementById('view-record').classList.add('active');
         document.getElementById('nav-record').classList.add('active');
-        // 일지 탭 활성화
         document.getElementById('record-diary-content').style.display = 'block';
         document.getElementById('record-disease-content').style.display = 'none';
-        document.getElementById('record-tab-diary').classList.add('active');
-        document.getElementById('record-tab-disease').classList.remove('active');
+        document.getElementById('record-list-content').style.display = 'none';
+        switchRecordTab('diary', document.getElementById('record-tab-diary'));
         return;
     }
     if (name === 'disease') {
         document.getElementById('view-record').classList.add('active');
         document.getElementById('nav-record').classList.add('active');
-        // 방역 탭 활성화
         document.getElementById('record-diary-content').style.display = 'none';
         document.getElementById('record-disease-content').style.display = 'block';
-        document.getElementById('record-tab-diary').classList.remove('active');
-        document.getElementById('record-tab-disease').classList.add('active');
+        document.getElementById('record-list-content').style.display = 'none';
+        switchRecordTab('disease', document.getElementById('record-tab-disease'));
         return;
     }
     // customer → account 뷰의 고객 탭으로
@@ -2846,6 +3384,8 @@ function switchRecordTab(tab, btn) {
         renderDiseaseFilterHive();
         renderDiaryList();
         renderDiseaseList();
+        // 서브탭 초기상태 복원 (일지 탭 활성)
+        switchListSubTab('diary', document.getElementById('list-sub-diary'));
     }
     // 일지/방역 탭 전환 시 작성폼으로 복원
     if (tab === 'diary') {
@@ -2856,28 +3396,24 @@ function switchRecordTab(tab, btn) {
     }
 }
 
+// 내역 탭 내 일지/방역 서브탭 전환
+function switchListSubTab(tab, btn) {
+    // 서브탭 스타일 초기화
+    ['list-sub-diary','list-sub-disease'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.style.color = 'var(--tx-sub)'; el.style.borderBottom = '3px solid transparent'; }
+    });
+    // 활성 탭 강조
+    if (btn) { btn.style.color = 'var(--tx-gold)'; btn.style.borderBottom = '3px solid var(--tx-gold)'; }
+    // 섹션 전환
+    document.getElementById('record-list-diary-section').style.display = tab === 'diary' ? 'block' : 'none';
+    document.getElementById('record-list-disease-section').style.display = tab === 'disease' ? 'block' : 'none';
+}
+
 // 앱 시작 시 첫 탭 활성화
 document.addEventListener('DOMContentLoaded', () => {
     switchRecordTab('diary', document.getElementById('record-tab-diary'));
 });
-
-function switchDiaryTab(tab, btn) {
-    const isList = tab === 'list';
-    document.getElementById('diary-write').style.display = isList ? 'none' : 'block';
-    document.getElementById('diary-list').style.display = isList ? 'block' : 'none';
-    const listBtn = document.getElementById('diary-tab-list');
-    if (listBtn) listBtn.style.background = isList ? '#8B5E3C' : '#2196F3';
-    if (isList) { renderDiaryFilterHive(); renderDiaryList(); }
-}
-
-function switchDiseaseTab(tab, btn) {
-    const isList = tab === 'list';
-    document.getElementById('disease-write').style.display = isList ? 'none' : 'block';
-    document.getElementById('disease-list').style.display = isList ? 'block' : 'none';
-    const listBtn = document.getElementById('disease-tab-list');
-    if (listBtn) listBtn.style.background = isList ? '#8B5E3C' : '#2196F3';
-    if (isList) { renderDiseaseFilterHive(); renderDiseaseList(); }
-}
 
 function switchAccTab(tab, btn) {
     document.querySelectorAll('#view-account .tab-btn').forEach(b => b.classList.remove('active'));
@@ -2892,7 +3428,7 @@ function switchAccTab(tab, btn) {
 function renderAccMonthly() {
     const container = document.getElementById('acc-monthly-content');
     if (!DB.accounts || DB.accounts.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><p>내역이 없습니다</p></div>';
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><p>내역이 없습니다<br><small style="color:var(--tx-sub);font-size:0.8rem;">기록 탭에서 작성해보세요</small></p></div>';
         return;
     }
 
@@ -2908,7 +3444,7 @@ function renderAccMonthly() {
 
     const sorted = Object.keys(months).sort((a, b) => b.localeCompare(a));
     if (sorted.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><p>내역이 없습니다</p></div>';
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><p>내역이 없습니다<br><small style="color:var(--tx-sub);font-size:0.8rem;">기록 탭에서 작성해보세요</small></p></div>';
         return;
     }
 
@@ -2922,15 +3458,15 @@ function renderAccMonthly() {
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;">
                 <div style="background:rgba(244,67,54,0.08);border-radius:10px;padding:10px;">
                     <div style="font-size:0.72rem;color:var(--tx-sub);margin-bottom:4px;">💸 지출</div>
-                    <div style="font-size:0.9rem;font-weight:900;color:#f44336;">-${formatMoney(expense)}원</div>
+                    <div style="font-size:0.9rem;font-weight:900;color:#f44336;">-${formatMoney(expense)}</div>
                 </div>
                 <div style="background:rgba(76,175,80,0.08);border-radius:10px;padding:10px;">
                     <div style="font-size:0.72rem;color:var(--tx-sub);margin-bottom:4px;">💰 수입</div>
-                    <div style="font-size:0.9rem;font-weight:900;color:#4caf50;">+${formatMoney(income)}원</div>
+                    <div style="font-size:0.9rem;font-weight:900;color:#4caf50;">+${formatMoney(income)}</div>
                 </div>
                 <div style="background:rgba(${balance>=0?'76,175,80':'244,67,54'},0.08);border-radius:10px;padding:10px;">
                     <div style="font-size:0.72rem;color:var(--tx-sub);margin-bottom:4px;">📈 순이익</div>
-                    <div style="font-size:0.9rem;font-weight:900;color:${balance>=0?'#4caf50':'#f44336'};">${balance>=0?'+':''}${formatMoney(balance)}원</div>
+                    <div style="font-size:0.9rem;font-weight:900;color:${balance>=0?'#4caf50':'#f44336'};">${balance>=0?'+':''}${formatMoney(balance)}</div>
                 </div>
             </div>
         </div>`;
@@ -2940,16 +3476,37 @@ function renderAccMonthly() {
 // ==================== 테마 ====================
 function toggleTheme() {
     document.body.classList.toggle('light-mode');
-    const btn = document.querySelector('.btn-icon');
-    btn.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
-    localStorage.setItem('dy_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+    const isLight = document.body.classList.contains('light-mode');
+    const btn = document.getElementById('theme-btn');
+    if (btn) btn.textContent = isLight ? '☀️' : '🌙';
+    localStorage.setItem('dy_theme', isLight ? 'light' : 'dark');
 }
 
 // ==================== 홈 렌더링 ====================
+let hiveStatusFilter = 'all';
+
+function setHiveFilter(status, btn) {
+    hiveStatusFilter = status;
+    document.querySelectorAll('[id^="hf-"]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderHiveGrid();
+}
+
 function renderHiveGrid() {
     const grid = document.getElementById('hive-grid');
     const empty = document.getElementById('hive-empty');
-    const activeHives = Object.entries(DB.hives).filter(([k,v]) => v.active);
+    const searchVal = (document.getElementById('hive-search')?.value || '').trim().toLowerCase();
+
+    let activeHives = Object.entries(DB.hives).filter(([k,v]) => v.active);
+
+    // 상태 필터
+    if (hiveStatusFilter !== 'all') {
+        activeHives = activeHives.filter(([k,v]) => (v.status || 'ok') === hiveStatusFilter);
+    }
+    // 검색 필터
+    if (searchVal) {
+        activeHives = activeHives.filter(([k]) => k.toLowerCase().includes(searchVal));
+    }
 
     if (activeHives.length === 0) {
         grid.style.display = 'none';
@@ -2972,6 +3529,46 @@ function updateHomeSummary() {
     document.getElementById('stat-ok').textContent = hives.filter(h => (h.status||'ok') === 'ok').length;
     document.getElementById('stat-warn').textContent = hives.filter(h => h.status === 'warn').length;
     document.getElementById('stat-danger').textContent = hives.filter(h => h.status === 'danger').length;
+    renderHomeTodaySchedule();
+}
+
+function renderHomeTodaySchedule() {
+    const container = document.getElementById('home-today-schedule');
+    if (!container) return;
+    const today = toLocalDateStr(new Date());
+    const items = [];
+
+    // 오늘 예정된 개인 일정
+    (DB.schedules || []).filter(s => s.date === today).forEach(s => {
+        items.push({ icon: s._diseaseAlarm ? '🔔' : '📅', color:'#2196F3', text: s.title });
+    });
+
+    // 분봉 주의
+    (DB.swarmAlerts || []).filter(a => !a.dismissed && a.alertDate <= today && a.alertDate10 >= today).forEach(a => {
+        const days = Math.floor((new Date(today) - new Date(a.observeDate)) / 86400000);
+        items.push({ icon:'🐝', color:'#ff9800', text:`${a.hiveNum} 분봉 주의 (왕대확인 ${days}일째)` });
+    });
+
+    // 치료 중인 방역
+    const treatingByHive = {};
+    (DB.diseases || []).filter(d => d.status === 'treating').forEach(d => {
+        if (!treatingByHive[d.hiveNum] || d.date > treatingByHive[d.hiveNum].date) treatingByHive[d.hiveNum] = d;
+    });
+    Object.values(treatingByHive).forEach(d => {
+        const days = Math.floor((new Date(today) - new Date(d.date)) / 86400000);
+        items.push({ icon:'💊', color:'#f44336', text:`${d.hiveNum} 방역 치료 ${days}일째 (${d.diseaseType||''})` });
+    });
+
+    if (items.length === 0) {
+        container.innerHTML = `<div style="padding:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;text-align:center;color:var(--tx-sub);font-size:0.85rem;">오늘 일정 없음 ✅</div>`;
+        return;
+    }
+
+    container.innerHTML = items.map(i => `
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid ${i.color};border-radius:12px;margin-bottom:8px;">
+            <span style="font-size:1.1rem;">${i.icon}</span>
+            <span style="font-size:0.88rem;font-weight:700;color:var(--tx-main);">${i.text}</span>
+        </div>`).join('');
 }
 
 function showHiveDetail(name) {
@@ -3006,6 +3603,7 @@ function showHiveDetail(name) {
             <button class="btn-sm" onclick="closeModal('hive-detail-modal');switchView('diary');">📔 일지 기록</button>
             <button class="btn-sm" onclick="closeModal('hive-detail-modal');switchView('disease');">🛡️ 방역 기록</button>
         </div>
+        <button class="btn-sm" onclick="closeModal('hive-detail-modal');focusHiveOnMap('${name}');" style="width:100%;margin-top:8px;background:rgba(33,150,243,0.15);border-color:rgba(33,150,243,0.4);color:#2196F3;">🗺️ 지도에서 위치 보기</button>
         <button class="btn-sm" onclick="closeModal('hive-detail-modal');" style="width:100%;margin-top:8px;">닫기</button>
     `;
     document.getElementById('hive-detail-content').innerHTML = content;
@@ -3015,14 +3613,6 @@ function showHiveDetail(name) {
 // ==================== 벌통 선택 렌더링 ====================
 function renderHiveSelects() {
     const activeHives = Object.keys(DB.hives).filter(k => DB.hives[k].active);
-    const html = activeHives.length === 0
-        ? '<div style="color:var(--tx-sub);font-size:0.82rem;">활성화된 벌통이 없습니다</div>'
-        : activeHives.map((name, i) => `
-            <button class="hive-select-btn ${i===0?'selected':''}" 
-                    onclick="selectHiveBtn(this,'${name}','${arguments[0]||''}')" 
-                    data-hive="${name}">${name.replace('번통','')}</button>
-          `).join('');
-
     ['diary-hive-select','disease-hive-select'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -3089,13 +3679,17 @@ function saveDiary() {
     } else if (currentDiaryType === 'swarm') {
         extra.swarmDate = document.getElementById('swarm-date').value;
         extra.swarmCaptured = document.getElementById('swarm-captured').value;
+        // 분봉 발생 → 군세 감소 → 주의 상태
+        updateHiveStatus(hiveNum, 'warn');
     } else if (currentDiaryType === 'capture') {
         extra.captureLocation = document.getElementById('capture-location').value;
         extra.colonySize = document.getElementById('colony-size').value;
+        // 포획 후 새 통 입봉 → 관찰 필요
+        if (DB.hives[hiveNum] && DB.hives[hiveNum].status === 'ok') updateHiveStatus(hiveNum, 'warn');
     } else if (currentDiaryType === 'harvest') {
         extra.harvestKg = document.getElementById('harvest-kg').value;
         extra.harvestStorage = document.getElementById('harvest-storage').value;
-        // 채밀 수입 자동 제안
+        // 채밀 후 군세 점검 필요 → 단기 주의
         if (extra.harvestKg) {
             showToast('채밀 완료! 가계부에서 수입을 기록하세요 🍯');
         }
@@ -3115,12 +3709,12 @@ function saveDiary() {
     DB.diaries.push(record);
     saveDB();
     showToast('📔 일지가 저장되었습니다');
-    const savedHive = hiveNum; // 저장 전 선택된 벌통 기억
+    const savedHive = hiveNum;
     resetDiaryForm();
     renderAll();
     // 저장 후 상단으로 스크롤
-    const recordView = document.getElementById('view-record');
-    if (recordView) recordView.scrollTop = 0;
+    const scrollArea = document.getElementById('record-scroll-area');
+    if (scrollArea) scrollArea.scrollTop = 0;
     // 저장 후 선택했던 벌통 유지
     const grid = document.getElementById('diary-hive-select');
     if (grid && savedHive) {
@@ -3160,7 +3754,7 @@ function renderDiaryList() {
     if (endFilter) records = records.filter(r => r.date <= endFilter);
 
     if (records.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📔</div><p>기록이 없습니다</p></div>';
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📔</div><p>일지 기록이 없습니다<br><small style="color:var(--tx-sub);font-size:0.8rem;">📔 일지 탭에서 첫 기록을 남겨보세요</small></p></div>';
         return;
     }
 
@@ -3173,6 +3767,7 @@ function renderDiaryList() {
                 </div>
                 <div style="display:flex;gap:6px;align-items:center;">
                     <span class="record-date">${r.date}</span>
+                    <button class="btn-sm" style="padding:4px 10px;font-size:0.72rem;" onclick="editDiary(${r.id})">수정</button>
                     <button class="btn-danger" style="padding:4px 10px;font-size:0.72rem;" onclick="deleteDiary(${r.id})">삭제</button>
                 </div>
             </div>
@@ -3187,7 +3782,7 @@ function renderDiaryList() {
 }
 
 function filterDiary(type, btn) {
-    document.querySelectorAll('#diary-list .btn-sm').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#record-list-diary-section .btn-sm').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     diaryFilterType = type;
     renderDiaryList();
@@ -3205,8 +3800,8 @@ function applyDiaryFilter() { renderDiaryList(); }
 
 function resetDiaryFilter() {
     diaryFilterType = 'all';
-    document.querySelectorAll('#diary-list .btn-sm').forEach(b => b.classList.remove('active'));
-    const firstBtn = document.querySelector('#diary-list .btn-sm');
+    document.querySelectorAll('#record-list-diary-section .btn-sm').forEach(b => b.classList.remove('active'));
+    const firstBtn = document.querySelector('#record-list-diary-section .btn-sm');
     if (firstBtn) firstBtn.classList.add('active');
     const hiveEl = document.getElementById('diary-filter-hive');
     const startEl = document.getElementById('diary-filter-start');
@@ -3222,10 +3817,21 @@ function deleteDiary(id) {
     const rec = DB.diaries.find(d => d.id === Number(id));
     DB.diaries = DB.diaries.filter(d => d.id !== Number(id));
     saveDB();
-    // 해당 벌통 상태 재계산
-    if (rec) recalcHiveStatus(rec.hiveNum);
+    if (rec) {
+        recalcHiveStatus(rec.hiveNum);
+        if (rec.type === 'observe' && rec.queenStatus === '왕대확인') {
+            const otherCheck = DB.diaries.some(d => d.hiveNum === rec.hiveNum && d.type === 'observe' && d.queenStatus === '왕대확인');
+            const queenCheck = (DB.queens || []).some(q => q.hiveNum === rec.hiveNum && q.event === '왕대확인');
+            if (!otherCheck && !queenCheck) {
+                DB.swarmAlerts = (DB.swarmAlerts || []).filter(a => a.hiveNum !== rec.hiveNum);
+                saveDB();
+            }
+        }
+    }
     renderDiaryList();
+    renderHiveGrid();
     updateHomeSummary();
+    if (typeof renderCalendar === 'function') renderCalendar();
     showToast('삭제되었습니다');
 }
 
@@ -3394,23 +4000,17 @@ function saveDisease() {
         showToast(`💊 방제 저장 + 📅 ${alarmDateStr} 재방문 알림 등록됨`);
     }
 
-    // 상태 업데이트
-    if (currentDiseaseStatus === 'treating') updateHiveStatus(hiveNum, 'danger');
-    else if (currentDiseaseStatus === 'watch') updateHiveStatus(hiveNum, 'warn');
-    else if (currentDiseaseStatus === 'done') {
-        const stillSick = DB.diseases.some(d => d.hiveNum === hiveNum && d.status !== 'done' && d.id !== record.id);
-        if (!stillSick) updateHiveStatus(hiveNum, 'ok');
-    }
-
+    // 상태 업데이트 (저장 후 전체 재계산으로 정합성 보장)
     saveDB();
+    recalcHiveStatus(hiveNum);
     showToast('💊 방제 기록이 저장되었습니다');
     const savedDiseaseHive = hiveNum;
     resetDiseaseForm();
     renderAll();
     if (typeof renderCalendar === 'function') renderCalendar();
-    // 저장 후 뷰 상단으로 스크롤
-    const recordView2 = document.getElementById('view-record');
-    if (recordView2) recordView2.scrollTop = 0;
+    // 저장 후 상단으로 스크롤
+    const scrollArea2 = document.getElementById('record-scroll-area');
+    if (scrollArea2) scrollArea2.scrollTop = 0;
     // 저장 후 선택했던 벌통 유지
     const dGrid = document.getElementById('disease-hive-select');
     if (dGrid && savedDiseaseHive) {
@@ -3458,7 +4058,7 @@ function renderDiseaseList() {
     if (endFilter) records = records.filter(r => r.date <= endFilter);
 
     if (records.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-icon">🛡️</div><p>방역 기록이 없습니다</p></div>';
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">🛡️</div><p>방역 기록이 없습니다<br><small style="color:var(--tx-sub);font-size:0.8rem;">🛡️ 방역 탭에서 기록해보세요</small></p></div>';
         return;
     }
 
@@ -3485,7 +4085,7 @@ function renderDiseaseList() {
 }
 
 function filterDiseaseList(status, btn) {
-    document.querySelectorAll('#disease-list .btn-sm').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#record-list-disease-section .btn-sm').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     diseaseFilterStatus = status;
     renderDiseaseList();
@@ -3503,8 +4103,8 @@ function applyDiseaseFilter() { renderDiseaseList(); }
 
 function resetDiseaseFilter() {
     diseaseFilterStatus = 'all';
-    document.querySelectorAll('#disease-list .btn-sm').forEach(b => b.classList.remove('active'));
-    const firstBtn = document.querySelector('#disease-list .btn-sm');
+    document.querySelectorAll('#record-list-disease-section .btn-sm').forEach(b => b.classList.remove('active'));
+    const firstBtn = document.querySelector('#record-list-disease-section .btn-sm');
     if (firstBtn) firstBtn.classList.add('active');
     const hiveEl = document.getElementById('disease-filter-hive');
     const startEl = document.getElementById('disease-filter-start');
@@ -3518,12 +4118,18 @@ function resetDiseaseFilter() {
 function editDisease(id) {
     const r = DB.diseases.find(d => d.id === Number(id));
     if (!r) return;
-    // cal-disease-edit-modal 재사용
+    calDiseaseEditStatus = r.status || 'treating';
     document.getElementById('cal-disease-edit-id').value = r.id;
     document.getElementById('cal-disease-edit-date').value = r.date;
     document.getElementById('cal-disease-edit-type').value = r.diseaseType || '';
     document.getElementById('cal-disease-edit-medicine').value = r.medicine || '';
     document.getElementById('cal-disease-edit-memo').value = r.memo || '';
+    document.getElementById('cal-disease-edit-hive').textContent = r.hiveNum || '';
+    ['cal-dedit-treating','cal-dedit-watch','cal-dedit-done'].forEach(btnId => {
+        document.getElementById(btnId).classList.remove('active');
+    });
+    const statusMap = { treating:'cal-dedit-treating', watch:'cal-dedit-watch', done:'cal-dedit-done' };
+    if (statusMap[r.status]) document.getElementById(statusMap[r.status]).classList.add('active');
     document.getElementById('cal-disease-edit-modal').classList.add('show');
 }
 
@@ -3532,9 +4138,9 @@ function deleteDisease(id) {
     const rec = DB.diseases.find(d => d.id === Number(id));
     DB.diseases = DB.diseases.filter(d => d.id !== Number(id));
     saveDB();
-    // 해당 벌통 상태 재계산
     if (rec) recalcHiveStatus(rec.hiveNum);
     renderDiseaseList();
+    renderHiveGrid();
     updateHomeSummary();
     showToast('삭제되었습니다');
 }
@@ -3740,15 +4346,22 @@ function saveAccount() {
     DB.accounts.push(record);
     saveDB();
     showToast('💰 저장되었습니다');
+    // 폼 전체 리셋
     document.getElementById('acc-amount').value = '';
     document.getElementById('acc-memo').value = '';
     document.getElementById('acc-category').value = '';
     document.getElementById('acc-qty').value = '';
     document.getElementById('acc-unit-price').value = '';
+    document.getElementById('acc-custom').value = '';
+    document.getElementById('acc-custom-wrap').style.display = 'none';
     document.getElementById('calc-badge').style.display = 'none';
     document.getElementById('sugar-fields').style.display = 'none';
+    document.getElementById('sugar-kg').value = '';
     if (document.getElementById('acc-customer')) document.getElementById('acc-customer').value = '';
     if (document.getElementById('acc-customer-phone')) document.getElementById('acc-customer-phone').value = '';
+    // 날짜는 오늘로 재설정
+    const today = toLocalDateStr(new Date());
+    document.getElementById('acc-date').value = today;
     renderAccMonth();
     renderAccList();
     // 저장 후 내역 탭으로 자동 이동
@@ -3764,7 +4377,7 @@ function renderAccList(filterType = 'all') {
     else if (filterType === 'sugar') records = records.filter(r=>r.category==='설탕');
 
     if (records.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-icon">💰</div><p>이번 달 내역이 없습니다</p></div>';
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">💰</div><p>이번 달 내역이 없습니다<br><small style="color:var(--tx-sub);font-size:0.8rem;">📝 기록 탭에서 수입/지출을 등록하세요</small></p></div>';
         return;
     }
 
@@ -3773,7 +4386,7 @@ function renderAccList(filterType = 'all') {
             <div class="acc-item">
                 <div class="acc-item-left">
                     <div class="acc-item-name">${r.category}${r.hiveNum ? ' · '+r.hiveNum : ''}${r.customerName ? ' · 👤'+r.customerName : ''}</div>
-                    <div class="acc-item-sub">${r.date}${r.qty ? ` | ${r.qty}개 × ${formatMoney(r.unitPrice)}원` : ''}${r.sugarKg ? ' | '+r.sugarKg+'kg' : ''}${r.memo ? ' | '+r.memo : ''}</div>
+                    <div class="acc-item-sub">${r.date}${r.qty ? ` | ${r.qty}개 × ${formatMoney(r.unitPrice)}` : ''}${r.sugarKg ? ' | '+r.sugarKg+'kg' : ''}${r.memo ? ' | '+r.memo : ''}</div>
                 </div>
                 <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                     <div class="acc-item-amount ${r.type}">${r.type==='income'?'+':'-'}${formatMoney(r.amount)}</div>
@@ -3902,6 +4515,7 @@ function renderHiveManage() {
                     <input type="checkbox" ${data.active?'checked':''} onchange="toggleHive('${name}', this.checked)" style="width:20px;height:20px;">
                     <span style="font-size:0.8rem;color:var(--tx-sub);">${data.active?'활성':'비활성'}</span>
                 </label>
+                <button class="btn-sm" style="padding:6px 10px;font-size:0.75rem;" onclick="renameHive('${name}')">수정</button>
                 <button class="btn-danger" style="padding:6px 10px;font-size:0.75rem;" onclick="deleteHive('${name}')">삭제</button>
             </div>
         </div>
@@ -3929,6 +4543,94 @@ function toggleHive(name, active) {
         saveDB();
         renderAll();
     }
+}
+
+// ==================== 일지 수정 ====================
+function editDiary(id) {
+    const r = DB.diaries.find(d => d.id === Number(id));
+    if (!r) return;
+    const typeLabels = {observe:'🔍 관찰', swarm:'🐝 분봉', capture:'📦 포획', harvest:'🍯 채밀'};
+    document.getElementById('diary-edit-id').value = id;
+    document.getElementById('diary-edit-type').textContent = typeLabels[r.type] || r.type;
+    document.getElementById('diary-edit-hive').textContent = r.hiveNum;
+    document.getElementById('diary-edit-date').value = r.date;
+    document.getElementById('diary-edit-memo').value = r.memo || '';
+    document.getElementById('diary-edit-modal').classList.add('show');
+}
+
+function saveDiaryEdit() {
+    const id = Number(document.getElementById('diary-edit-id').value);
+    const idx = DB.diaries.findIndex(d => d.id === id);
+    if (idx === -1) return;
+    DB.diaries[idx].date = document.getElementById('diary-edit-date').value;
+    DB.diaries[idx].memo = document.getElementById('diary-edit-memo').value;
+    saveDB();
+    recalcHiveStatus(DB.diaries[idx].hiveNum);
+    closeModal('diary-edit-modal');
+    renderDiaryList();
+    if (typeof renderCalendar === 'function') renderCalendar();
+    showToast('✅ 일지가 수정되었습니다');
+}
+
+// ==================== 여왕벌 이벤트 수정 ====================
+function editQueenEvent(id) {
+    const r = (DB.queens || []).find(q => q.id === Number(id));
+    if (!r) return;
+    document.getElementById('queen-edit-id').value = id;
+    document.getElementById('queen-edit-hive').textContent = r.hiveNum;
+    document.getElementById('queen-edit-event-label').textContent = QUEEN_EVENT_LABELS[r.event] || r.event;
+    document.getElementById('queen-edit-date').value = r.date;
+    document.getElementById('queen-edit-memo').value = r.memo || '';
+    document.getElementById('queen-edit-modal').classList.add('show');
+}
+
+function saveQueenEventEdit() {
+    const id = Number(document.getElementById('queen-edit-id').value);
+    const idx = (DB.queens || []).findIndex(q => q.id === id);
+    if (idx === -1) return;
+    DB.queens[idx].date = document.getElementById('queen-edit-date').value;
+    DB.queens[idx].memo = document.getElementById('queen-edit-memo').value;
+    saveDB();
+    closeModal('queen-edit-modal');
+    renderQueenHistory();
+    if (typeof renderCalendar === 'function') renderCalendar();
+    showToast('✅ 여왕벌 이력이 수정되었습니다');
+}
+
+// ==================== 벌통 이름 수정 ====================
+function renameHive(oldName) {
+    document.getElementById('hive-rename-old').value = oldName;
+    document.getElementById('hive-rename-new').value = oldName;
+    document.getElementById('hive-rename-modal').classList.add('show');
+}
+
+function saveHiveRename() {
+    const oldName = document.getElementById('hive-rename-old').value;
+    const newName = document.getElementById('hive-rename-new').value.trim();
+    if (!newName) { showToast('이름을 입력하세요'); return; }
+    if (newName === oldName) { closeModal('hive-rename-modal'); return; }
+    if (DB.hives[newName]) { showToast('이미 존재하는 이름입니다'); return; }
+
+    // hives 복사
+    DB.hives[newName] = { ...DB.hives[oldName] };
+    delete DB.hives[oldName];
+
+    // 관련 기록 일괄 변경
+    (DB.diaries || []).forEach(d => { if (d.hiveNum === oldName) d.hiveNum = newName; });
+    (DB.diseases || []).forEach(d => { if (d.hiveNum === oldName) d.hiveNum = newName; });
+    (DB.queens || []).forEach(q => { if (q.hiveNum === oldName) q.hiveNum = newName; });
+    (DB.accounts || []).forEach(a => { if (a.hiveNum === oldName) a.hiveNum = newName; });
+    (DB.schedules || []).forEach(s => { if (s.hiveNum === oldName) s.hiveNum = newName; });
+    (DB.swarmAlerts || []).forEach(a => { if (a.hiveNum === oldName) a.hiveNum = newName; });
+    if (DB.locations && DB.locations[oldName]) {
+        DB.locations[newName] = DB.locations[oldName];
+        delete DB.locations[oldName];
+    }
+
+    saveDB();
+    closeModal('hive-rename-modal');
+    renderAll();
+    showToast(`✅ ${oldName} → ${newName} 변경 완료`);
 }
 
 function deleteHive(name) {
@@ -3966,6 +4668,37 @@ function recalcHiveStatus(hiveNum) {
     saveDB();
     renderHiveGrid();
     updateHomeSummary();
+}
+
+// 앱 시작 시 / 전체 정합성 보장 - 모든 벌통 상태를 실제 기록 기반으로 재계산
+function recalcAllHiveStatuses() {
+    let changed = false;
+    Object.keys(DB.hives).forEach(hiveNum => {
+        if (!DB.hives[hiveNum].active) return;
+
+        let newStatus = 'ok';
+
+        const activeDisease = (DB.diseases || []).filter(d => d.hiveNum === hiveNum && d.status !== 'done');
+        if (activeDisease.some(d => d.status === 'treating')) {
+            newStatus = 'danger';
+        } else if (activeDisease.some(d => d.status === 'watch')) {
+            newStatus = 'warn';
+        } else {
+            const lastDiary = [...(DB.diaries || [])]
+                .filter(d => d.hiveNum === hiveNum && d.type === 'observe')
+                .sort((a, b) => b.date.localeCompare(a.date))[0];
+            if (lastDiary) {
+                if (lastDiary.escapeStatus === '도거발생') newStatus = 'danger';
+                else if (lastDiary.queenStatus === '교체필요' || lastDiary.escapeStatus === '도거위험') newStatus = 'warn';
+            }
+        }
+
+        if (DB.hives[hiveNum].status !== newStatus) {
+            DB.hives[hiveNum].status = newStatus;
+            changed = true;
+        }
+    });
+    if (changed) saveDB();
 }
 
 function updateHiveStatus(name, status) {
@@ -4048,7 +4781,6 @@ let markerLayer = null;
 
 function renderMapMarkers() {
     if (!mapInstance) return;
-    // 기존 마커 레이어 제거
     if (markerLayer) mapInstance.removeLayer(markerLayer);
     markerLayer = L.layerGroup().addTo(mapInstance);
 
@@ -4056,15 +4788,55 @@ function renderMapMarkers() {
         if (!loc.lat || !loc.lng) return;
         const hive = DB.hives[name] || {};
         const color = hive.status === 'danger' ? '#f44336' : hive.status === 'warn' ? '#ff9800' : '#4caf50';
-        L.circleMarker([loc.lat, loc.lng], {
-            color, fillColor: color, fillOpacity: 0.85, radius: 6, weight: 2
-        }).addTo(markerLayer).bindPopup(`
-            <b>🏺 ${name}</b><br>
-            ${hive.status === 'danger' ? '🔴 위험' : hive.status === 'warn' ? '🟡 주의' : '🟢 정상'}<br>
-            ${loc.isPublic ? '🌐 공개' : '🔒 비공개'}<br>
-            ${loc.memo ? '📝 ' + loc.memo : ''}
+        const marker = L.circleMarker([loc.lat, loc.lng], {
+            color, fillColor: color, fillOpacity: 0.85, radius: 10, weight: 2
+        }).addTo(markerLayer);
+
+        marker.bindPopup(`
+            <div style="font-size:0.95rem;font-weight:900;">🏺 ${name}</div>
+            <div style="font-size:0.82rem;margin-top:4px;">${hive.status === 'danger' ? '🔴 위험' : hive.status === 'warn' ? '🟡 주의' : '🟢 정상'}</div>
+            ${loc.memo ? `<div style="font-size:0.8rem;color:#666;margin-top:2px;">📝 ${loc.memo}</div>` : ''}
+            <div style="font-size:0.78rem;color:#888;margin-top:2px;">${loc.isPublic ? '🌐 공개' : '🔒 비공개'}</div>
         `);
+
+        // 마커 클릭 시 팝업 열기
+        marker.on('click', () => marker.openPopup());
+
+        // hiveNum으로 마커 참조 저장 (focusHiveOnMap에서 사용)
+        marker._hiveName = name;
     });
+}
+
+// 특정 벌통을 지도에서 포커스
+function focusHiveOnMap(hiveName) {
+    const loc = DB.locations[hiveName];
+    if (!loc || !loc.lat || !loc.lng) {
+        switchView('map');
+        setTimeout(() => showToast(`⚠️ ${hiveName} 위치가 등록되지 않았습니다`), 300);
+        return;
+    }
+    switchView('map');
+    setTimeout(() => flyToHive(hiveName), 200);
+}
+
+// 지도 내에서 특정 벌통 위치로 이동 + 팝업
+function flyToHive(hiveName) {
+    const loc = DB.locations[hiveName];
+    if (!loc || !loc.lat || !loc.lng) { showToast(`⚠️ ${hiveName} 위치가 등록되지 않았습니다`); return; }
+    if (!mapInstance) { showToast('지도를 먼저 로드하세요'); return; }
+
+    mapInstance.setView([loc.lat, loc.lng], 17, { animate: true });
+
+    // 해당 마커 팝업 열기
+    setTimeout(() => {
+        markerLayer && markerLayer.eachLayer(m => {
+            if (m._hiveName === hiveName) m.openPopup();
+        });
+    }, 400);
+
+    // 지도 영역으로 스크롤
+    const mapEl = document.getElementById('map');
+    if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function showAllHivesOnMap() {
@@ -4283,17 +5055,17 @@ function renderHiveLocationList() {
         return;
     }
     container.innerHTML = entries.map(([name, loc]) => `
-        <div class="record-card">
+        <div class="record-card" onclick="flyToHive('${name}')" style="cursor:pointer;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
                 <div>
-                    <div style="font-weight:800;color:var(--tx-main);">🏺 ${name}</div>
+                    <div style="font-weight:800;color:var(--tx-main);">🏺 ${name} <span style="font-size:0.75rem;color:var(--tx-sub);font-weight:400;">탭하면 지도 이동 📍</span></div>
                     <div style="font-size:0.78rem;color:var(--tx-sub);">${loc.lat?.toFixed(4)}, ${loc.lng?.toFixed(4)}</div>
                     ${loc.memo ? `<div style="font-size:0.8rem;color:var(--tx-sub);">${loc.memo}</div>` : ''}
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
                     <span style="font-size:0.75rem;">${loc.isPublic ? '🌐 공개' : '🔒 비공개'}</span>
                     <span style="font-size:0.7rem;">${loc.synced===false ? '📴 미동기' : '☁️ 저장됨'}</span>
-                    <div style="display:flex;gap:4px;">
+                    <div style="display:flex;gap:4px;" onclick="event.stopPropagation()">
                         <button class="btn-sm" style="padding:4px 10px;font-size:0.72rem;" onclick="editLocation('${name}')">수정</button>
                         <button class="btn-danger" style="padding:4px 10px;font-size:0.72rem;" onclick="deleteLocation('${name}')">삭제</button>
                     </div>
@@ -4359,16 +5131,29 @@ const photoData = {};
 
 function addPhotos(input, containerId) {
     const files = Array.from(input.files);
-    const container = document.getElementById(containerId);
     if (!photoData[containerId]) photoData[containerId] = [];
 
     files.forEach(file => {
         if (photoData[containerId].length >= 3) { showToast('사진은 최대 3장입니다'); return; }
         const reader = new FileReader();
         reader.onload = e => {
-            const src = e.target.result;
-            photoData[containerId].push(src);
-            renderPhotos(containerId);
+            const img = new Image();
+            img.onload = () => {
+                // 최대 800px, quality 0.6으로 압축 (원본 대비 약 10~20분의 1)
+                const MAX = 800;
+                const ratio = Math.min(MAX / img.width, MAX / img.height, 1);
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.round(img.width * ratio);
+                canvas.height = Math.round(img.height * ratio);
+                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                const compressed = canvas.toDataURL('image/jpeg', 0.6);
+                photoData[containerId].push(compressed);
+                renderPhotos(containerId);
+                // 저장 용량 경고
+                const totalSize = JSON.stringify(DB).length;
+                if (totalSize > 3500000) showToast('⚠️ 저장 용량이 많습니다. 백업을 권장합니다.');
+            };
+            img.src = e.target.result;
         };
         reader.readAsDataURL(file);
     });
@@ -4630,7 +5415,7 @@ function initAccCategories() {
 function restoreTheme() {
     if (localStorage.getItem('dy_theme') === 'light') {
         document.body.classList.add('light-mode');
-        const btn = document.querySelector('.btn-icon');
+        const btn = document.getElementById('theme-btn');
         if (btn) btn.textContent = '☀️';
     }
 }
@@ -4649,6 +5434,10 @@ window.switchView = function(name) {
     origSwitchView(name);
     updateBackBtn();
     if (name === 'map') {
+        // nav-map 명시적 활성화 (origSwitchView에서 처리되지만 보장)
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const navMap = document.getElementById('nav-map');
+        if (navMap) navMap.classList.add('active');
         // view가 active된 후 Leaflet이 크기를 제대로 계산하도록 충분한 딜레이
         setTimeout(() => {
             if (!mapInstance) {
@@ -4656,7 +5445,6 @@ window.switchView = function(name) {
             } else {
                 mapInstance.invalidateSize(true);
                 renderMapMarkers();
-                // 한 번 더 보장
                 setTimeout(() => mapInstance.invalidateSize(true), 300);
             }
         }, 150);
