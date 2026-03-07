@@ -1935,9 +1935,14 @@
             <div id="today-date-label" style="font-size:0.82rem;color:var(--tx-sub);"></div>
         </div>
         <div id="today-todo-content"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
-            <button class="btn-sm" onclick="closeModal('today-todo-modal')">닫기</button>
-            <button class="btn-primary" onclick="closeModal('today-todo-modal');switchView('record');" style="margin:0;">📔 기록하기</button>
+        <!-- 오늘 그만보기 -->
+        <label style="display:flex;align-items:center;gap:8px;margin-top:14px;cursor:pointer;padding:8px 0;border-top:1px solid var(--border);">
+            <input type="checkbox" id="todo-hide-today" style="width:18px;height:18px;accent-color:var(--tx-gold);">
+            <span style="font-size:0.85rem;color:var(--tx-sub);">오늘 하루 다시 보지 않기</span>
+        </label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+            <button class="btn-sm" onclick="closeTodayTodo()">닫기</button>
+            <button class="btn-primary" onclick="closeTodayTodo();switchView('record');" style="margin:0;">📔 기록하기</button>
         </div>
     </div>
 </div>
@@ -2386,6 +2391,13 @@ function renderQueenSummary() {
 // ==================== 오늘의 할 일 ====================
 function showTodayTodo() {
     const today = toLocalDateStr(new Date());
+
+    // 오늘 그만보기 체크 확인
+    try {
+        const hideDate = localStorage.getItem('todayTodoHideDate');
+        if (hideDate === today) return;
+    } catch(e) {}
+
     const items = [];
 
     // ① 오늘 만료/기간 내 분봉 주의
@@ -2449,7 +2461,21 @@ function showTodayTodo() {
             </div>`).join('');
     }
     content.innerHTML = html;
+    // 체크박스 초기화
+    const cb = document.getElementById('todo-hide-today');
+    if (cb) cb.checked = false;
     document.getElementById('today-todo-modal').classList.add('show');
+}
+
+function closeTodayTodo() {
+    // 오늘 그만보기 체크 시 날짜 저장
+    const cb = document.getElementById('todo-hide-today');
+    if (cb && cb.checked) {
+        try {
+            localStorage.setItem('todayTodoHideDate', toLocalDateStr(new Date()));
+        } catch(e) {}
+    }
+    closeModal('today-todo-modal');
 }
 
 function checkSwarmAlerts() {
