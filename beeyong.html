@@ -4693,10 +4693,8 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         /* ===== 팝업 함수 끝 ===== */
         
         function goToSplash() {
-            // 대문으로 돌아가기 (뒤로가기 버튼용)
-            document.getElementById('main-app').style.display = 'none';
-            document.getElementById('splash').style.display = 'flex';
-            document.querySelector('.bottom-nav').style.display = 'none';
+            // index.html 선택 화면으로 이동
+            window.location.href = 'index.html';
         }
 
         function startApp(type) {
@@ -7974,8 +7972,7 @@ function getUserInfo(){
         }
 
         function goHomeWithoutConfirm() {
-            document.getElementById('splash').style.display = 'flex';
-            document.getElementById('main-app').classList.add('hidden');
+            window.location.href = 'index.html';
             document.getElementById('main-memo').value = '';
             document.querySelectorAll('.work-btn.selected').forEach(btn => btn.classList.remove('selected'));
             document.getElementById('custom-work').value = '';
