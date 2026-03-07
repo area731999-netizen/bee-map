@@ -237,10 +237,14 @@
 
         /* 가계부 탭 */
         body.light-mode .acc-tab {
-            background: #e0e7ff !important;
-            color: #3730a3 !important;
-            border: 2px solid #c7d2fe !important;
+            background: #e2e8f0 !important;
+            color: #1e293b !important;
+            border: 2px solid #94a3b8 !important;
             font-weight: 700;
+        }
+        body.light-mode {
+            --acc-tab-inactive-bg: #d1d5db;
+            --acc-tab-inactive-color: #111827;
         }
 
         body.light-mode .acc-tab.active {
@@ -289,6 +293,7 @@
 
         /* 모달 */
         body.light-mode #calendar-preview-modal > div,
+        body.light-mode #today-popup-inner,
         body.light-mode #work-selection-area {
             background: #ffffff !important;
             border: 1px solid #dee2e6 !important;
@@ -2038,8 +2043,9 @@
             color: #ffffff !important;
         }
         body.light-mode .acc-tab:not(.active) {
-            background: #f1f5f9 !important;
-            color: #374151 !important;
+            background: #e2e8f0 !important;
+            color: #1e293b !important;
+            border: 1px solid #94a3b8 !important;
         }
 
         /* ── 통계/차트 섹션 ── */
@@ -2292,6 +2298,17 @@
             color: #dc2626 !important;
             border: 1px solid #fca5a5 !important;
         }
+        /* ── 고객 정렬 버튼 ── */
+        .csort-btn {
+            padding: 6px 13px; background: var(--bg-input); color: var(--tx-sub);
+            border: 1px solid var(--bd-card); border-radius: 20px; font-size: 0.78rem;
+            font-weight: 700; cursor: pointer; touch-action: manipulation; white-space: nowrap;
+        }
+        .csort-btn.csort-on {
+            background: rgba(96,165,250,0.2); color: #93c5fd;
+            border-color: rgba(96,165,250,0.5);
+        }
+
         /* ── 지도 봉장등록 폼 (buildFormEl) ── */
         body.light-mode .ac-form,
         body.light-mode #view-map .ac-form {
@@ -2485,7 +2502,7 @@
             --bd-green:   #86efac;   /* 라이트모드 초록 테두리 */
             --bg-purple:  #f5f3ff;   /* 라이트모드 연보라 배경 */
             --bg-editbtn: #2563eb;   /* 라이트모드 수정버튼 배경 - 진파랑 */
-            --tx-editbtn: #ffffff;   /* 라이트모드 수정버튼 글씨 - 흰색 */
+            --tx-editbtn: #1d4ed8;   /* 라이트모드 수정버튼 글씨 - 짙은 파란색 */
             --bg-editbtn-green: #16a34a; /* 라이트모드 가계부 수정버튼 - 진초록 */
         }
         /* 변수 기반 전역 적용 */
@@ -2802,6 +2819,18 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 <button onclick="changeYear(1)" style="color:var(--tx-amber);background:rgba(255,179,0,0.15);border:none;border-radius:8px;padding:8px 10px;font-size:0.9rem;font-weight:900;cursor:pointer;min-height:40px;min-width:38px;touch-action:manipulation;">▶▶</button>
             </div>
             <div id="cal-body" class="calendar-grid"></div>
+
+            <!-- 달력 이모지 범례 -->
+            <div style="display:flex;flex-wrap:wrap;gap:6px 12px;padding:10px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;margin-bottom:10px;">
+                <span style="font-size:0.72rem;color:var(--tx-sub);font-weight:700;width:100%;margin-bottom:2px;">📌 범례</span>
+                <span style="font-size:0.78rem;color:var(--tx-sub);">📝 일지</span>
+                <span style="font-size:0.78rem;color:var(--tx-sub);">👑 왕대출방</span>
+                <span style="font-size:0.78rem;color:var(--tx-sub);">🛡️ 방역</span>
+                <span style="font-size:0.78rem;color:var(--tx-sub);">🍯 채밀예정</span>
+                <span style="font-size:0.78rem;color:var(--tx-sub);">📅 개인일정</span>
+                <span style="font-size:0.78rem;color:var(--tx-sub);">🌿 절기</span>
+            </div>
+
             <div id="record-list" class="mt-8 space-y-4 pb-24"></div>
         </div>
 
@@ -2874,6 +2903,69 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
 
 
+            <!-- 사양 급이 입력 폼 (사양/화분떡 선택시 표시) -->
+            <div id="feeding-form" style="display:none;">
+                <div style="background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.25);border-radius:14px;padding:16px;margin-bottom:12px;">
+                    <div style="color:#4ade80;font-weight:900;font-size:1rem;margin-bottom:14px;">🌿 사양 급이 기록 <span style="font-size:0.75rem;color:var(--tx-sub);font-weight:400;">(선택사항 - 입력 시 통계에 반영)</span></div>
+                    <div id="feeding-inputs-container"></div>
+                </div>
+            </div>
+
+            <!-- 채밀 입력 폼 (채밀 작업 선택시 표시) -->
+            <div id="harvest-form" style="display:none;">
+                <div class="input-row" style="background:rgba(255,179,0,0.07); border:1px solid rgba(255,179,0,0.25); border-radius:14px; padding:16px; margin-bottom:12px;">
+                    <div style="color:var(--tx-gold); font-weight:900; font-size:1rem; margin-bottom:14px;">🍯 채밀 기록</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <div>
+                            <label style="font-size:0.78rem; color:var(--tx-sub); font-weight:700; display:block; margin-bottom:4px;">🪣 채밀 통수</label>
+                            <input type="number" id="harvest-hives" class="field" placeholder="통수" min="0" style="text-align:center;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.78rem; color:var(--tx-sub); font-weight:700; display:block; margin-bottom:4px;">⚖️ 채밀량</label>
+                            <div style="display:flex; gap:5px;">
+                                <input type="number" id="harvest-kg" class="field" placeholder="양" min="0" step="0.1" style="text-align:center; flex:1; min-width:0;">
+                                <select id="harvest-unit" class="field" style="flex:0 0 auto; width:80px; padding:8px 4px;">
+                                    <option value="kg">kg</option>
+                                    <option value="말통">말통</option>
+                                    <option value="드럼통">드럼통</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <div>
+                            <label style="font-size:0.78rem; color:var(--tx-sub); font-weight:700; display:block; margin-bottom:4px;">🌸 꿀 종류</label>
+                            <select id="harvest-type" class="field">
+                                <option value="">선택</option>
+                                <option value="아카시아꿀">아카시아꿀</option>
+                                <option value="밤꿀">밤꿀</option>
+                                <option value="잡화꿀">잡화꿀</option>
+                                <option value="야생화꿀">야생화꿀</option>
+                                <option value="유채꿀">유채꿀</option>
+                                <option value="밀감꿀">밀감꿀</option>
+                                <option value="기타">기타</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:0.78rem; color:var(--tx-sub); font-weight:700; display:block; margin-bottom:4px;">🔬 당도 (브릭스)</label>
+                            <input type="number" id="harvest-brix" class="field" placeholder="예: 78" min="0" max="100" step="0.1" style="text-align:center;">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size:0.78rem; color:var(--tx-sub); font-weight:700; display:block; margin-bottom:4px;">🔔 다음 채밀 알림</label>
+                        <input type="date" id="harvest-next-date" class="field">
+                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+                            <button type="button" onclick="setHarvestNextDate('harvest-next-date', null)" style="padding:5px 10px;background:rgba(100,100,100,0.18);color:var(--tx-sub);border:1px solid rgba(255,255,255,0.12);border-radius:7px;font-size:0.74rem;font-weight:700;cursor:pointer;">직접입력</button>
+                            <button type="button" onclick="setHarvestNextDate('harvest-next-date', 3)"    style="padding:5px 10px;background:rgba(255,179,0,0.12);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.25);border-radius:7px;font-size:0.74rem;font-weight:700;cursor:pointer;">+3일</button>
+                            <button type="button" onclick="setHarvestNextDate('harvest-next-date', 4)"    style="padding:5px 10px;background:rgba(255,179,0,0.12);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.25);border-radius:7px;font-size:0.74rem;font-weight:700;cursor:pointer;">+4일</button>
+                            <button type="button" onclick="setHarvestNextDate('harvest-next-date', 5)"    style="padding:5px 10px;background:rgba(255,179,0,0.12);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.25);border-radius:7px;font-size:0.74rem;font-weight:700;cursor:pointer;">+5일</button>
+                            <button type="button" onclick="setHarvestNextDate('harvest-next-date', 6)"    style="padding:5px 10px;background:rgba(255,179,0,0.12);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.25);border-radius:7px;font-size:0.74rem;font-weight:700;cursor:pointer;">+6일</button>
+                            <button type="button" onclick="setHarvestNextDate('harvest-next-date', 7)"    style="padding:5px 10px;background:rgba(255,179,0,0.12);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.25);border-radius:7px;font-size:0.74rem;font-weight:700;cursor:pointer;">+7일</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="input-row">
                 <span class="input-label">📝 상세 메모</span>
                 <div style="position: relative;">
@@ -2895,8 +2987,8 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 </div>
                 <div id="diary-photo-preview" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;"></div>
             </div>
+            </div>
 
-        
             <!-- 저장 버튼 고정 -->
             <div style="position:sticky;bottom:70px;left:0;right:0;padding:10px 16px;background:linear-gradient(to top,rgba(26,14,5,1) 70%,transparent);z-index:100;">
                 <button onclick="saveData()" class="btn-save btn-diary-save" style="width:100%;min-height:52px;font-size:1rem;">
@@ -3038,6 +3130,45 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             </div>
         </div>
 
+        <!-- ===== 오늘의 일정 & 할일 팝업 모달 ===== -->
+        <div id="today-popup-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.78); z-index:99999; overflow-y:auto; padding:20px; align-items:center; justify-content:center;">
+            <div id="today-popup-inner" style="background:linear-gradient(145deg,#1e1a14,#2a2218); border:1px solid rgba(255,179,0,0.25); border-radius:20px; max-width:440px; margin:auto; padding:0; box-shadow:0 20px 60px rgba(0,0,0,0.6); overflow:hidden;">
+                <!-- 헤더 -->
+                <div style="background:linear-gradient(135deg,rgba(255,179,0,0.18),rgba(255,140,0,0.08)); padding:18px 20px 14px; border-bottom:1px solid rgba(255,179,0,0.15); display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                        <div style="font-size:1.25rem; font-weight:900; color:#fbbf24; letter-spacing:-0.3px;">📋 오늘의 일정 & 할일</div>
+                        <div id="today-popup-date" style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-top:2px;"></div>
+                    </div>
+                    <button onclick="closeTodayPopup()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.7); border-radius:50%; width:34px; height:34px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✕</button>
+                </div>
+
+                <!-- 본문 -->
+                <div style="padding:16px 18px;">
+                    <!-- 오늘의 일정 섹션 -->
+                    <div style="margin-bottom:16px;">
+                        <div style="font-size:0.82rem; font-weight:800; color:rgba(255,255,255,0.45); letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">📅 오늘의 일정</div>
+                        <div id="popup-schedules"></div>
+                    </div>
+
+                    <!-- 오늘의 할일 섹션 -->
+                    <div style="margin-bottom:6px;">
+                        <div style="font-size:0.82rem; font-weight:800; color:rgba(255,255,255,0.45); letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">✅ 오늘의 할일</div>
+                        <div id="popup-tasks"></div>
+                    </div>
+                </div>
+
+                <!-- 푸터 - 오늘 하루 보지 않기 -->
+                <div style="padding:14px 18px 18px; border-top:1px solid rgba(255,255,255,0.07); display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                    <label style="display:flex; align-items:center; gap:9px; cursor:pointer; flex:1;">
+                        <input type="checkbox" id="popup-no-show-today" onchange="handleNoShowToday(this)" style="width:18px; height:18px; accent-color:#f59e0b; cursor:pointer; flex-shrink:0;">
+                        <span style="font-size:0.85rem; color:rgba(255,255,255,0.55); line-height:1.3;">오늘은 더이상 보지 않기</span>
+                    </label>
+                    <button onclick="closeTodayPopup()" style="background:linear-gradient(135deg,#f59e0b,#d97706); color:#1a1200; font-weight:800; font-size:0.9rem; padding:10px 22px; border-radius:10px; border:none; cursor:pointer; flex-shrink:0; box-shadow:0 4px 12px rgba(245,158,11,0.35);">확인</button>
+                </div>
+            </div>
+        </div>
+        <!-- ===== 오늘의 일정 & 할일 팝업 끝 ===== -->
+
         <!-- 달력 미리보기 모달 -->
         <div id="calendar-preview-modal" style="display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85); z-index: 10000; overflow-y: auto; padding: 20px;">
             <div style="max-width: 500px; margin: 40px auto; background: #2a1f14; border-radius: 16px; border: 2px solid rgba(255,179,0,0.4);">
@@ -3083,15 +3214,15 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                   <span style="font-size:1.2rem;">📅</span>달력
                 </div>
                 <div id="v-list" onclick="switchAccView('list')"
-                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:transparent;color:var(--tx-sub);font-size:.82rem;font-weight:700;transition:all .2s;">
+                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:var(--acc-tab-inactive-bg,rgba(255,255,255,0.08));color:var(--acc-tab-inactive-color,#ccc);font-size:.82rem;font-weight:700;transition:all .2s;">
                   <span style="font-size:1.2rem;">✏️</span>기록
                 </div>
                 <div id="v-stat" onclick="switchAccView('stat')"
-                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:transparent;color:var(--tx-sub);font-size:.82rem;font-weight:700;transition:all .2s;">
+                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:var(--acc-tab-inactive-bg,rgba(255,255,255,0.08));color:var(--acc-tab-inactive-color,#ccc);font-size:.82rem;font-weight:700;transition:all .2s;">
                   <span style="font-size:1.2rem;">📊</span>내역
                 </div>
                 <div id="v-customers" onclick="switchAccView('customers')"
-                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:transparent;color:var(--tx-sub);font-size:.82rem;font-weight:700;transition:all .2s;">
+                  style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:10px;cursor:pointer;background:var(--acc-tab-inactive-bg,rgba(255,255,255,0.08));color:var(--acc-tab-inactive-color,#ccc);font-size:.82rem;font-weight:700;transition:all .2s;">
                   <span style="font-size:1.2rem;">👥</span>고객
                 </div>
             </div>
@@ -3212,13 +3343,75 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
             <!-- 고객관리 페이지 -->
             <div id="acc-page-customers" style="display:none; padding-bottom:120px;">
-                <div style="text-align:center; margin-bottom:16px; padding:12px; background:linear-gradient(135deg,rgba(96,165,250,0.2),rgba(59,130,246,0.15)); border-radius:12px;">
-                    <h2 style="color:var(--tx-editbtn); font-size:1.3rem; font-weight:900;">👥 고객 관리</h2>
+                <!-- 헤더 -->
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                    <span style="color:var(--tx-editbtn); font-size:1rem; font-weight:900;">👥 고객 목록</span>
+                    <button onclick="openAddCustomerModal()" style="background:var(--bg-card); color:var(--tx-editbtn); border:1px solid rgba(96,165,250,0.35); border-radius:10px; padding:7px 14px; font-size:0.82rem; font-weight:800; cursor:pointer;">+ 직접 추가</button>
                 </div>
-                <div style="display:flex; gap:8px; margin-bottom:16px;">
-                    <input type="text" id="customer-search" placeholder="이름 또는 연락처 검색..." class="field" style="flex:1;" oninput="renderCustomerList()">
+
+                <!-- 검색 -->
+                <input type="text" id="customer-search" placeholder="🔍 이름 또는 연락처 검색" class="field" style="margin-bottom:12px; width:100%;" oninput="renderCustomerList()">
+
+                <!-- 정렬 버튼 -->
+                <div style="display:flex; gap:7px; flex-wrap:wrap; margin-bottom:10px;">
+                    <button id="csort-amount"  onclick="setCustSort('amount')"  class="csort-btn csort-on">💰 금액순</button>
+                    <button id="csort-count"   onclick="setCustSort('count')"   class="csort-btn">🛒 구매횟수</button>
+                    <button id="csort-recent"  onclick="setCustSort('recent')"  class="csort-btn">📅 최근순</button>
+                    <button id="csort-name"    onclick="setCustSort('name')"    class="csort-btn">가나다순</button>
                 </div>
+
+                <!-- 카테고리 필터 -->
+                <div id="customer-cat-filters" style="display:flex; gap:7px; flex-wrap:wrap; margin-bottom:14px;">
+                    <button id="ccat-all" onclick="setCustCat('all')" class="csort-btn csort-on">전체</button>
+                </div>
+
+                <!-- 요약 통계 -->
+                <div id="customer-summary" style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px;"></div>
+
+                <!-- 목록 -->
                 <div id="customer-list-view" style="margin-bottom:80px;"></div>
+            </div>
+
+            <!-- 고객 직접 추가/수정 모달 -->
+            <div id="add-customer-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:99999; align-items:center; justify-content:center; padding:20px;">
+                <div style="background:var(--bg-card); border:1px solid rgba(96,165,250,0.3); border-radius:18px; width:100%; max-width:420px; padding:20px; box-shadow:0 20px 50px rgba(0,0,0,0.5);">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                        <span id="add-cust-title" style="font-size:1.05rem; font-weight:900; color:var(--tx-editbtn);">👤 고객 추가</span>
+                        <button onclick="closeAddCustomerModal()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#aaa; border-radius:50%; width:32px; height:32px; cursor:pointer; font-size:1rem;">✕</button>
+                    </div>
+                    <input type="hidden" id="edit-cust-key">
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:0.8rem; color:var(--tx-sub); font-weight:700;">이름 *</label>
+                        <input type="text" id="add-cust-name" placeholder="고객 이름" class="field" style="margin-top:4px;">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:0.8rem; color:var(--tx-sub); font-weight:700;">연락처</label>
+                        <input type="tel" id="add-cust-phone" placeholder="010-0000-0000" class="field" style="margin-top:4px;">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:0.8rem; color:var(--tx-sub); font-weight:700;">주소</label>
+                        <input type="text" id="add-cust-addr" placeholder="주소 (선택)" class="field" style="margin-top:4px;">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:0.8rem; color:var(--tx-sub); font-weight:700;">카테고리</label>
+                        <input type="text" id="add-cust-cat" placeholder="예: 단골, 도매, 소매" class="field" style="margin-top:4px;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="font-size:0.8rem; color:var(--tx-sub); font-weight:700;">메모</label>
+                        <textarea id="add-cust-memo" class="field" style="height:70px; margin-top:4px;" placeholder="특이사항, 선호제품 등"></textarea>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button onclick="closeAddCustomerModal()" style="flex:1; padding:12px; background:rgba(100,100,100,0.2); color:#aaa; border:none; border-radius:10px; font-weight:700; cursor:pointer;">취소</button>
+                        <button onclick="saveCustomerDirect()" style="flex:2; padding:12px; background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; border:none; border-radius:10px; font-weight:900; cursor:pointer;">저장</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 고객 상세 모달 -->
+            <div id="cust-detail-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78); z-index:99998; overflow-y:auto; padding:20px;">
+                <div style="background:var(--bg-card); border:1px solid rgba(96,165,250,0.25); border-radius:18px; max-width:460px; margin:auto; padding:0; overflow:hidden;">
+                    <div id="cust-detail-body"></div>
+                </div>
             </div>
         </div>
 
@@ -3268,6 +3461,193 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
 <div id="toast"></div>
 </div>
+
+        <!-- ============ 채밀 기록 화면 ============ -->
+        <div id="view-harvest" class="view-group" style="padding-bottom:120px;">
+            <!-- 채밀/사양 메인 탭 -->
+            <div style="display:flex;gap:0;margin-bottom:16px;background:var(--bg-input);border-radius:14px;padding:4px;">
+                <div id="v-main-harvest" onclick="switchMainHarvestTab('harvest')" style="flex:1;text-align:center;padding:10px;border-radius:10px;cursor:pointer;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:800;font-size:0.95rem;">🍯 채밀</div>
+                <div id="v-main-feeding" onclick="switchMainHarvestTab('feeding')" style="flex:1;text-align:center;padding:10px;border-radius:10px;cursor:pointer;background:transparent;color:var(--tx-sub);font-weight:700;font-size:0.95rem;">🌿 사양</div>
+            </div>
+
+            <!-- 채밀 섹션 -->
+            <div id="section-harvest">
+            <h2 class="text-2xl font-black mb-4 text-center" style="color:var(--tx-gold);">🍯 채밀 기록</h2>
+            <!-- 탭 -->
+            <div class="v-switch" style="margin-bottom:20px;">
+                <div id="v-harvest-stats" class="v-btn active" onclick="switchHarvestTab('stats')">통계</div>
+                <div id="v-harvest-list"  class="v-btn" onclick="switchHarvestTab('list')">이력</div>
+            </div>
+
+            <!-- 통계 탭 -->
+            <div id="harvest-tab-stats">
+                <!-- 연도 선택 -->
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                    <button onclick="changeHarvestYear(-1)" style="background:var(--bg-input);border:1px solid var(--bd-card);color:var(--tx-main);border-radius:8px;padding:6px 14px;font-weight:700;cursor:pointer;">◀</button>
+                    <span id="harvest-year-label" style="font-size:1.1rem;font-weight:900;color:var(--tx-gold);"></span>
+                    <button onclick="changeHarvestYear(1)"  style="background:var(--bg-input);border:1px solid var(--bd-card);color:var(--tx-main);border-radius:8px;padding:6px 14px;font-weight:700;cursor:pointer;">▶</button>
+                </div>
+                <!-- 요약 카드 -->
+                <div id="harvest-summary-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;"></div>
+                <!-- 봉장별 차트 -->
+                <div id="harvest-by-apiary" style="margin-bottom:16px;"></div>
+                <!-- 꿀 종류별 -->
+                <div id="harvest-by-type" style="margin-bottom:16px;"></div>
+                <!-- 통계탭 기록 목록 (수정/삭제용) -->
+                <div id="harvest-stats-list" style="margin-top:4px;"></div>
+            </div>
+
+            <!-- 이력 탭 -->
+            <div id="harvest-tab-list" style="display:none;">
+                <div id="harvest-list-view"></div>
+            </div>
+            </div><!-- /section-harvest -->
+
+            <!-- 사양 섹션 -->
+            <div id="section-feeding" style="display:none;"></div>
+        </div>
+
+
+            <!-- 채밀 수정 모달 -->
+            <div id="harvest-edit-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78); z-index:99999; align-items:center; justify-content:center; padding:20px;">
+                <div style="background:var(--bg-card); border:1px solid rgba(255,179,0,0.3); border-radius:18px; width:100%; max-width:420px; padding:20px; box-shadow:0 20px 50px rgba(0,0,0,0.5); max-height:90vh; overflow-y:auto;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                        <span style="font-size:1.05rem; font-weight:900; color:var(--tx-gold);">🍯 채밀 기록 수정</span>
+                        <button onclick="closeHarvestEditModal()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#aaa; border-radius:50%; width:32px; height:32px; cursor:pointer; font-size:1rem; flex-shrink:0;">✕</button>
+                    </div>
+                    <input type="hidden" id="harvest-edit-id">
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:0.78rem; color:var(--tx-sub); font-weight:700; display:block; margin-bottom:4px;">📅 날짜</label>
+                        <input type="date" id="hedit-date" class="field">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:0.78rem; color:var(--tx-sub); font-weight:700; display:block; margin-bottom:4px;">🪣 채밀 통수</label>
+                        <input type="number" id="hedit-hives" class="field" placeholder="통수" min="0">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:0.78rem; color:var(--tx-sub); font-weight:700; display:block; margin-bottom:4px;">⚖️ 채밀량</label>
+                        <div style="display:flex; gap:6px;">
+                            <input type="number" id="hedit-amount" class="field" placeholder="양" min="0" step="0.1" style="flex:1;">
+                            <select id="hedit-unit" class="field" style="flex:0 0 auto; width:90px; padding:8px 4px;">
+                                <option value="kg">kg</option>
+                                <option value="말통">말통</option>
+                                <option value="드럼통">드럼통</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:0.78rem; color:var(--tx-sub); font-weight:700; display:block; margin-bottom:4px;">🌸 꿀 종류</label>
+                        <select id="hedit-type" class="field">
+                            <option value="">선택</option>
+                            <option value="아카시아꿀">아카시아꿀</option>
+                            <option value="밤꿀">밤꿀</option>
+                            <option value="잡화꿀">잡화꿀</option>
+                            <option value="야생화꿀">야생화꿀</option>
+                            <option value="유채꿀">유채꿀</option>
+                            <option value="밀감꿀">밀감꿀</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:0.78rem; color:var(--tx-sub); font-weight:700; display:block; margin-bottom:4px;">🔬 당도 (브릭스)</label>
+                        <input type="number" id="hedit-brix" class="field" placeholder="예: 78" min="0" max="100" step="0.1">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:0.78rem; color:var(--tx-sub); font-weight:700; display:block; margin-bottom:4px;">🔔 다음 채밀 알림</label>
+                        <input type="date" id="hedit-next-date" class="field">
+                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+                            <button type="button" onclick="setHarvestNextDate('hedit-next-date', null)" style="padding:5px 10px;background:rgba(100,100,100,0.18);color:var(--tx-sub);border:1px solid rgba(255,255,255,0.12);border-radius:7px;font-size:0.74rem;font-weight:700;cursor:pointer;">직접입력</button>
+                            <button type="button" onclick="setHarvestNextDate('hedit-next-date', 3)"    style="padding:5px 10px;background:rgba(255,179,0,0.12);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.25);border-radius:7px;font-size:0.74rem;font-weight:700;cursor:pointer;">+3일</button>
+                            <button type="button" onclick="setHarvestNextDate('hedit-next-date', 4)"    style="padding:5px 10px;background:rgba(255,179,0,0.12);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.25);border-radius:7px;font-size:0.74rem;font-weight:700;cursor:pointer;">+4일</button>
+                            <button type="button" onclick="setHarvestNextDate('hedit-next-date', 5)"    style="padding:5px 10px;background:rgba(255,179,0,0.12);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.25);border-radius:7px;font-size:0.74rem;font-weight:700;cursor:pointer;">+5일</button>
+                            <button type="button" onclick="setHarvestNextDate('hedit-next-date', 6)"    style="padding:5px 10px;background:rgba(255,179,0,0.12);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.25);border-radius:7px;font-size:0.74rem;font-weight:700;cursor:pointer;">+6일</button>
+                            <button type="button" onclick="setHarvestNextDate('hedit-next-date', 7)"    style="padding:5px 10px;background:rgba(255,179,0,0.12);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.25);border-radius:7px;font-size:0.74rem;font-weight:700;cursor:pointer;">+7일</button>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="font-size:0.78rem; color:var(--tx-sub); font-weight:700; display:block; margin-bottom:4px;">📝 메모</label>
+                        <textarea id="hedit-memo" class="field" style="height:70px;" placeholder="채밀 메모..."></textarea>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button onclick="closeHarvestEditModal()" style="flex:1; padding:12px; background:rgba(100,100,100,0.2); color:#aaa; border:none; border-radius:10px; font-weight:700; cursor:pointer;">취소</button>
+                        <button onclick="saveHarvestEdit()" style="flex:2; padding:12px; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; border:none; border-radius:10px; font-weight:900; cursor:pointer;">저장</button>
+                    </div>
+                </div>
+            </div>
+
+        <!-- ===== 사양 급이 화면 ===== -->
+        <div id="view-feeding" class="view-group" style="padding-bottom:120px;">
+            <h2 class="text-2xl font-black mb-4 text-center" style="color:var(--tx-gold);">🌿 사양 급이 기록</h2>
+
+            <!-- 탭 -->
+            <div class="v-switch" style="margin-bottom:20px;">
+                <div id="v-feeding-stats" class="v-btn active" onclick="switchFeedingTab('stats')">통계</div>
+                <div id="v-feeding-list"  class="v-btn" onclick="switchFeedingTab('list')">이력</div>
+            </div>
+
+            <!-- 통계 탭 -->
+            <div id="feeding-tab-stats">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                    <button onclick="changeFeedingYear(-1)" style="background:var(--bg-input);border:1px solid var(--bd-card);color:var(--tx-main);border-radius:8px;padding:6px 14px;font-weight:700;cursor:pointer;">◀</button>
+                    <span id="feeding-year-label" style="font-size:1.1rem;font-weight:900;color:var(--tx-gold);"></span>
+                    <button onclick="changeFeedingYear(1)"  style="background:var(--bg-input);border:1px solid var(--bd-card);color:var(--tx-main);border-radius:8px;padding:6px 14px;font-weight:700;cursor:pointer;">▶</button>
+                </div>
+                <!-- 요약 카드 -->
+                <div id="feeding-summary-cards" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px;"></div>
+                <!-- 봉장별 현황 -->
+                <div id="feeding-by-apiary" style="margin-bottom:16px;"></div>
+                <!-- 종류별 -->
+                <div id="feeding-by-type" style="margin-bottom:16px;"></div>
+                <!-- 통계탭 목록 -->
+                <div id="feeding-stats-list" style="margin-top:4px;"></div>
+            </div>
+
+            <!-- 이력 탭 -->
+            <div id="feeding-tab-list" style="display:none;">
+                <div id="feeding-list-view"></div>
+            </div>
+        </div>
+
+        <!-- 사양 수정 모달 -->
+        <div id="feeding-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:99999;align-items:center;justify-content:center;padding:20px;">
+            <div style="background:var(--bg-card);border:1px solid rgba(100,200,100,0.3);border-radius:18px;width:100%;max-width:420px;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,0.5);max-height:90vh;overflow-y:auto;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                    <span style="font-size:1.05rem;font-weight:900;color:#4ade80;">🌿 사양 기록 수정</span>
+                    <button onclick="closeFeedingEditModal()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#aaa;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:1rem;">✕</button>
+                </div>
+                <input type="hidden" id="feeding-edit-id">
+                <div style="margin-bottom:10px;">
+                    <label style="font-size:0.78rem;color:var(--tx-sub);font-weight:700;display:block;margin-bottom:4px;">📅 날짜</label>
+                    <input type="date" id="fedit-date" class="field">
+                </div>
+                <div style="margin-bottom:10px;">
+                    <label style="font-size:0.78rem;color:var(--tx-sub);font-weight:700;display:block;margin-bottom:4px;">🏡 봉장</label>
+                    <select id="fedit-loc" class="field"></select>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <label style="font-size:0.78rem;color:var(--tx-sub);font-weight:700;display:block;margin-bottom:4px;">🍬 사양 종류</label>
+                    <select id="fedit-type" class="field">
+                        <option value="설탕사양">🍚 설탕 사양</option>
+                        <option value="화분떡">🍰 화분떡</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <label style="font-size:0.78rem;color:var(--tx-sub);font-weight:700;display:block;margin-bottom:4px;">⚖️ 급이량</label>
+                    <div style="display:flex;gap:6px;">
+                        <input type="number" id="fedit-amount" class="field" placeholder="양" min="0" step="0.1" style="flex:1;">
+                        <select id="fedit-unit" class="field" style="flex:0 0 auto;width:100px;padding:8px 4px;"></select>
+                    </div>
+                </div>
+                <div style="margin-bottom:16px;">
+                    <label style="font-size:0.78rem;color:var(--tx-sub);font-weight:700;display:block;margin-bottom:4px;">📝 메모</label>
+                    <textarea id="fedit-memo" class="field" style="height:70px;" placeholder="메모..."></textarea>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button onclick="closeFeedingEditModal()" style="flex:1;padding:12px;background:rgba(100,100,100,0.2);color:#aaa;border:none;border-radius:10px;font-weight:700;cursor:pointer;">취소</button>
+                    <button onclick="saveFeedingEdit()" style="flex:2;padding:12px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:10px;font-weight:900;cursor:pointer;">저장</button>
+                </div>
+            </div>
+        </div>
 
         <!-- 계산기 화면 -->
         <div id="view-calculator" class="view-group" style="padding-bottom: 120px;">
@@ -3584,8 +3964,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 <div style="font-size: 24px; margin-bottom: 4px;">📒</div>
                 가계부
             </div>
+            <div id="nav-harvest" class="nav-item" onclick="switchView('harvest', true)">
+                <div style="font-size: 24px; margin-bottom: 4px;">📊</div>
+                채밀/사양
+            </div>
             <div id="nav-calculator" class="nav-item" onclick="switchView('calculator', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">🍯</div>
+                <div style="font-size: 24px; margin-bottom: 4px;">🧮</div>
                 계산기
             </div>
             <div id="nav-settings" class="nav-item" onclick="switchView('apiary-settings', true)">
@@ -3638,11 +4022,11 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         let apiaryLocations = JSON.parse(localStorage.getItem('apiaryLocations')) || {};
         // { '1봉장': { lat, lng, address, isPublic, memo, updatedAt } }
 
-        // 봉장 활성화 설정
-        let apiarySettings = JSON.parse(localStorage.getItem('apiarySettings')) || {
-            '1봉장': true, '2봉장': true, '3봉장': true,
-            '이동1봉장': false, '이동2봉장': false, '이동3봉장': false
-        };
+        // 봉장 활성화 설정 — 기본값과 병합하여 누락 키 보완
+        const _apiaryDefaults = {'1봉장': true, '2봉장': true, '3봉장': true, '이동1봉장': false, '이동2봉장': false, '이동3봉장': false};
+        let apiarySettings = Object.assign({}, _apiaryDefaults, JSON.parse(localStorage.getItem('apiarySettings') || 'null') || {});
+        // 병합된 값을 즉시 저장 (누락 키가 있었다면 이제 채워짐)
+        localStorage.setItem('apiarySettings', JSON.stringify(apiarySettings));
 
         // ===== 커스텀 설정 항목 (localStorage) =====
         let customSettings = JSON.parse(localStorage.getItem('beeCustomSettings')) || {
@@ -3661,7 +4045,8 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     "약품": ["속살만", "개미산", "만푸골드", "노제마약", "부저약", "소독제", "기타"],
                     "자재": ["벌통", "소초광", "개포", "격리판", "소문", "기타"],
                     "장비": ["채밀기", "탈봉기", "훈연기", "작업복", "소화기", "기타"],
-                    "운영": ["임대료", "전기세", "주유비", "간식비", "기타"]
+                    "운영": ["임대료", "전기세", "주유비", "간식비", "기타"],
+                    "종봉": ["왕대", "처녀왕", "산란신왕", "기타"]
                 },
                 'in': {
                     "천연꿀": ["아카시아꿀", "밤꿀", "잡화꿀", "사양꿀", "기타"],
@@ -3783,8 +4168,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                         // GPS 없으면 현재 날씨 하나만 표시
                         // GPS 미등록 - 봉장별 기록일만 표시
                         const dbData0 = JSON.parse(localStorage.getItem('beeData')||'{}');
-                        const cnt0 = activeApiaries.length; const cols0 = cnt0 === 1 ? '1fr' : cnt0 === 2 ? 'repeat(2,1fr)' : 'repeat(3,1fr)';
+                        const cnt0 = activeApiaries.length;
+                        const cols0 = cnt0 === 1 ? '1fr' : cnt0 === 2 ? 'repeat(2,1fr)' : 'repeat(3,1fr)';
                         weatherCardsEl.style.gridTemplateColumns = cols0;
+                        weatherCardsEl.style.overflowX = '';
                         weatherCardsEl.innerHTML = activeApiaries.map(loc => {
                             const icon0 = loc.includes('이동') ? '🚚' : '🏠';
                             const keys0 = Object.keys(dbData0).filter(k => {
@@ -3830,9 +4217,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                             }
                         }).join('');
                         
-                        // 최대 3열 고정 (1개→1열, 2개→2열, 3개↑→3열)
-                        const cnt = apiariesWithGPS.length;
+                        // 1개→1열, 2개→2열, 3개↑→3열 고정 (4개부터 자동 2줄)
+                        const cnt = activeApiaries.length;
                         weatherCardsEl.style.gridTemplateColumns = cnt === 1 ? '1fr' : cnt === 2 ? 'repeat(2,1fr)' : 'repeat(3,1fr)';
+                        weatherCardsEl.style.overflowX = '';
 
                         // 각 봉장 날씨 비동기 호출
                         activeApiaries.filter(loc => locs[loc] && locs[loc].lat).forEach(async loc => {
@@ -4168,7 +4556,153 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             setTimeout(() => window.scrollTo({top:0, behavior:'smooth'}), 100);
             // 대시보드 데이터 갱신
             updateDashboard();
+            // 오늘의 일정 팝업 표시 (오늘 하루 숨김 체크 없을 때만)
+            setTimeout(() => showTodayPopupIfNeeded(), 400);
         }
+
+        /* ===== 오늘의 일정 & 할일 팝업 함수들 ===== */
+        function showTodayPopupIfNeeded() {
+            const today = new Date();
+            const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+            const noShowKey = 'todayPopupNoShow_' + todayStr;
+            if(localStorage.getItem(noShowKey) === '1') return; // 오늘 숨김 설정됨
+
+            const items = buildTodayPopupItems(today, todayStr);
+            // 일정/할일이 없어도 팝업 표시 (사용자가 확인하도록)
+            renderTodayPopup(today, todayStr, items);
+            openTodayPopup();
+        }
+
+        function buildTodayPopupItems(today, todayStr) {
+            const todayKey = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate();
+            const items = { schedules: [], tasks: [] };
+
+            // ① 개인 일정
+            const schedules = JSON.parse(localStorage.getItem('personalSchedules')||'[]');
+            schedules.forEach(s => {
+                if(s.date === todayStr || s.date === todayKey) {
+                    items.schedules.push({ icon: '📅', text: s.title || '개인일정', sub: s.memo || '', color: '#a78bfa', bg: 'rgba(124,58,237,0.12)', border: 'rgba(124,58,237,0.25)' });
+                }
+            });
+
+            // ② 방역 예정 알림
+            const dLogs = JSON.parse(localStorage.getItem('diseaseLogs')||'[]');
+            dLogs.forEach(log => {
+                if(log.alarmKey === todayKey || log.alarmKey === todayStr) {
+                    items.tasks.push({ icon: '🛡️', text: '방역 예정', sub: (log.location||'') + (log.diseaseTypeName||log.diseaseType ? ' · ' + (log.diseaseTypeName||log.diseaseType) : ''), color: '#f87171', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.28)' });
+                }
+            });
+
+            // ③ 왕대 출방 예정
+            const beeData = JSON.parse(localStorage.getItem('beeData')||'{}');
+            if(beeData[todayKey] && beeData[todayKey].isQueen) {
+                items.tasks.push({ icon: '👑', text: '왕대 출방 예정일', sub: '여왕벌 확인이 필요합니다', color: '#fbbf24', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)' });
+            }
+
+            // ④ 다음 방역일 D-Day (오늘이 방역 예정일인 경우 중복 방지)
+            const allLogs = JSON.parse(localStorage.getItem('diseaseLogs')||'[]');
+            if(allLogs.length > 0) {
+                const sorted = allLogs.slice().sort((a,b) => (b.dateStr||'').localeCompare(a.dateStr||''));
+                const last = sorted[0];
+                let nextDate = null;
+                if(last.alarmKey) {
+                    const ap = last.alarmKey.split('-');
+                    nextDate = new Date(parseInt(ap[0]), parseInt(ap[1])-1, parseInt(ap[2]));
+                } else if(last.dateStr) {
+                    const parts = last.dateStr.split('-');
+                    if(parts.length === 3) {
+                        nextDate = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+                        nextDate.setDate(nextDate.getDate() + 7);
+                    }
+                }
+                if(nextDate) {
+                    const diff = Math.ceil((nextDate - today) / (1000*60*60*24));
+                    if(diff > 0 && diff <= 3) {
+                        const nd = nextDate.getFullYear() + '-' + String(nextDate.getMonth()+1).padStart(2,'0') + '-' + String(nextDate.getDate()).padStart(2,'0');
+                        items.tasks.push({ icon: '⚠️', text: '방역 D-' + diff + ' (' + nd + ')', sub: (last.location||'') + ' 방역 예정일이 다가옵니다', color: '#fb923c', bg: 'rgba(251,146,60,0.12)', border: 'rgba(251,146,60,0.28)' });
+                    }
+                }
+            }
+
+            // ④-2 채밀 예정 알림 - harvestLogs.nextDate 직접 확인 (beeData 의존 없음)
+            {
+                const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth()+1).padStart(2,'0')}-${String(todayObj.getDate()).padStart(2,'0')}`;
+                const hLogs = (() => { try { return JSON.parse(localStorage.getItem('harvestLogs')||'[]'); } catch(e){ return []; } })();
+                hLogs.filter(l => l.nextDate === todayStr).forEach(l => {
+                    items.tasks.push({ icon: '🍯', text: '채밀 예정일', sub: (l.loc||'') + (l.type ? ' · '+l.type : ''), color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.3)' });
+                });
+            }
+
+            // ⑤ 오늘 작성된 일지
+            if(beeData[todayKey] && beeData[todayKey].records && beeData[todayKey].records.length > 0) {
+                const cnt = beeData[todayKey].records.length;
+                items.schedules.push({ icon: '📔', text: '오늘 일지 ' + cnt + '건 작성됨', sub: '오늘 일지가 기록되어 있습니다', color: '#4ade80', bg: 'rgba(74,222,128,0.1)', border: 'rgba(74,222,128,0.22)' });
+            }
+
+            return items;
+        }
+
+        function renderTodayPopup(today, todayStr, items) {
+            // 날짜 표시
+            const days = ['일','월','화','수','목','금','토'];
+            const dateEl = document.getElementById('today-popup-date');
+            if(dateEl) dateEl.textContent = todayStr + ' (' + days[today.getDay()] + ')';
+
+            // 일정 렌더링
+            const schedEl = document.getElementById('popup-schedules');
+            if(schedEl) {
+                if(items.schedules.length > 0) {
+                    schedEl.innerHTML = items.schedules.map(i => popupItemHTML(i)).join('');
+                } else {
+                    schedEl.innerHTML = '<div style="padding:10px 12px; background:rgba(255,255,255,0.04); border-radius:10px; color:rgba(255,255,255,0.35); font-size:0.85rem; text-align:center;">오늘 등록된 일정이 없습니다</div>';
+                }
+            }
+
+            // 할일 렌더링
+            const taskEl = document.getElementById('popup-tasks');
+            if(taskEl) {
+                if(items.tasks.length > 0) {
+                    taskEl.innerHTML = items.tasks.map(i => popupItemHTML(i)).join('');
+                } else {
+                    taskEl.innerHTML = '<div style="padding:10px 12px; background:rgba(255,255,255,0.04); border-radius:10px; color:rgba(255,255,255,0.35); font-size:0.85rem; text-align:center;">오늘 예정된 할일이 없습니다</div>';
+                }
+            }
+        }
+
+        function popupItemHTML(item) {
+            return `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:${item.bg};border:1px solid ${item.border};border-radius:10px;margin-bottom:7px;">
+                <span style="font-size:1.2rem;flex-shrink:0;margin-top:1px;">${item.icon}</span>
+                <div style="flex:1;min-width:0;">
+                    <div style="color:${item.color};font-weight:800;font-size:0.9rem;">${item.text}</div>
+                    ${item.sub ? `<div style="color:rgba(255,255,255,0.45);font-size:0.78rem;margin-top:2px;">${item.sub}</div>` : ''}
+                </div>
+            </div>`;
+        }
+
+        function openTodayPopup() {
+            const modal = document.getElementById('today-popup-modal');
+            if(modal) {
+                modal.style.display = 'flex';
+                document.getElementById('popup-no-show-today').checked = false;
+            }
+        }
+
+        function closeTodayPopup() {
+            const modal = document.getElementById('today-popup-modal');
+            if(modal) modal.style.display = 'none';
+        }
+
+        function handleNoShowToday(cb) {
+            const today = new Date();
+            const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+            const noShowKey = 'todayPopupNoShow_' + todayStr;
+            if(cb.checked) {
+                localStorage.setItem(noShowKey, '1');
+            } else {
+                localStorage.removeItem(noShowKey);
+            }
+        }
+        /* ===== 팝업 함수 끝 ===== */
         
         function goToSplash() {
             // 대문으로 돌아가기 (뒤로가기 버튼용)
@@ -4244,6 +4778,8 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     
                     // 대시보드 데이터 갱신
                     setTimeout(() => updateDashboard(), 300);
+                    // 오늘의 일정 팝업 (앱 첫 진입시)
+                    setTimeout(() => showTodayPopupIfNeeded(), 700);
                     
                     // 네비게이션 상태 초기화
                     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -4738,6 +5274,16 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     const dayDiseases = diseaseLogs.filter(function(dl){return dl.dateStr===key;});
                     if(db[key]?.isDiseaseAlarm || dayDiseases.length > 0) {
                         eventIcons += `<span style="${iconStyle}" title="방역">🛡️</span>`;
+                    }
+
+                    // 채밀 알림 - harvestLogs.nextDate 직접 확인 (beeData 의존 없음)
+                    {
+                        const [ky, km, kd] = key.split('-').map(Number);
+                        const keyDateStr = `${ky}-${String(km).padStart(2,'0')}-${String(kd).padStart(2,'0')}`;
+                        const hLogsForCal = (() => { try { return JSON.parse(localStorage.getItem('harvestLogs')||'[]'); } catch(e){ return []; } })();
+                        if(hLogsForCal.some(l => l.nextDate === keyDateStr)) {
+                            eventIcons += `<span style="${iconStyle}" title="채밀 예정">🍯</span>`;
+                        }
                     }
 
                     // 개인일정
@@ -5644,7 +6190,12 @@ var AS = (function(){try{return JSON.parse(localStorage.getItem('apiarySettings'
   || {'1봉장':true,'2봉장':true,'3봉장':true,'이동1봉장':false,'이동2봉장':false,'이동3봉장':false};
 var AL = (function(){try{return JSON.parse(localStorage.getItem('apiaryLocations'))||{};}catch(e){return{};}})();
 
-function getNames(){return Object.keys(AS).filter(function(k){return AS[k];});}
+function getNames(){
+  var defaults = {"1봉장":true,"2봉장":true,"3봉장":true,"이동1봉장":false,"이동2봉장":false,"이동3봉장":false};
+  var stored = (function(){try{return JSON.parse(localStorage.getItem("apiarySettings"));}catch(e){return null;}}()) || {};
+  AS = Object.assign({}, defaults, stored);
+  return Object.keys(AS).filter(function(k){return AS[k];});
+}
 function saveLocs(){try{localStorage.setItem('apiaryLocations',JSON.stringify(AL));return true;}catch(e){showToast('⚠️ 저장 실패');return false;}}
 
 var vmap=null, tiles=[], aMks=[], myMk=null, myC=null, myPos=null, wid=null;
@@ -5818,7 +6369,7 @@ function renderAMks(){
   });
 }
 
-var regListOpen = false;
+var regListOpen = true; // 등록된 봉장도 기본적으로 펼쳐서 표시
 
 function renderAList(){
   NAMES=getNames();
@@ -6197,86 +6748,1086 @@ function getUserInfo(){
   try { return JSON.parse(localStorage.getItem('beeUserInfo')) || {}; } catch(e){ return {}; }
 }
 
+        // ==================== 채밀 관리 ====================
+        let harvestYear = new Date().getFullYear();
+
+        // ===================================================
+        // 🌿 사양 급이 탭 전체 기능
+        // ===================================================
+        // 채밀/사양 메인탭 전환
+        function switchMainHarvestTab(tab) {
+            var isHarvest = tab === 'harvest';
+            document.getElementById('section-harvest').style.display = isHarvest ? 'block' : 'none';
+            document.getElementById('section-feeding').style.display = isHarvest ? 'none' : 'block';
+            var hBtn = document.getElementById('v-main-harvest');
+            var fBtn = document.getElementById('v-main-feeding');
+            if(hBtn) { hBtn.style.background = isHarvest ? 'linear-gradient(135deg,#f59e0b,#d97706)' : 'transparent'; hBtn.style.color = isHarvest ? '#fff' : 'var(--tx-sub)'; }
+            if(fBtn) { fBtn.style.background = isHarvest ? 'transparent' : 'linear-gradient(135deg,#16a34a,#15803d)'; fBtn.style.color = isHarvest ? 'var(--tx-sub)' : '#fff'; }
+            if(!isHarvest) renderFeedingSection();
+        }
+
+        function renderFeedingSection() {
+            var sec = document.getElementById('section-feeding');
+            if(!sec) return;
+            // 사양 뷰 HTML을 동적으로 렌더링
+            sec.innerHTML =
+                '<h2 class="text-2xl font-black mb-4 text-center" style="color:#4ade80;">🌿 사양 급이 기록</h2>' +
+                '<div class="v-switch" style="margin-bottom:20px;">' +
+                    '<div id="v-feeding-stats" class="v-btn active" onclick="switchFeedingTab(\'stats\')">통계</div>' +
+                    '<div id="v-feeding-list" class="v-btn" onclick="switchFeedingTab(\'list\')">이력</div>' +
+                '</div>' +
+                '<div id="feeding-tab-stats">' +
+                    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
+                        '<button onclick="changeFeedingYear(-1)" style="background:var(--bg-input);border:1px solid var(--bd-card);color:var(--tx-main);border-radius:8px;padding:6px 14px;font-weight:700;cursor:pointer;">◀</button>' +
+                        '<span id="feeding-year-label" style="font-size:1.1rem;font-weight:900;color:#4ade80;"></span>' +
+                        '<button onclick="changeFeedingYear(1)" style="background:var(--bg-input);border:1px solid var(--bd-card);color:var(--tx-main);border-radius:8px;padding:6px 14px;font-weight:700;cursor:pointer;">▶</button>' +
+                    '</div>' +
+                    '<div id="feeding-summary-cards" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px;"></div>' +
+                    '<div id="feeding-by-apiary" style="margin-bottom:16px;"></div>' +
+                    '<div id="feeding-by-type" style="margin-bottom:16px;"></div>' +
+                    '<div id="feeding-stats-list" style="margin-top:4px;"></div>' +
+                '</div>' +
+                '<div id="feeding-tab-list" style="display:none;">' +
+                    '<div id="feeding-list-view"></div>' +
+                '</div>';
+            renderFeedingView();
+        }
+
+        let feedingYear = new Date().getFullYear();
+        window._feedingList = [];
+        window._feedingStatsList = [];
+
+        function getFeedingLogs() {
+            try {
+                var logs = JSON.parse(localStorage.getItem('feedingLogs') || '[]');
+                // id 없는 구 데이터 자동 부여
+                var changed = false;
+                logs.forEach(function(l) {
+                    if(!l.id) { l.id = 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); changed = true; }
+                });
+                if(changed) localStorage.setItem('feedingLogs', JSON.stringify(logs));
+                return logs;
+            } catch(e) { return []; }
+        }
+
+        function getActiveApiaries() {
+            var s = {};
+            try { s = JSON.parse(localStorage.getItem('apiarySettings') || '{}'); } catch(e) {}
+            var defaults = {'1봉장':true,'2봉장':true,'3봉장':true,'이동1봉장':false,'이동2봉장':false,'이동3봉장':false};
+            var merged = Object.assign({}, defaults, s);
+            return Object.keys(merged).filter(function(k){ return merged[k]; });
+        }
+
+        function getFeedingUnits(type) {
+            if(type === '화분떡') return ['kg','개'];
+            return ['kg','포(15kg)'];
+        }
+
+        function feedingToKg(amount, unit) {
+            if(unit === '포(15kg)') return amount * 15;
+            if(unit === 'kg') return amount;
+            return null; // 개수는 kg 환산 불가
+        }
+
+        function switchFeedingTab(tab) {
+            var tabs = ['stats','list'];
+            tabs.forEach(function(t) {
+                var btn = document.getElementById('v-feeding-' + t);
+                var el  = document.getElementById('feeding-tab-' + t);
+                if(btn) btn.classList.toggle('active', t === tab);
+                if(el)  el.style.display = t === tab ? 'block' : 'none';
+            });
+        }
+
+        function changeFeedingYear(d) {
+            feedingYear += d;
+            renderFeedingView();
+        }
+
+        function renderFeedingView() {
+            var label = document.getElementById('feeding-year-label');
+            if(label) label.textContent = feedingYear + '년';
+
+            var logs = getFeedingLogs().filter(function(l){ return l.date && l.date.startsWith(String(feedingYear)); });
+            logs.sort(function(a,b){ return b.date.localeCompare(a.date); });
+
+            renderFeedingStats(logs);
+            renderFeedingList(logs);
+        }
+
+        function renderFeedingStats(logs) {
+            // 요약 카드
+            var totalSugar = 0, totalSugarUnit = '';
+            var totalPollen = 0, totalPollenKg = 0, pollenUnit = '';
+            var sugarKg = 0;
+            logs.forEach(function(l) {
+                if(l.type === '설탕사양') {
+                    var kg = feedingToKg(l.amount, l.unit);
+                    if(kg) sugarKg += kg;
+                    totalSugar += l.amount;
+                    totalSugarUnit = l.unit;
+                } else if(l.type === '화분떡') {
+                    if(l.unit === 'kg') { totalPollenKg += l.amount; }
+                    else { totalPollen += l.amount; }
+                }
+            });
+
+            var cards = document.getElementById('feeding-summary-cards');
+            if(cards) {
+                var sugarText = sugarKg > 0 ? sugarKg.toLocaleString() + 'kg' : (logs.filter(function(l){return l.type==='설탕사양';}).length > 0 ? '기록있음' : '-');
+                var pollenText = '';
+                if(totalPollenKg > 0 && totalPollen > 0) pollenText = totalPollenKg + 'kg / ' + totalPollen + '개';
+                else if(totalPollenKg > 0) pollenText = totalPollenKg + 'kg';
+                else if(totalPollen > 0) pollenText = totalPollen + '개';
+                else pollenText = '-';
+
+                cards.innerHTML =
+                    '<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:14px;text-align:center;">' +
+                        '<div style="color:#4ade80;font-size:0.75rem;margin-bottom:4px;">🍚 설탕 총량</div>' +
+                        '<div style="color:#fff;font-size:1.2rem;font-weight:900;">' + sugarText + '</div>' +
+                    '</div>' +
+                    '<div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);border-radius:12px;padding:14px;text-align:center;">' +
+                        '<div style="color:#fbbf24;font-size:0.75rem;margin-bottom:4px;">🍰 화분떡 총량</div>' +
+                        '<div style="color:#fff;font-size:1.2rem;font-weight:900;">' + pollenText + '</div>' +
+                    '</div>';
+            }
+
+            // 봉장별 현황
+            var byApiary = {};
+            logs.forEach(function(l) {
+                if(!byApiary[l.loc]) byApiary[l.loc] = {sugar:0, pollenKg:0, pollenCnt:0};
+                if(l.type === '설탕사양') {
+                    var kg = feedingToKg(l.amount, l.unit) || 0;
+                    byApiary[l.loc].sugar += kg;
+                } else if(l.type === '화분떡') {
+                    if(l.unit === 'kg') byApiary[l.loc].pollenKg += l.amount;
+                    else byApiary[l.loc].pollenCnt += l.amount;
+                }
+            });
+
+            var byApiaryEl = document.getElementById('feeding-by-apiary');
+            if(byApiaryEl) {
+                if(Object.keys(byApiary).length === 0) {
+                    byApiaryEl.innerHTML = '';
+                } else {
+                    var html = '<div style="background:var(--bg-card);border-radius:14px;padding:14px;border:1px solid rgba(255,255,255,0.07);margin-bottom:8px;">' +
+                        '<div style="font-size:0.85rem;font-weight:800;color:#4ade80;margin-bottom:10px;">🏡 봉장별 급이량</div>';
+                    Object.keys(byApiary).forEach(function(loc) {
+                        var d = byApiary[loc];
+                        var parts = [];
+                        if(d.sugar > 0) parts.push('설탕 ' + d.sugar.toLocaleString() + 'kg');
+                        if(d.pollenKg > 0) parts.push('화분떡 ' + d.pollenKg + 'kg');
+                        if(d.pollenCnt > 0) parts.push('화분떡 ' + d.pollenCnt + '개');
+                        html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);">' +
+                            '<span style="color:var(--tx-main);font-size:0.88rem;">📍 ' + loc + '</span>' +
+                            '<span style="color:#4ade80;font-size:0.85rem;font-weight:700;">' + (parts.join(' / ') || '-') + '</span>' +
+                        '</div>';
+                    });
+                    html += '</div>';
+                    byApiaryEl.innerHTML = html;
+                }
+            }
+
+            // 월별 현황
+            var byMonth = {};
+            logs.forEach(function(l) {
+                var m = l.date ? l.date.slice(0,7) : '';
+                if(!m) return;
+                if(!byMonth[m]) byMonth[m] = {sugar:0, pollenKg:0, pollenCnt:0};
+                if(l.type === '설탕사양') byMonth[m].sugar += feedingToKg(l.amount, l.unit) || 0;
+                else if(l.type === '화분떡') {
+                    if(l.unit === 'kg') byMonth[m].pollenKg += l.amount;
+                    else byMonth[m].pollenCnt += l.amount;
+                }
+            });
+
+            var byTypeEl = document.getElementById('feeding-by-type');
+            if(byTypeEl) {
+                if(Object.keys(byMonth).length === 0) {
+                    byTypeEl.innerHTML = '';
+                } else {
+                    var html2 = '<div style="background:var(--bg-card);border-radius:14px;padding:14px;border:1px solid rgba(255,255,255,0.07);">' +
+                        '<div style="font-size:0.85rem;font-weight:800;color:#fbbf24;margin-bottom:10px;">📅 월별 급이 현황</div>';
+                    Object.keys(byMonth).sort().reverse().forEach(function(m) {
+                        var d = byMonth[m];
+                        var parts = [];
+                        if(d.sugar > 0) parts.push('설탕 ' + d.sugar.toLocaleString() + 'kg');
+                        if(d.pollenKg > 0) parts.push('화분떡 ' + d.pollenKg + 'kg');
+                        if(d.pollenCnt > 0) parts.push('화분떡 ' + d.pollenCnt + '개');
+                        html2 += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);">' +
+                            '<span style="color:var(--tx-sub);font-size:0.85rem;">' + m.replace('-','년 ') + '월</span>' +
+                            '<span style="color:#fbbf24;font-size:0.85rem;font-weight:700;">' + (parts.join(' / ') || '-') + '</span>' +
+                        '</div>';
+                    });
+                    html2 += '</div>';
+                    byTypeEl.innerHTML = html2;
+                }
+            }
+
+            // 통계탭 기록 목록 (수정/삭제)
+            window._feedingStatsList = logs.slice();
+            window._feedingEdit = function(idx) { feedingEditByIdx(idx, 'stats'); };
+            window._feedingDelete = function(idx) { feedingDeleteByIdx(idx, 'stats'); };
+            var statsListEl = document.getElementById('feeding-stats-list');
+            if(statsListEl) {
+                if(logs.length === 0) {
+                    statsListEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--tx-sub);">기록이 없습니다.</div>';
+                    return;
+                }
+                var html3 = '<div style="font-size:0.85rem;font-weight:800;color:var(--tx-sub);margin-bottom:8px;">📋 급이 기록 목록</div>';
+                logs.forEach(function(log, idx) {
+                    html3 += renderFeedingCard(log, idx, 'stats');
+                });
+                statsListEl.innerHTML = html3;
+            }
+        }
+
+        function renderFeedingList(logs) {
+            window._feedingList = logs.slice();
+            window._feedingEdit = function(idx) { feedingEditByIdx(idx, 'list'); };
+            window._feedingDelete = function(idx) { feedingDeleteByIdx(idx, 'list'); };
+            var el = document.getElementById('feeding-list-view');
+            if(!el) return;
+            if(logs.length === 0) {
+                el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--tx-sub);">기록이 없습니다.<br><br>일지 작성 시 사양/화분떡 작업을 선택하고 급이량을 입력하면 자동으로 기록됩니다.</div>';
+                return;
+            }
+            var html = '';
+            logs.forEach(function(log, idx) {
+                html += renderFeedingCard(log, idx, 'list');
+            });
+            el.innerHTML = html;
+        }
+
+        function renderFeedingCard(log, idx, mode) {
+            var typeColor = log.type === '설탕사양' ? '#4ade80' : '#fbbf24';
+            var typeIcon  = log.type === '설탕사양' ? '🍚' : '🍰';
+            var amtText   = log.amount + (log.unit || '');
+            if(log.type === '설탕사양' && log.unit === '포(15kg)') {
+                amtText += ' (' + (log.amount * 15) + 'kg)';
+            }
+            return '<div style="background:var(--bg-card);border:1px solid rgba(74,222,128,0.15);border-radius:12px;padding:13px 15px;margin-bottom:9px;">' +
+                '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;">' +
+                    '<div>' +
+                        '<span style="color:' + typeColor + ';font-weight:800;font-size:0.9rem;">' + typeIcon + ' ' + (log.type||'') + '</span>' +
+                        '<span style="color:var(--tx-sub);font-size:0.78rem;margin-left:8px;">📍 ' + (log.loc||'') + '</span>' +
+                    '</div>' +
+                    '<span style="color:var(--tx-sub);font-size:0.78rem;">' + (log.date||'') + '</span>' +
+                '</div>' +
+                '<div style="color:#fff;font-size:0.95rem;font-weight:700;margin-bottom:4px;">⚖️ ' + amtText + '</div>' +
+                (log.memo ? '<div style="color:var(--tx-sub);font-size:0.78rem;margin-bottom:6px;">📝 ' + log.memo + '</div>' : '') +
+                '<div style="display:flex;gap:6px;justify-content:flex-end;">' +
+                    '<button onclick="window._feedingEdit(' + idx + ')" style="padding:4px 10px;background:rgba(96,165,250,0.15);color:#93c5fd;border:1px solid rgba(96,165,250,0.3);border-radius:7px;font-size:0.73rem;font-weight:700;cursor:pointer;">✏️ 수정</button>' +
+                    '<button onclick="window._feedingDelete(' + idx + ')" style="padding:4px 10px;background:rgba(185,28,28,0.15);color:#f87171;border:1px solid rgba(185,28,28,0.3);border-radius:7px;font-size:0.73rem;font-weight:700;cursor:pointer;">🗑️ 삭제</button>' +
+                '</div>' +
+            '</div>';
+        }
+
+        function feedingDeleteByIdx(idx, mode) {
+            var arr = mode === 'stats' ? window._feedingStatsList : window._feedingList;
+            var log = arr[idx];
+            if(!log) return;
+            if(!confirm('이 급이 기록을 삭제할까요?')) return;
+            var all = getFeedingLogs();
+            var newAll = all.filter(function(l){ return l.id !== log.id; });
+            localStorage.setItem('feedingLogs', JSON.stringify(newAll));
+            renderFeedingView();
+            showToast('🗑️ 삭제되었습니다');
+        }
+
+        function feedingEditByIdx(idx, mode) {
+            var arr = mode === 'stats' ? window._feedingStatsList : window._feedingList;
+            var log = arr[idx];
+            if(!log) return;
+            openFeedingEditModal(log);
+        }
+
+        function openFeedingEditModal(log) {
+            var modal = document.getElementById('feeding-edit-modal');
+            if(!modal) return;
+            // 봉장 선택 옵션 채우기
+            var locSel = document.getElementById('fedit-loc');
+            if(locSel) {
+                var locs = getActiveApiaries();
+                locSel.innerHTML = locs.map(function(l){ return '<option value="'+l+'"'+(l===log.loc?' selected':'')+'>'+l+'</option>'; }).join('');
+            }
+            document.getElementById('feeding-edit-id').value = log.id || '';
+            document.getElementById('fedit-date').value = log.date || '';
+            document.getElementById('fedit-type').value = log.type || '설탕사양';
+            document.getElementById('fedit-amount').value = log.amount || '';
+            document.getElementById('fedit-memo').value = log.memo || '';
+            updateFeedingEditUnits(log.type, log.unit);
+            modal.style.display = 'flex';
+        }
+
+        function updateFeedingEditUnits(type, selectedUnit) {
+            var sel = document.getElementById('fedit-unit');
+            if(!sel) return;
+            var units = getFeedingUnits(type || '설탕사양');
+            sel.innerHTML = units.map(function(u){ return '<option value="'+u+'"'+(u===selectedUnit?' selected':'')+'>'+u+'</option>'; }).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var typeEl = document.getElementById('fedit-type');
+            if(typeEl) typeEl.addEventListener('change', function(){ updateFeedingEditUnits(this.value, null); });
+        });
+
+        function closeFeedingEditModal() {
+            var modal = document.getElementById('feeding-edit-modal');
+            if(modal) modal.style.display = 'none';
+        }
+
+        function saveFeedingEdit() {
+            var id     = document.getElementById('feeding-edit-id').value;
+            var date   = document.getElementById('fedit-date').value;
+            var loc    = document.getElementById('fedit-loc').value;
+            var type   = document.getElementById('fedit-type').value;
+            var amount = parseFloat(document.getElementById('fedit-amount').value);
+            var unit   = document.getElementById('fedit-unit').value;
+            var memo   = document.getElementById('fedit-memo').value.trim();
+
+            if(!date || !loc || !type || isNaN(amount) || amount <= 0) {
+                showToast('⚠️ 날짜, 봉장, 종류, 급이량을 모두 입력하세요'); return;
+            }
+            var all = getFeedingLogs();
+            var idx = all.findIndex(function(l){ return l.id === id; });
+            if(idx === -1) { showToast('⚠️ 기록을 찾을 수 없습니다'); return; }
+            all[idx] = Object.assign(all[idx], { date, loc, type, amount, unit, memo });
+            localStorage.setItem('feedingLogs', JSON.stringify(all));
+            closeFeedingEditModal();
+            renderFeedingView();
+            showToast('✅ 수정되었습니다');
+        }
+
+        // 일지에서 사양 기록 저장 시 호출하는 함수
+        function saveFeedingLog(date, loc, type, amount, unit, memo) {
+            var logs = getFeedingLogs();
+            var newLog = {
+                id: 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+                date, loc, type, amount: parseFloat(amount), unit, memo: memo || ''
+            };
+            logs.unshift(newLog);
+            localStorage.setItem('feedingLogs', JSON.stringify(logs));
+
+            // 가계부 연동 팝업
+            if(confirm('💰 가계부 지출에도 기록할까요?\n(취소 시 사양 기록만 저장)')) {
+                promptFeedingAccountEntry(newLog);
+            }
+        }
+
+        function promptFeedingAccountEntry(log) {
+            var typeLabel = log.type === '설탕사양' ? '설탕' : '화분떡';
+            var amtText = log.amount + (log.unit||'');
+            var price = prompt('💰 가계부 지출 기록\n\n봉장: ' + log.loc + '\n종류: ' + log.type + ' ' + amtText + '\n\n구입 금액을 숫자로만 입력하세요 (원)\n예) 50000', '');
+            if(price === null || price === '') return;
+            var priceNum = parseInt(price.replace(/[^0-9]/g,''));
+            if(isNaN(priceNum) || priceNum <= 0) { showToast('⚠️ 금액을 숫자로 입력하세요 (예: 50000)'); return; }
+
+            try {
+                // 기존 가계부 구조에 맞게 저장 + accLogs 전역변수도 업데이트
+                var memoText = log.loc + ' ' + log.type + ' ' + amtText + (log.memo ? ' - ' + log.memo : '');
+                var record = {
+                    type: 'out',
+                    items: [typeLabel],
+                    item: typeLabel,
+                    lines: [{ name: typeLabel, qty: 1, unitPrice: priceNum, subtotal: priceNum }],
+                    price: priceNum,
+                    date: log.date + 'T00:00:00.000Z',
+                    beeType: selectedBeeType || '양봉',
+                    memo: memoText
+                };
+                accLogs.unshift(record);
+                localStorage.setItem('beeMoney', JSON.stringify(accLogs));
+                showToast('✅ 가계부에 지출 기록 완료');
+            } catch(e) { showToast('⚠️ 가계부 기록 실패: ' + e.message); }
+        }
+
+        let harvestTab = 'stats';
+
+        function getHarvestLogs() {
+            try {
+                let logs = JSON.parse(localStorage.getItem('harvestLogs') || '[]');
+                // id 없는 항목에 고유 id 부여하고 저장
+                let needsSave = false;
+                logs = logs.map((l, i) => {
+                    if(!l.id) { l = {...l, id: Date.now() + i * 13}; needsSave = true; }
+                    return l;
+                });
+                if(needsSave) localStorage.setItem('harvestLogs', JSON.stringify(logs));
+                return logs;
+            } catch(e) { return []; }
+        }
+
+        function switchHarvestTab(tab) {
+            harvestTab = tab;
+            ['stats','list'].forEach(t => {
+                document.getElementById('v-harvest-'+t)?.classList.toggle('active', t === tab);
+                const el = document.getElementById('harvest-tab-'+t);
+                if(el) el.style.display = t === tab ? 'block' : 'none';
+            });
+            renderHarvestView();
+        }
+
+        function changeHarvestYear(delta) {
+            harvestYear += delta;
+            renderHarvestView();
+        }
+
+        function renderHarvestView() {
+            const label = document.getElementById('harvest-year-label');
+            if(label) label.textContent = harvestYear + '년';
+
+            const logs = getHarvestLogs().filter(l => l.date && l.date.startsWith(String(harvestYear)));
+
+            if(harvestTab === 'stats') renderHarvestStats(logs);
+            else renderHarvestList();
+        }
+
+        // 단위별 집계 헬퍼 - { kg: 300, 말통: 1, 드럼통: 2 } 형태로 반환
+        function groupByUnit(logs) {
+            const map = {};
+            logs.forEach(l => {
+                const unit = l.unit || 'kg';
+                const amt  = l.amount || l.kg || 0;
+                if(!amt) return;
+                if(!map[unit]) map[unit] = 0;
+                map[unit] += amt;
+            });
+            return map;
+        }
+
+        // 단위별 집계를 "300kg / 1드럼통" 형태 문자열로
+        function formatByUnit(unitMap) {
+            const parts = Object.entries(unitMap).map(([unit, amt]) => {
+                const disp = Number.isInteger(amt) ? amt : amt.toFixed(1);
+                return disp + unit;
+            });
+            return parts.length > 0 ? parts.join(' / ') : '-';
+        }
+
+        function renderHarvestStats(logs) {
+            const totalHives = logs.reduce((s,l) => s + (l.hives || 0), 0);
+            const totalTimes = logs.length;
+            // 단위별 집계
+            const unitTotals = groupByUnit(logs);
+            const totalStr   = formatByUnit(unitTotals);
+
+            const summaryEl = document.getElementById('harvest-summary-cards');
+            if(summaryEl) {
+                summaryEl.innerHTML =
+                    '<div style="background:rgba(255,179,0,0.12);border:1px solid rgba(255,179,0,0.25);border-radius:10px;padding:12px;text-align:center;grid-column:span 3;">'
+                    +'<div style="color:var(--tx-gold);font-size:0.72rem;margin-bottom:4px;">🍯 총 채밀량 (단위별)</div>'
+                    +'<div style="color:var(--tx-amber);font-size:1.1rem;font-weight:900;word-break:break-all;">'+totalStr+'</div></div>'
+                    +'<div style="background:rgba(255,179,0,0.08);border:1px solid rgba(255,179,0,0.18);border-radius:10px;padding:12px;text-align:center;">'
+                    +'<div style="color:var(--tx-gold);font-size:0.72rem;margin-bottom:3px;">🪣 채밀 통수</div>'
+                    +'<div style="color:var(--tx-amber);font-size:1.3rem;font-weight:900;">'+(totalHives > 0 ? totalHives+'통' : '-')+'</div></div>'
+                    +'<div style="background:rgba(255,179,0,0.06);border:1px solid rgba(255,179,0,0.15);border-radius:10px;padding:12px;text-align:center;">'
+                    +'<div style="color:var(--tx-gold);font-size:0.72rem;margin-bottom:3px;">📅 채밀 횟수</div>'
+                    +'<div style="color:var(--tx-amber);font-size:1.3rem;font-weight:900;">'+(totalTimes > 0 ? totalTimes+'회' : '-')+'</div></div>';
+            }
+
+            // 봉장별 집계 - 단위별로 각각 표시
+            const apiaryEl = document.getElementById('harvest-by-apiary');
+            if(apiaryEl) {
+                if(logs.length === 0) {
+                    apiaryEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--tx-sub);">'+harvestYear+'년 채밀 기록이 없습니다<br><br>일지에서 채밀 작업을 선택하고 기록해보세요!</div>';
+                    // 관련 영역 모두 초기화
+                    const typeElClear = document.getElementById('harvest-by-type');
+                    if(typeElClear) typeElClear.innerHTML = '';
+                    const statsListClear = document.getElementById('harvest-stats-list');
+                    if(statsListClear) statsListClear.innerHTML = '';
+                    window._harvestStatsList = [];
+                    return;
+                }
+                // 봉장별 { loc: { unitMap, times } }
+                const byLoc = {};
+                logs.forEach(l => {
+                    if(!byLoc[l.loc]) byLoc[l.loc] = { units: {}, times: 0 };
+                    const unit = l.unit || 'kg';
+                    const amt  = l.amount || l.kg || 0;
+                    if(amt) {
+                        if(!byLoc[l.loc].units[unit]) byLoc[l.loc].units[unit] = 0;
+                        byLoc[l.loc].units[unit] += amt;
+                    }
+                    byLoc[l.loc].times++;
+                });
+                // 바 차트 기준: kg 환산 (시각화용만, 표시는 원단위)
+                const toKgApprox = u => u === '드럼통' ? 200 : u === '말통' ? 20 : 1;
+                const locKgApprox = loc => Object.entries(byLoc[loc].units).reduce((s,[u,a]) => s + a*toKgApprox(u), 0);
+                const maxApprox = Math.max(...Object.keys(byLoc).map(loc => locKgApprox(loc)), 1);
+
+                let html = '<div style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.4);margin-bottom:10px;">📍 봉장별 채밀량</div>';
+                Object.entries(byLoc).sort((a,b) => locKgApprox(b[0]) - locKgApprox(a[0])).forEach(([loc, val]) => {
+                    const pct = Math.round((locKgApprox(loc) / maxApprox) * 100);
+                    const amtStr = formatByUnit(val.units);
+                    html += '<div style="margin-bottom:10px;">'
+                        +'<div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px;">'
+                        +'<span style="color:var(--tx-main);font-weight:700;">'+loc+'</span>'
+                        +'<span style="color:var(--tx-amber);font-weight:900;">'+amtStr+' ('+val.times+'회)</span></div>'
+                        +'<div style="background:rgba(255,255,255,0.08);border-radius:6px;height:10px;overflow:hidden;">'
+                        +'<div style="background:linear-gradient(90deg,#f59e0b,#d97706);height:100%;border-radius:6px;width:'+pct+'%;transition:width 0.4s;"></div></div></div>';
+                });
+                apiaryEl.innerHTML = html;
+            }
+
+            // 꿀 종류별 - 단위별 집계
+            const typeEl = document.getElementById('harvest-by-type');
+            if(typeEl) {
+                const byType = {}; // { type: { unit: amt } }
+                logs.filter(l => l.type).forEach(l => {
+                    const unit = l.unit || 'kg';
+                    const amt  = l.amount || l.kg || 0;
+                    if(!amt) return;
+                    if(!byType[l.type]) byType[l.type] = {};
+                    if(!byType[l.type][unit]) byType[l.type][unit] = 0;
+                    byType[l.type][unit] += amt;
+                });
+                if(Object.keys(byType).length > 0) {
+                    let html = '<div style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.4);margin-bottom:10px;">🌸 꿀 종류별</div>'
+                        +'<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+                    Object.entries(byType).forEach(([type, units]) => {
+                        html += '<div style="background:rgba(255,179,0,0.12);border:1px solid rgba(255,179,0,0.25);border-radius:10px;padding:8px 14px;text-align:center;">'
+                            +'<div style="color:var(--tx-gold);font-weight:900;font-size:0.85rem;">'+type+'</div>'
+                            +'<div style="color:var(--tx-amber);font-size:0.75rem;margin-top:2px;">'+formatByUnit(units)+'</div></div>';
+                    });
+                    html += '</div>';
+                    typeEl.innerHTML = html;
+                } else {
+                    typeEl.innerHTML = '';
+                }
+            }
+
+            // 통계탭 하단 기록 목록 (수정/삭제)
+            const statsListEl = document.getElementById('harvest-stats-list');
+            if(statsListEl) {
+                if(logs.length === 0) {
+                    statsListEl.innerHTML = '';
+                    window._harvestStatsList = [];
+                } else {
+                    window._harvestStatsList = logs.slice().sort((a,b) => (b.date||'').localeCompare(a.date||''));
+                    let html = '<div style="font-size:0.82rem;font-weight:800;color:rgba(255,255,255,0.4);margin:16px 0 10px;">📋 기록 목록</div>';
+                    window._harvestStatsList.forEach((l, idx) => {
+                        const d = (l.date||'').replace(/-/g,'.');
+                        const amtStr = l.amount ? l.amount+(l.unit||'kg') : (l.kg ? l.kg+'kg' : '');
+                        html += '<div style="background:var(--bg-card);border:1px solid rgba(255,179,0,0.18);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">'
+                            + '<div>'
+                            + '<div style="font-size:0.85rem;font-weight:800;color:var(--tx-amber);">🍯 '+(l.type||'채밀')+'</div>'
+                            + '<div style="font-size:0.76rem;color:var(--tx-sub);margin-top:2px;">📍 '+l.loc+' · 📅 '+d+(amtStr ? ' · '+amtStr : '')+'</div>'
+                            + '</div>'
+                            + '<div style="display:flex;gap:6px;flex-shrink:0;">'
+                            + '<button onclick="statsHarvestEdit('+idx+')" style="padding:5px 11px;background:rgba(96,165,250,0.15);color:#93c5fd;border:1px solid rgba(96,165,250,0.3);border-radius:7px;font-size:0.72rem;font-weight:700;cursor:pointer;">✏️ 수정</button>'
+                            + '<button onclick="statsHarvestDelete('+idx+')" style="padding:5px 11px;background:rgba(185,28,28,0.15);color:#f87171;border:1px solid rgba(185,28,28,0.3);border-radius:7px;font-size:0.72rem;font-weight:700;cursor:pointer;">🗑️ 삭제</button>'
+                            + '</div></div>';
+                    });
+                    statsListEl.innerHTML = html;
+                }
+            }
+        }
+
+        function statsHarvestEdit(idx) {
+            const target = window._harvestStatsList && window._harvestStatsList[idx];
+            if(!target) return;
+            openHarvestEditModal(String(target.id || ''), target);
+        }
+
+        function statsHarvestDelete(idx) {
+            const target = window._harvestStatsList && window._harvestStatsList[idx];
+            if(!target) { showToast('⚠️ 기록을 찾을 수 없습니다'); return; }
+            if(!confirm('이 채밀 기록을 삭제할까요?')) return;
+
+            // harvestLogs 삭제
+            const all = getHarvestLogs();
+            const filtered = all.filter(l => {
+                if(target.id && l.id) return String(l.id) !== String(target.id);
+                return !(l.date === target.date && l.loc === target.loc && l.amount === target.amount);
+            });
+            localStorage.setItem('harvestLogs', JSON.stringify(filtered));
+
+            // 달력 + 통계 재렌더링
+            if(typeof renderCalendar === 'function') renderCalendar();
+            renderHarvestView();
+            showToast('🗑️ 채밀 기록 삭제됨');
+        }
+
+        function renderHarvestList() {
+            const el = document.getElementById('harvest-list-view');
+            if(!el) return;
+            const logs = getHarvestLogs().slice().sort((a,b) => (b.date||'').localeCompare(a.date||''));
+            if(logs.length === 0) {
+                el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--tx-sub);">채밀 기록이 없습니다</div>';
+                return;
+            }
+            // id를 전역 배열로 보관 - onclick에서 인덱스로 접근 (따옴표 이스케이프 문제 완전 회피)
+            window._harvestList = logs;
+            el.innerHTML = logs.map((l, idx) => {
+                const d = (l.date||'').replace(/-/g,'.');
+                const amtStr = l.amount ? l.amount+(l.unit||'kg') : (l.kg ? l.kg+'kg' : '');
+                return '<div style="background:var(--bg-card);border:1px solid rgba(255,179,0,0.18);border-radius:12px;padding:14px 16px;margin-bottom:9px;">'
+                    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'
+                    + '<div>'
+                    + '<div style="font-size:0.9rem;font-weight:800;color:var(--tx-amber);">🍯 '+(l.type||'채밀')+'</div>'
+                    + '<div style="font-size:0.78rem;color:var(--tx-sub);margin-top:2px;">📍 '+l.loc+' · 📅 '+d+'</div>'
+                    + '</div>'
+                    + '<div style="text-align:right;">'
+                    + (amtStr ? '<div style="color:var(--tx-gold);font-weight:900;font-size:1rem;">'+amtStr+'</div>' : '')
+                    + (l.hives ? '<div style="color:var(--tx-sub);font-size:0.75rem;">'+l.hives+'통</div>' : '')
+                    + '</div></div>'
+                    + (l.brix ? '<div style="font-size:0.78rem;color:#94a3b8;margin-bottom:3px;">🔬 당도: '+l.brix+'브릭스</div>' : '')
+                    + (l.nextDate ? '<div style="font-size:0.78rem;color:#93c5fd;margin-bottom:3px;">🔔 다음 채밀: '+l.nextDate.replace(/-/g,'.')+'</div>' : '')
+                    + (l.memo ? '<div style="font-size:0.76rem;color:#64748b;margin-bottom:4px;">📝 '+l.memo+'</div>' : '')
+                    + '<div style="display:flex;gap:6px;justify-content:flex-end;margin-top:8px;">'
+                    + '<button onclick="harvestEditByIdx('+idx+')" style="padding:5px 13px;background:rgba(96,165,250,0.15);color:#93c5fd;border:1px solid rgba(96,165,250,0.3);border-radius:7px;font-size:0.73rem;font-weight:700;cursor:pointer;">✏️ 수정</button>'
+                    + '<button onclick="harvestDeleteByIdx('+idx+')" style="padding:5px 13px;background:rgba(185,28,28,0.15);color:#f87171;border:1px solid rgba(185,28,28,0.3);border-radius:7px;font-size:0.73rem;font-weight:700;cursor:pointer;">🗑️ 삭제</button>'
+                    + '</div></div>';
+            }).join('');
+        }
+
+        function harvestDeleteByIdx(idx) {
+            const target = window._harvestList && window._harvestList[idx];
+            if(!target) { showToast('⚠️ 기록을 찾을 수 없습니다'); return; }
+            if(!confirm('이 채밀 기록을 삭제할까요?')) return;
+            const all = getHarvestLogs();
+            const filtered = all.filter(l => {
+                if(target.id && l.id) return String(l.id) !== String(target.id);
+                return !(l.date === target.date && l.loc === target.loc && l.amount === target.amount);
+            });
+            localStorage.setItem('harvestLogs', JSON.stringify(filtered));
+
+            renderHarvestList();
+            // 달력 재렌더링
+            if(typeof renderCalendar === 'function') renderCalendar();
+            showToast('🗑️ 채밀 기록 삭제됨');
+        }
+
+
+        function setHarvestNextDate(inputId, daysOffset) {
+            const el = document.getElementById(inputId);
+            if(!el) return;
+            if(daysOffset === null) { el.value = ''; el.focus(); return; }
+            const d = new Date();
+            d.setDate(d.getDate() + daysOffset);
+            const y = d.getFullYear();
+            const m = String(d.getMonth()+1).padStart(2,'0');
+            const day = String(d.getDate()).padStart(2,'0');
+            el.value = `${y}-${m}-${day}`;
+        }
+        function harvestEditByIdx(idx) {
+            const target = window._harvestList && window._harvestList[idx];
+            if(!target) return;
+            openHarvestEditModal(String(target.id || ''), target);
+        }
+
+        function deleteHarvestLog(id) {
+            if(!confirm('이 채밀 기록을 삭제할까요?')) return;
+            const logs = getHarvestLogs().filter(l => String(l.id) !== String(id));
+            localStorage.setItem('harvestLogs', JSON.stringify(logs));
+            renderHarvestList();
+            showToast('🗑️ 채밀 기록 삭제됨');
+        }
+
+        function openHarvestEditModal(id, logObj) {
+            const log = logObj || getHarvestLogs().find(l => String(l.id) === String(id));
+            if(!log) return;
+            document.getElementById('harvest-edit-id').value = String(log.id || id);
+            document.getElementById('hedit-date').value       = log.date || '';
+            document.getElementById('hedit-hives').value      = log.hives || '';
+            document.getElementById('hedit-amount').value     = log.amount || log.kg || '';
+            document.getElementById('hedit-unit').value       = log.unit || 'kg';
+            document.getElementById('hedit-type').value       = log.type || '';
+            document.getElementById('hedit-brix').value       = log.brix || '';
+            document.getElementById('hedit-next-date').value  = log.nextDate || '';
+            document.getElementById('hedit-memo').value       = log.memo || '';
+            document.getElementById('harvest-edit-modal').style.display = 'flex';
+        }
+
+        function closeHarvestEditModal() {
+            document.getElementById('harvest-edit-modal').style.display = 'none';
+        }
+
+        function saveHarvestEdit() {
+            const id = document.getElementById('harvest-edit-id').value;
+            const logs = getHarvestLogs();
+            const idx = logs.findIndex(l => String(l.id) === String(id));
+            if(idx < 0) { showToast('⚠️ 기록을 찾을 수 없습니다'); return; }
+            const amtVal = document.getElementById('hedit-amount').value;
+            logs[idx] = {
+                ...logs[idx],
+                date:     document.getElementById('hedit-date').value,
+                hives:    document.getElementById('hedit-hives').value ? Number(document.getElementById('hedit-hives').value) : null,
+                amount:   amtVal ? Number(amtVal) : null,
+                unit:     document.getElementById('hedit-unit').value || 'kg',
+                type:     document.getElementById('hedit-type').value,
+                brix:     document.getElementById('hedit-brix').value ? Number(document.getElementById('hedit-brix').value) : null,
+                nextDate: document.getElementById('hedit-next-date').value,
+                memo:     document.getElementById('hedit-memo').value
+            };
+            localStorage.setItem('harvestLogs', JSON.stringify(logs));
+            closeHarvestEditModal();
+            renderHarvestView(); // 통계/이력 탭 모두 갱신
+            showToast('✅ 채밀 기록 수정됨');
+        }
+
+        // 작업 선택 시 채밀 폼 표시/숨김
+        function toggleHarvestForm() {
+            const selected = Array.from(document.querySelectorAll('.work-btn.selected')).map(b => b.innerText);
+            const form = document.getElementById('harvest-form');
+            if(form) form.style.display = selected.includes('채밀') ? 'block' : 'none';
+            // 사양 폼
+            const feedingWorks = ['사양','화분떡 급이','화분떡 보충','먹이장 보충'];
+            const activeFeedingWorks = feedingWorks.filter(function(w){ return selected.includes(w); });
+            const feedingForm = document.getElementById('feeding-form');
+            if(feedingForm) feedingForm.style.display = activeFeedingWorks.length > 0 ? 'block' : 'none';
+            if(activeFeedingWorks.length > 0) renderFeedingInputs(activeFeedingWorks);
+        }
+
+        function renderFeedingInputs(works) {
+            var container = document.getElementById('feeding-inputs-container');
+            if(!container) return;
+            var html = '';
+            works.forEach(function(w) {
+                var key = w.replace(/ /g,'_');
+                var isSugar = (w === '사양' || w === '먹이장 보충');
+                var units = isSugar ? ['kg','포(15kg)'] : ['kg','개'];
+                var icon  = isSugar ? '🍚' : '🍰';
+                html += '<div style="margin-bottom:12px;">' +
+                    '<div style="font-size:0.82rem;color:#4ade80;font-weight:700;margin-bottom:6px;">' + icon + ' ' + w + ' 급이량</div>' +
+                    '<div style="display:flex;gap:6px;">' +
+                        '<input type="number" id="feeding-amount-' + key + '" class="field" placeholder="양 (미입력시 통계 미반영)" min="0" step="0.1" style="flex:1;">' +
+                        '<select id="feeding-unit-' + key + '" class="field" style="flex:0 0 auto;width:100px;padding:8px 4px;">' +
+                            units.map(function(u){ return '<option value="'+u+'">'+u+'</option>'; }).join('') +
+                        '</select>' +
+                    '</div>' +
+                '</div>';
+            });
+            container.innerHTML = html;
+        }
+
         // ==================== 고객 관리 ====================
+        let custSortMode = 'amount';   // amount | count | recent | name
+        let custCatFilter = 'all';
+
+        // 직접 등록한 고객 DB (localStorage: directCustomers)
+        function getDirectCustomers() {
+            try { return JSON.parse(localStorage.getItem('directCustomers') || '{}'); } catch(e) { return {}; }
+        }
+        function saveDirectCustomers(db) {
+            localStorage.setItem('directCustomers', JSON.stringify(db));
+        }
+
+        // 가계부 로그에서 고객 집계
+        function buildCustomerMap() {
+            const map = {};
+
+            // ① 직접 등록 고객
+            const dc = getDirectCustomers();
+            Object.entries(dc).forEach(([key, c]) => {
+                map[key] = {
+                    key, name: c.name, phone: c.phone || '', addr: c.addr || '',
+                    cat: c.cat || '', memo: c.memo || '',
+                    totalAmount: 0, count: 0, lastDate: '', items: [], isDirect: true
+                };
+            });
+
+            // ② 가계부 수입 기록에서 자동 수집
+            accLogs.forEach(log => {
+                if(log.type !== 'in' || !log.customerName) return;
+                const key = log.customerName + '||' + (log.customerPhone || '');
+                if(!map[key]) {
+                    map[key] = {
+                        key, name: log.customerName, phone: log.customerPhone || '',
+                        addr: '', cat: '', memo: '', totalAmount: 0, count: 0, lastDate: '', items: [], isDirect: false
+                    };
+                }
+                map[key].totalAmount += log.price || 0;
+                map[key].count++;
+                const d = log.date ? log.date.substring(0, 10) : '';
+                if(!map[key].lastDate || d > map[key].lastDate) map[key].lastDate = d;
+                (log.lines || [{name: log.item}]).forEach(l => { if(l.name) map[key].items.push(l.name); });
+            });
+            return map;
+        }
+
+        function setCustSort(mode) {
+            custSortMode = mode;
+            document.querySelectorAll('.csort-btn[id^="csort-"]').forEach(b => b.classList.remove('csort-on'));
+            const btn = document.getElementById('csort-' + mode);
+            if(btn) btn.classList.add('csort-on');
+            renderCustomerList();
+        }
+
+        function setCustCat(cat) {
+            custCatFilter = cat;
+            document.querySelectorAll('#customer-cat-filters .csort-btn').forEach(b => b.classList.remove('csort-on'));
+            const btn = document.getElementById('ccat-' + (cat === 'all' ? 'all' : encodeURIComponent(cat)));
+            if(btn) btn.classList.add('csort-on');
+            renderCustomerList();
+        }
+
         function renderCustomerList() {
             const container = document.getElementById('customer-list-view');
             if(!container) return;
 
             const searchVal = (document.getElementById('customer-search')?.value || '').trim().toLowerCase();
+            const map = buildCustomerMap();
+            let customers = Object.values(map);
 
-            // accLogs에서 고객 정보 있는 수입 기록 수집 → 고객별로 집계
-            const customerMap = {};
-            accLogs.forEach(function(log, idx) {
-                if(log.type !== 'in' || !log.customerName) return;
-                const key = log.customerName + '||' + (log.customerPhone || '');
-                if(!customerMap[key]) {
-                    customerMap[key] = {
-                        name: log.customerName,
-                        phone: log.customerPhone || '',
-                        totalAmount: 0,
-                        count: 0,
-                        lastDate: '',
-                        items: []
-                    };
-                }
-                customerMap[key].totalAmount += log.price || 0;
-                customerMap[key].count++;
-                const d = log.date ? log.date.substring(0, 10) : '';
-                if(!customerMap[key].lastDate || d > customerMap[key].lastDate) customerMap[key].lastDate = d;
-                (log.lines || [{ name: log.item, qty: 1, unitPrice: log.price }]).forEach(function(l) {
-                    customerMap[key].items.push(l.name);
+            // 카테고리 필터 버튼 업데이트
+            const catSet = new Set(customers.map(c => c.cat).filter(Boolean));
+            const catFiltersEl = document.getElementById('customer-cat-filters');
+            if(catFiltersEl) {
+                let catHTML = '<button id="ccat-all" onclick="setCustCat(&quot;all&quot;)" class="csort-btn' + (custCatFilter==='all'?' csort-on':'') + '">전체</button>';
+                catSet.forEach(cat => {
+                    const enc = encodeURIComponent(cat);
+                    catHTML += '<button id="ccat-'+enc+'" onclick="setCustCat(&quot;'+cat+'&quot;)" class="csort-btn'+(custCatFilter===cat?' csort-on':'')+'">'+cat+'</button>';
                 });
-            });
-
-            let customers = Object.values(customerMap);
-
-            // 검색 필터
-            if(searchVal) {
-                customers = customers.filter(function(c) {
-                    return c.name.toLowerCase().includes(searchVal) || c.phone.includes(searchVal);
-                });
+                catFiltersEl.innerHTML = catHTML;
             }
 
-            // 거래금액 내림차순
-            customers.sort(function(a, b) { return b.totalAmount - a.totalAmount; });
+            // 카테고리 필터
+            if(custCatFilter !== 'all') customers = customers.filter(c => c.cat === custCatFilter);
+
+            // 검색
+            if(searchVal) customers = customers.filter(c =>
+                c.name.toLowerCase().includes(searchVal) || c.phone.includes(searchVal)
+            );
+
+            // 정렬
+            if(custSortMode === 'amount')     customers.sort((a,b) => b.totalAmount - a.totalAmount);
+            else if(custSortMode === 'count') customers.sort((a,b) => b.count - a.count);
+            else if(custSortMode === 'recent') customers.sort((a,b) => (b.lastDate||'').localeCompare(a.lastDate||''));
+            else if(custSortMode === 'name')  customers.sort((a,b) => a.name.localeCompare(b.name, 'ko'));
+
+            // 통계: 단골 = 3회 이상 거래
+            const totalCustomers = Object.keys(map).length;
+            const totalSales = Object.values(map).reduce((s,c) => s + c.totalAmount, 0);
+            const regularCount = Object.values(map).filter(c => c.count >= 3).length;
+            const topCustomer = Object.values(map).sort((a,b) => b.totalAmount - a.totalAmount)[0];
+
+            const summaryEl = document.getElementById('customer-summary');
+            if(summaryEl) {
+                summaryEl.innerHTML =
+                    '<div style="background:rgba(96,165,250,0.12); border:1px solid rgba(96,165,250,0.2); border-radius:10px; padding:10px; text-align:center;">'
+                    + '<div style="color:#93c5fd; font-size:0.72rem; margin-bottom:3px;">👥 총 고객</div>'
+                    + '<div style="color:#93c5fd; font-size:1.3rem; font-weight:900;">' + totalCustomers + '명</div></div>'
+                    + '<div style="background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.2); border-radius:10px; padding:10px; text-align:center;">'
+                    + '<div style="color:var(--tx-green); font-size:0.72rem; margin-bottom:3px;">💰 총 매출</div>'
+                    + '<div style="color:#86efac; font-size:1rem; font-weight:900;">' + (totalSales > 0 ? totalSales.toLocaleString()+'원' : '0원') + '</div></div>'
+                    + '<div style="background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.2); border-radius:10px; padding:10px; text-align:center;">'
+                    + '<div style="color:var(--tx-gold); font-size:0.72rem; margin-bottom:3px;">⭐ 단골</div>'
+                    + '<div style="color:var(--tx-gold); font-size:1.3rem; font-weight:900;">' + (regularCount > 0 ? regularCount+'명' : '-') + '</div></div>';
+            }
 
             if(customers.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--tx-muted); font-style:italic;">'
-                    + (searchVal ? '검색 결과가 없습니다.' : '수입 기록에 고객 정보를 입력하면 자동으로 표시됩니다.<br><br>💡 가계부 → 기록하기 → 수입 탭에서<br>고객 정보를 입력하세요.') + '</div>';
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--tx-sub);">'
+                    + (searchVal || custCatFilter !== 'all' ? '검색 결과가 없습니다.' : '아직 등록된 고객이 없습니다.<br><br>+ 직접 추가 버튼으로 고객을 등록하거나<br>가계부 수입 기록 시 고객 정보를 입력하세요.') + '</div>';
                 return;
             }
 
-            const totalCustomers = customers.length;
-            const totalSales = customers.reduce(function(s, c) { return s + c.totalAmount; }, 0);
-
-            let html = '<div style="display:flex; gap:10px; margin-bottom:16px;">'
-                + '<div style="flex:1; background:rgba(96,165,250,0.15); border-radius:10px; padding:12px; text-align:center;">'
-                + '<div style="color:var(--tx-editbtn); font-size:0.75rem; margin-bottom:4px;">👥 총 고객수</div>'
-                + '<div style="color:var(--tx-editbtn); font-size:1.3rem; font-weight:900;">' + totalCustomers + '명</div></div>'
-                + '<div style="flex:1; background:var(--bg-green); border-radius:10px; padding:12px; text-align:center;">'
-                + '<div style="color:var(--tx-green); font-size:0.75rem; margin-bottom:4px;">💰 총 매출</div>'
-                + '<div style="color:#86efac; font-size:1.1rem; font-weight:900;">' + totalSales.toLocaleString() + '원</div></div>'
-                + '</div>';
-
-            customers.forEach(function(cust) {
-                const uniqueItems = [...new Set(cust.items)].slice(0, 3).join(', ');
-                const lastD = cust.lastDate ? cust.lastDate.replace(/-/g, '.') : '';
-                html += '<div style="background:var(--bg-card); border:1px solid rgba(96,165,250,0.2); border-radius:12px; padding:16px; margin-bottom:10px;">'
-                    + '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">'
-                    + '<div>'
-                    + '<div style="font-size:1rem; font-weight:800; color:#e2e8f0; margin-bottom:4px;">👤 ' + cust.name + '</div>'
-                    + (cust.phone ? '<div style="font-size:0.85rem; color:#94a3b8;">📞 ' + cust.phone + '</div>' : '')
+            let html = '';
+            customers.forEach(cust => {
+                const uniqueItems = [...new Set(cust.items)].slice(0,3).join(', ');
+                const lastD = cust.lastDate ? cust.lastDate.replace(/-/g,'.') : '';
+                const isRegular = cust.count >= 3;
+                const safeKey1 = cust.key.replace(/'/g, "\\'");
+                const safeKeyAttr = cust.key.replace(/"/g,'&quot;');
+                html += '<div data-cust-key="'+safeKeyAttr+'" style="background:var(--bg-card); border:1px solid rgba(96,165,250,0.18); border-radius:12px; padding:14px 16px; margin-bottom:9px;">'
+                    + '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">'
+                    + '<div onclick="openCustDetail(this.closest(\'[data-cust-key]\').dataset.custKey)" style="display:flex; align-items:center; gap:7px; flex-wrap:wrap; flex:1; cursor:pointer; min-width:0; padding-right:8px;">'
+                    + '<span style="font-size:0.95rem; font-weight:800; color:#e2e8f0;">👤 ' + cust.name + '</span>'
+                    + (isRegular ? '<span style="background:rgba(251,191,36,0.2); color:#fbbf24; font-size:0.68rem; padding:1px 7px; border-radius:10px; font-weight:700;">⭐단골</span>' : '')
+                    + (cust.cat ? '<span style="background:rgba(96,165,250,0.15); color:#93c5fd; font-size:0.68rem; padding:1px 7px; border-radius:10px;">'+cust.cat+'</span>' : '')
                     + '</div>'
+                    + '<div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0;">'
                     + '<div style="text-align:right;">'
-                    + '<div style="color:var(--tx-green); font-weight:900; font-size:1rem;">' + cust.totalAmount.toLocaleString() + '원</div>'
-                    + '<div style="color:#64748b; font-size:0.75rem;">' + cust.count + '회 거래</div>'
-                    + '</div></div>'
-                    + (uniqueItems ? '<div style="font-size:0.78rem; color:#94a3b8; margin-bottom:4px;">🏷️ ' + uniqueItems + (cust.items.length > 3 ? ' 외' : '') + '</div>' : '')
-                    + (lastD ? '<div style="font-size:0.75rem; color:#64748b;">📅 마지막 거래: ' + lastD + '</div>' : '')
+                    + (cust.totalAmount > 0 ? '<div style="color:var(--tx-green); font-weight:900; font-size:0.95rem;">' + cust.totalAmount.toLocaleString() + '원</div>' : '')
+                    + (cust.count > 0 ? '<div style="color:#64748b; font-size:0.73rem;">' + cust.count + '회 거래</div>' : '')
+                    + '</div>'
+                    + '<div style="display:flex; gap:5px;">'
+                    + '<button onclick="event.stopPropagation(); openAddCustomerModal(this.closest(\'[data-cust-key]\').dataset.custKey)" style="padding:4px 10px; background:rgba(96,165,250,0.15); color:#93c5fd; border:1px solid rgba(96,165,250,0.3); border-radius:7px; font-size:0.73rem; font-weight:700; cursor:pointer;">✏️ 수정</button>'
+                    + '<button onclick="event.stopPropagation(); custQuickDelete(this.closest(\'[data-cust-key]\').dataset.custKey)" style="padding:4px 10px; background:rgba(185,28,28,0.15); color:#f87171; border:1px solid rgba(185,28,28,0.3); border-radius:7px; font-size:0.73rem; font-weight:700; cursor:pointer;">🗑️ 삭제</button>'
+                    + '</div></div></div>'
+                    + (cust.phone ? '<div style="font-size:0.82rem; color:#94a3b8; margin-bottom:3px;">📞 ' + cust.phone + '</div>' : '')
+                    + (uniqueItems ? '<div style="font-size:0.76rem; color:#64748b; margin-bottom:3px;">🏷️ ' + uniqueItems + (cust.items.length > 3 ? ' 외' : '') + '</div>' : '')
+                    + (lastD ? '<div style="font-size:0.73rem; color:#475569;">📅 마지막 거래: ' + lastD + '</div>' : '')
                     + '</div>';
             });
-
             container.innerHTML = html;
+        }
+
+        // 직접 추가 모달 열기
+        function openAddCustomerModal(keyToEdit) {
+            const modal = document.getElementById('add-customer-modal');
+            if(!modal) return;
+            document.getElementById('edit-cust-key').value = keyToEdit || '';
+            if(keyToEdit) {
+                // 직접등록 고객 먼저 조회
+                const db = getDirectCustomers();
+                let c = db[keyToEdit];
+                if(!c) {
+                    // 가계부 자동수집 고객 - localStorage에서 직접 새로 읽어서 조회
+                    const freshLogs = (() => { try { return JSON.parse(localStorage.getItem('beeMoney') || '[]'); } catch(e) { return []; } })();
+                    const parts = keyToEdit.split('||');
+                    const custName = parts[0] || '';
+                    const custPhone = parts[1] || '';
+                    const match = freshLogs.find(l => l.type === 'in' && l.customerName === custName && (l.customerPhone || '') === custPhone);
+                    if(match) {
+                        c = { name: match.customerName, phone: match.customerPhone || '', addr: '', cat: '', memo: '' };
+                    }
+                }
+                c = c || {};
+                document.getElementById('add-cust-title').textContent = '👤 고객 수정';
+                document.getElementById('add-cust-name').value = c.name || '';
+                document.getElementById('add-cust-phone').value = c.phone || '';
+                document.getElementById('add-cust-addr').value = c.addr || '';
+                document.getElementById('add-cust-cat').value = c.cat || '';
+                document.getElementById('add-cust-memo').value = c.memo || '';
+            } else {
+                document.getElementById('add-cust-title').textContent = '👤 고객 추가';
+                ['add-cust-name','add-cust-phone','add-cust-addr','add-cust-cat','add-cust-memo'].forEach(id => {
+                    const el = document.getElementById(id); if(el) el.value = '';
+                });
+            }
+            modal.style.display = 'flex';
+        }
+        function closeAddCustomerModal() {
+            const modal = document.getElementById('add-customer-modal');
+            if(modal) modal.style.display = 'none';
+        }
+        function saveCustomerDirect() {
+            const name = (document.getElementById('add-cust-name')?.value || '').trim();
+            if(!name) { showToast('⚠️ 이름을 입력하세요'); return; }
+            const db = getDirectCustomers();
+            const editKey = document.getElementById('edit-cust-key')?.value || '';
+            const key = editKey || (name + '||' + (document.getElementById('add-cust-phone')?.value || '').trim());
+            db[key] = {
+                name,
+                phone: (document.getElementById('add-cust-phone')?.value || '').trim(),
+                addr:  (document.getElementById('add-cust-addr')?.value  || '').trim(),
+                cat:   (document.getElementById('add-cust-cat')?.value   || '').trim(),
+                memo:  (document.getElementById('add-cust-memo')?.value  || '').trim(),
+                createdAt: editKey ? (db[editKey]?.createdAt || new Date().toISOString()) : new Date().toISOString()
+            };
+            if(editKey && editKey !== key) delete db[editKey];
+            saveDirectCustomers(db);
+            closeAddCustomerModal();
+            renderCustomerList();
+            showToast('✅ 고객 정보 저장됨');
+        }
+
+        // 고객 상세 모달
+        function _openCustDetailByKey(key) {
+            const map = buildCustomerMap();
+            const cust = map[key];
+            if(!cust) return;
+            const modal = document.getElementById('cust-detail-modal');
+            const body  = document.getElementById('cust-detail-body');
+            if(!modal || !body) return;
+
+            // 해당 고객 거래 내역
+            const logs = accLogs.filter(l => l.type === 'in' && l.customerName === cust.name)
+                .sort((a,b) => (b.date||'').localeCompare(a.date||''));
+
+            const isRegular = cust.count >= 3;
+            let html = '<div style="background:linear-gradient(135deg,rgba(96,165,250,0.2),rgba(59,130,246,0.1)); padding:18px 20px 14px;">'
+                + '<div style="display:flex; justify-content:space-between; align-items:flex-start;">'
+                + '<div>'
+                + '<div style="font-size:1.1rem; font-weight:900; color:#e2e8f0; margin-bottom:4px;">👤 ' + cust.name + ' '
+                + (isRegular ? '<span style="background:rgba(251,191,36,0.25); color:#fbbf24; font-size:0.7rem; padding:2px 8px; border-radius:10px;">⭐단골</span>' : '') + '</div>'
+                + (cust.phone ? '<div style="font-size:0.85rem; color:#94a3b8;">📞 ' + cust.phone + '</div>' : '')
+                + (cust.addr  ? '<div style="font-size:0.82rem; color:#94a3b8;">📍 ' + cust.addr + '</div>' : '')
+                + (cust.cat   ? '<div style="margin-top:4px;"><span style="background:rgba(96,165,250,0.15); color:#93c5fd; font-size:0.73rem; padding:2px 9px; border-radius:10px;">' + cust.cat + '</span></div>' : '')
+                + '</div>'
+                + '<button onclick="closeCustDetail()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#aaa; border-radius:50%; width:32px; height:32px; cursor:pointer; font-size:1rem; flex-shrink:0;">✕</button>'
+                + '</div></div>'
+                + '<div style="padding:14px 18px;">'
+                // 통계
+                + '<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px;">'
+                + '<div style="background:rgba(74,222,128,0.1); border-radius:8px; padding:10px; text-align:center;">'
+                + '<div style="color:var(--tx-green); font-size:0.7rem;">총 구매액</div>'
+                + '<div style="color:#86efac; font-weight:900; font-size:0.95rem;">' + cust.totalAmount.toLocaleString() + '원</div></div>'
+                + '<div style="background:rgba(96,165,250,0.1); border-radius:8px; padding:10px; text-align:center;">'
+                + '<div style="color:#93c5fd; font-size:0.7rem;">구매횟수</div>'
+                + '<div style="color:#93c5fd; font-weight:900; font-size:1rem;">' + cust.count + '회</div></div>'
+                + '<div style="background:rgba(251,191,36,0.1); border-radius:8px; padding:10px; text-align:center;">'
+                + '<div style="color:var(--tx-gold); font-size:0.7rem;">최근 거래</div>'
+                + '<div style="color:var(--tx-gold); font-weight:700; font-size:0.75rem;">' + (cust.lastDate ? cust.lastDate.replace(/-/g,'.') : '-') + '</div></div>'
+                + '</div>';
+
+            if(cust.memo) {
+                html += '<div style="background:rgba(255,255,255,0.05); border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:0.82rem; color:#94a3b8;">📝 ' + cust.memo + '</div>';
+            }
+
+            // 거래 내역
+            if(logs.length > 0) {
+                html += '<div style="font-size:0.8rem; font-weight:800; color:rgba(255,255,255,0.4); margin-bottom:8px; letter-spacing:0.5px;">거래 내역</div>';
+                logs.slice(0,10).forEach(l => {
+                    const d = l.date ? l.date.substring(0,10).replace(/-/g,'.') : '';
+                    html += '<div style="display:flex; justify-content:space-between; padding:8px 10px; background:var(--bg-input); border-radius:8px; margin-bottom:5px; font-size:0.82rem;">'
+                        + '<div><span style="color:#94a3b8;">' + d + '</span> <span style="color:#e2e8f0; font-weight:700; margin-left:6px;">' + (l.item||'') + '</span></div>'
+                        + '<span style="color:var(--tx-green); font-weight:700;">' + (l.price||0).toLocaleString() + '원</span>'
+                        + '</div>';
+                });
+            } else {
+                html += '<div style="text-align:center; padding:16px; color:#475569; font-size:0.82rem;">거래 내역이 없습니다</div>';
+            }
+
+            // 수정/삭제 버튼
+            const safeKey2 = key.replace(/"/g,'&quot;');
+            html += '<div style="display:flex; gap:8px; margin-top:14px;">'
+                + '<button onclick="closeCustDetailAndEdit(this.dataset.key)" data-key="'+safeKey2+'" style="flex:1; padding:11px; background:rgba(96,165,250,0.15); color:#93c5fd; border:1px solid rgba(96,165,250,0.3); border-radius:10px; font-weight:700; cursor:pointer;">✏️ 수정</button>'
+                + '<button onclick="deleteCustDirect(this.dataset.key)" data-key="'+safeKey2+'" style="flex:1; padding:11px; background:rgba(185,28,28,0.15); color:#f87171; border:1px solid rgba(185,28,28,0.3); border-radius:10px; font-weight:700; cursor:pointer;">🗑️ 삭제</button>'
+                + '</div></div>';
+
+            body.innerHTML = html;
+            modal.style.display = 'block';
+        }
+
+        function openCustDetail(key) {
+            if(!key || key === 'undefined') return;
+            _openCustDetailByKey(key);
+        }
+
+        // 카드 목록에서 바로 삭제
+        function custQuickDelete(key) {
+            const db = getDirectCustomers();
+            if(db[key]) {
+                // 직접 등록 고객
+                if(!confirm('이 고객을 삭제할까요?')) return;
+                delete db[key];
+                saveDirectCustomers(db);
+                renderCustomerList();
+                showToast('🗑️ 고객 삭제됨');
+            } else {
+                // 가계부 자동 수집 고객 - 거래 내역도 함께 삭제
+                const custName = key.split('||')[0];
+                const custPhone = key.split('||')[1] || '';
+                const txCount = accLogs.filter(l => l.type === 'in' && l.customerName === custName && (l.customerPhone || '') === custPhone).length;
+                if(!confirm(`"${custName}" 고객과 관련된 가계부 거래 내역 ${txCount}건이 함께 삭제됩니다.\n계속하시겠습니까?`)) return;
+                accLogs = accLogs.filter(l => !(l.type === 'in' && l.customerName === custName && (l.customerPhone || '') === custPhone));
+                localStorage.setItem('beeMoney', JSON.stringify(accLogs));
+                renderCustomerList();
+                showToast('🗑️ 고객 및 거래 내역 삭제됨');
+            }
+        }
+
+        function closeCustDetail() {
+            const m = document.getElementById('cust-detail-modal');
+            if(m) m.style.display = 'none';
+        }
+
+        function closeCustDetailAndEdit(key) {
+            document.getElementById('cust-detail-modal').style.display = 'none';
+            openAddCustomerModal(key);
+        }
+
+        function deleteCustDirect(key) {
+            if(!confirm('이 고객을 삭제할까요?')) return;
+            const db = getDirectCustomers();
+            delete db[key];
+            saveDirectCustomers(db);
+            document.getElementById('cust-detail-modal').style.display = 'none';
+            renderCustomerList();
+            showToast('🗑️ 고객 삭제됨');
         }
 
         // ==================== 화면 전환 ====================
@@ -6294,10 +7845,12 @@ function getUserInfo(){
             const navMap = {
                 'diary': 'nav-diary',
                 'calendar': 'nav-calendar',
+                'harvest': 'nav-harvest',
                 'calculator': 'nav-calculator',
                 'account': 'nav-account',
                 'apiary-settings': 'nav-settings',
-                'map': 'nav-map'
+                'map': 'nav-map',
+                'feeding': 'nav-harvest'
             };
             if(navMap[v]) {
                 document.getElementById(navMap[v]).classList.add('active');
@@ -6326,6 +7879,13 @@ function getUserInfo(){
                         renderAMks(); 
                     }
                 }, 200);
+            }
+
+            if(v === 'harvest') {
+                renderHarvestView();
+            }
+            if(v === 'feeding') {
+                switchMainHarvestTab('feeding');
             }
 
             if(v === 'disease-history') {
@@ -6401,6 +7961,16 @@ function getUserInfo(){
             document.querySelectorAll('.work-btn.selected').forEach(btn => btn.classList.remove('selected'));
             document.getElementById('custom-work').value = '';
             updateSelectedDisplay();
+            // 채밀 폼 초기화
+            ['harvest-hives','harvest-kg','harvest-brix','harvest-next-date'].forEach(id => {
+                const el = document.getElementById(id); if(el) el.value = '';
+            });
+            const harvestType = document.getElementById('harvest-type');
+            if(harvestType) harvestType.value = '';
+            const harvestUnit = document.getElementById('harvest-unit');
+            if(harvestUnit) harvestUnit.value = 'kg';
+            const harvestForm = document.getElementById('harvest-form');
+            if(harvestForm) harvestForm.style.display = 'none';
             weatherInserted = false;
             viewHistory = ['diary'];
             document.querySelector('.bottom-nav').style.display = 'flex';
@@ -6435,6 +8005,8 @@ function getUserInfo(){
             
             const statusText = selected.length > 0 ? `${selected.length}개 선택됨` : "작업을 선택하세요";
             document.getElementById('work-btn-text').innerText = statusText;
+            // 채밀 선택 시 채밀 폼 표시
+            toggleHarvestForm();
         }
 
         // ==================== 일지 저장 ====================
@@ -6487,6 +8059,53 @@ function getUserInfo(){
             // 달력 필터에서 사용하는 hasData 플래그 설정
             db[key].hasData = db[key].records.length > 0;
             
+            // 채밀 처리 - 채밀 작업 선택 시 채밀 데이터 저장
+            if(works.includes('채밀')) {
+                const harvestHives  = document.getElementById('harvest-hives')?.value || '';
+                const harvestKg     = document.getElementById('harvest-kg')?.value || '';
+                const harvestUnit   = document.getElementById('harvest-unit')?.value || 'kg';
+                const harvestType   = document.getElementById('harvest-type')?.value || '';
+                const harvestBrix   = document.getElementById('harvest-brix')?.value || '';
+                const harvestNextDate = document.getElementById('harvest-next-date')?.value || '';
+                const harvestMemo   = document.getElementById('harvest-memo')?.value || '';
+
+                if(harvestKg || harvestHives) {
+                    // 채밀 전용 스토리지에 저장
+                    const harvestLogs = JSON.parse(localStorage.getItem('harvestLogs') || '[]');
+                    harvestLogs.push({
+                        id: Date.now(),
+                        date: `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`,
+                        loc: selectedLoc,
+                        hives: harvestHives ? Number(harvestHives) : null,
+                        amount: harvestKg ? Number(harvestKg) : null,
+                        unit: harvestUnit || 'kg',
+                        type: harvestType,
+                        brix: harvestBrix ? Number(harvestBrix) : null,
+                        nextDate: harvestNextDate,
+                        memo: harvestMemo
+                    });
+                    localStorage.setItem('harvestLogs', JSON.stringify(harvestLogs));
+
+                    // 다음 채밀 알림 달력 이벤트 생성
+                    // harvestLogs에 nextDate 포함 저장됨 - beeData.harvestAlarms 불필요
+                }
+            }
+
+            // 사양/화분떡 처리
+            var feedingTypes = {'사양':'설탕사양', '화분떡 급이':'화분떡', '화분떡 보충':'화분떡', '먹이장 보충':'설탕사양'};
+            Object.keys(feedingTypes).forEach(function(workName) {
+                if(works.includes(workName)) {
+                    var amtEl  = document.getElementById('feeding-amount-' + workName.replace(/ /g,'_'));
+                    var unitEl = document.getElementById('feeding-unit-' + workName.replace(/ /g,'_'));
+                    var amt    = amtEl ? parseFloat(amtEl.value) : NaN;
+                    var unit   = unitEl ? unitEl.value : '';
+                    if(!isNaN(amt) && amt > 0 && unit) {
+                        var feedDate = y + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+                        saveFeedingLog(feedDate, selectedLoc, feedingTypes[workName], amt, unit, '');
+                    }
+                }
+            });
+
             // 왕대이충 처리
             if(works.includes('왕대이충')) {
                 const today = new Date(y, m-1, d);
@@ -6508,6 +8127,16 @@ function getUserInfo(){
             document.querySelectorAll('.work-btn.selected').forEach(btn => btn.classList.remove('selected'));
             document.getElementById('custom-work').value = '';
             updateSelectedDisplay();
+            // 채밀 폼 초기화
+            ['harvest-hives','harvest-kg','harvest-brix','harvest-next-date'].forEach(id => {
+                const el = document.getElementById(id); if(el) el.value = '';
+            });
+            const harvestType = document.getElementById('harvest-type');
+            if(harvestType) harvestType.value = '';
+            const harvestUnit = document.getElementById('harvest-unit');
+            if(harvestUnit) harvestUnit.value = 'kg';
+            const harvestForm = document.getElementById('harvest-form');
+            if(harvestForm) harvestForm.style.display = 'none';
             weatherInserted = false;
             clearDiaryPhotos();
             // 방제 상태 초기화
@@ -6605,7 +8234,9 @@ function getUserInfo(){
                 renderAlarmDayList();
                 renderAccSettingList('out');
                 renderAccSettingList('in');
+                renderScholarList();
             }
+            initGdriveUI();
         }
 
         // ===== 설정 아코디언 토글 =====
@@ -7304,12 +8935,7 @@ function getUserInfo(){
         }
 
         // 설정탭 로드 시 로그인 상태 확인
-        function switchSettingsTab(tab) {
-            document.querySelectorAll('.settings-tab').forEach(t => t.style.display = 'none');
-            const target = document.getElementById('settings-' + tab);
-            if(target) { target.style.display = 'block'; initGdriveUI(); }
-            if(tab === 'custom') renderScholarList();
-        }
+        // switchSettingsTab 중복 제거 - 위의 함수로 통합됨
 
         function initGdriveUI() {
             const saved = localStorage.getItem('gdrive_token');
@@ -7974,10 +9600,13 @@ function getUserInfo(){
                     el.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
                     el.style.color = '#fff';
                     el.style.fontWeight = '800';
+                    el.style.border = 'none';
                 } else {
-                    el.style.background = 'transparent';
-                    el.style.color = '#888';
+                    var isLight = document.body.classList.contains('light-mode');
+                    el.style.background = isLight ? '#d1d5db' : 'rgba(255,255,255,0.08)';
+                    el.style.color = isLight ? '#111827' : '#aaa';
                     el.style.fontWeight = '700';
+                    el.style.border = isLight ? '1px solid #9ca3af' : 'none';
                 }
             });
             
@@ -9323,6 +10952,23 @@ function getUserInfo(){
 
         // ==================== 초기화 ====================
         // ==================== 데이터 마이그레이션 ====================
+        // 종봉 카테고리 자동 추가 마이그레이션
+        function migrateAddJongbongCategory() {
+            var saved = localStorage.getItem('beeCustomCategories');
+            if(!saved) return; // 기본값 사용 중이면 불필요
+            var cats = JSON.parse(saved);
+            if(!cats.out) return;
+            if(!cats.out['종봉']) {
+                cats.out['종봉'] = ['왕대', '처녀왕', '산란신왕', '기타'];
+                localStorage.setItem('beeCustomCategories', JSON.stringify(cats));
+                // 전역 customCategories도 업데이트
+                if(typeof customCategories !== 'undefined') {
+                    customCategories.out['종봉'] = ['왕대', '처녀왕', '산란신왕', '기타'];
+                }
+                console.log('✅ 종봉 카테고리 자동 추가 완료');
+            }
+        }
+
         function migrateDbHasData() {
             try {
                 var db = JSON.parse(localStorage.getItem('beeData') || '{}');
@@ -9446,14 +11092,51 @@ function getUserInfo(){
             loadTheme();
         });
 
+        // beeData에 남은 harvestAlarms 잔재 전체 제거 (이제 harvestLogs로 직접 관리)
+        function cleanOrphanHarvestAlarms() {
+            try {
+                const beeData = JSON.parse(localStorage.getItem('beeData') || '{}');
+                let changed = false;
+                Object.keys(beeData).forEach(key => {
+                    if(beeData[key].harvestAlarms) {
+                        delete beeData[key].harvestAlarms;
+                        changed = true;
+                    }
+                });
+                if(changed) {
+                    localStorage.setItem('beeData', JSON.stringify(beeData));
+                    console.log('🧹 beeData.harvestAlarms 잔재 전체 제거 완료');
+                }
+            } catch(e) {}
+        }
+
         window.addEventListener('DOMContentLoaded', function() {
             console.log('=================================================');
             console.log('🐝 BEE MASTER 초기화 시작');
             console.log('=================================================');
             
+            // ===== 사용자 설정값 내장 (백업 2026-03-07) =====
+            if(!localStorage.getItem('beeData')) localStorage.setItem('beeData', `{"2026-3-1":{"isQueen":true}}`);
+            if(!localStorage.getItem('beeMoney')) localStorage.setItem('beeMoney', `[]`);
+            if(!localStorage.getItem('diseaseLogs')) localStorage.setItem('diseaseLogs', `[]`);
+            if(!localStorage.getItem('personalSchedules')) localStorage.setItem('personalSchedules', `[]`);
+            localStorage.setItem('apiarySettings', `{"1봉장":true,"2봉장":true,"3봉장":false,"이동1봉장":true,"이동2봉장":false,"이동3봉장":false}`);
+            localStorage.setItem('customWorkItems', `["내검","증소","왕대이충","채밀","분봉","사양","화분떡 급이","제리 수거","화분떡 보충","소초광투입","벌통청소","제리이충","먹이장 보충"]`);
+            localStorage.setItem('customDiseases', `[{"value":"mite","name":"꿀벌응애 / 중국가시응애"},{"value":"afb","name":"미국부저병 (AFB)"},{"value":"efb","name":"유럽부저병 (EFB)"},{"value":"nosema","name":"노제마병"},{"value":"chalkbrood","name":"석고병"},{"value":"virus","name":"바이러스"},{"value":"custom_1772867608663","name":"작은벌집딱정벌레"},{"value":"custom_1772867620687","name":"소충"},{"value":"custom_1772867634805","name":"기타"}]`);
+            localStorage.setItem('customMedicines', `{"mite":["플루발리네이트","아미트라즈","개미산","옥살산","티몰","멘톨","유황","구연산","쿠마포스"],"afb":["옥시테트라사이클린","네오마이신"],"efb":["옥시테트라사이클린","네오마이신"],"nosema":["푸마길린","살리실산나트륨","기타"],"chalkbrood":["환기 개선","습도 관리","축소","기타"],"virus":["약봉 제거","소초 교체","영양 공급","소독약품","기타"],"custom_1772867608663":["기타"],"custom_1772867620687":["기타"]}`);
+            localStorage.setItem('customMedicineOptions', `{"mite":{"medicines":["플루발리네이트","아미트라즈","개미산","옥살산","티몰","멘톨"],"details":{"플루발리네이트":["왕스","만프골드","홍사방","흠(삼금)만패","마브릭","기타"],"아미트라즈":["속살골드","속살만2호","마이탁","속살만-10호","히어로","닥터비","기타"],"개미산":["85%","80%","75%","70%","65%","60%","55%","50%","속살만6호","마이트-K","기타"],"옥살산":["1G","2G","3G","4G","3.2%","3.5%","옥살산 글리세린 패트","기타"],"티몰":["순도 99%","일반"],"멘톨":["결정","오일","기타"]},"methods":{"플루발리네이트":["분무","연무","투입","기타"],"아미트라즈":["분무","연무","투입","기타"],"개미산":["기화기","겔","단기처리","장기처리","기타"],"옥살산":["증기(기화)","연무","분무","흘림","투입","기타"],"티몰":["증발","연무","겔","기타"],"멘톨":["증발","투입","기타"],"유황":["분말","분무","기타"],"구연산":["흘림","사양","분무","기타"],"쿠마포스":["기화기","분무","기타"]}},"afb":{"medicines":["옥시테트라사이클린"],"details":{},"methods":{"옥시테트라사이클린":["분말","사양","분무","기타"],"네오마이신":["분말","사양","분무","기타"]}},"efb":{"medicines":["옥시테트라사이클린"],"details":{},"methods":{"옥시테트라사이클린":["분말","사양","분무","기타"],"네오마이신":["분말","사양","분무","기타"]}},"nosema":{"medicines":["푸마길린"],"details":{"푸마길린":[]},"methods":{"푸마길린":["사양","분무","기타"],"살리실산나트륨":["사양","흘림","분무","가타"]}}}`);
+            localStorage.setItem('beeCustomCategories', `{"out":{"사료":["설탕","자연화분","대용화분","고체사료","기타"],"약품":["속살만","개미산","만푸골드","노제마약","부저약","소독제","기타"],"자재":["벌통","소초광","개포","격리판","소문","꿀드럼","공병","기타"],"장비":["채밀기","탈봉기","훈연기","작업복","소화기","기타소모품"],"운영":["임대료","전기세","주유비","간식비","이동경비","인건비","밀원답사비","기타"],"종봉":["왕대","처녀왕","산란신왕","종봉구입비","기타"]},"in":{"천연꿀":["아카시아꿀","밤꿀","잡화꿀","사양꿀","감로꿀","피나무꿀","싸리꿀","때죽나무꿀","헛개나무꿀","옻나무꿀","기타"],"양봉산물":["생화분","프로폴리스","로열젤리","밀랍","숫벌애벌레(웅봉)","기타"],"종봉분양":["벌통판매","여왕벌분양","수정벌임대","왕대판매","처녀왕 판매","신왕판매","기타"],"기타":["보조금","교육수입","기타"]}}`);
+            // ===== 사용자 설정값 내장 끝 =====
+
+            // 고아 채밀 알람 정리 (삭제 찌꺼기 제거)
+            cleanOrphanHarvestAlarms();
+
             // 데이터 마이그레이션 실행
             try {
                 migrateDbHasData();
+            } catch(e) {}
+            try {
+                migrateAddJongbongCategory();
             } catch(e) {}
             try {
                 migrateCustomMedicineOptions();
