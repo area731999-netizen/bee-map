@@ -2742,7 +2742,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 </head>
 <body>
 
-    <div id="splash">
+    <div id="splash" style="display:none;">
         <div class="bee-fly">🐝</div>
         <h1 class="logo-text">BEE MASTER</h1>
         <p class="subtitle">스마트 양봉 관리 시스템</p>
@@ -11209,8 +11209,10 @@ function getUserInfo(){
             console.log('- location-filters:', document.getElementById('location-filters') ? '✓' : '✗');
             
             console.log('\n✅ BEE MASTER 초기화 완료');
-            console.log('💡 대문에서 "양봉" 또는 "동양종" 버튼을 클릭하세요');
             console.log('=================================================\n');
+
+            // index.html에서 양봉 선택 후 진입 → 스플래시 건너뛰고 바로 앱 시작
+            startApp('양봉');
         });
     </script>
 
