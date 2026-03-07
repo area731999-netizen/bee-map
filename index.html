@@ -992,6 +992,7 @@
         .view-group { 
             min-height: calc(100vh - 180px);
             overflow-y: visible;
+            overflow-x: hidden;
             padding: 20px; 
             display: none; 
             animation: fadeIn 0.3s ease-out;
@@ -1653,25 +1654,35 @@
             background: rgba(0,0,0,0.8);
             backdrop-filter: blur(10px);
             border-top: 1px solid rgba(255,213,79,0.2); 
-            display: flex; 
+            display: flex;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
             z-index: 5000; 
             padding-bottom: env(safe-area-inset-bottom);
             box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
         }
+        .bottom-nav::-webkit-scrollbar { display: none; }
         
         .nav-item { 
-            flex: 1; 
+            flex: 0 0 72px;
+            min-width: 72px;
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            font-size: 13px; 
+            font-size: 11px; 
             color: #666; 
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 700;
             position: relative;
-            gap: 2px;
+            gap: 1px;
+            padding: 0 4px;
+            word-break: keep-all;
+            text-align: center;
+            line-height: 1.2;
         }
 
         .nav-item::before {
@@ -2883,7 +2894,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         </div>
 
         <!-- 일지 입력 화면 -->
-        <div id="view-diary" class="view-group" style="padding-bottom: 200px;">
+        <div id="view-diary" class="view-group" style="padding-bottom: 200px; display:none;">
             <div class="input-row">
                 <span class="input-label">📍 봉장 선택</span>
                 <input type="hidden" id="loc-select" value="1봉장">
@@ -2987,15 +2998,14 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 </div>
                 <div id="diary-photo-preview" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;"></div>
             </div>
-            </div>
 
-            <!-- 저장 버튼 고정 -->
-            <div style="position:sticky;bottom:70px;left:0;right:0;padding:10px 16px;background:linear-gradient(to top,rgba(26,14,5,1) 70%,transparent);z-index:100;">
+            <!-- 저장 버튼 -->
+            <div style="padding:10px 0 20px 0;">
                 <button onclick="saveData()" class="btn-save btn-diary-save" style="width:100%;min-height:52px;font-size:1rem;">
                     📔 일지 저장하기
                 </button>
             </div>
-        </div>
+        </div><!-- /view-diary -->
         <!-- 방제 입력 화면 -->
         <div id="view-disease" class="view-group" style="padding-bottom: 100px;">
             <h3 style="color: var(--tx-amber); margin-bottom: 20px; font-size: 1.5rem; font-weight: 900; text-align: center;">💊 방제 처리</h3>
@@ -3965,7 +3975,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 가계부
             </div>
             <div id="nav-harvest" class="nav-item" onclick="switchView('harvest', true)">
-                <div style="font-size: 24px; margin-bottom: 4px;">📊</div>
+                <div style="font-size: 20px; margin-bottom: 2px;">📊</div>
                 채밀/사양
             </div>
             <div id="nav-calculator" class="nav-item" onclick="switchView('calculator', true)">
@@ -4626,9 +4636,9 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
             // ④-2 채밀 예정 알림 - harvestLogs.nextDate 직접 확인 (beeData 의존 없음)
             {
-                const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth()+1).padStart(2,'0')}-${String(todayObj.getDate()).padStart(2,'0')}`;
+                const todayStr2 = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
                 const hLogs = (() => { try { return JSON.parse(localStorage.getItem('harvestLogs')||'[]'); } catch(e){ return []; } })();
-                hLogs.filter(l => l.nextDate === todayStr).forEach(l => {
+                hLogs.filter(l => l.nextDate === todayStr2).forEach(l => {
                     items.tasks.push({ icon: '🍯', text: '채밀 예정일', sub: (l.loc||'') + (l.type ? ' · '+l.type : ''), color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.3)' });
                 });
             }
@@ -7100,7 +7110,7 @@ function getUserInfo(){
         }
 
         // 일지에서 사양 기록 저장 시 호출하는 함수
-        function saveFeedingLog(date, loc, type, amount, unit, memo) {
+        function saveFeedingLog(date, loc, type, amount, unit, memo, delayPopup) {
             var logs = getFeedingLogs();
             var newLog = {
                 id: 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
@@ -7109,9 +7119,17 @@ function getUserInfo(){
             logs.unshift(newLog);
             localStorage.setItem('feedingLogs', JSON.stringify(logs));
 
-            // 가계부 연동 팝업
-            if(confirm('💰 가계부 지출에도 기록할까요?\n(취소 시 사양 기록만 저장)')) {
-                promptFeedingAccountEntry(newLog);
+            // 가계부 연동 팝업 - 일지 저장 흐름 방해 안 하도록 지연 실행
+            if(delayPopup) {
+                setTimeout(function() {
+                    if(confirm('💰 가계부 지출에도 기록할까요?\n(취소 시 사양 기록만 저장)')) {
+                        promptFeedingAccountEntry(newLog);
+                    }
+                }, 500);
+            } else {
+                if(confirm('💰 가계부 지출에도 기록할까요?\n(취소 시 사양 기록만 저장)')) {
+                    promptFeedingAccountEntry(newLog);
+                }
             }
         }
 
@@ -7838,8 +7856,15 @@ function getUserInfo(){
                 viewHistory.push(v);
             }
             
-            document.querySelectorAll('.view-group').forEach(el => el.classList.remove('view-active'));
-            document.getElementById('view-' + v).classList.add('view-active');
+            document.querySelectorAll('.view-group').forEach(el => {
+                el.classList.remove('view-active');
+                el.style.display = 'none';
+            });
+            var targetEl = document.getElementById('view-' + v);
+            if(targetEl) {
+                targetEl.classList.add('view-active');
+                targetEl.style.display = 'block';
+            }
 
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             const navMap = {
@@ -7853,7 +7878,18 @@ function getUserInfo(){
                 'feeding': 'nav-harvest'
             };
             if(navMap[v]) {
-                document.getElementById(navMap[v]).classList.add('active');
+                var activeNav = document.getElementById(navMap[v]);
+                if(activeNav) {
+                    activeNav.classList.add('active');
+                    // 활성 탭이 보이도록 자동 스크롤
+                    setTimeout(function() {
+                        var nav = document.querySelector('.bottom-nav');
+                        if(nav && activeNav) {
+                            var center = activeNav.offsetLeft - (nav.offsetWidth / 2) + (activeNav.offsetWidth / 2);
+                            nav.scrollTo({ left: center, behavior: 'smooth' });
+                        }
+                    }, 50);
+                }
             }
 
             if(v === 'calendar') {
@@ -8101,7 +8137,7 @@ function getUserInfo(){
                     var unit   = unitEl ? unitEl.value : '';
                     if(!isNaN(amt) && amt > 0 && unit) {
                         var feedDate = y + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0');
-                        saveFeedingLog(feedDate, selectedLoc, feedingTypes[workName], amt, unit, '');
+                        saveFeedingLog(feedDate, selectedLoc, feedingTypes[workName], amt, unit, '', true);
                     }
                 }
             });
