@@ -5921,8 +5921,45 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             }
             
             localStorage.setItem('beeData', JSON.stringify(db));
-            
-            showToast('✅ 일지' + (diseaseRemoved > 0 ? ' + 방역기록 ' + diseaseRemoved + '건이' : '가') + ' 삭제되었습니다');
+
+            // 사양 작업이 포함된 경우 사양급이 이력 + 가계부 연동 삭제
+            var feedingRemoved = 0;
+            var accRemoved = 0;
+            if(record.works && (record.works.includes('사양') || record.works.includes('화분떡 급이') || record.works.includes('화분떡 보충'))) {
+                // 사양급이 이력에서 같은 날짜 + 봉장 삭제
+                try {
+                    var fLogs = JSON.parse(localStorage.getItem('feedingLogs') || '[]');
+                    var fFiltered = fLogs.filter(function(f) {
+                        return !(f.date === key && f.loc === record.loc);
+                    });
+                    feedingRemoved = fLogs.length - fFiltered.length;
+                    if(feedingRemoved > 0) {
+                        localStorage.setItem('feedingLogs', JSON.stringify(fFiltered));
+                    }
+                } catch(e) {}
+
+                // 가계부에서 같은 날짜 + 봉장 + 사양 메모 삭제
+                try {
+                    var aFiltered = accLogs.filter(function(a) {
+                        var aDate = a.date ? a.date.slice(0, 10) : '';
+                        var aMemo = a.memo || '';
+                        var isSaying = aMemo.includes('사양') || aMemo.includes('화분떡');
+                        return !(aDate === key && isSaying && aMemo.includes(record.loc));
+                    });
+                    accRemoved = accLogs.length - aFiltered.length;
+                    if(accRemoved > 0) {
+                        accLogs.splice(0, accLogs.length, ...aFiltered);
+                        localStorage.setItem('beeMoney', JSON.stringify(accLogs));
+                    }
+                } catch(e) {}
+            }
+
+            var toastMsg = '✅ 일지';
+            if(diseaseRemoved > 0) toastMsg += ' + 방역기록 ' + diseaseRemoved + '건';
+            if(feedingRemoved > 0) toastMsg += ' + 사양급이 ' + feedingRemoved + '건';
+            if(accRemoved > 0) toastMsg += ' + 가계부 ' + accRemoved + '건';
+            toastMsg += '이 삭제되었습니다';
+            showToast(toastMsg);
             renderCalendar();
             
             // 남은 기록이 있으면 표시, 없으면 삭제 메시지
@@ -6395,8 +6432,35 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             
             accLogs.splice(index, 1);
             localStorage.setItem('beeMoney', JSON.stringify(accLogs));
-            
-            showToast('✅ 가계부가 삭제되었습니다');
+
+            // 사양급이 이력 연동 삭제 (날짜 + 메모 매칭)
+            // 가계부 저장 시 memo에 "봉장명 사양종류 수량" 형태로 저장됨
+            try {
+                const logDate = log.date ? log.date.slice(0, 10) : '';
+                const logMemo = log.memo || '';
+                const isFeedingRecord = logMemo.includes('사양') || logMemo.includes('화분떡');
+                if(isFeedingRecord && logDate) {
+                    const feedingLogs = JSON.parse(localStorage.getItem('feedingLogs') || '[]');
+                    const filtered = feedingLogs.filter(function(f) {
+                        // 날짜 일치 + 메모에 봉장명 또는 사양종류 포함 여부로 매칭
+                        const fDate = f.date || '';
+                        const fDesc = (f.loc || '') + ' ' + (f.type || '') + ' ' + (f.amount || '') + (f.unit || '');
+                        return !(fDate === logDate && logMemo.includes(f.loc || '') && logMemo.includes(f.type || ''));
+                    });
+                    if(filtered.length < feedingLogs.length) {
+                        localStorage.setItem('feedingLogs', JSON.stringify(filtered));
+                        showToast('✅ 가계부 + 사양급이 이력이 삭제되었습니다');
+                        renderFeedingView();
+                    } else {
+                        showToast('✅ 가계부가 삭제되었습니다');
+                    }
+                } else {
+                    showToast('✅ 가계부가 삭제되었습니다');
+                }
+            } catch(e) {
+                showToast('✅ 가계부가 삭제되었습니다');
+            }
+
             renderStatView();
             renderAccCalendar();
         }
