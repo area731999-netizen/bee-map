@@ -6445,20 +6445,42 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 const logMemo = log.memo || '';
                 const isFeedingRecord = logMemo.includes('사양') || logMemo.includes('화분떡');
                 if(isFeedingRecord && logDate) {
+                    // feedingLogs 삭제
                     const feedingLogs = JSON.parse(localStorage.getItem('feedingLogs') || '[]');
                     const filtered = feedingLogs.filter(function(f) {
-                        // 날짜 일치 + 메모에 봉장명 또는 사양종류 포함 여부로 매칭
                         const fDate = f.date || '';
-                        const fDesc = (f.loc || '') + ' ' + (f.type || '') + ' ' + (f.amount || '') + (f.unit || '');
                         return !(fDate === logDate && logMemo.includes(f.loc || '') && logMemo.includes(f.type || ''));
                     });
                     if(filtered.length < feedingLogs.length) {
                         localStorage.setItem('feedingLogs', JSON.stringify(filtered));
-                        showToast('✅ 가계부 + 사양급이 이력이 삭제되었습니다');
-                        renderFeedingView();
-                    } else {
-                        showToast('✅ 가계부가 삭제되었습니다');
                     }
+
+                    // 달력 db records에서도 연동 삭제 (날짜 + 봉장 매칭)
+                    // logDate: "2025-03-15" → db key: "2025-3-15" 형식으로 변환
+                    try {
+                        const dp = logDate.split('-');
+                        const dbKey = dp[0] + '-' + String(parseInt(dp[1])) + '-' + String(parseInt(dp[2]));
+                        if(db[dbKey] && db[dbKey].records) {
+                            var beforeLen = db[dbKey].records.length;
+                            db[dbKey].records = db[dbKey].records.filter(function(r) {
+                                var hasSaying = r.works && (r.works.includes('사양') || r.works.includes('화분떡 급이') || r.works.includes('화분떡 보충'));
+                                var locMatch = logMemo.includes(r.loc || '');
+                                return !(hasSaying && locMatch);
+                            });
+                            if(db[dbKey].records.length < beforeLen) {
+                                if(db[dbKey].records.length === 0 && !db[dbKey].isQueen && !db[dbKey].isDiseaseAlarm) {
+                                    delete db[dbKey];
+                                } else {
+                                    db[dbKey].hasData = db[dbKey].records.length > 0;
+                                }
+                                localStorage.setItem('beeData', JSON.stringify(db));
+                                renderCalendar();
+                            }
+                        }
+                    } catch(e2) {}
+
+                    showToast('✅ 가계부 + 사양급이 이력 + 일지가 삭제되었습니다');
+                    renderFeedingView();
                 } else {
                     showToast('✅ 가계부가 삭제되었습니다');
                 }
