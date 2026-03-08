@@ -608,14 +608,6 @@
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
         }
 
-        /* 오늘의 추천작업 */
-        body.light-mode #today-work-suggestion > div {
-            background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(37,99,235,0.07) 100%) !important;
-            border: 2px solid rgba(59,130,246,0.25) !important;
-        }
-        body.light-mode #today-work-list {
-            color: #374151 !important;
-        }
 
         /* 스플래시 화면은 항상 다크 유지 */
         body.light-mode #splash {
@@ -1857,10 +1849,6 @@
             color: #fff !important;
             border-color: #2563eb !important;
         }
-        /* 오늘의 추천 섹션 아이콘 텍스트 */
-        body.light-mode #today-work-suggestion [style*="color: #FFD54F"] {
-            color: #1d4ed8 !important;
-        }
         /* 방역 기록 없음 텍스트 */
         body.light-mode #history-list-view p {
             color: #9ca3af !important;
@@ -2777,16 +2765,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         <!-- 외검 가능 여부 가이드 -->
         <div id="inspection-guide" style="margin: 16px; margin-top: -8px; display: none;"></div>
 
-        <!-- 오늘의 작업 알림 -->
-        <div id="today-work-suggestion" style="margin: 16px; margin-top: -8px; display: none;">
-            <div style="background: linear-gradient(135deg, rgba(255,179,0,0.15) 0%, rgba(255,143,0,0.1) 100%); border: 2px solid rgba(255,179,0,0.3); border-radius: 12px; padding: 14px;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                    <span style="font-size: 1.3rem;">💡</span>
-                    <span style="color: var(--tx-gold); font-weight: 700; font-size: 0.95rem;">오늘의 추천 작업</span>
-                </div>
-                <div id="today-work-list" style="color: var(--tx-main); font-size: 0.85rem; line-height: 1.6;"></div>
-            </div>
-        </div>
+        <!-- 이달의 추천 작업 -->
+        <div id="monthly-work-guide" style="margin: 16px; margin-top: 0;"></div>
+
+
 
         <!-- 동양종 준비중 화면 -->
         <div id="view-oriental-prep" class="view-group">
@@ -4811,6 +4793,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                         } catch(e) {
                             console.error('필터 렌더링 오류:', e);
                         }
+
+                        try {
+                            renderMonthlyWorkGuide();
+                        } catch(e) {}
                         
                         console.log('✅ 모든 렌더링 완료');
                     }, 200);
@@ -5001,68 +4987,190 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         }
 
         // ==================== 오늘의 작업 제안 ====================
-        function showTodayWorkSuggestion() {
-            const container = document.getElementById('today-work-suggestion');
-            const listEl = document.getElementById('today-work-list');
-            if(!container || !listEl) return;
+        // ==================== 이달의 추천 작업 ====================
+        const MONTHLY_WORK_GUIDE = {
+            1: {
+                label: '1월 — 월동 관리',
+                items: [
+                    { urgent: false, text: '월동벌 보온관리 철저히 유지' },
+                    { urgent: false, text: '벌통 내 습기 제거 및 환기 조절' },
+                    { urgent: false, text: '소문 조절로 보온 유지' },
+                    { urgent: true,  text: '먹이(사양) 부족 여부 확인 및 보충' },
+                    { urgent: true,  text: '응애·부저병 방제 준비' },
+                    { urgent: false, text: '수벌 유입 차단, 도봉 방지' },
+                    { urgent: false, text: '봄 증식 준비 및 여왕벌 상태 확인' },
+                ]
+            },
+            2: {
+                label: '2월 — 봄 증식 준비',
+                items: [
+                    { urgent: true,  text: '봄 증식을 위한 사양(설탕물) 시작' },
+                    { urgent: true,  text: '여왕벌 산란 촉진을 위한 보온 강화' },
+                    { urgent: false, text: '꽃가루(화분) 공급 시작' },
+                    { urgent: false, text: '소비 교체 및 벌통 내부 청소' },
+                    { urgent: true,  text: '응애 방제 실시 (봄 방제 시작)' },
+                    { urgent: false, text: '빈 벌통 소독 및 정비' },
+                    { urgent: false, text: '이른 봄 밀원 개화 시기 파악' },
+                ]
+            },
+            3: {
+                label: '3월 — 봄 활동 개시',
+                items: [
+                    { urgent: true,  text: '내검 시작 (10℃ 이상 시)' },
+                    { urgent: true,  text: '여왕벌 산란 상태 확인' },
+                    { urgent: false, text: '소초광 투입 (증소 시작)' },
+                    { urgent: false, text: '화분 및 사양 공급 지속' },
+                    { urgent: true,  text: '분봉 준비 및 분봉열 관찰' },
+                    { urgent: true,  text: '응애 방제 본격 시작' },
+                    { urgent: false, text: '약한 군 합봉 검토' },
+                    { urgent: false, text: '보온재 제거 시기 결정' },
+                ]
+            },
+            4: {
+                label: '4월 — 채밀·분봉 준비',
+                items: [
+                    { urgent: true,  text: '아카시아 채밀 준비 (계상 올리기)' },
+                    { urgent: true,  text: '분봉열 적극 관찰 및 왕대 확인' },
+                    { urgent: false, text: '인공분봉 및 교미상 준비' },
+                    { urgent: true,  text: '응애 방제 (채밀 전 마무리)' },
+                    { urgent: false, text: '소문 확대 (환기)' },
+                    { urgent: false, text: '이동봉장 운영 시작' },
+                    { urgent: false, text: '내검 주기 단축 (주 1회 이상)' },
+                ]
+            },
+            5: {
+                label: '5월 — 아카시아 채밀 최성기',
+                items: [
+                    { urgent: true,  text: '아카시아꿀 채밀 (5월 최성기)' },
+                    { urgent: true,  text: '채밀 후 응애 방제 즉시 실시' },
+                    { urgent: true,  text: '분봉 방지 철저 (분봉열 제거)' },
+                    { urgent: false, text: '인공분봉 및 여왕벌 교체' },
+                    { urgent: false, text: '고온 대비 차광막 설치' },
+                    { urgent: false, text: '잡화꿀 준비 (아카시아 이후 밀원 파악)' },
+                    { urgent: false, text: '도봉 방지 강화' },
+                ]
+            },
+            6: {
+                label: '6월 — 여왕벌 교체·방제',
+                items: [
+                    { urgent: false, text: '잡화꿀 채밀 (밤꿀·싸리꿀 등)' },
+                    { urgent: true,  text: '여왕벌 교체 (신왕 교체 적기)' },
+                    { urgent: true,  text: '응애 방제 본격 실시' },
+                    { urgent: false, text: '유럽부저병·노제마 예방 점검' },
+                    { urgent: false, text: '소문 최대 개방 (환기·고온 대비)' },
+                    { urgent: false, text: '차광막 설치 및 급수 공급' },
+                    { urgent: false, text: '도봉 방지 강화' },
+                ]
+            },
+            7: {
+                label: '7월 — 고온기·말벌 방제',
+                items: [
+                    { urgent: true,  text: '차광막·그늘 철저히 유지, 급수 공급' },
+                    { urgent: true,  text: '응애 방제 집중 실시 (고온기 번식 왕성)' },
+                    { urgent: true,  text: '말벌 트랩 설치 및 소문 망 설치' },
+                    { urgent: false, text: '싸리꿀·잡화꿀 채밀' },
+                    { urgent: false, text: '밀원 부족기 사양 공급 검토' },
+                    { urgent: false, text: '소문 최대 개방 (환기 강화)' },
+                    { urgent: false, text: '군세 약한 군 합봉 검토' },
+                ]
+            },
+            8: {
+                label: '8월 — 말벌·응애 집중 방제',
+                items: [
+                    { urgent: true,  text: '말벌 트랩 집중 설치 및 직접 포획' },
+                    { urgent: true,  text: '응애 방제 집중 실시 (8월 최성기)' },
+                    { urgent: false, text: '고온 관리 지속 (차광·환기·급수)' },
+                    { urgent: true,  text: '월동 여왕벌 확인 및 교체' },
+                    { urgent: false, text: '가을 밀원 개화 시기 파악 (메밀 등)' },
+                    { urgent: false, text: '군세 강화를 위한 사양 시작' },
+                    { urgent: false, text: '이동봉장 복귀 준비' },
+                ]
+            },
+            9: {
+                label: '9월 — 월동 군세 확보',
+                items: [
+                    { urgent: true,  text: '월동 군세 확보 (강군 만들기)' },
+                    { urgent: true,  text: '여왕벌 산란 촉진 사양 집중 공급' },
+                    { urgent: true,  text: '응애 방제 마무리 (월동 전 완료 목표)' },
+                    { urgent: true,  text: '말벌 방제 지속, 소문 축소 시작' },
+                    { urgent: false, text: '가을 잡화꿀 채밀 후 먹이 즉시 보충' },
+                    { urgent: false, text: '약한 군 합봉 실시' },
+                    { urgent: false, text: '이동봉장 복귀 및 보온 준비 시작' },
+                ]
+            },
+            10: {
+                label: '10월 — 월동 준비 마무리',
+                items: [
+                    { urgent: true,  text: '월동 먹이 최종 확인 및 사양 보충' },
+                    { urgent: true,  text: '소문 축소 (도봉·말벌·냉기 차단)' },
+                    { urgent: false, text: '보온재 설치 시작' },
+                    { urgent: true,  text: '응애 방제 최종 마무리' },
+                    { urgent: false, text: '수벌 제거' },
+                    { urgent: false, text: '여왕벌 산란 중단 및 먹이량 확인' },
+                    { urgent: false, text: '이동봉장 완전 복귀 및 장비 정비' },
+                ]
+            },
+            11: {
+                label: '11월 — 월동 완료',
+                items: [
+                    { urgent: true,  text: '보온재 완전 설치 (벌통 외부 포장)' },
+                    { urgent: true,  text: '소문 최소화 (쥐·냉기 침입 차단)' },
+                    { urgent: false, text: '쥐막이 설치' },
+                    { urgent: true,  text: '옥살산 응애 최종 방제 (무봉판 시기)' },
+                    { urgent: false, text: '노제마 예방약 처리' },
+                    { urgent: false, text: '내검 자제 (벌무리 안정 유지)' },
+                    { urgent: false, text: '빈 벌통·소초광 세척 및 보관' },
+                ]
+            },
+            12: {
+                label: '12월 — 월동 안정 유지',
+                items: [
+                    { urgent: false, text: '보온 상태 외부 점검 (내검 금지)' },
+                    { urgent: false, text: '소문 확인 (얼음·눈 막힘 제거)' },
+                    { urgent: false, text: '쥐 침입 여부 확인' },
+                    { urgent: true,  text: '옥살산 응애 방제 (무봉판 최적 시기)' },
+                    { urgent: false, text: '먹이 부족 시 응급 사양만 실시' },
+                    { urgent: false, text: '장비 정비 및 내년 밀원 답사 계획 수립' },
+                    { urgent: false, text: '종봉 구입 계획 및 교육 참석' },
+                ]
+            }
+        };
 
-            // 최근 7일간 작업 분석
-            const today = new Date();
-            const suggestions = [];
-            const recentWorks = {};
-            
-            for(let i = 1; i <= 7; i++) {
-                const checkDate = new Date(today);
-                checkDate.setDate(checkDate.getDate() - i);
-                const key = `${checkDate.getFullYear()}-${checkDate.getMonth()+1}-${checkDate.getDate()}`;
-                
-                if(db[key] && db[key].records) {
-                    db[key].records.forEach(r => {
-                        if(r.works) {
-                            r.works.forEach(w => {
-                                recentWorks[w] = (recentWorks[w] || 0) + 1;
-                            });
-                        }
-                    });
-                }
+        function renderMonthlyWorkGuide() {
+            const el = document.getElementById('monthly-work-guide');
+            if (!el) return;
+            const month = new Date().getMonth() + 1;
+            const guide = MONTHLY_WORK_GUIDE[month];
+            if (!guide) return;
+
+            const urgentItems = guide.items.filter(i => i.urgent);
+            const normalItems = guide.items.filter(i => !i.urgent);
+
+            let html = `
+                <div style="background:linear-gradient(135deg,rgba(255,179,0,0.08) 0%,rgba(255,143,0,0.05) 100%);border:1px solid rgba(255,179,0,0.2);border-radius:16px;padding:14px 16px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                        <span style="font-size:1.1rem;">📋</span>
+                        <span style="color:var(--tx-gold);font-weight:800;font-size:0.92rem;">${guide.label}</span>
+                    </div>`;
+
+            if (urgentItems.length > 0) {
+                html += `<div style="font-size:0.75rem;font-weight:900;color:#f87171;margin-bottom:5px;letter-spacing:0.3px;">🚨 이달 중점 작업</div>`;
+                html += urgentItems.map(i => `
+                    <div style="display:flex;align-items:flex-start;gap:7px;padding:6px 8px;background:rgba(248,113,113,0.07);border-left:3px solid #f87171;border-radius:8px;margin-bottom:5px;">
+                        <span style="font-size:0.82rem;color:var(--tx-main);font-weight:600;line-height:1.5;">${i.text}</span>
+                    </div>`).join('');
             }
 
-            // 방역 알림 확인
-            const todayKey = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
-            if(db[todayKey]?.isDiseaseAlarm) {
-                suggestions.push('🔔 <strong>방역 알림</strong>이 설정되어 있습니다');
+            if (normalItems.length > 0) {
+                html += `<div style="font-size:0.75rem;font-weight:900;color:rgba(255,179,0,0.6);margin:8px 0 5px;letter-spacing:0.3px;">📌 일반 관리</div>`;
+                html += normalItems.map(i => `
+                    <div style="display:flex;align-items:flex-start;gap:7px;padding:5px 8px;background:rgba(255,179,0,0.05);border-left:3px solid rgba(255,179,0,0.3);border-radius:8px;margin-bottom:5px;">
+                        <span style="font-size:0.82rem;color:var(--tx-sub);line-height:1.5;">${i.text}</span>
+                    </div>`).join('');
             }
 
-            // 개인 일정 확인
-            const todayScheduleDate = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-            const todaySchedules = personalSchedules.filter(s => s.date === todayScheduleDate);
-            if(todaySchedules.length > 0) {
-                todaySchedules.forEach(s => {
-                    suggestions.push(`📅 <strong>${s.title}</strong>${s.memo ? ': ' + s.memo : ''}`);
-                });
-            }
-
-            // 최근 많이 한 작업 (내검은 항상 추천)
-            if(!recentWorks['내검']) {
-                suggestions.push('🔍 <strong>내검</strong>을 권장합니다');
-            }
-
-            // 계절별 추천
-            const month = today.getMonth() + 1;
-            if(month >= 3 && month <= 5) {
-                if(!recentWorks['분봉']) suggestions.push('🐝 봄철입니다. <strong>분봉 준비</strong>를 확인하세요');
-            } else if(month >= 6 && month <= 8) {
-                if(!recentWorks['채밀']) suggestions.push('🍯 여름철입니다. <strong>채밀</strong> 시기를 확인하세요');
-            } else if(month >= 11 || month <= 2) {
-                if(!recentWorks['월동준비']) suggestions.push('❄️ 겨울철입니다. <strong>월동 준비</strong> 상태를 점검하세요');
-            }
-
-            if(suggestions.length === 0) {
-                suggestions.push('오늘은 특별한 예정 작업이 없습니다 😊');
-            }
-
-            listEl.innerHTML = suggestions.map(s => `• ${s}`).join('<br>');
-            container.style.display = 'block';
+            html += `</div>`;
+            el.innerHTML = html;
         }
 
         // ==================== 달력 미리보기 모달 ====================
@@ -7923,7 +8031,7 @@ function getUserInfo(){
             if(v === 'diary') {
                 setTimeout(() => {
                     renderLocationButtons();
-                    showTodayWorkSuggestion();
+                    renderMonthlyWorkGuide();
                 }, 100);
             }
             
