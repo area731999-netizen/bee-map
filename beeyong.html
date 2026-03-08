@@ -1668,20 +1668,21 @@
         .nav-inner::-webkit-scrollbar { display: none; }
         
         .nav-item { 
-            flex: 0 0 72px;
-            min-width: 72px;
+            flex: 1 0 60px;
+            min-width: 60px;
+            max-width: 80px;
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            font-size: 11px; 
+            font-size: 10px; 
             color: #666; 
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 700;
             position: relative;
             gap: 1px;
-            padding: 0 4px;
+            padding: 0 2px;
             word-break: keep-all;
             text-align: center;
             line-height: 1.2;
@@ -7343,12 +7344,23 @@ JSON만 출력:`;
                     }
                 );
                 const data = await response.json();
-                var text = '';
-                try { text = data.candidates[0].content.parts[0].text; } catch(e) {
-                    // 에러 응답 전체 표시
-                    text = JSON.stringify(data);
+                console.log('Gemini 전체응답:', JSON.stringify(data));
+
+                // API 오류 체크
+                if(data.error) {
+                    renderFlowerResult({ found: false, description: 'API 오류: ' + data.error.message });
+                    return;
                 }
-                console.log('Gemini 응답:', text);
+
+                var text = '';
+                try {
+                    text = data.candidates[0].content.parts[0].text;
+                } catch(e) {
+                    renderFlowerResult({ found: false, description: '응답구조 오류: ' + JSON.stringify(data).slice(0, 300) });
+                    return;
+                }
+
+                console.log('Gemini 텍스트:', text);
                 let result;
                 try {
                     var cleaned = text.replace(/```json/g,'').replace(/```/g,'').trim();
@@ -7356,8 +7368,7 @@ JSON만 출력:`;
                     if(jsonMatch) cleaned = jsonMatch[0];
                     result = JSON.parse(cleaned);
                 } catch(e) {
-                    // 파싱 실패 시 실제 응답 내용 표시 (디버깅용)
-                    result = { found: false, description: '응답: ' + text.slice(0, 200) };
+                    result = { found: false, description: '파싱오류 - 응답: ' + text.slice(0, 300) };
                 }
                 renderFlowerResult(result);
             } catch(e) {
