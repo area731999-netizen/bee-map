@@ -2813,6 +2813,9 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <!-- 봉장별 필터 제거 -->
             <div id="location-filters" style="display:none;"></div>
             
+            <!-- 주간 날씨 카드 -->
+            <div id="cal-weekly-weather" style="margin-bottom:10px;"></div>
+
             <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,179,0,0.06);border-radius:12px;padding:6px 8px;margin-bottom:10px;gap:4px;">
                 <button onclick="changeYear(-1)" style="color:var(--tx-amber);background:rgba(255,179,0,0.15);border:none;border-radius:8px;padding:8px 10px;font-size:0.9rem;font-weight:900;cursor:pointer;min-height:40px;min-width:38px;touch-action:manipulation;">◀◀</button>
                 <button onclick="changeMonth(-1)" style="color:var(--tx-amber);background:rgba(255,179,0,0.1);border:none;border-radius:8px;padding:8px 12px;font-size:1.2rem;font-weight:900;cursor:pointer;min-height:40px;min-width:38px;touch-action:manipulation;">◀</button>
@@ -2851,6 +2854,9 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     </div>
                 </div>
             </div>
+
+            <!-- 주간 날씨 카드 -->
+            <div id="home-weekly-weather" style="margin-bottom:12px;"></div>
 
             <!-- 오늘의 일정 -->
             <div class="input-row" style="margin-bottom:12px;">
@@ -4169,7 +4175,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                             const lastDate2 = keys2.sort().reverse()[0] || '';
                             const hasGPS = locs[loc] && locs[loc].lat;
                             if(hasGPS) {
-                                return `<div id="weather-card-${loc.replace(/\s/g,'_')}" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px;text-align:center;">
+                                return `<div id="weather-card-${loc.replace(/\s/g,'_')}" onclick="fetchWeeklyWeather(${locs[loc].lat},${locs[loc].lng},'${getDisplayName(loc)}')" style="background:var(--bg-input);border:1px solid var(--bd-card);border-radius:10px;padding:10px;text-align:center;cursor:pointer;">
                                     <div style="font-size:1.2rem;">${icon}</div>
                                     <div style="font-weight:800;font-size:0.78rem;color:var(--tx-main);margin:3px 0;">${getDisplayName(loc)}</div>
                                     <div style="font-size:1.6rem;font-weight:900;color:var(--tx-gold);">--°C</div>
@@ -4797,6 +4803,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                         try {
                             renderMonthlyWorkGuide();
                         } catch(e) {}
+
+                        try {
+                            fetchWeeklyWeather();
+                        } catch(e) {}
                         
                         console.log('✅ 모든 렌더링 완료');
                     }, 200);
@@ -4998,7 +5008,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     { urgent: true,  text: '먹이(사양) 부족 여부 확인 및 보충' },
                     { urgent: true,  text: '응애·부저병 방제 준비' },
                     { urgent: false, text: '수벌 유입 차단, 도봉 방지' },
-                    { urgent: false, text: '봄 증식 준비 및 여왕벌 상태 확인' },
+                    { urgent: false, text: '봄 증식 준비' },
                 ]
             },
             2: {
@@ -5032,10 +5042,11 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     { urgent: true,  text: '아카시아 채밀 준비 (계상 올리기)' },
                     { urgent: true,  text: '분봉열 적극 관찰 및 왕대 확인' },
                     { urgent: false, text: '인공분봉 및 교미상 준비' },
-                    { urgent: true,  text: '응애 방제 (채밀 전 마무리)' },
+                    { urgent: true,  text: '응애 방제 - 수벌집 활용하기 (채밀 전 마무리)' },
                     { urgent: false, text: '소문 확대 (환기)' },
                     { urgent: false, text: '이동봉장 운영 시작' },
                     { urgent: false, text: '내검 주기 단축 (주 1회 이상)' },
+                    { urgent: true,  text: '중순 이후 말벌 여왕벌 잡기' },
                 ]
             },
             5: {
@@ -5044,6 +5055,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     { urgent: true,  text: '아카시아꿀 채밀 (5월 최성기)' },
                     { urgent: true,  text: '채밀 후 응애 방제 즉시 실시' },
                     { urgent: true,  text: '분봉 방지 철저 (분봉열 제거)' },
+                    { urgent: true,  text: '말벌 여왕벌 잡기' },
                     { urgent: false, text: '인공분봉 및 여왕벌 교체' },
                     { urgent: false, text: '고온 대비 차광막 설치' },
                     { urgent: false, text: '잡화꿀 준비 (아카시아 이후 밀원 파악)' },
@@ -5078,7 +5090,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 label: '8월 — 말벌·응애 집중 방제',
                 items: [
                     { urgent: true,  text: '말벌 트랩 집중 설치 및 직접 포획' },
-                    { urgent: true,  text: '응애 방제 집중 실시 (8월 최성기)' },
+                    { urgent: true,  text: '응애 방제 집중 실시 - 개미산 사용 (8월 최성기)' },
                     { urgent: false, text: '고온 관리 지속 (차광·환기·급수)' },
                     { urgent: true,  text: '월동 여왕벌 확인 및 교체' },
                     { urgent: false, text: '가을 밀원 개화 시기 파악 (메밀 등)' },
@@ -5093,7 +5105,6 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     { urgent: true,  text: '여왕벌 산란 촉진 사양 집중 공급' },
                     { urgent: true,  text: '응애 방제 마무리 (월동 전 완료 목표)' },
                     { urgent: true,  text: '말벌 방제 지속, 소문 축소 시작' },
-                    { urgent: false, text: '가을 잡화꿀 채밀 후 먹이 즉시 보충' },
                     { urgent: false, text: '약한 군 합봉 실시' },
                     { urgent: false, text: '이동봉장 복귀 및 보온 준비 시작' },
                 ]
@@ -5136,9 +5147,197 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             }
         };
 
+        // ==================== 주간 날씨 카드 ====================
+        const WEEKLY_WEATHER_CACHE_KEY = 'weeklyWeatherCache';
+
+        function skyToEmoji(sky, pty) {
+            if (pty === 1 || pty === 4) return '🌧️';
+            if (pty === 2) return '🌨️';
+            if (pty === 3) return '❄️';
+            if (sky === 1) return '☀️';
+            if (sky === 3) return '⛅';
+            if (sky === 4) return '☁️';
+            return '🌤️';
+        }
+
+        function skyToLabel(sky, pty) {
+            if (pty === 1 || pty === 4) return '비';
+            if (pty === 2) return '진눈깨비';
+            if (pty === 3) return '눈';
+            if (sky === 1) return '맑음';
+            if (sky === 3) return '구름많음';
+            if (sky === 4) return '흐림';
+            return '맑음';
+        }
+
+        // lat, lng, label 없으면 현재위치 GPS 사용
+        async function fetchWeeklyWeather(lat, lng, label) {
+            const useGPS = !lat || !lng;
+            const weatherLabel = label || '현재 위치';
+
+            if (useGPS) {
+                // GPS 현재위치 요청
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        pos => fetchWeeklyWeatherByCoord(pos.coords.latitude, pos.coords.longitude, '현재 위치'),
+                        () => {
+                            // GPS 실패 시 첫 번째 봉장 또는 서울 기본값
+                            const locs = Object.values(apiaryLocations || {});
+                            const loc = locs.find(l => l.lat && l.lng);
+                            fetchWeeklyWeatherByCoord(loc ? loc.lat : 37.5665, loc ? loc.lng : 126.9780, loc ? '봉장(GPS실패)' : '서울(기본)');
+                        },
+                        { timeout: 5000 }
+                    );
+                } else {
+                    const locs = Object.values(apiaryLocations || {});
+                    const loc = locs.find(l => l.lat && l.lng);
+                    fetchWeeklyWeatherByCoord(loc ? loc.lat : 37.5665, loc ? loc.lng : 126.9780, '기본 위치');
+                }
+            } else {
+                fetchWeeklyWeatherByCoord(lat, lng, weatherLabel);
+            }
+        }
+
+        async function fetchWeeklyWeatherByCoord(lat, lng, label) {
+            // 캐시 확인 (1시간, 위치별)
+            const cacheKey = WEEKLY_WEATHER_CACHE_KEY + '_' + Math.round(lat*100) + '_' + Math.round(lng*100);
+            try {
+                const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+                if (cached && Date.now() - cached.ts < 3600000) {
+                    renderWeeklyWeatherCards(cached.data, label);
+                    return;
+                }
+            } catch(e) {}
+
+            try {
+                const { nx, ny } = latLngToGrid(lat, lng);
+                const apiKey = '65f24df2c40acfea34f9867244aa3e3e3834e2e234d69795856ffc3041fe2722';
+                const now = new Date();
+                const baseTimes = [2,5,8,11,14,17,20,23];
+                let hour = now.getHours();
+                let baseHour = baseTimes.filter(h => h <= hour).pop() || 23;
+                let baseDate = now.toISOString().slice(0,10).replace(/-/g,'');
+                if (baseHour === 23 && hour < 23) {
+                    const yesterday = new Date(now - 86400000);
+                    baseDate = yesterday.toISOString().slice(0,10).replace(/-/g,'');
+                    baseHour = 23;
+                }
+                const baseTime = String(baseHour).padStart(2,'0') + '00';
+                const url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${apiKey}&numOfRows=1000&pageNo=1&dataType=JSON&base_date=${baseDate}&base_time=${baseTime}&nx=${nx}&ny=${ny}`;
+                const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+                const json = await res.json();
+                const items = json?.response?.body?.items?.item || [];
+
+                const dayMap = {};
+                for (const item of items) {
+                    const d = item.fcstDate;
+                    if (!dayMap[d]) dayMap[d] = { sky: [], pty: [], tmx: null, tmn: null };
+                    if (item.category === 'SKY') dayMap[d].sky.push(parseInt(item.fcstValue));
+                    if (item.category === 'PTY') dayMap[d].pty.push(parseInt(item.fcstValue));
+                    if (item.category === 'TMX') dayMap[d].tmx = parseFloat(item.fcstValue);
+                    if (item.category === 'TMN') dayMap[d].tmn = parseFloat(item.fcstValue);
+                }
+
+                const days = Object.keys(dayMap).sort().slice(0, 5);
+                if (days.length === 0) throw new Error('no data');
+
+                const data = days.map(d => {
+                    const sky = dayMap[d].sky.length ? Math.round(dayMap[d].sky.reduce((a,b)=>a+b,0)/dayMap[d].sky.length) : 1;
+                    const ptyArr = dayMap[d].pty.filter(v => v > 0);
+                    const pty = ptyArr.length ? ptyArr[0] : 0;
+                    const date = new Date(d.slice(0,4)+'-'+d.slice(4,6)+'-'+d.slice(6,8));
+                    return { date: date.toISOString(), sky, pty, tmx: dayMap[d].tmx, tmn: dayMap[d].tmn };
+                });
+
+                localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data }));
+                renderWeeklyWeatherCards(data, label);
+            } catch(e) {
+                console.warn('기상청 주간예보 실패, Open-Meteo 대체:', e);
+                await fetchWeeklyWeatherOpenMeteo(lat, lng, label);
+            }
+        }
+
+        async function fetchWeeklyWeatherOpenMeteo(lat, lng, label) {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia/Seoul&forecast_days=7`;
+                const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+                const json = await res.json();
+                const d = json.daily;
+                const WMO_EMOJI = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'❄️',73:'❄️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+                const WMO_LABEL = {0:'맑음',1:'맑음',2:'구름많음',3:'흐림',45:'안개',48:'안개',51:'이슬비',53:'이슬비',55:'이슬비',61:'비',63:'비',65:'폭우',71:'눈',73:'눈',75:'폭설',80:'소나기',81:'소나기',82:'소나기',95:'천둥',96:'천둥',99:'천둥'};
+                const data = d.time.map((t, i) => ({
+                    date: new Date(t).toISOString(),
+                    emoji: WMO_EMOJI[d.weathercode[i]] || '🌤️',
+                    label: WMO_LABEL[d.weathercode[i]] || '맑음',
+                    tmx: d.temperature_2m_max[i],
+                    tmn: d.temperature_2m_min[i]
+                }));
+                renderWeeklyWeatherCards(data, label);
+            } catch(e) {
+                console.warn('Open-Meteo 주간예보도 실패:', e);
+            }
+        }
+
+        function renderWeeklyWeatherCards(rawData, label) {
+            const DOW = ['일','월','화','수','목','금','토'];
+            const today = new Date(); today.setHours(0,0,0,0);
+            const locLabel = label || '현재 위치';
+            const isGPS = locLabel === '현재 위치';
+
+            const cards = rawData.map(d => {
+                const date = new Date(d.date); date.setHours(0,0,0,0);
+                const dow = DOW[date.getDay()];
+                const md = (date.getMonth()+1) + '/' + date.getDate();
+                const isToday = date.getTime() === today.getTime();
+                const isSun = date.getDay() === 0;
+                const isSat = date.getDay() === 6;
+                const emoji = d.emoji || skyToEmoji(d.sky, d.pty);
+                const lbl = d.label || skyToLabel(d.sky, d.pty);
+                const tmx = d.tmx != null ? Math.round(d.tmx) + '°' : '--';
+                const tmn = d.tmn != null ? Math.round(d.tmn) + '°' : '--';
+                const dowColor = isSun ? '#f87171' : isSat ? '#60a5fa' : 'var(--tx-sub)';
+                const bg = isToday ? 'rgba(255,179,0,0.15)' : 'rgba(255,255,255,0.04)';
+                const border = isToday ? '1px solid rgba(255,179,0,0.4)' : '1px solid rgba(255,255,255,0.07)';
+                return `<div style="background:${bg};border:${border};border-radius:10px;padding:7px 4px;text-align:center;min-width:0;">
+                    <div style="font-size:0.7rem;font-weight:${isToday?'900':'700'};color:${isToday?'var(--tx-gold)':dowColor};">${isToday?'오늘':dow}</div>
+                    <div style="font-size:0.65rem;color:var(--tx-muted);margin-bottom:3px;">${md}</div>
+                    <div style="font-size:1.5rem;line-height:1.2;">${emoji}</div>
+                    <div style="font-size:0.62rem;color:var(--tx-sub);margin-top:2px;">${lbl}</div>
+                    <div style="font-size:0.68rem;margin-top:3px;">
+                        <span style="color:#f87171;font-weight:700;">${tmx}</span>
+                        <span style="color:var(--tx-muted);margin:0 1px;">/</span>
+                        <span style="color:#60a5fa;font-weight:700;">${tmn}</span>
+                    </div>
+                </div>`;
+            }).join('');
+
+            const gpsBtn = !isGPS ? `<button onclick="fetchWeeklyWeather()" style="background:rgba(96,165,250,0.15);border:1px solid rgba(96,165,250,0.4);border-radius:7px;color:#60a5fa;font-size:0.72rem;font-weight:700;padding:3px 9px;cursor:pointer;white-space:nowrap;">📍 현재위치</button>` : '';
+
+            const html = `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:10px 10px 8px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <div style="font-size:0.75rem;font-weight:800;color:var(--tx-gold);">🌤️ 주간 날씨 — <span style="color:${isGPS?'#60a5fa':'#4ade80'};">${locLabel}</span></div>
+                    ${gpsBtn}
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;">${cards}</div>
+            </div>`;
+
+            ['home-weekly-weather', 'cal-weekly-weather'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = html;
+            });
+        }
+
         function renderMonthlyWorkGuide() {
             const el = document.getElementById('monthly-work-guide');
             if (!el) return;
+
+            // 오늘 하루 닫기 체크
+            const today = new Date().toDateString();
+            if (localStorage.getItem('monthlyWorkClosed') === today) {
+                el.innerHTML = '';
+                return;
+            }
+
             const month = new Date().getMonth() + 1;
             const guide = MONTHLY_WORK_GUIDE[month];
             if (!guide) return;
@@ -5148,9 +5347,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
             let html = `
                 <div style="background:linear-gradient(135deg,rgba(255,179,0,0.08) 0%,rgba(255,143,0,0.05) 100%);border:1px solid rgba(255,179,0,0.2);border-radius:16px;padding:14px 16px;">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                        <span style="font-size:1.1rem;">📋</span>
-                        <span style="color:var(--tx-gold);font-weight:800;font-size:0.92rem;">${guide.label}</span>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-size:1.1rem;">📋</span>
+                            <span style="color:var(--tx-gold);font-weight:800;font-size:0.92rem;">${guide.label}</span>
+                        </div>
+                        <button onclick="closeMonthlyWorkGuide()" style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.5);border-radius:8px;color:#60a5fa;font-size:0.75rem;font-weight:700;padding:4px 10px;cursor:pointer;">오늘 그만보기 ✕</button>
                     </div>`;
 
             if (urgentItems.length > 0) {
@@ -5171,6 +5373,13 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
             html += `</div>`;
             el.innerHTML = html;
+        }
+
+        function closeMonthlyWorkGuide() {
+            const today = new Date().toDateString();
+            localStorage.setItem('monthlyWorkClosed', today);
+            const el = document.getElementById('monthly-work-guide');
+            if (el) el.innerHTML = '';
         }
 
         // ==================== 달력 미리보기 모달 ====================
@@ -7984,6 +8193,7 @@ function getUserInfo(){
             if(v === 'calendar') {
                 viewDate = new Date();
                 renderCalendar();
+                fetchWeeklyWeather();
                 // 오늘 날짜 기록 자동 표시
                 const t = new Date();
                 const todayKey = `${t.getFullYear()}-${t.getMonth()+1}-${t.getDate()}`;
