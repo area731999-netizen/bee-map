@@ -6804,7 +6804,7 @@ function getUserInfo(){
         function getActiveApiaries() {
             var s = {};
             try { s = JSON.parse(localStorage.getItem('apiarySettings') || '{}'); } catch(e) {}
-            var defaults = {'1봉장':true,'2봉장':true,'3봉장':true,'이동1봉장':false,'이동2봉장':false,'이동3봉장':false};
+            var defaults = {'1봉장':false,'2봉장':false,'3봉장':false,'이동1봉장':false,'이동2봉장':false,'이동3봉장':false};
             var merged = Object.assign({}, defaults, s);
             return Object.keys(merged).filter(function(k){ return merged[k]; });
         }
