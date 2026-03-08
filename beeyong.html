@@ -5930,9 +5930,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             if(record.works && (record.works.includes('사양') || record.works.includes('화분떡 급이') || record.works.includes('화분떡 보충'))) {
                 // 사양급이 이력에서 같은 날짜 + 봉장 삭제
                 try {
+                    // key는 "2025-3-15" 형식 → "2025-03-15" ISO 형식으로 변환
+                    var keyParts = key.split('-');
+                    var keyISO = keyParts[0] + '-' + String(keyParts[1]).padStart(2,'0') + '-' + String(keyParts[2]).padStart(2,'0');
                     var fLogs = JSON.parse(localStorage.getItem('feedingLogs') || '[]');
                     var fFiltered = fLogs.filter(function(f) {
-                        return !(f.date === key && f.loc === record.loc);
+                        return !(f.date === keyISO && f.loc === record.loc);
                     });
                     feedingRemoved = fLogs.length - fFiltered.length;
                     if(feedingRemoved > 0) {
@@ -5946,7 +5949,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                         var aDate = a.date ? a.date.slice(0, 10) : '';
                         var aMemo = a.memo || '';
                         var isSaying = aMemo.includes('사양') || aMemo.includes('화분떡');
-                        return !(aDate === key && isSaying && aMemo.includes(record.loc));
+                        return !(aDate === keyISO && isSaying && aMemo.includes(record.loc));
                     });
                     accRemoved = accLogs.length - aFiltered.length;
                     if(accRemoved > 0) {
