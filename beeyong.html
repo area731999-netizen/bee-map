@@ -7338,24 +7338,26 @@ JSON만 출력:`;
                                     { text: prompt }
                                 ]
                             }],
-                            generationConfig: { temperature: 0.1, maxOutputTokens: 1000, responseMimeType: 'application/json' }
+                            generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
                         })
                     }
                 );
                 const data = await response.json();
                 var text = '';
-                try { text = data.candidates[0].content.parts[0].text; } catch(e) {}
+                try { text = data.candidates[0].content.parts[0].text; } catch(e) {
+                    // 에러 응답 전체 표시
+                    text = JSON.stringify(data);
+                }
+                console.log('Gemini 응답:', text);
                 let result;
                 try {
-                    // JSON 블록 추출 강화
                     var cleaned = text.replace(/```json/g,'').replace(/```/g,'').trim();
-                    // 중괄호 시작~끝 추출
                     var jsonMatch = cleaned.match(/\{[\s\S]*\}/);
                     if(jsonMatch) cleaned = jsonMatch[0];
                     result = JSON.parse(cleaned);
                 } catch(e) {
-                    // 파싱 실패 시 텍스트 그대로 표시
-                    result = { found: true, name: '분석 완료', scientific: '', blooming: '-', nectar: '-', pollen: '-', honey_type: null, beekeeping_value: 0, description: text || '결과를 가져왔으나 형식 오류가 발생했습니다.', tips: null };
+                    // 파싱 실패 시 실제 응답 내용 표시 (디버깅용)
+                    result = { found: false, description: '응답: ' + text.slice(0, 200) };
                 }
                 renderFlowerResult(result);
             } catch(e) {
