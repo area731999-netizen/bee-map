@@ -5231,11 +5231,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 const dayMap = {};
                 for (const item of items) {
                     const d = item.fcstDate;
-                    if (!dayMap[d]) dayMap[d] = { sky: [], pty: [], tmx: null, tmn: null };
+                    if (!dayMap[d]) dayMap[d] = { sky: [], pty: [], tmx: null, tmn: null, tmp: [] };
                     if (item.category === 'SKY') dayMap[d].sky.push(parseInt(item.fcstValue));
                     if (item.category === 'PTY') dayMap[d].pty.push(parseInt(item.fcstValue));
                     if (item.category === 'TMX') dayMap[d].tmx = parseFloat(item.fcstValue);
                     if (item.category === 'TMN') dayMap[d].tmn = parseFloat(item.fcstValue);
+                    if (item.category === 'TMP') dayMap[d].tmp.push(parseFloat(item.fcstValue));
                 }
 
                 const days = Object.keys(dayMap).sort().slice(0, 5);
@@ -5246,7 +5247,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     const ptyArr = dayMap[d].pty.filter(v => v > 0);
                     const pty = ptyArr.length ? ptyArr[0] : 0;
                     const date = new Date(d.slice(0,4)+'-'+d.slice(4,6)+'-'+d.slice(6,8));
-                    return { date: date.toISOString(), sky, pty, tmx: dayMap[d].tmx, tmn: dayMap[d].tmn };
+                    // TMX/TMN 없으면 TMP 시간별 기온에서 계산
+                    const tmx = dayMap[d].tmx != null ? dayMap[d].tmx :
+                        (dayMap[d].tmp.length ? Math.max(...dayMap[d].tmp) : null);
+                    const tmn = dayMap[d].tmn != null ? dayMap[d].tmn :
+                        (dayMap[d].tmp.length ? Math.min(...dayMap[d].tmp) : null);
+                    return { date: date.toISOString(), sky, pty, tmx, tmn };
                 });
 
                 localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data }));
