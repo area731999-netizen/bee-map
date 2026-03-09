@@ -7412,31 +7412,24 @@ function getUserInfo(){
 
             try {
                 var mimeType = _flowerImageBlob ? _flowerImageBlob.type : 'image/jpeg';
-                var res = await fetch('https://text.pollinations.ai/openai', {
+                var res = await fetch(_WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: 'openai-large',
-                        messages: [{
+                        contents: [{
                             role: 'user',
-                            content: [
-                                {
-                                    type: 'image_url',
-                                    image_url: { url: 'data:' + mimeType + ';base64,' + _flowerImageBase64 }
-                                },
-                                {
-                                    type: 'text',
-                                    text: '이 식물의 이름을 식별해주세요. 반드시 다음 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요:\n{"koreanName":"한국어 일반명","scientificName":"학명","confidence":85,"description":"간단한 특징 1줄"}'
-                                }
+                            parts: [
+                                { inline_data: { mime_type: mimeType, data: _flowerImageBase64 } },
+                                { text: '이 식물의 이름을 식별해주세요. 반드시 다음 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요:\n{"koreanName":"한국어 일반명","scientificName":"학명","confidence":85,"description":"간단한 특징 1줄"}' }
                             ]
                         }],
-                        max_tokens: 200
+                        generationConfig: { maxOutputTokens: 200 }
                     })
                 });
                 var data = await res.json();
                 if(data.error) throw new Error(data.error.message);
 
-                var text = data.choices[0].message.content.trim();
+                var text = data.candidates[0].content.parts[0].text.trim();
                 var jsonMatch = text.match(/\{[\s\S]*\}/);
                 if(!jsonMatch) throw new Error('인식 결과를 파싱할 수 없습니다: ' + text.slice(0,100));
 
@@ -7593,30 +7586,30 @@ function getUserInfo(){
             btn.style.cursor = 'not-allowed';
         }
 
-        // ==================== AI 양봉 상담 (Pollinations.ai - 무료/키없음) ====================
+        // ==================== AI 양봉 상담 (Cloudflare Worker + Gemini) ====================
         var _flowerChatHistory = [];
+        var _WORKER_URL = 'https://beeyong-ai.area731999.workers.dev';
         var _AI_SYSTEM = '당신은 한국 양봉 전문가 AI 어시스턴트입니다. 양봉, 꿀벌 관리, 밀원식물, 병해충 방제, 채밀, 분봉 등 양봉 관련 질문에 친절하고 실용적으로 답변해주세요. 반드시 한국어로 답변하고 간결하게 3~5문장으로 해주세요.';
 
         async function callAiChat(userMsg, history) {
-            var messages = [{ role: 'system', content: _AI_SYSTEM }];
+            var contents = [];
             history.forEach(function(h) {
-                messages.push({ role: h.role === 'model' ? 'assistant' : 'user', content: h.text });
+                contents.push({ role: h.role === 'model' ? 'model' : 'user', parts: [{ text: h.text }] });
             });
-            messages.push({ role: 'user', content: userMsg });
+            contents.push({ role: 'user', parts: [{ text: userMsg }] });
 
-            var res = await fetch('https://text.pollinations.ai/openai', {
+            var res = await fetch(_WORKER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    model: 'openai',
-                    messages: messages,
-                    max_tokens: 600,
-                    temperature: 0.7
+                    system_instruction: { parts: [{ text: _AI_SYSTEM }] },
+                    contents: contents,
+                    generationConfig: { temperature: 0.7, maxOutputTokens: 600 }
                 })
             });
             var data = await res.json();
             if(data.error) throw new Error(data.error.message || '오류 발생');
-            return data.choices[0].message.content;
+            return data.candidates[0].content.parts[0].text;
         }
 
         // 홈 AI 빠른 질문
