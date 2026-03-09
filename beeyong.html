@@ -3774,6 +3774,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 style="border:2px dashed rgba(255,179,0,0.35);border-radius:18px;padding:24px 20px;text-align:center;cursor:pointer;background:var(--bg-card);margin-bottom:12px;">
                 <div id="flower-preview-wrap" style="display:none;margin-bottom:12px;">
                     <img id="flower-preview-img" style="max-width:100%;max-height:220px;border-radius:12px;object-fit:contain;">
+                    <button onclick="resetFlowerSearch()" style="width:100%;margin-top:8px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:var(--tx-muted);font-size:0.8rem;cursor:pointer;">✕ 사진 다시 선택</button>
                 </div>
                 <div id="flower-upload-placeholder">
                     <div style="font-size:2.5rem;margin-bottom:6px;">📷</div>
@@ -7419,7 +7420,7 @@ function getUserInfo(){
                 var data = await response.json();
 
                 if(!data.results || data.results.length === 0) {
-                    renderFlowerResult(null, null);
+                    renderFlowerResult(null, null, JSON.stringify(data).slice(0,200));
                     return;
                 }
 
@@ -7440,7 +7441,7 @@ function getUserInfo(){
 
             } catch(e) {
                 document.getElementById('flower-result').innerHTML =
-                    '<div style="background:var(--bg-card);border-radius:14px;padding:20px;text-align:center;color:#f87171;">❌ 오류: ' + e.message + '</div>';
+                    '<div style="background:var(--bg-card);border-radius:14px;padding:20px;text-align:center;color:#f87171;">❌ 오류: ' + e.message + '<br><small style="color:var(--tx-muted);">' + e.toString() + '</small></div>';
                 document.getElementById('flower-result').style.display = 'block';
             } finally {
                 document.getElementById('flower-loading').style.display = 'none';
@@ -7474,10 +7475,10 @@ function getUserInfo(){
             }
         }
 
-        function renderFlowerResult(r, allResults) {
+        function renderFlowerResult(r, allResults, debugMsg) {
             var el = document.getElementById('flower-result');
             if(!r) {
-                el.innerHTML = '<div style="background:var(--bg-card);border-radius:14px;padding:20px;text-align:center;color:var(--tx-muted);">🌿 식물을 인식할 수 없습니다. 꽃이 잘 보이는 사진으로 다시 시도해보세요.</div>';
+                el.innerHTML = '<div style="background:var(--bg-card);border-radius:14px;padding:20px;text-align:center;color:var(--tx-muted);">🌿 식물을 인식할 수 없습니다. 꽃이 잘 보이는 사진으로 다시 시도해보세요.' + (debugMsg ? '<br><small style="color:#f87171;font-size:0.75rem;">응답: ' + debugMsg + '</small>' : '') + '</div>';
                 el.style.display = 'block';
                 return;
             }
@@ -7575,34 +7576,30 @@ function getUserInfo(){
             btn.style.cursor = 'not-allowed';
         }
 
-        // ==================== AI 양봉 상담 ====================
-        var _GEMINI_CHAT_KEY = 'AIzaSyDYLprqdVfj0tS1pJ-BB291FO2PQH4ss28';
+        // ==================== AI 양봉 상담 (Pollinations.ai - 무료/키없음) ====================
         var _flowerChatHistory = [];
-        var _AI_SYSTEM = '당신은 한국 양봉 전문가 AI 어시스턴트입니다. 양봉, 꿀벌 관리, 밀원식물, 병해충 방제, 채밀, 분봉 등 양봉 관련 질문에 친절하고 실용적으로 답변해주세요. 답변은 간결하게 3~5문장으로 해주세요.';
+        var _AI_SYSTEM = '당신은 한국 양봉 전문가 AI 어시스턴트입니다. 양봉, 꿀벌 관리, 밀원식물, 병해충 방제, 채밀, 분봉 등 양봉 관련 질문에 친절하고 실용적으로 답변해주세요. 반드시 한국어로 답변하고 간결하게 3~5문장으로 해주세요.';
 
-        async function callGeminiChat(userMsg, history) {
-            var contents = [];
-            // 히스토리 포함
+        async function callAiChat(userMsg, history) {
+            var messages = [{ role: 'system', content: _AI_SYSTEM }];
             history.forEach(function(h) {
-                contents.push({ role: h.role, parts: [{ text: h.text }] });
+                messages.push({ role: h.role === 'model' ? 'assistant' : 'user', content: h.text });
             });
-            contents.push({ role: 'user', parts: [{ text: userMsg }] });
+            messages.push({ role: 'user', content: userMsg });
 
-            var res = await fetch(
-                'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + _GEMINI_CHAT_KEY,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        system_instruction: { parts: [{ text: _AI_SYSTEM }] },
-                        contents: contents,
-                        generationConfig: { temperature: 0.7, maxOutputTokens: 600 }
-                    })
-                }
-            );
+            var res = await fetch('https://text.pollinations.ai/openai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: 'openai',
+                    messages: messages,
+                    max_tokens: 600,
+                    temperature: 0.7
+                })
+            });
             var data = await res.json();
-            if(data.error) throw new Error(data.error.message);
-            return data.candidates[0].content.parts[0].text;
+            if(data.error) throw new Error(data.error.message || '오류 발생');
+            return data.choices[0].message.content;
         }
 
         // 홈 AI 빠른 질문
@@ -7620,7 +7617,7 @@ function getUserInfo(){
             resultEl.innerHTML = '<span style="color:var(--tx-muted);">🐝 답변 생성 중...</span>';
             input.value = '';
             try {
-                var answer = await callGeminiChat(q, []);
+                var answer = await callAiChat(q, []);
                 resultEl.innerHTML = '<div style="color:var(--tx-amber);font-size:0.78rem;font-weight:700;margin-bottom:6px;">🤖 AI 답변</div>' +
                     '<div>' + answer.replace(/\n/g,'<br>') + '</div>';
             } catch(e) {
@@ -7647,7 +7644,7 @@ function getUserInfo(){
             msgEl.scrollTop = msgEl.scrollHeight;
 
             try {
-                var answer = await callGeminiChat(q, _flowerChatHistory);
+                var answer = await callAiChat(q, _flowerChatHistory);
                 _flowerChatHistory.push({ role: 'user', text: q });
                 _flowerChatHistory.push({ role: 'model', text: answer });
                 if(_flowerChatHistory.length > 20) _flowerChatHistory = _flowerChatHistory.slice(-20);
