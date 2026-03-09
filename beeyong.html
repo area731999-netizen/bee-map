@@ -7405,45 +7405,59 @@ function getUserInfo(){
         }
 
         async function analyzeFlower() {
-            if(!_flowerImageBlob) return;
+            if(!_flowerImageBase64) return;
             document.getElementById('flower-loading').style.display = 'block';
             document.getElementById('flower-result').style.display = 'none';
             document.getElementById('flower-analyze-btn').disabled = true;
 
             try {
-                var formData = new FormData();
-                formData.append('images', _flowerImageBlob);
-                formData.append('organs', 'flower');
+                var mimeType = _flowerImageBlob ? _flowerImageBlob.type : 'image/jpeg';
+                var res = await fetch('https://text.pollinations.ai/openai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'openai-large',
+                        messages: [{
+                            role: 'user',
+                            content: [
+                                {
+                                    type: 'image_url',
+                                    image_url: { url: 'data:' + mimeType + ';base64,' + _flowerImageBase64 }
+                                },
+                                {
+                                    type: 'text',
+                                    text: '이 식물의 이름을 식별해주세요. 반드시 다음 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요:\n{"koreanName":"한국어 일반명","scientificName":"학명","confidence":85,"description":"간단한 특징 1줄"}'
+                                }
+                            ]
+                        }],
+                        max_tokens: 200
+                    })
+                });
+                var data = await res.json();
+                if(data.error) throw new Error(data.error.message);
 
-                var response = await fetch(
-                    'https://my-api.plantnet.org/v2/identify/all?api-key=' + _PLANTNET_KEY + '&lang=en&nb-results=3',
-                    { method: 'POST', body: formData }
-                );
-                var data = await response.json();
+                var text = data.choices[0].message.content.trim();
+                var jsonMatch = text.match(/\{[\s\S]*\}/);
+                if(!jsonMatch) throw new Error('인식 결과를 파싱할 수 없습니다: ' + text.slice(0,100));
 
-                if(!data.results || data.results.length === 0) {
-                    renderFlowerResult(null, null, JSON.stringify(data).slice(0,200));
-                    return;
-                }
+                var result = JSON.parse(jsonMatch[0]);
+                var koreanName = result.koreanName || '';
+                var scientificName = result.scientificName || '';
+                var score = result.confidence || 0;
 
-                var best = data.results[0];
-                var scientificName = best.species && best.species.scientificNameWithoutAuthor || '';
-                var koreanName = (best.species && best.species.commonNames && best.species.commonNames[0]) || scientificName;
-                var score = Math.round((best.score || 0) * 100);
-
-                // 밀원 DB 매칭
                 var nectarInfo = matchNectarDB(scientificName, koreanName);
 
                 renderFlowerResult({
                     name: nectarInfo ? nectarInfo.name : koreanName,
                     scientific: scientificName,
                     score: score,
+                    description: result.description || '',
                     nectarInfo: nectarInfo
-                }, data.results);
+                }, null);
 
             } catch(e) {
                 document.getElementById('flower-result').innerHTML =
-                    '<div style="background:var(--bg-card);border-radius:14px;padding:20px;text-align:center;color:#f87171;">❌ 오류: ' + e.message + '<br><small style="color:var(--tx-muted);">' + e.toString() + '</small></div>';
+                    '<div style="background:var(--bg-card);border-radius:14px;padding:20px;text-align:center;color:#f87171;">❌ 오류: ' + e.message + '</div>';
                 document.getElementById('flower-result').style.display = 'block';
             } finally {
                 document.getElementById('flower-loading').style.display = 'none';
@@ -7531,6 +7545,7 @@ function getUserInfo(){
                         '<div>' +
                             '<div style="font-size:1.4rem;font-weight:900;color:var(--tx-gold);">' + r.name + '</div>' +
                             (r.scientific ? '<div style="font-size:0.78rem;color:var(--tx-muted);font-style:italic;margin-top:2px;">' + r.scientific + '</div>' : '') +
+                            (r.description ? '<div style="font-size:0.8rem;color:var(--tx-sub);margin-top:4px;">' + r.description + '</div>' : '') +
                         '</div>' +
                         '<div style="font-size:1.0rem;">' + stars + '</div>' +
                     '</div>' +
