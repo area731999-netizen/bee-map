@@ -5335,7 +5335,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             const locLabel = label || '현재 위치';
             const isGPS = locLabel === '현재 위치';
 
-            const cards = rawData.map(d => {
+            const cards = rawData
+                .filter(d => { const date = new Date(d.date); date.setHours(0,0,0,0); return date.getTime() >= today.getTime(); })
+                .slice(0, 5)
+                .map(d => {
                 const date = new Date(d.date); date.setHours(0,0,0,0);
                 const dow = DOW[date.getDay()];
                 const md = (date.getMonth()+1) + '/' + date.getDate();
