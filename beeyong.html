@@ -2900,13 +2900,15 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div class="input-row" style="margin-bottom:80px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
                     <span style="color:var(--tx-gold);font-weight:800;font-size:1rem;">🤖 AI 양봉 상담</span>
-                    <span style="font-size:0.72rem;color:var(--tx-muted);">Gemini AI</span>
+                    <span style="font-size:0.72rem;color:var(--tx-muted);">AI 무료</span>
                 </div>
                 <!-- 빠른 질문 버튼 -->
                 <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
-                    ${['응애 방제 시기는?','아카시아 채밀 적기','분봉 예방법','월동 준비 방법','여왕벌 교체 시기'].map(function(q){
-                        return '<button onclick="homeAiQuickAsk(\''+q+'\')" style="padding:6px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">'+q+'</button>';
-                    }).join('')}
+                    <button onclick="homeAiQuickAsk('응애 방제 시기는?')" style="padding:6px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">응애 방제 시기는?</button>
+                    <button onclick="homeAiQuickAsk('아카시아 채밀 적기')" style="padding:6px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">아카시아 채밀 적기</button>
+                    <button onclick="homeAiQuickAsk('분봉 예방법')" style="padding:6px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">분봉 예방법</button>
+                    <button onclick="homeAiQuickAsk('월동 준비 방법')" style="padding:6px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">월동 준비 방법</button>
+                    <button onclick="homeAiQuickAsk('여왕벌 교체 시기')" style="padding:6px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">여왕벌 교체 시기</button>
                 </div>
                 <div style="display:flex;gap:8px;margin-bottom:10px;">
                     <input id="home-ai-input" type="text" placeholder="양봉 관련 무엇이든 물어보세요..."
@@ -7414,7 +7416,7 @@ function getUserInfo(){
                 formData.append('organs', 'flower');
 
                 var response = await fetch(
-                    'https://my-api.plantnet.org/v2/identify/all?api-key=' + _PLANTNET_KEY + '&lang=ko&nb-results=3',
+                    'https://my-api.plantnet.org/v2/identify/all?api-key=' + _PLANTNET_KEY + '&lang=en&nb-results=3',
                     { method: 'POST', body: formData }
                 );
                 var data = await response.json();
