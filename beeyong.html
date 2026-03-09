@@ -3746,36 +3746,37 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         <!-- 밀원식물 검색 화면 -->
         <div id="view-flower" class="view-group" style="padding-bottom:120px;">
             <h2 class="text-2xl font-black mb-2 text-center" style="color:var(--tx-gold);">🌸 밀원식물 검색</h2>
-            <p style="text-align:center;color:var(--tx-sub);font-size:0.8rem;margin-bottom:18px;">꽃 사진을 찍거나 선택하면 AI가 밀원 정보를 분석합니다</p>
+            <p style="text-align:center;color:var(--tx-sub);font-size:0.8rem;margin-bottom:16px;">구글 렌즈로 식물 이름을 확인 후 검색하세요</p>
 
-            <!-- 사진 업로드 영역 -->
-            <div id="flower-upload-area" onclick="document.getElementById('flower-file-input').click()"
-                style="border:2px dashed rgba(255,179,0,0.35);border-radius:18px;padding:32px 20px;text-align:center;cursor:pointer;background:var(--bg-card);margin-bottom:16px;transition:border-color 0.2s;">
-                <div id="flower-preview-wrap" style="display:none;margin-bottom:12px;">
-                    <img id="flower-preview-img" style="max-width:100%;max-height:240px;border-radius:12px;object-fit:contain;">
-                </div>
-                <div id="flower-upload-placeholder">
-                    <div style="font-size:3rem;margin-bottom:8px;">📷</div>
-                    <div style="color:var(--tx-amber);font-weight:700;font-size:0.95rem;margin-bottom:4px;">사진 촬영 또는 선택</div>
-                    <div style="color:var(--tx-muted);font-size:0.78rem;">탭하여 카메라 또는 갤러리 열기</div>
-                </div>
+            <!-- STEP 1: 구글 렌즈 버튼 -->
+            <div style="background:rgba(66,133,244,0.08);border:1px solid rgba(66,133,244,0.3);border-radius:14px;padding:16px;margin-bottom:14px;text-align:center;">
+                <div style="font-size:0.8rem;color:var(--tx-sub);margin-bottom:10px;">📷 STEP 1 — 꽃 사진을 구글 렌즈로 이름 확인</div>
+                <button onclick="openGoogleLens()" style="width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,#4285f4,#1a73e8);color:#fff;font-weight:800;font-size:0.95rem;cursor:pointer;">🔍 구글 렌즈 열기</button>
             </div>
-            <input type="file" id="flower-file-input" accept="image/*" style="display:none;" onchange="onFlowerImageSelected(event)">
 
-            <!-- 분석 버튼 -->
-            <button id="flower-analyze-btn" onclick="analyzeFlower()" disabled
-                style="width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,rgba(255,179,0,0.3),rgba(180,100,10,0.3));color:var(--tx-muted);font-size:1rem;font-weight:800;cursor:not-allowed;margin-bottom:16px;transition:all 0.2s;">
-                🔍 밀원 분석하기
-            </button>
-
-            <!-- 로딩 -->
-            <div id="flower-loading" style="display:none;text-align:center;padding:30px;">
-                <div style="font-size:2.5rem;animation:float 1s ease-in-out infinite;">🐝</div>
-                <div style="color:var(--tx-amber);font-weight:700;margin-top:10px;">AI가 분석 중입니다...</div>
+            <!-- STEP 2: 이름 입력 검색 -->
+            <div style="background:var(--bg-card);border:1px solid rgba(255,179,0,0.15);border-radius:14px;padding:16px;margin-bottom:14px;">
+                <div style="font-size:0.8rem;color:var(--tx-sub);margin-bottom:10px;">🌿 STEP 2 — 식물 이름으로 밀원 정보 검색</div>
+                <div style="display:flex;gap:8px;">
+                    <input id="flower-name-input" type="text" placeholder="예: 아카시아, 민들레, 싸리..."
+                        onkeydown="if(event.key==='Enter') analyzeFlower()"
+                        style="flex:1;padding:11px 14px;border-radius:10px;border:1px solid rgba(255,179,0,0.25);background:var(--bg-input);color:var(--tx-main);font-size:0.9rem;">
+                    <button onclick="analyzeFlower()" style="padding:11px 18px;border-radius:10px;border:none;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:800;font-size:0.9rem;cursor:pointer;">검색</button>
+                </div>
             </div>
 
             <!-- 결과 -->
             <div id="flower-result" style="display:none;"></div>
+
+            <!-- 빠른 검색 버튼 -->
+            <div style="background:var(--bg-card);border-radius:14px;padding:14px;">
+                <div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:10px;">⭐ 주요 밀원식물 빠른 검색</div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                    ${['아카시아','밤나무','피나무','유채','싸리','클로버','칡','오동나무','때죽나무','민들레','해바라기','파셀리아'].map(function(n){
+                        return '<button onclick="document.getElementById(\'flower-name-input\').value=\''+n+'\';analyzeFlower()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.8rem;font-weight:700;cursor:pointer;">'+n+'</button>';
+                    }).join('')}
+                </div>
+            </div>
         </div>
 
         <!-- 봉장 관리 설정 화면 -->
@@ -7285,30 +7286,33 @@ function getUserInfo(){
             if(isCalc) renderCalculatorSection();
         }
 
-        // ==================== 밀원식물 검색 (iNaturalist) ====================
+        // ==================== 밀원식물 검색 (오프라인 DB) ====================
         var _flowerImageBase64 = null;
-        var _flowerImageType = null;
         var _flowerImageBlob = null;
 
         // 한국 주요 밀원식물 데이터베이스
-        var NECTAR_DB = {
-            'Robinia pseudoacacia':    {name:'아카시아',      nectar:'풍부', pollen:'보통', blooming:'5~6월',   honey:'아카시아꿀',  val:5, tips:'한국 최대 밀원. 개화 2~3일이 최적 채밀 시기.'},
-            'Castanea crenata':        {name:'밤나무',        nectar:'풍부', pollen:'풍부', blooming:'6~7월',   honey:'밤꿀',        val:5, tips:'독특한 향의 밤꿀 생산. 화분도 풍부.'},
-            'Tilia':                   {name:'피나무',        nectar:'풍부', pollen:'보통', blooming:'7월',     honey:'피나무꿀',    val:5, tips:'고급 꿀 생산. 고산지대 밀원.'},
-            'Brassica':                {name:'유채',          nectar:'풍부', pollen:'풍부', blooming:'3~5월',   honey:'유채꿀',      val:4, tips:'봄철 대표 밀원. 결정화 빠름.'},
-            'Sophora japonica':        {name:'회화나무',      nectar:'보통', pollen:'보통', blooming:'7~8월',   honey:'잡화꿀',      val:3, tips:'도심 가로수로 흔함. 여름 밀원.'},
-            'Prunus':                  {name:'벚나무류',      nectar:'보통', pollen:'풍부', blooming:'3~4월',   honey:'잡화꿀',      val:3, tips:'봄철 화분원. 이른 봄 봉군 증식에 도움.'},
-            'Taraxacum':               {name:'민들레',        nectar:'보통', pollen:'풍부', blooming:'3~5월',   honey:'잡화꿀',      val:3, tips:'이른 봄 화분 공급원. 봉군 회복에 중요.'},
-            'Phacelia tanacetifolia':  {name:'파셀리아',      nectar:'풍부', pollen:'풍부', blooming:'4~6월',   honey:'잡화꿀',      val:4, tips:'인기 밀원 식물. 직접 재배 권장.'},
-            'Helianthus annuus':       {name:'해바라기',      nectar:'보통', pollen:'풍부', blooming:'7~9월',   honey:'해바라기꿀',  val:3, tips:'화분 풍부. 여름 밀원 공백 해소.'},
-            'Trifolium':               {name:'토끼풀(클로버)',nectar:'풍부', pollen:'보통', blooming:'5~9월',   honey:'클로버꿀',    val:4, tips:'장기간 개화. 목초지 주변 필수 밀원.'},
-            'Cercis chinensis':        {name:'박태기나무',    nectar:'보통', pollen:'보통', blooming:'4~5월',   honey:'잡화꿀',      val:3, tips:'봄철 조경수. 이른 밀원.'},
-            'Lespedeza':               {name:'싸리',          nectar:'풍부', pollen:'보통', blooming:'7~9월',   honey:'싸리꿀',      val:4, tips:'산야의 중요 밀원. 여름~가을 꿀 생산.'},
-            'Actinidia':               {name:'다래나무',      nectar:'보통', pollen:'풍부', blooming:'5~6월',   honey:'잡화꿀',      val:3, tips:'산지 밀원. 화분 공급원.'},
-            'Quercus':                 {name:'참나무류',      nectar:'없음', pollen:'풍부', blooming:'4~5월',   honey:null,          val:2, tips:'꿀은 없으나 화분 공급원으로 가치 있음.'},
-            'Cosmos':                  {name:'코스모스',      nectar:'적음', pollen:'보통', blooming:'8~10월',  honey:'잡화꿀',      val:2, tips:'가을 밀원 보완. 화분 공급.'},
-            'Camellia sinensis':       {name:'차나무',        nectar:'보통', pollen:'보통', blooming:'10~12월', honey:'잡화꿀',      val:3, tips:'가을~겨울 밀원. 월동 전 꿀 저장에 도움.'},
-        };
+        var NECTAR_DB = [
+            {keys:['아카시아','아까시','아까시나무','Robinia'],     name:'아카시아(아까시나무)',  nectar:'풍부', pollen:'보통', blooming:'5~6월',   honey:'아카시아꿀',  val:5, tips:'한국 최대 밀원. 개화 2~3일이 최적 채밀 시기.'},
+            {keys:['밤','밤나무','Castanea'],                       name:'밤나무',               nectar:'풍부', pollen:'풍부', blooming:'6~7월',   honey:'밤꿀',        val:5, tips:'독특한 향의 밤꿀 생산. 화분도 풍부.'},
+            {keys:['피나무','Tilia','보리수'],                      name:'피나무',               nectar:'풍부', pollen:'보통', blooming:'7월',     honey:'피나무꿀',    val:5, tips:'고급 꿀 생산. 고산지대 주요 밀원.'},
+            {keys:['유채','Brassica','평지'],                       name:'유채',                 nectar:'풍부', pollen:'풍부', blooming:'3~5월',   honey:'유채꿀',      val:4, tips:'봄철 대표 밀원. 결정화 빠름.'},
+            {keys:['싸리','Lespedeza'],                             name:'싸리',                 nectar:'풍부', pollen:'보통', blooming:'7~9월',   honey:'싸리꿀',      val:4, tips:'산야의 중요 밀원. 여름~가을 꿀 생산.'},
+            {keys:['클로버','토끼풀','Trifolium'],                  name:'토끼풀(클로버)',        nectar:'풍부', pollen:'보통', blooming:'5~9월',   honey:'클로버꿀',    val:4, tips:'장기간 개화. 목초지 주변 필수 밀원.'},
+            {keys:['파셀리아','Phacelia'],                          name:'파셀리아',             nectar:'풍부', pollen:'풍부', blooming:'4~6월',   honey:'잡화꿀',      val:4, tips:'인기 밀원. 직접 재배 권장.'},
+            {keys:['해바라기','Helianthus'],                        name:'해바라기',             nectar:'보통', pollen:'풍부', blooming:'7~9월',   honey:'해바라기꿀',  val:3, tips:'화분 풍부. 여름 밀원 공백 해소.'},
+            {keys:['민들레','Taraxacum'],                           name:'민들레',               nectar:'보통', pollen:'풍부', blooming:'3~5월',   honey:'잡화꿀',      val:3, tips:'이른 봄 화분 공급원. 봉군 회복에 중요.'},
+            {keys:['벚','벚나무','Prunus','체리'],                  name:'벚나무',               nectar:'보통', pollen:'풍부', blooming:'3~4월',   honey:'잡화꿀',      val:3, tips:'봄철 화분원. 이른 봄 봉군 증식에 도움.'},
+            {keys:['회화나무','Sophora'],                           name:'회화나무',             nectar:'보통', pollen:'보통', blooming:'7~8월',   honey:'잡화꿀',      val:3, tips:'도심 가로수. 여름 밀원.'},
+            {keys:['박태기','Cercis'],                              name:'박태기나무',           nectar:'보통', pollen:'보통', blooming:'4~5월',   honey:'잡화꿀',      val:3, tips:'봄철 조경수 밀원.'},
+            {keys:['다래','Actinidia','키위'],                      name:'다래나무',             nectar:'보통', pollen:'풍부', blooming:'5~6월',   honey:'잡화꿀',      val:3, tips:'산지 밀원. 화분 공급원.'},
+            {keys:['코스모스','Cosmos'],                            name:'코스모스',             nectar:'적음', pollen:'보통', blooming:'8~10월',  honey:'잡화꿀',      val:2, tips:'가을 밀원 보완.'},
+            {keys:['차나무','Camellia','동백'],                     name:'차나무/동백',          nectar:'보통', pollen:'보통', blooming:'10~12월', honey:'잡화꿀',      val:3, tips:'가을~겨울 밀원. 월동 전 꿀 저장.'},
+            {keys:['참나무','Quercus','상수리','신갈','졸참'],      name:'참나무류',             nectar:'없음', pollen:'풍부', blooming:'4~5월',   honey:null,          val:2, tips:'꿀은 없으나 화분 공급원으로 가치 있음.'},
+            {keys:['칡','Pueraria'],                               name:'칡',                   nectar:'풍부', pollen:'보통', blooming:'7~9월',   honey:'잡화꿀',      val:4, tips:'야산 대표 밀원. 개화기 꿀 생산 탁월.'},
+            {keys:['오동','오동나무','Paulownia'],                  name:'오동나무',             nectar:'풍부', pollen:'보통', blooming:'4~5월',   honey:'잡화꿀',      val:4, tips:'꿀 분비 많고 향기로운 봄 밀원.'},
+            {keys:['때죽','때죽나무','Styrax'],                     name:'때죽나무',             nectar:'풍부', pollen:'보통', blooming:'5~6월',   honey:'잡화꿀',      val:4, tips:'산지 우수 밀원. 향기로운 꿀 생산.'},
+            {keys:['헛개','헛개나무','Hovenia'],                    name:'헛개나무',             nectar:'보통', pollen:'보통', blooming:'6~7월',   honey:'잡화꿀',      val:3, tips:'여름 밀원. 산지에서 흔함.'},
+        ];
 
         function onFlowerImageSelected(e) {
             var file = e.target.files[0];
@@ -7316,204 +7320,113 @@ function getUserInfo(){
             _flowerImageBlob = file;
             var reader = new FileReader();
             reader.onload = function(ev) {
-                var dataUrl = ev.target.result;
-                _flowerImageBase64 = dataUrl.split(',')[1];
-                _flowerImageType = file.type || 'image/jpeg';
-                var img = document.getElementById('flower-preview-img');
-                img.src = dataUrl;
+                _flowerImageBase64 = ev.target.result.split(',')[1];
+                document.getElementById('flower-preview-img').src = ev.target.result;
                 document.getElementById('flower-preview-wrap').style.display = 'block';
                 document.getElementById('flower-upload-placeholder').style.display = 'none';
-                var btn = document.getElementById('flower-analyze-btn');
-                btn.disabled = false;
-                btn.style.background = 'linear-gradient(135deg,#f59e0b,#d97706)';
-                btn.style.color = '#fff';
-                btn.style.cursor = 'pointer';
                 document.getElementById('flower-result').style.display = 'none';
+                document.getElementById('flower-search-section').style.display = 'block';
             };
             reader.readAsDataURL(file);
         }
 
-        async function analyzeFlower() {
-            if(!_flowerImageBlob) return;
-            document.getElementById('flower-loading').style.display = 'block';
-            document.getElementById('flower-result').style.display = 'none';
-            document.getElementById('flower-analyze-btn').disabled = true;
+        function analyzeFlower() {
+            var query = (document.getElementById('flower-name-input').value || '').trim();
+            if(!query) { alert('식물 이름을 입력해주세요.'); return; }
+            var result = searchNectarDB(query);
+            renderFlowerResult(result, query);
+        }
 
-            try {
-                // iNaturalist Computer Vision API
-                var formData = new FormData();
-                formData.append('image_file', _flowerImageBlob);
-                formData.append('locale', 'ko');
-
-                var response = await fetch('https://api.inaturalist.org/v1/computervision/score_image', {
-                    method: 'POST',
-                    body: formData
-                });
-                var data = await response.json();
-
-                if(!data.results || data.results.length === 0) {
-                    renderFlowerResult(null);
-                    return;
+        function searchNectarDB(query) {
+            var q = query.toLowerCase().replace(/\s/g,'');
+            for(var i=0; i<NECTAR_DB.length; i++) {
+                var item = NECTAR_DB[i];
+                for(var j=0; j<item.keys.length; j++) {
+                    var k = item.keys[j].toLowerCase().replace(/\s/g,'');
+                    if(q.indexOf(k) !== -1 || k.indexOf(q) !== -1) return item;
                 }
-
-                // 상위 결과 중 식물(Plantae) 찾기
-                var best = null;
-                for(var i=0; i<data.results.length; i++) {
-                    var r = data.results[i];
-                    var ancestors = r.taxon && r.taxon.ancestor_ids ? r.taxon.ancestor_ids : [];
-                    // Plantae kingdom id = 47126
-                    if(ancestors.indexOf(47126) !== -1 || (r.taxon && r.taxon.iconic_taxon_name === 'Plantae')) {
-                        best = r;
-                        break;
-                    }
-                }
-                if(!best) best = data.results[0];
-
-                var taxon = best.taxon || {};
-                var scientificName = taxon.name || '';
-                var koreanName = (taxon.preferred_common_name) || scientificName;
-                var score = Math.round((best.combined_score || 0) * 100);
-
-                // 밀원 DB 매칭
-                var nectarInfo = null;
-                var sciLower = scientificName.toLowerCase();
-                Object.keys(NECTAR_DB).forEach(function(key) {
-                    if(sciLower.indexOf(key.toLowerCase()) !== -1 || key.toLowerCase().indexOf(sciLower.split(' ')[0].toLowerCase()) !== -1) {
-                        if(!nectarInfo) nectarInfo = NECTAR_DB[key];
-                    }
-                });
-                // 한국명으로도 매칭 시도
-                if(!nectarInfo) {
-                    Object.keys(NECTAR_DB).forEach(function(key) {
-                        var db = NECTAR_DB[key];
-                        if(koreanName && koreanName.indexOf(db.name.replace(/\(.*\)/,'').trim()) !== -1) {
-                            if(!nectarInfo) nectarInfo = db;
-                        }
-                    });
-                }
-
-                renderFlowerResult({
-                    found: true,
-                    name: nectarInfo ? nectarInfo.name : koreanName,
-                    scientific: scientificName,
-                    score: score,
-                    blooming: nectarInfo ? nectarInfo.blooming : '정보 없음',
-                    nectar: nectarInfo ? nectarInfo.nectar : '알 수 없음',
-                    pollen: nectarInfo ? nectarInfo.pollen : '알 수 없음',
-                    honey_type: nectarInfo ? nectarInfo.honey : null,
-                    beekeeping_value: nectarInfo ? nectarInfo.val : 0,
-                    description: nectarInfo ? null : '밀원 데이터베이스에 없는 식물입니다. 구글 렌즈로 추가 확인해보세요.',
-                    tips: nectarInfo ? nectarInfo.tips : null,
-                    inNectarDB: !!nectarInfo
-                });
-
-            } catch(e) {
-                renderFlowerResult({ found: false, description: '오류: ' + e.message });
-            } finally {
-                document.getElementById('flower-loading').style.display = 'none';
-                document.getElementById('flower-analyze-btn').disabled = false;
             }
+            return null;
         }
 
         function openGoogleLens() {
-            // 모바일: 구글 렌즈 앱 또는 구글 이미지 검색으로 이동
             window.open('https://lens.google.com', '_blank');
         }
 
-        function renderFlowerResult(r) {
+        function renderFlowerResult(item, query) {
             var el = document.getElementById('flower-result');
-            // 구글 렌즈 보조 버튼 (항상 하단에 표시)
-            var googleLensBtn = '<div style="margin-top:12px;text-align:center;">' +
-                '<button onclick="openGoogleLens()" style="width:100%;padding:11px;border-radius:10px;border:1px solid rgba(66,133,244,0.4);background:rgba(66,133,244,0.08);color:#60a5fa;font-weight:700;font-size:0.85rem;cursor:pointer;">🔍 결과가 정확하지 않나요? 구글 렌즈로 확인하기</button>' +
+            var googleLensBtn = '<div style="margin-top:12px;">' +
+                '<button onclick="openGoogleLens()" style="width:100%;padding:11px;border-radius:10px;border:1px solid rgba(66,133,244,0.4);background:rgba(66,133,244,0.08);color:#60a5fa;font-weight:700;font-size:0.85rem;cursor:pointer;">🔍 구글 렌즈로 식물 이름 확인하기</button>' +
                 '</div>';
 
-            if(!r || !r.found) {
-                el.innerHTML = '<div style="background:var(--bg-card);border-radius:14px;padding:20px;text-align:center;color:var(--tx-muted);">🌿 ' + (r && r.description ? r.description : '식물을 인식할 수 없습니다') + '</div>' + googleLensBtn;
+            if(!item) {
+                el.innerHTML =
+                    '<div style="background:var(--bg-card);border-radius:14px;padding:20px;text-align:center;">' +
+                        '<div style="font-size:2rem;margin-bottom:8px;">🌿</div>' +
+                        '<div style="color:var(--tx-muted);font-size:0.9rem;margin-bottom:4px;">"<b style=\'color:var(--tx-main);\'>' + query + '</b>" 은(는) 밀원 DB에 없습니다.</div>' +
+                        '<div style="color:var(--tx-muted);font-size:0.8rem;">구글 렌즈로 식물 이름을 먼저 확인해보세요.</div>' +
+                    '</div>' + googleLensBtn;
                 el.style.display = 'block';
                 return;
             }
 
             var stars = '';
-            for(var i=0;i<5;i++) stars += i < (r.beekeeping_value||0) ? '⭐' : '☆';
-            function badgeColor(v) {
-                if(!v||v==='알 수 없음') return 'rgba(100,100,100,0.2)';
-                if(v.includes('풍부')) return 'rgba(74,222,128,0.2)';
-                if(v.includes('보통')) return 'rgba(251,191,36,0.2)';
-                return 'rgba(239,68,68,0.15)';
+            for(var i=0;i<5;i++) stars += i < item.val ? '⭐' : '☆';
+            function bc(v) {
+                if(v==='풍부') return 'rgba(74,222,128,0.2)';
+                if(v==='보통') return 'rgba(251,191,36,0.2)';
+                if(v==='적음') return 'rgba(239,68,68,0.15)';
+                return 'rgba(100,100,100,0.2)';
             }
-            function badgeTextColor(v) {
-                if(!v||v==='알 수 없음') return '#888';
-                if(v.includes('풍부')) return '#4ade80';
-                if(v.includes('보통')) return '#fbbf24';
-                return '#f87171';
+            function tc(v) {
+                if(v==='풍부') return '#4ade80';
+                if(v==='보통') return '#fbbf24';
+                if(v==='적음') return '#f87171';
+                return '#888';
             }
-
-            var confidenceBar = r.score ? '<div style="margin-bottom:14px;">' +
-                '<div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:4px;">🎯 인식 정확도</div>' +
-                '<div style="background:rgba(255,255,255,0.08);border-radius:6px;height:8px;overflow:hidden;">' +
-                    '<div style="background:linear-gradient(90deg,#4ade80,#f59e0b);height:100%;width:'+r.score+'%;border-radius:6px;transition:width 0.5s;"></div>' +
-                '</div>' +
-                '<div style="font-size:0.75rem;color:var(--tx-sub);margin-top:3px;text-align:right;">'+r.score+'%</div>' +
-            '</div>' : '';
-
-            var noDbMsg = !r.inNectarDB ? '<div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:10px;margin-bottom:10px;font-size:0.82rem;color:#fbbf24;">⚠️ 밀원 DB 미등록 식물입니다. 아래 구글 렌즈로 추가 확인하세요.</div>' : '';
 
             el.innerHTML =
                 '<div style="background:var(--bg-card);border:1px solid rgba(255,179,0,0.2);border-radius:18px;padding:20px;">' +
-                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">' +
-                        '<div>' +
-                            '<div style="font-size:1.4rem;font-weight:900;color:var(--tx-gold);">' + r.name + '</div>' +
-                            '<div style="font-size:0.78rem;color:var(--tx-muted);font-style:italic;margin-top:2px;">' + (r.scientific||'') + '</div>' +
-                        '</div>' +
+                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">' +
+                        '<div><div style="font-size:1.4rem;font-weight:900;color:var(--tx-gold);">' + item.name + '</div></div>' +
                         '<div style="font-size:1.0rem;">' + stars + '</div>' +
                     '</div>' +
-                    confidenceBar +
-                    noDbMsg +
                     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">' +
                         '<div style="background:var(--bg-input);border-radius:10px;padding:10px;text-align:center;">' +
                             '<div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:4px;">🌼 개화시기</div>' +
-                            '<div style="font-size:0.88rem;font-weight:700;color:var(--tx-main);">' + (r.blooming||'-') + '</div>' +
+                            '<div style="font-size:0.88rem;font-weight:700;color:var(--tx-main);">' + item.blooming + '</div>' +
                         '</div>' +
                         '<div style="background:var(--bg-input);border-radius:10px;padding:10px;text-align:center;">' +
                             '<div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:4px;">🍯 꿀 종류</div>' +
-                            '<div style="font-size:0.88rem;font-weight:700;color:var(--tx-amber);">' + (r.honey_type||'미등록') + '</div>' +
+                            '<div style="font-size:0.88rem;font-weight:700;color:var(--tx-amber);">' + (item.honey||'해당없음') + '</div>' +
                         '</div>' +
-                        '<div style="background:' + badgeColor(r.nectar) + ';border-radius:10px;padding:10px;text-align:center;">' +
+                        '<div style="background:'+bc(item.nectar)+';border-radius:10px;padding:10px;text-align:center;">' +
                             '<div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:4px;">💧 유밀</div>' +
-                            '<div style="font-size:0.88rem;font-weight:800;color:' + badgeTextColor(r.nectar) + ';">' + (r.nectar||'-') + '</div>' +
+                            '<div style="font-size:0.88rem;font-weight:800;color:'+tc(item.nectar)+';">' + item.nectar + '</div>' +
                         '</div>' +
-                        '<div style="background:' + badgeColor(r.pollen) + ';border-radius:10px;padding:10px;text-align:center;">' +
+                        '<div style="background:'+bc(item.pollen)+';border-radius:10px;padding:10px;text-align:center;">' +
                             '<div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:4px;">🌾 화분</div>' +
-                            '<div style="font-size:0.88rem;font-weight:800;color:' + badgeTextColor(r.pollen) + ';">' + (r.pollen||'-') + '</div>' +
+                            '<div style="font-size:0.88rem;font-weight:800;color:'+tc(item.pollen)+';">' + item.pollen + '</div>' +
                         '</div>' +
                     '</div>' +
-                    (r.description ? '<div style="background:var(--bg-input);border-radius:10px;padding:12px;margin-bottom:10px;">' +
-                        '<div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:6px;">📋 특징</div>' +
-                        '<div style="font-size:0.88rem;color:var(--tx-main);line-height:1.6;">' + r.description + '</div>' +
-                    '</div>' : '') +
-                    (r.tips ? '<div style="background:rgba(255,179,0,0.08);border:1px solid rgba(255,179,0,0.2);border-radius:10px;padding:12px;margin-bottom:0;">' +
+                    '<div style="background:rgba(255,179,0,0.08);border:1px solid rgba(255,179,0,0.2);border-radius:10px;padding:12px;">' +
                         '<div style="font-size:0.78rem;color:var(--tx-amber);margin-bottom:4px;font-weight:700;">🐝 양봉 팁</div>' +
-                        '<div style="font-size:0.85rem;color:var(--tx-main);line-height:1.6;">' + r.tips + '</div>' +
-                    '</div>' : '') +
-                    '<button onclick="resetFlowerSearch()" style="width:100%;margin-top:14px;padding:12px;border-radius:10px;border:1px solid rgba(255,179,0,0.3);background:transparent;color:var(--tx-amber);font-weight:700;font-size:0.9rem;cursor:pointer;">📷 다른 사진 분석하기</button>' +
-                '</div>' +
-                googleLensBtn;
+                        '<div style="font-size:0.85rem;color:var(--tx-main);line-height:1.6;">' + item.tips + '</div>' +
+                    '</div>' +
+                    '<button onclick="resetFlowerSearch()" style="width:100%;margin-top:14px;padding:12px;border-radius:10px;border:1px solid rgba(255,179,0,0.3);background:transparent;color:var(--tx-amber);font-weight:700;font-size:0.9rem;cursor:pointer;">🔄 다시 검색하기</button>' +
+                '</div>' + googleLensBtn;
             el.style.display = 'block';
         }
 
         function resetFlowerSearch() {
             _flowerImageBase64 = null;
-            _flowerImageType = null;
             _flowerImageBlob = null;
             document.getElementById('flower-preview-wrap').style.display = 'none';
             document.getElementById('flower-upload-placeholder').style.display = 'block';
             document.getElementById('flower-result').style.display = 'none';
+            document.getElementById('flower-search-section').style.display = 'none';
+            document.getElementById('flower-name-input').value = '';
             document.getElementById('flower-file-input').value = '';
-            var btn = document.getElementById('flower-analyze-btn');
-            btn.disabled = true;
-            btn.style.background = 'linear-gradient(135deg,rgba(255,179,0,0.3),rgba(180,100,10,0.3))';
-            btn.style.color = 'var(--tx-muted)';
-            btn.style.cursor = 'not-allowed';
         }
 
         function renderCalculatorSection() {
