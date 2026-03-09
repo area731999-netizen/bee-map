@@ -2889,11 +2889,32 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             </div>
 
             <!-- 학술 검색 -->
-            <div class="input-row" style="margin-bottom:80px;">
+            <div class="input-row" style="margin-bottom:12px;">
                 <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">🔬 양봉 학술검색</div>
                 <div id="scholar-buttons-container" style="display:grid; grid-template-columns: repeat(2,1fr); gap:8px;">
                     <div style="color:var(--tx-sub);font-size:0.85rem;grid-column:span 2;text-align:center;">불러오는 중...</div>
                 </div>
+            </div>
+
+            <!-- AI 양봉 상담 카드 (홈) -->
+            <div class="input-row" style="margin-bottom:80px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                    <span style="color:var(--tx-gold);font-weight:800;font-size:1rem;">🤖 AI 양봉 상담</span>
+                    <span style="font-size:0.72rem;color:var(--tx-muted);">Gemini AI</span>
+                </div>
+                <!-- 빠른 질문 버튼 -->
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+                    ${['응애 방제 시기는?','아카시아 채밀 적기','분봉 예방법','월동 준비 방법','여왕벌 교체 시기'].map(function(q){
+                        return '<button onclick="homeAiQuickAsk(\''+q+'\')" style="padding:6px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">'+q+'</button>';
+                    }).join('')}
+                </div>
+                <div style="display:flex;gap:8px;margin-bottom:10px;">
+                    <input id="home-ai-input" type="text" placeholder="양봉 관련 무엇이든 물어보세요..."
+                        onkeydown="if(event.key==='Enter') homeAiAsk()"
+                        style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,179,0,0.25);background:var(--bg-input);color:var(--tx-main);font-size:0.88rem;">
+                    <button onclick="homeAiAsk()" style="padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:800;font-size:0.88rem;cursor:pointer;">전송</button>
+                </div>
+                <div id="home-ai-result" style="display:none;background:var(--bg-input);border-radius:12px;padding:14px;font-size:0.88rem;color:var(--tx-main);line-height:1.7;max-height:220px;overflow-y:auto;"></div>
             </div>
         </div>
 
@@ -3806,9 +3827,26 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     <button onclick="document.getElementById('flower-name-input').value='파셀리아';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">파셀리아</button>
                 </div>
             </div>
-        </div>
 
-        <!-- 봉장 관리 설정 화면 -->
+            <!-- AI 밀원·양봉 채팅 -->
+            <div style="background:var(--bg-card);border:1px solid rgba(255,179,0,0.15);border-radius:14px;padding:14px;margin-top:14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                    <span style="color:var(--tx-gold);font-weight:800;font-size:0.95rem;">🤖 AI 밀원·양봉 상담</span>
+                    <button onclick="clearFlowerChat()" style="font-size:0.72rem;color:var(--tx-muted);background:transparent;border:none;cursor:pointer;">대화 초기화</button>
+                </div>
+                <div id="flower-chat-messages" style="min-height:80px;max-height:320px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;">
+                    <div style="background:rgba(255,179,0,0.08);border-radius:10px;padding:10px;font-size:0.85rem;color:var(--tx-sub);">
+                        🐝 안녕하세요! 밀원식물이나 양봉에 관해 무엇이든 물어보세요.
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <input id="flower-chat-input" type="text" placeholder="질문을 입력하세요..."
+                        onkeydown="if(event.key==='Enter') flowerChatAsk()"
+                        style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,179,0,0.25);background:var(--bg-input);color:var(--tx-main);font-size:0.88rem;">
+                    <button onclick="flowerChatAsk()" id="flower-chat-btn" style="padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:800;font-size:0.88rem;cursor:pointer;">전송</button>
+                </div>
+            </div>
+        </div>
         <div id="view-apiary-settings" class="view-group" style="padding-bottom: 140px;">
             <h2 class="text-2xl font-black mb-4 text-center" style="color: var(--tx-amber);">⚙️ 설정</h2>
             
@@ -7536,6 +7574,173 @@ function getUserInfo(){
             btn.style.color = 'var(--tx-muted)';
             btn.style.cursor = 'not-allowed';
         }
+
+        // ==================== AI 양봉 상담 ====================
+        var _GEMINI_CHAT_KEY = 'AIzaSyDYLprqdVfj0tS1pJ-BB291FO2PQH4ss28';
+        var _flowerChatHistory = [];
+        var _AI_SYSTEM = '당신은 한국 양봉 전문가 AI 어시스턴트입니다. 양봉, 꿀벌 관리, 밀원식물, 병해충 방제, 채밀, 분봉 등 양봉 관련 질문에 친절하고 실용적으로 답변해주세요. 답변은 간결하게 3~5문장으로 해주세요.';
+
+        async function callGeminiChat(userMsg, history) {
+            var contents = [];
+            // 히스토리 포함
+            history.forEach(function(h) {
+                contents.push({ role: h.role, parts: [{ text: h.text }] });
+            });
+            contents.push({ role: 'user', parts: [{ text: userMsg }] });
+
+            var res = await fetch(
+                'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + _GEMINI_CHAT_KEY,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        system_instruction: { parts: [{ text: _AI_SYSTEM }] },
+                        contents: contents,
+                        generationConfig: { temperature: 0.7, maxOutputTokens: 600 }
+                    })
+                }
+            );
+            var data = await res.json();
+            if(data.error) throw new Error(data.error.message);
+            return data.candidates[0].content.parts[0].text;
+        }
+
+        // 홈 AI 빠른 질문
+        async function homeAiQuickAsk(q) {
+            document.getElementById('home-ai-input').value = q;
+            await homeAiAsk();
+        }
+
+        async function homeAiAsk() {
+            var input = document.getElementById('home-ai-input');
+            var q = (input.value || '').trim();
+            if(!q) return;
+            var resultEl = document.getElementById('home-ai-result');
+            resultEl.style.display = 'block';
+            resultEl.innerHTML = '<span style="color:var(--tx-muted);">🐝 답변 생성 중...</span>';
+            input.value = '';
+            try {
+                var answer = await callGeminiChat(q, []);
+                resultEl.innerHTML = '<div style="color:var(--tx-amber);font-size:0.78rem;font-weight:700;margin-bottom:6px;">🤖 AI 답변</div>' +
+                    '<div>' + answer.replace(/\n/g,'<br>') + '</div>';
+            } catch(e) {
+                resultEl.innerHTML = '<span style="color:#f87171;">오류: ' + e.message + '</span>';
+            }
+        }
+
+        // 밀원탭 채팅
+        async function flowerChatAsk() {
+            var input = document.getElementById('flower-chat-input');
+            var q = (input.value || '').trim();
+            if(!q) return;
+            var btn = document.getElementById('flower-chat-btn');
+            var msgEl = document.getElementById('flower-chat-messages');
+
+            // 사용자 말풍선
+            msgEl.innerHTML += '<div style="align-self:flex-end;background:rgba(255,179,0,0.15);border-radius:12px 12px 2px 12px;padding:8px 12px;font-size:0.85rem;color:var(--tx-main);max-width:85%;">' + q + '</div>';
+            input.value = '';
+            btn.disabled = true;
+
+            // 로딩
+            var loadingId = 'ai-loading-' + Date.now();
+            msgEl.innerHTML += '<div id="'+loadingId+'" style="align-self:flex-start;background:rgba(255,255,255,0.05);border-radius:12px 12px 12px 2px;padding:8px 12px;font-size:0.85rem;color:var(--tx-muted);">🐝 답변 생성 중...</div>';
+            msgEl.scrollTop = msgEl.scrollHeight;
+
+            try {
+                var answer = await callGeminiChat(q, _flowerChatHistory);
+                _flowerChatHistory.push({ role: 'user', text: q });
+                _flowerChatHistory.push({ role: 'model', text: answer });
+                if(_flowerChatHistory.length > 20) _flowerChatHistory = _flowerChatHistory.slice(-20);
+
+                var loadEl = document.getElementById(loadingId);
+                if(loadEl) loadEl.outerHTML = '<div style="align-self:flex-start;background:rgba(255,255,255,0.05);border-radius:12px 12px 12px 2px;padding:8px 12px;font-size:0.85rem;color:var(--tx-main);max-width:90%;line-height:1.6;">' + answer.replace(/\n/g,'<br>') + '</div>';
+            } catch(e) {
+                var loadEl2 = document.getElementById(loadingId);
+                if(loadEl2) loadEl2.outerHTML = '<div style="color:#f87171;font-size:0.82rem;padding:6px;">오류: ' + e.message + '</div>';
+            } finally {
+                btn.disabled = false;
+                msgEl.scrollTop = msgEl.scrollHeight;
+            }
+        }
+
+        function clearFlowerChat() {
+            _flowerChatHistory = [];
+            document.getElementById('flower-chat-messages').innerHTML =
+                '<div style="background:rgba(255,179,0,0.08);border-radius:10px;padding:10px;font-size:0.85rem;color:var(--tx-sub);">🐝 안녕하세요! 밀원식물이나 양봉에 관해 무엇이든 물어보세요.</div>';
+        }
+
+        // ==================== 스와이프 탭 전환 ====================
+        (function() {
+            // 네비 탭 순서 정의
+            var SWIPE_VIEWS = ['dashboard', 'calendar', 'map', 'account', 'harvest', 'flower', 'apiary-settings'];
+            var _swipeStartX = 0;
+            var _swipeStartY = 0;
+            var _swipeStartTime = 0;
+            var _swipeLocked = false;
+
+            function getSwipeIdx() {
+                var v = currentActiveView;
+                // 서브뷰는 상위 탭으로 매핑
+                if(v === 'diary' || v === 'day-detail') v = 'calendar';
+                if(v === 'feeding' || v === 'calculator') v = 'harvest';
+                if(v === 'disease') v = 'calendar';
+                var idx = SWIPE_VIEWS.indexOf(v);
+                return idx;
+            }
+
+            document.addEventListener('touchstart', function(e) {
+                // 입력/스크롤 요소는 제외
+                var tag = e.target.tagName;
+                if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+                _swipeStartX = e.touches[0].clientX;
+                _swipeStartY = e.touches[0].clientY;
+                _swipeStartTime = Date.now();
+                _swipeLocked = false;
+            }, { passive: true });
+
+            document.addEventListener('touchend', function(e) {
+                if(_swipeLocked) return;
+                var tag = e.target.tagName;
+                if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+                var dx = e.changedTouches[0].clientX - _swipeStartX;
+                var dy = e.changedTouches[0].clientY - _swipeStartY;
+                var dt = Date.now() - _swipeStartTime;
+
+                // 조건: 수평 이동 60px 이상, 수직 이동 수평의 절반 미만, 400ms 이내
+                if(Math.abs(dx) < 60) return;
+                if(Math.abs(dy) > Math.abs(dx) * 0.6) return;
+                if(dt > 400) return;
+
+                var idx = getSwipeIdx();
+                if(idx === -1) return;
+
+                _swipeLocked = true;
+                if(dx < 0 && idx < SWIPE_VIEWS.length - 1) {
+                    // 왼쪽 스와이프 → 다음 탭
+                    switchView(SWIPE_VIEWS[idx + 1], true);
+                    showSwipeIndicator('→');
+                } else if(dx > 0 && idx > 0) {
+                    // 오른쪽 스와이프 → 이전 탭
+                    switchView(SWIPE_VIEWS[idx - 1], true);
+                    showSwipeIndicator('←');
+                }
+            }, { passive: true });
+
+            function showSwipeIndicator(dir) {
+                var el = document.getElementById('swipe-indicator');
+                if(!el) {
+                    el = document.createElement('div');
+                    el.id = 'swipe-indicator';
+                    el.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.6);color:#FFB300;font-size:2rem;padding:12px 24px;border-radius:16px;z-index:99998;pointer-events:none;transition:opacity 0.3s;';
+                    document.body.appendChild(el);
+                }
+                el.textContent = dir;
+                el.style.opacity = '1';
+                clearTimeout(el._timer);
+                el._timer = setTimeout(function() { el.style.opacity = '0'; }, 400);
+            }
+        })();
 
         function renderCalculatorSection() {
             var sec = document.getElementById('section-calculator');
