@@ -7425,8 +7425,7 @@ function getUserInfo(){
                         }],
                         generationConfig: { maxOutputTokens: 200 }
                     })
-                });
-                var data = await res.json();
+                });                var data = await res.json();
                 if(data.error) throw new Error(data.error.message);
 
                 var text = data.candidates[0].content.parts[0].text.trim();
@@ -7596,13 +7595,14 @@ function getUserInfo(){
             history.forEach(function(h) {
                 contents.push({ role: h.role === 'model' ? 'model' : 'user', parts: [{ text: h.text }] });
             });
-            contents.push({ role: 'user', parts: [{ text: userMsg }] });
+            // 첫 질문에 시스템 프롬프트 포함
+            var fullMsg = history.length === 0 ? _AI_SYSTEM + '\n\n' + userMsg : userMsg;
+            contents.push({ role: 'user', parts: [{ text: fullMsg }] });
 
             var res = await fetch(_WORKER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    system_instruction: { parts: [{ text: _AI_SYSTEM }] },
                     contents: contents,
                     generationConfig: { temperature: 0.7, maxOutputTokens: 600 }
                 })
