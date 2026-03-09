@@ -7588,7 +7588,7 @@ function getUserInfo(){
 
         // ==================== AI 양봉 상담 (Cloudflare Worker + Gemini) ====================
         var _flowerChatHistory = [];
-        var _WORKER_URL = 'https://beeyong-ai.area731999.workers.dev';
+        var _WORKER_URL = 'https://beemaster-ai.area731999.workers.dev';
         var _AI_SYSTEM = '당신은 한국 양봉 전문가 AI 어시스턴트입니다. 양봉, 꿀벌 관리, 밀원식물, 병해충 방제, 채밀, 분봉 등 양봉 관련 질문에 친절하고 실용적으로 답변해주세요. 반드시 한국어로 답변하고 간결하게 3~5문장으로 해주세요.';
 
         async function callAiChat(userMsg, history) {
