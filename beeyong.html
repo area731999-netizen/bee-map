@@ -7591,21 +7591,20 @@ function getUserInfo(){
         var _AI_SYSTEM = '당신은 한국 양봉 전문가 AI 어시스턴트입니다. 양봉, 꿀벌 관리, 밀원식물, 병해충 방제, 채밀, 분봉 등 양봉 관련 질문에 친절하고 실용적으로 답변해주세요. 반드시 한국어로 답변하고 간결하게 3~5문장으로 해주세요.';
 
         async function callAiChat(userMsg, history) {
-            var prompt = _AI_SYSTEM + '\n\n';
+            var messages = [{ role: 'system', content: _AI_SYSTEM }];
             history.forEach(function(h) {
-                prompt += (h.role === 'model' ? '어시스턴트: ' : '사용자: ') + h.text + '\n';
+                messages.push({ role: h.role === 'model' ? 'assistant' : 'user', content: h.text });
             });
-            prompt += '사용자: ' + userMsg + '\n어시스턴트:';
+            messages.push({ role: 'user', content: userMsg });
 
             var res = await fetch(_WORKER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: prompt })
+                body: JSON.stringify({ messages: messages })
             });
             var data = await res.json();
-            if(data.error) throw new Error(data.error || '오류 발생');
-            if(Array.isArray(data)) return data[0].generated_text.trim();
-            throw new Error('응답 형식 오류');
+            if(data.error) throw new Error(data.error.message || data.error || '오류 발생');
+            return data.choices[0].message.content;
         }
 
         // 홈 AI 빠른 질문
