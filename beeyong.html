@@ -2820,7 +2820,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div id="location-filters" style="display:none;"></div>
             
             <!-- 주간 날씨 카드 -->
-            <div id="cal-weekly-weather" style="margin-bottom:10px;"></div>
+
 
             <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,179,0,0.06);border-radius:12px;padding:6px 8px;margin-bottom:10px;gap:4px;">
                 <button onclick="changeYear(-1)" style="color:var(--tx-amber);background:rgba(255,179,0,0.15);border:none;border-radius:8px;padding:8px 10px;font-size:0.9rem;font-weight:900;cursor:pointer;min-height:40px;min-width:38px;touch-action:manipulation;">◀◀</button>
@@ -5446,7 +5446,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;">${cards}</div>
             </div>`;
 
-            ['home-weekly-weather', 'cal-weekly-weather'].forEach(id => {
+            ['home-weekly-weather'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.innerHTML = html;
             });
@@ -7604,9 +7604,9 @@ function getUserInfo(){
                 body: JSON.stringify({ messages: messages })
             });
             var data = await res.json();
-            if(data.error) throw new Error(data.error.message || data.error || '오류 발생');
-            if(!data.choices || !data.choices[0]) throw new Error('응답: ' + JSON.stringify(data).slice(0,200));
-            return data.choices[0].message.content;
+            if(data.error) throw new Error(data.error || '오류 발생');
+            if(!data.reply) throw new Error('응답 없음');
+            return data.reply;
         }
 
         // 홈 AI 빠른 질문
