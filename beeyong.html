@@ -7416,20 +7416,15 @@ function getUserInfo(){
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        messages: [{
-                            role: 'user',
-                            content: [
-                                { type: 'image_url', image_url: { url: 'data:' + mimeType + ';base64,' + _flowerImageBase64 } },
-                                { type: 'text', text: '이 식물의 이름을 식별해주세요. 반드시 다음 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요:\n{"koreanName":"한국어 일반명","scientificName":"학명","confidence":85,"description":"간단한 특징 1줄"}' }
-                            ]
-                        }]
+                        image: 'data:' + mimeType + ';base64,' + _flowerImageBase64,
+                        prompt: '이 식물의 이름을 식별해주세요. 반드시 다음 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요:\n{"koreanName":"한국어 일반명","scientificName":"학명","confidence":85,"description":"간단한 특징 1줄"}'
                     })
                 });
                 var data = await res.json();
-                if(data.error) throw new Error(data.error.message || data.error || '오류 발생');
-                if(!data.choices || !data.choices[0]) throw new Error('응답: ' + JSON.stringify(data).slice(0,200));
+                if(data.error) throw new Error(data.error || '오류 발생');
+                if(!data.reply) throw new Error('응답 없음');
 
-                var text = data.choices[0].message.content.trim();
+                var text = data.reply.trim();
                 var jsonMatch = text.match(/\{[\s\S]*\}/);
                 if(!jsonMatch) throw new Error('인식 결과를 파싱할 수 없습니다: ' + text.slice(0,100));
 
@@ -7604,9 +7599,9 @@ function getUserInfo(){
                 body: JSON.stringify({ messages: messages })
             });
             var data = await res.json();
-            if(data.error) throw new Error(data.error || '오류 발생');
-            if(!data.reply) throw new Error('응답 없음');
-            return data.reply;
+            if(data.error) throw new Error(data.error.message || data.error || '오류 발생');
+            if(!data.choices || !data.choices[0]) throw new Error('응답: ' + JSON.stringify(data).slice(0,200));
+            return data.choices[0].message.content;
         }
 
         // 홈 AI 빠른 질문
