@@ -2864,6 +2864,16 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <!-- 주간 날씨 카드 -->
             <div id="home-weekly-weather" style="margin-bottom:12px;"></div>
 
+            <!-- 이달의 밀원 카드 -->
+            <div class="input-row" style="margin-bottom:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                    <span style="color:var(--tx-gold);font-weight:800;font-size:1rem;">🌸 이달의 밀원</span>
+                    <span id="home-nectar-month" style="font-size:0.75rem;color:var(--tx-muted);"></span>
+                </div>
+                <div id="home-nectar-list" style="display:flex;flex-direction:column;gap:7px;"></div>
+                <div style="margin-top:8px;font-size:0.72rem;color:var(--tx-muted);text-align:right;">※ 지역·해발·기온에 따라 차이 있음</div>
+            </div>
+
             <!-- 오늘의 일정 -->
             <div class="input-row" style="margin-bottom:12px;">
                 <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">📅 오늘의 일정</div>
@@ -3812,22 +3822,42 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 </div>
             </div>
 
+            <!-- 월별 밀원 캘린더 -->
+            <div style="background:var(--bg-card);border-radius:14px;padding:14px;margin-bottom:14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                    <span style="color:var(--tx-gold);font-weight:800;font-size:0.95rem;">📅 월별 밀원 캘린더</span>
+                    <span style="font-size:0.7rem;color:var(--tx-muted);">※ 지역·해발·기온에 따라 차이 있음</span>
+                </div>
+                <!-- 월 탭 -->
+                <div id="nectar-cal-tabs" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px;">
+                </div>
+                <!-- 필터 -->
+                <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+                    <button onclick="setNectarFilter('all')" id="nf-all" style="padding:4px 10px;border-radius:12px;border:1px solid rgba(255,179,0,0.4);background:rgba(255,179,0,0.15);color:var(--tx-amber);font-size:0.73rem;font-weight:700;cursor:pointer;">전체</button>
+                    <button onclick="setNectarFilter('nectar')" id="nf-nectar" style="padding:4px 10px;border-radius:12px;border:1px solid rgba(74,222,128,0.3);background:transparent;color:var(--tx-muted);font-size:0.73rem;font-weight:700;cursor:pointer;">🍯 꿀 풍부</button>
+                    <button onclick="setNectarFilter('pollen')" id="nf-pollen" style="padding:4px 10px;border-radius:12px;border:1px solid rgba(251,191,36,0.3);background:transparent;color:var(--tx-muted);font-size:0.73rem;font-weight:700;cursor:pointer;">🌼 화분원</button>
+                    <button onclick="setNectarFilter('top')" id="nf-top" style="padding:4px 10px;border-radius:12px;border:1px solid rgba(239,68,68,0.3);background:transparent;color:var(--tx-muted);font-size:0.73rem;font-weight:700;cursor:pointer;">⭐ 주요(4~5)</button>
+                </div>
+                <!-- 목록 -->
+                <div id="nectar-cal-list" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;"></div>
+            </div>
+
             <!-- 빠른 검색 -->
             <div style="background:var(--bg-card);border-radius:14px;padding:14px;">
                 <div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:8px;">⭐ 주요 밀원식물 빠른 검색</div>
                 <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                    <button onclick="document.getElementById('flower-name-input').value='아카시아';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">아카시아</button>
+                    <button onclick="document.getElementById('flower-name-input').value='아까시나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">아까시나무</button>
                     <button onclick="document.getElementById('flower-name-input').value='밤나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">밤나무</button>
                     <button onclick="document.getElementById('flower-name-input').value='피나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">피나무</button>
                     <button onclick="document.getElementById('flower-name-input').value='유채';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">유채</button>
                     <button onclick="document.getElementById('flower-name-input').value='싸리';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">싸리</button>
-                    <button onclick="document.getElementById('flower-name-input').value='클로버';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">클로버</button>
-                    <button onclick="document.getElementById('flower-name-input').value='칡';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">칡</button>
-                    <button onclick="document.getElementById('flower-name-input').value='오동나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">오동나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='산수유';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">산수유</button>
                     <button onclick="document.getElementById('flower-name-input').value='때죽나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">때죽나무</button>
-                    <button onclick="document.getElementById('flower-name-input').value='민들레';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">민들레</button>
+                    <button onclick="document.getElementById('flower-name-input').value='이팝나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">이팝나무</button>
                     <button onclick="document.getElementById('flower-name-input').value='해바라기';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">해바라기</button>
-                    <button onclick="document.getElementById('flower-name-input').value='파셀리아';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">파셀리아</button>
+                    <button onclick="document.getElementById('flower-name-input').value='메밀';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">메밀</button>
+                    <button onclick="document.getElementById('flower-name-input').value='바이텍스';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">바이텍스</button>
+                    <button onclick="document.getElementById('flower-name-input').value='모감주나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">모감주나무</button>
                 </div>
             </div>
 
@@ -7654,7 +7684,141 @@ function getUserInfo(){
             {keys:["비파나무","비파"], name:'비파나무', nectar:'보통', pollen:'보통', blooming:'11~12월', honey:'비파꿀', val:3, tips:'남부 겨울 희귀 밀원. 기온 관리 중요.'},
         ];
 
-        function onFlowerImageSelected(e) {
+        // 홈 이달의 밀원
+        function renderHomeNectar() {
+            var now = new Date();
+            var m = now.getMonth() + 1; // 1~12
+            var monthNames = ['','1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+            document.getElementById('home-nectar-month').textContent = monthNames[m] + ' 개화 밀원';
+
+            var list = getMonthNectarList(m);
+            // val 높은 순, 최대 6개
+            list.sort(function(a,b){return b.val - a.val;});
+            list = list.slice(0,6);
+
+            var el = document.getElementById('home-nectar-list');
+            if(!list.length) {
+                el.innerHTML = '<div style="color:var(--tx-muted);font-size:0.85rem;text-align:center;padding:10px;">이달 밀원 데이터가 없습니다.</div>';
+                return;
+            }
+            el.innerHTML = list.map(function(p) {
+                var stars = '';
+                for(var i=0;i<5;i++) stars += i<p.val ? '⭐' : '☆';
+                var nc = p.nectar==='풍부'?'#4ade80':p.nectar==='보통'?'#fbbf24':'#f87171';
+                var pc = p.pollen==='풍부'?'#4ade80':p.pollen==='보통'?'#fbbf24':'#f87171';
+                return '<div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-input);border-radius:10px;padding:9px 12px;">'
+                    + '<div>'
+                    + '<span style="font-weight:700;font-size:0.9rem;color:var(--tx-main);">'+p.name+'</span>'
+                    + '<span style="font-size:0.72rem;color:var(--tx-muted);margin-left:6px;">'+p.blooming+'</span>'
+                    + '</div>'
+                    + '<div style="display:flex;align-items:center;gap:8px;">'
+                    + '<span style="font-size:0.72rem;color:'+nc+';">꿀 '+p.nectar+'</span>'
+                    + '<span style="font-size:0.72rem;color:'+pc+';">화분 '+p.pollen+'</span>'
+                    + '<span style="font-size:0.72rem;">'+stars+'</span>'
+                    + '</div>'
+                    + '</div>';
+            }).join('');
+        }
+
+        // 해당 월에 개화하는 식물 목록 반환
+        function getMonthNectarList(m, filter) {
+            var mStr = String(m);
+            return NECTAR_DB.filter(function(p) {
+                // blooming 파싱: '5월', '5~7월', '2~3월' 등
+                var b = p.blooming.replace(/[월]/g,'');
+                var parts = b.split('~');
+                var start = parseInt(parts[0]);
+                var end = parts.length>1 ? parseInt(parts[1]) : start;
+                var match = (m >= start && m <= end);
+                if(!match) return false;
+                if(!filter || filter==='all') return true;
+                if(filter==='nectar') return p.nectar==='풍부';
+                if(filter==='pollen') return p.pollen==='풍부';
+                if(filter==='top') return p.val>=4;
+                return true;
+            });
+        }
+
+        // 밀원 캘린더
+        var _nectarCalMonth = new Date().getMonth()+1;
+        var _nectarCalFilter = 'all';
+
+        function initNectarCalendar() {
+            var tabs = document.getElementById('nectar-cal-tabs');
+            if(!tabs) return;
+            var months = [
+                {m:2,label:'2월'},{m:3,label:'3월'},{m:4,label:'4월'},{m:5,label:'5월'},
+                {m:6,label:'6월'},{m:7,label:'7월'},{m:8,label:'8월'},{m:9,label:'9월'},
+                {m:10,label:'10월'},{m:11,label:'11월'}
+            ];
+            tabs.innerHTML = months.map(function(t) {
+                var active = t.m === _nectarCalMonth;
+                return '<button onclick="selectNectarMonth('+t.m+')" id="nctab-'+t.m+'" style="padding:4px 10px;border-radius:12px;border:1px solid rgba(255,179,0,'+(active?'0.6':'0.2')+');background:'+(active?'rgba(255,179,0,0.2)':'transparent')+';color:'+(active?'var(--tx-amber)':'var(--tx-muted)')+';font-size:0.75rem;font-weight:700;cursor:pointer;">'+t.label+'</button>';
+            }).join('');
+            renderNectarCalList();
+        }
+
+        function selectNectarMonth(m) {
+            _nectarCalMonth = m;
+            // 탭 스타일 업데이트
+            for(var i=2;i<=11;i++) {
+                var el = document.getElementById('nctab-'+i);
+                if(!el) continue;
+                var active = i===m;
+                el.style.borderColor = active?'rgba(255,179,0,0.6)':'rgba(255,179,0,0.2)';
+                el.style.background = active?'rgba(255,179,0,0.2)':'transparent';
+                el.style.color = active?'var(--tx-amber)':'var(--tx-muted)';
+            }
+            renderNectarCalList();
+        }
+
+        function setNectarFilter(f) {
+            _nectarCalFilter = f;
+            ['all','nectar','pollen','top'].forEach(function(k) {
+                var el = document.getElementById('nf-'+k);
+                if(!el) return;
+                var active = k===f;
+                el.style.background = active?'rgba(255,179,0,0.15)':'transparent';
+                el.style.color = active?'var(--tx-amber)':'var(--tx-muted)';
+            });
+            renderNectarCalList();
+        }
+
+        function renderNectarCalList() {
+            var el = document.getElementById('nectar-cal-list');
+            if(!el) return;
+            var list = getMonthNectarList(_nectarCalMonth, _nectarCalFilter);
+            list.sort(function(a,b){return b.val-a.val;});
+            if(!list.length) {
+                el.innerHTML = '<div style="color:var(--tx-muted);font-size:0.85rem;text-align:center;padding:14px;">해당 조건의 밀원이 없습니다.</div>';
+                return;
+            }
+            el.innerHTML = list.map(function(p) {
+                var stars=''; for(var i=0;i<5;i++) stars+=i<p.val?'⭐':'☆';
+                var nc=p.nectar==='풍부'?'#4ade80':p.nectar==='보통'?'#fbbf24':'#9ca3af';
+                var pc=p.pollen==='풍부'?'#4ade80':p.pollen==='보통'?'#fbbf24':'#9ca3af';
+                return '<div onclick="document.getElementById(\'flower-name-input\').value=\''+p.name+'\';analyzeFlowerByName();switchView(\'flower\',true);" style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-input);border-radius:10px;padding:10px 12px;cursor:pointer;active:opacity:0.7;">'
+                    + '<div style="flex:1;">'
+                    + '<div style="font-weight:700;font-size:0.88rem;color:var(--tx-main);">'+p.name+'</div>'
+                    + '<div style="font-size:0.72rem;color:var(--tx-muted);margin-top:2px;">'+(p.tips||p.note||'')+'</div>'
+                    + '</div>'
+                    + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;margin-left:8px;flex-shrink:0;">'
+                    + '<div style="font-size:0.7rem;">'+stars+'</div>'
+                    + '<div style="display:flex;gap:5px;">'
+                    + '<span style="font-size:0.68rem;color:'+nc+';">꿀 '+p.nectar+'</span>'
+                    + '<span style="font-size:0.68rem;color:'+pc+';">화분 '+p.pollen+'</span>'
+                    + '</div>'
+                    + '</div>'
+                    + '</div>';
+            }).join('');
+        }
+
+        // 밀원검색 탭 진입시 캘린더 초기화
+        function onFlowerTabEnter() {
+            initNectarCalendar();
+        }
+
+
             var file = e.target.files[0];
             if(!file) return;
             _flowerImageBlob = file;
@@ -9237,6 +9401,14 @@ function getUserInfo(){
             if(v === 'apiary-settings') {
                 loadUserInfo();
                 loadApiarySettings();
+            }
+
+            if(v === 'flower') {
+                onFlowerTabEnter();
+            }
+
+            if(v === 'dashboard') {
+                renderHomeNectar();
             }
             
             if(v === 'diary') {
@@ -12584,6 +12756,13 @@ function getUserInfo(){
                 console.log('✓ 현재 날짜 업데이트 완료');
             } catch(e) {
                 console.error('✗ 날짜 업데이트 실패:', e);
+            }
+
+            try {
+                renderHomeNectar();
+                console.log('✓ 이달의 밀원 렌더링 완료');
+            } catch(e) {
+                console.error('✗ 이달의 밀원 렌더링 실패:', e);
             }
             
             try {
