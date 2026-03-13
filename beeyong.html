@@ -7395,15 +7395,18 @@ function getUserInfo(){
                 document.getElementById('flower-preview-wrap').style.display = 'block';
                 document.getElementById('flower-upload-placeholder').style.display = 'none';
                 document.getElementById('flower-result').style.display = 'none';
-                // 이미지 압축 (최대 1000px, 품질 0.75)
-                compressImage(original, 1000, 0.75, function(compressed) {
-                    _flowerImageBase64 = compressed.split(',')[1];
-                });
                 var btn = document.getElementById('flower-analyze-btn');
-                btn.disabled = false;
-                btn.style.background = 'linear-gradient(135deg,#f59e0b,#d97706)';
-                btn.style.color = '#fff';
-                btn.style.cursor = 'pointer';
+                btn.disabled = true;
+                btn.style.background = 'rgba(255,179,0,0.3)';
+                btn.style.color = 'var(--tx-muted)';
+                btn.style.cursor = 'not-allowed';
+                compressImage(original, 800, 0.6, function(compressed) {
+                    _flowerImageBase64 = compressed.split(',')[1];
+                    btn.disabled = false;
+                    btn.style.background = 'linear-gradient(135deg,#f59e0b,#d97706)';
+                    btn.style.color = '#fff';
+                    btn.style.cursor = 'pointer';
+                });
             };
             reader.readAsDataURL(file);
         }
