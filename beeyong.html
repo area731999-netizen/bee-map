@@ -3881,7 +3881,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <div style="background:var(--bg-card);border-radius:14px;padding:14px;margin-bottom:14px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                     <span style="color:var(--tx-gold);font-weight:800;font-size:0.95rem;">📅 월별 밀원 캘린더</span>
-                    <span style="font-size:0.7rem;color:var(--tx-muted);">※ 지역·해발·기온에 따라 차이 있음</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span id="nectar-cal-count" style="font-size:0.75rem;color:var(--tx-amber);font-weight:700;"></span>
+                        <span style="font-size:0.7rem;color:var(--tx-muted);">※ 지역·해발·기온에 따라 차이 있음</span>
+                    </div>
                 </div>
                 <!-- 월 탭 -->
                 <div id="nectar-cal-tabs" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px;">
@@ -7528,8 +7531,8 @@ function getUserInfo(){
             {keys:["가중나무","가죽나무"], name:'가중나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["광나무"], name:'광나무', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'중교목'},
             {keys:["개오동나무","개오동"], name:'개오동나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
-            {keys:["피나무"], name:'피나무', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'피나무꿀', val:5, tips:'큰나무'},
-            {keys:["쉬나무"], name:'쉬나무', nectar:'풍부', pollen:'보통', blooming:'5~7월', honey:'쉬나무꿀', val:5, tips:'큰나무'},
+            {keys:["피나무"], name:'피나무', nectar:'풍부', pollen:'적음', blooming:'7월', honey:'피나무꿀', val:5, tips:'큰나무'},
+            {keys:["쉬나무"], name:'쉬나무', nectar:'풍부', pollen:'보통', blooming:'7월', honey:'쉬나무꿀', val:5, tips:'큰나무'},
             {keys:["수수꽃다리","라일락"], name:'수수꽃다리(라일락)', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
             {keys:["마가목"], name:'마가목', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["조팝나무","조팝"], name:'조팝나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
@@ -7568,7 +7571,7 @@ function getUserInfo(){
             {keys:["돌나물"], name:'돌나물', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'낙엽소교목'},
             {keys:["다래"], name:'다래', nectar:'풍부', pollen:'풍부', blooming:'6월', honey:'잡화꿀', val:5, tips:'덩굴'},
             {keys:["광대싸리"], name:'광대싸리', nectar:'없음', pollen:'풍부', blooming:'6월', honey:null, val:2, tips:'작은나무'},
-            {keys:["헛개나무","헛개"], name:'헛개나무', nectar:'적음', pollen:'보통', blooming:'6월', honey:'잡화꿀', val:3, tips:'큰나무'},
+            {keys:["헛개나무","헛개"], name:'헛개나무', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'잡화꿀', val:4, tips:'큰나무'},
             {keys:["명석딸기"], name:'명석딸기', nectar:'보통', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:2, tips:'덩굴'},
             {keys:["예덕나무","예덕"], name:'예덕나무', nectar:'보통', pollen:'없음', blooming:'6월', honey:'잡화꿀', val:2, tips:'큰나무(남부)'},
             {keys:["오이"], name:'오이', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'한해살이'},
@@ -7940,13 +7943,16 @@ function getUserInfo(){
 
         // 해당 월에 개화하는 식물 목록 반환
         function getMonthNectarList(m, filter) {
-            var mStr = String(m);
             return NECTAR_DB.filter(function(p) {
-                // blooming 파싱: '5월', '5~7월', '2~3월' 등
-                var b = p.blooming.replace(/[월]/g,'');
+                // blooming 파싱: '5월', '5월중', '5~7월', '9~10월', '11~12월' 등 모두 처리
+                var b = p.blooming
+                    .replace(/초|중|하/g,'')   // 상중하 제거
+                    .replace(/월/g,'')          // '월' 제거
+                    .replace(/\s/g,'');         // 공백 제거
                 var parts = b.split('~');
                 var start = parseInt(parts[0]);
-                var end = parts.length>1 ? parseInt(parts[1]) : start;
+                var end   = parts.length > 1 ? parseInt(parts[parts.length-1]) : start;
+                if(isNaN(start)) return false;
                 var match = (m >= start && m <= end);
                 if(!match) return false;
                 if(!filter || filter==='all') return true;
@@ -7971,21 +7977,21 @@ function getUserInfo(){
             ];
             tabs.innerHTML = months.map(function(t) {
                 var active = t.m === _nectarCalMonth;
-                return '<button onclick="selectNectarMonth('+t.m+')" id="nctab-'+t.m+'" style="padding:4px 10px;border-radius:12px;border:1px solid rgba(255,179,0,'+(active?'0.6':'0.2')+');background:'+(active?'rgba(255,179,0,0.2)':'transparent')+';color:'+(active?'var(--tx-amber)':'var(--tx-muted)')+';font-size:0.75rem;font-weight:700;cursor:pointer;">'+t.label+'</button>';
+                var cnt = getMonthNectarList(t.m, 'all').length;
+                return '<button onclick="selectNectarMonth('+t.m+')" id="nctab-'+t.m+'" style="padding:4px 10px;border-radius:12px;border:1px solid rgba(255,179,0,'+(active?'0.6':'0.2')+');background:'+(active?'rgba(255,179,0,0.2)':'transparent')+';color:'+(active?'var(--tx-amber)':'var(--tx-muted)')+';font-size:0.75rem;font-weight:700;cursor:pointer;">'+t.label+'<span style="font-size:0.65rem;opacity:0.7;margin-left:2px;">('+cnt+')</span></button>';
             }).join('');
             renderNectarCalList();
         }
 
         function selectNectarMonth(m) {
             _nectarCalMonth = m;
-            // 탭 스타일 업데이트
             for(var i=2;i<=11;i++) {
                 var el = document.getElementById('nctab-'+i);
                 if(!el) continue;
                 var active = i===m;
                 el.style.borderColor = active?'rgba(255,179,0,0.6)':'rgba(255,179,0,0.2)';
-                el.style.background = active?'rgba(255,179,0,0.2)':'transparent';
-                el.style.color = active?'var(--tx-amber)':'var(--tx-muted)';
+                el.style.background  = active?'rgba(255,179,0,0.2)':'transparent';
+                el.style.color       = active?'var(--tx-amber)':'var(--tx-muted)';
             }
             renderNectarCalList();
         }
@@ -7997,7 +8003,7 @@ function getUserInfo(){
                 if(!el) return;
                 var active = k===f;
                 el.style.background = active?'rgba(255,179,0,0.15)':'transparent';
-                el.style.color = active?'var(--tx-amber)':'var(--tx-muted)';
+                el.style.color      = active?'var(--tx-amber)':'var(--tx-muted)';
             });
             renderNectarCalList();
         }
@@ -8006,25 +8012,39 @@ function getUserInfo(){
             var el = document.getElementById('nectar-cal-list');
             if(!el) return;
             var list = getMonthNectarList(_nectarCalMonth, _nectarCalFilter);
-            list.sort(function(a,b){return b.val-a.val;});
+            list.sort(function(a,b){ return b.val - a.val; });
+
             if(!list.length) {
                 el.innerHTML = '<div style="color:var(--tx-muted);font-size:0.85rem;text-align:center;padding:14px;">해당 조건의 밀원이 없습니다.</div>';
                 return;
             }
+
+            // 종수 표시 업데이트
+            var countEl = document.getElementById('nectar-cal-count');
+            if(countEl) countEl.textContent = list.length + '종';
+
             el.innerHTML = list.map(function(p) {
-                var stars=''; for(var i=0;i<5;i++) stars+=i<p.val?'⭐':'☆';
-                var nc=p.nectar==='풍부'?'#4ade80':p.nectar==='보통'?'#fbbf24':'#9ca3af';
-                var pc=p.pollen==='풍부'?'#4ade80':p.pollen==='보통'?'#fbbf24':'#9ca3af';
-                return '<div onclick="document.getElementById(\'flower-name-input\').value=\''+p.name+'\';analyzeFlowerByName();switchView(\'flower\',true);" style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-input);border-radius:10px;padding:10px 12px;cursor:pointer;active:opacity:0.7;">'
-                    + '<div style="flex:1;">'
-                    + '<div style="font-weight:700;font-size:0.88rem;color:var(--tx-main);">'+p.name+'</div>'
-                    + '<div style="font-size:0.72rem;color:var(--tx-muted);margin-top:2px;">'+(p.tips||p.note||'')+'</div>'
+                var nc  = p.nectar==='풍부'?'#4ade80':p.nectar==='보통'?'#fbbf24':'#9ca3af';
+                var pc  = p.pollen==='풍부'?'#4ade80':p.pollen==='보통'?'#fbbf24':'#9ca3af';
+                var valDot = p.val>=5?'🔴':p.val>=4?'🟠':p.val>=3?'🟡':'⚪';
+                var duration = p.duration ? '<span style="font-size:0.68rem;color:var(--tx-muted);">개화 '+p.duration+'일</span>' : '';
+                var honey = p.honey && p.honey!=='잡화꿀' ? '<span style="font-size:0.68rem;color:var(--tx-amber);">'+p.honey+'</span>' : '';
+                var tags = [
+                    '<span style="font-size:0.68rem;color:'+nc+';">꿀 '+p.nectar+'</span>',
+                    '<span style="font-size:0.68rem;color:'+pc+';">화분 '+p.pollen+'</span>',
+                ].join('');
+
+                return '<div onclick="document.getElementById(\'flower-name-input\').value=\''+p.name+'\';analyzeFlowerByName();switchView(\'flower\',true);" '
+                    + 'style="display:flex;align-items:center;gap:10px;background:var(--bg-input);border-radius:10px;padding:10px 12px;cursor:pointer;">'
+                    + '<div style="font-size:1.1rem;flex-shrink:0;">'+valDot+'</div>'
+                    + '<div style="flex:1;min-width:0;">'
+                    + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
+                    + '<span style="font-weight:800;font-size:0.9rem;color:var(--tx-main);">'+p.name+'</span>'
+                    + (honey ? honey : '')
                     + '</div>'
-                    + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;margin-left:8px;flex-shrink:0;">'
-                    + '<div style="font-size:0.7rem;">'+stars+'</div>'
-                    + '<div style="display:flex;gap:5px;">'
-                    + '<span style="font-size:0.68rem;color:'+nc+';">꿀 '+p.nectar+'</span>'
-                    + '<span style="font-size:0.68rem;color:'+pc+';">화분 '+p.pollen+'</span>'
+                    + '<div style="display:flex;gap:8px;align-items:center;margin-top:3px;flex-wrap:wrap;">'
+                    + tags
+                    + (duration ? '&nbsp;'+duration : '')
                     + '</div>'
                     + '</div>'
                     + '</div>';
