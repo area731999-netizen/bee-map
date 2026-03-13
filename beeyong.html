@@ -3821,8 +3821,32 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <!-- 설탕 사양액 계산 -->
             <div style="background: var(--bg-card); padding: 20px; border-radius: 16px; margin-bottom: 100px; border: 1px solid rgba(255,213,79,0.15);">
                 <h4 style="color: var(--tx-gold); font-weight: 900; margin-bottom: 16px; font-size: 1.1rem;">🍯 설탕 사양액 계산</h4>
-                <input type="number" id="sugar-ratio" placeholder="비율 (1:1은 1 입력)" class="field" style="margin-bottom: 12px;">
-                <input type="number" id="sugar-water" placeholder="물의 양 (L)" class="field" style="margin-bottom: 12px;">
+
+                <!-- 설탕:물 비율 -->
+                <div style="margin-bottom:10px;">
+                    <div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:5px;">설탕:물 비율 <span style="color:var(--tx-amber);">(설탕 기준, 예: 설탕1:물1 → 1 입력)</span></div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="font-size:0.85rem;color:var(--tx-gold);font-weight:700;white-space:nowrap;">설탕 1 : 물</span>
+                        <input type="number" id="sugar-ratio" placeholder="예: 1" class="field" style="flex:1;text-align:center;" oninput="calcSugar()">
+                    </div>
+                    <!-- 빠른 선택 버튼 -->
+                    <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;">
+                        <button onclick="document.getElementById('sugar-ratio').value=1;calcSugar()" style="padding:5px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">1:1 (자극)</button>
+                        <button onclick="document.getElementById('sugar-ratio').value=0.67;calcSugar()" style="padding:5px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">1:1.5 (보통)</button>
+                        <button onclick="document.getElementById('sugar-ratio').value=0.5;calcSugar()" style="padding:5px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">1:2 (묽음)</button>
+                        <button onclick="document.getElementById('sugar-ratio').value=2;calcSugar()" style="padding:5px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">2:1 (저장)</button>
+                    </div>
+                </div>
+
+                <!-- 물 양 -->
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:5px;">물의 양</div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <input type="number" id="sugar-water" placeholder="예: 10" class="field" style="flex:1;text-align:center;" oninput="calcSugar()">
+                        <span style="font-size:0.85rem;color:var(--tx-gold);font-weight:700;">L</span>
+                    </div>
+                </div>
+
                 <div style="display: flex; gap: 8px;">
                     <button onclick="calcSugar()" style="flex: 1; background: #A0522D; color: white; padding: 14px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">계산</button>
                     <button onclick="resetSugar()" style="background: rgba(100,100,100,0.5); color: white; padding: 14px 20px; border-radius: 10px; border: none; cursor: pointer;">초기화</button>
@@ -3902,20 +3926,46 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
             <!-- 빠른 검색 -->
             <div style="background:var(--bg-card);border-radius:14px;padding:14px;">
-                <div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:8px;">⭐ 주요 밀원식물 빠른 검색</div>
-                <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                    <button onclick="document.getElementById('flower-name-input').value='아까시나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">아까시나무</button>
-                    <button onclick="document.getElementById('flower-name-input').value='밤나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">밤나무</button>
-                    <button onclick="document.getElementById('flower-name-input').value='피나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">피나무</button>
-                    <button onclick="document.getElementById('flower-name-input').value='유채';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">유채</button>
-                    <button onclick="document.getElementById('flower-name-input').value='싸리';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">싸리</button>
-                    <button onclick="document.getElementById('flower-name-input').value='산수유';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">산수유</button>
-                    <button onclick="document.getElementById('flower-name-input').value='때죽나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">때죽나무</button>
-                    <button onclick="document.getElementById('flower-name-input').value='이팝나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">이팝나무</button>
-                    <button onclick="document.getElementById('flower-name-input').value='해바라기';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">해바라기</button>
-                    <button onclick="document.getElementById('flower-name-input').value='메밀';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">메밀</button>
-                    <button onclick="document.getElementById('flower-name-input').value='바이텍스';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">바이텍스</button>
-                    <button onclick="document.getElementById('flower-name-input').value='모감주나무';analyzeFlowerByName()" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">모감주나무</button>
+                <div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:10px;">⭐ 주요 밀원식물 빠른 검색</div>
+                <!-- 봄 -->
+                <div style="font-size:0.72rem;color:var(--tx-amber);font-weight:700;margin-bottom:5px;">🌸 봄 (3~5월)</div>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;">
+                    <button onclick="document.getElementById('flower-name-input').value='산수유';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.77rem;font-weight:700;cursor:pointer;">산수유</button>
+                    <button onclick="document.getElementById('flower-name-input').value='유채';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.77rem;font-weight:700;cursor:pointer;">유채</button>
+                    <button onclick="document.getElementById('flower-name-input').value='왕벚나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.77rem;font-weight:700;cursor:pointer;">왕벚나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='사과나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.77rem;font-weight:700;cursor:pointer;">사과나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='아까시나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.77rem;font-weight:700;cursor:pointer;">아까시나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='때죽나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.77rem;font-weight:700;cursor:pointer;">때죽나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='다래나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.77rem;font-weight:700;cursor:pointer;">다래나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='복분자딸기';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.77rem;font-weight:700;cursor:pointer;">복분자딸기</button>
+                    <button onclick="document.getElementById('flower-name-input').value='족제비싸리';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.77rem;font-weight:700;cursor:pointer;">족제비싸리</button>
+                    <button onclick="document.getElementById('flower-name-input').value='황벽나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.77rem;font-weight:700;cursor:pointer;">황벽나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='쥐똥나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.77rem;font-weight:700;cursor:pointer;">쥐똥나무</button>
+                </div>
+                <!-- 초여름 -->
+                <div style="font-size:0.72rem;color:#34d399;font-weight:700;margin-bottom:5px;">☀️ 초여름 (6~7월)</div>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;">
+                    <button onclick="document.getElementById('flower-name-input').value='밤나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);color:#34d399;font-size:0.77rem;font-weight:700;cursor:pointer;">밤나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='대추나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);color:#34d399;font-size:0.77rem;font-weight:700;cursor:pointer;">대추나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='헛개나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);color:#34d399;font-size:0.77rem;font-weight:700;cursor:pointer;">헛개나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='모감주나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);color:#34d399;font-size:0.77rem;font-weight:700;cursor:pointer;">모감주나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='오가피';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);color:#34d399;font-size:0.77rem;font-weight:700;cursor:pointer;">오가피</button>
+                    <button onclick="document.getElementById('flower-name-input').value='튤립나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);color:#34d399;font-size:0.77rem;font-weight:700;cursor:pointer;">튤립나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='피나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);color:#34d399;font-size:0.77rem;font-weight:700;cursor:pointer;">피나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='쉬나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);color:#34d399;font-size:0.77rem;font-weight:700;cursor:pointer;">쉬나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='옻나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);color:#34d399;font-size:0.77rem;font-weight:700;cursor:pointer;">옻나무</button>
+                </div>
+                <!-- 여름~가을 -->
+                <div style="font-size:0.72rem;color:#60a5fa;font-weight:700;margin-bottom:5px;">🍂 여름~가을 (7~10월)</div>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;">
+                    <button onclick="document.getElementById('flower-name-input').value='싸리';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);color:#60a5fa;font-size:0.77rem;font-weight:700;cursor:pointer;">싸리</button>
+                    <button onclick="document.getElementById('flower-name-input').value='해바라기';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);color:#60a5fa;font-size:0.77rem;font-weight:700;cursor:pointer;">해바라기</button>
+                    <button onclick="document.getElementById('flower-name-input').value='바이텍스';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);color:#60a5fa;font-size:0.77rem;font-weight:700;cursor:pointer;">바이텍스</button>
+                    <button onclick="document.getElementById('flower-name-input').value='붉나무';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);color:#60a5fa;font-size:0.77rem;font-weight:700;cursor:pointer;">붉나무</button>
+                    <button onclick="document.getElementById('flower-name-input').value='메밀';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);color:#60a5fa;font-size:0.77rem;font-weight:700;cursor:pointer;">메밀</button>
+                    <button onclick="document.getElementById('flower-name-input').value='들깨';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);color:#60a5fa;font-size:0.77rem;font-weight:700;cursor:pointer;">들깨</button>
+                    <button onclick="document.getElementById('flower-name-input').value='배초향';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);color:#60a5fa;font-size:0.77rem;font-weight:700;cursor:pointer;">배초향</button>
+                    <button onclick="document.getElementById('flower-name-input').value='꽃향유';analyzeFlowerByName()" style="padding:5px 11px;border-radius:20px;border:1px solid rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);color:#60a5fa;font-size:0.77rem;font-weight:700;cursor:pointer;">꽃향유</button>
                 </div>
             </div>
 
@@ -7457,11 +7507,12 @@ function getUserInfo(){
             {keys:["생강나무","생강"], name:'생강나무', nectar:'보통', pollen:'보통', blooming:'3월', honey:'잡화꿀', val:3, tips:'중키나무'},
             {keys:["개불알풀"], name:'개불알풀', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["갯버들"], name:'갯버들', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:2, tips:'작은나무'},
+            {keys:["왕버들","왕버들나무"], name:'왕버들', nectar:'보통', pollen:'풍부', blooming:'3~4월', honey:'잡화꿀', val:4, tips:'봄철 주요 화분 수집종. 큰나무'},
             {keys:["꽃다지"], name:'꽃다지', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["광대나물"], name:'광대나물', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:2, tips:'한해살이'},
             {keys:["수선화"], name:'수선화', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["개암나무"], name:'개암나무', nectar:'없음', pollen:'풍부', blooming:'3월', honey:null, val:2, tips:'작은나무'},
-            {keys:["오리나무"], name:'오리나무', nectar:'없음', pollen:'풍부', blooming:'3월', honey:null, val:2, tips:'큰나무'},
+            {keys:["개암나무"], name:'개암나무', nectar:'없음', pollen:'풍부', blooming:'3월', honey:null, val:3, tips:'봄철 주요 화분 수집종. 작은나무'},
+            {keys:["오리나무"], name:'오리나무', nectar:'없음', pollen:'풍부', blooming:'3월', honey:null, val:3, tips:'봄철 주요 화분 수집종. 큰나무'},
             {keys:["느릅나무"], name:'느릅나무', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["산수유"], name:'산수유', nectar:'풍부', pollen:'보통', blooming:'3월', honey:'산수유꿀', val:4, tips:'큰나무'},
             {keys:["복수초"], name:'복수초', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:1, tips:'숙근초'},
@@ -7469,7 +7520,7 @@ function getUserInfo(){
             {keys:["수양버들"], name:'수양버들', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["물오리나무"], name:'물오리나무', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["매실나무","매실"], name:'매실나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["유채","유채꽃"], name:'유채', nectar:'풍부', pollen:'풍부', blooming:'4월', honey:'유채꿀', val:5, tips:'한해살이'},
+            {keys:["유채","유채꽃"], name:'유채', nectar:'풍부', pollen:'풍부', blooming:'3~5월', honey:'유채꿀', val:5, tips:'한해살이'},
             {keys:["진달래"], name:'진달래', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["앵두나무","앵두"], name:'앵두나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["자두나무","자두"], name:'자두나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
@@ -7477,7 +7528,7 @@ function getUserInfo(){
             {keys:["산버들"], name:'산버들', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["백목련","목련"], name:'백목련', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["땅딸기"], name:'땅딸기', nectar:'보통', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'여러해살이'},
-            {keys:["민들레"], name:'민들레', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:3, tips:'여러해살이'},
+            {keys:["민들레"], name:'민들레', nectar:'적음', pollen:'풍부', blooming:'3~5월', honey:'잡화꿀', val:3, tips:'여러해살이'},
             {keys:["왕벚나무","왕벚","벚나무","벚"], name:'왕벚나무', nectar:'풍부', pollen:'풍부', blooming:'4월', honey:'벚꿀', val:5, tips:'큰나무'},
             {keys:["산벚나무","산벚"], name:'산벚나무', nectar:'풍부', pollen:'풍부', blooming:'4월', honey:'벚꿀', val:5, tips:'큰나무'},
             {keys:["살구나무","살구"], name:'살구나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
@@ -7488,7 +7539,7 @@ function getUserInfo(){
             {keys:["개살구나무","개살구"], name:'개살구나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["보리수나무(토종)","보리수","뜰보리수"], name:'보리수나무', nectar:'풍부', pollen:'적음', blooming:'4월', honey:'보리수꿀', val:4, tips:'큰나무'},
             {keys:["능금나무","능금"], name:'능금나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["상수리나무","상수리","도토리"], name:'상수리나무', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
+            {keys:["상수리나무","상수리","도토리"], name:'상수리나무', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
             {keys:["사과나무","사과"], name:'사과나무', nectar:'풍부', pollen:'적음', blooming:'4월', honey:'사과꿀', val:4, tips:'큰나무'},
             {keys:["배나무","배"], name:'배나무', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["호도나무","호두나무","호두"], name:'호도나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'큰나무'},
@@ -7496,8 +7547,8 @@ function getUserInfo(){
             {keys:["능수버들"], name:'능수버들', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["파"], name:'파', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["봄까치풀"], name:'봄까치풀', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["참나무","도토리나무"], name:'참나무(도토리)', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["떡갈나무","떡갈"], name:'떡갈나무', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
+            {keys:["참나무","도토리나무"], name:'참나무(도토리)', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
+            {keys:["떡갈나무","떡갈"], name:'떡갈나무', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
             {keys:["팽나무"], name:'팽나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'큰나무'},
             {keys:["아로니아"], name:'아로니아', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["자작나무"], name:'자작나무', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
@@ -7510,63 +7561,62 @@ function getUserInfo(){
             {keys:["으름덩굴","으름"], name:'으름덩굴', nectar:'보통', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:3, tips:'덩굴'},
             {keys:["고추나무"], name:'고추나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'작은나무'},
             {keys:["소귀나무"], name:'소귀나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'작은나무'},
-            {keys:["이팝나무","이팝"], name:'이팝나무', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'이팝꿀', val:5, tips:'큰나무'},
-            {keys:["산사나무","산사"], name:'산사나무', nectar:'풍부', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:4, tips:'작은나무'},
-            {keys:["애기사과나무","애기사과"], name:'애기사과나무', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
-            {keys:["때죽나무","때죽"], name:'때죽나무', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'때죽꿀', val:5, tips:'큰나무'},
-            {keys:["쪽동백나무","쪽동백"], name:'쪽동백나무', nectar:'풍부', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:4, tips:'큰나무'},
+            {keys:["산사나무","산사"], name:'산사나무', nectar:'풍부', pollen:'보통', blooming:'4~5월', honey:'잡화꿀', val:4, tips:'작은나무'},
+            {keys:["애기사과나무","애기사과"], name:'애기사과나무', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:4, tips:'작은나무'},
+            {keys:["때죽나무","때죽"], name:'때죽나무', nectar:'풍부', pollen:'적음', blooming:'5~6월', honey:'때죽꿀', val:5, tips:'큰나무'},
+            {keys:["쪽동백나무","쪽동백"], name:'쪽동백나무', nectar:'풍부', pollen:'보통', blooming:'5~6월', honey:'잡화꿀', val:4, tips:'큰나무'},
             {keys:["다래나무","다래"], name:'다래나무', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'덩굴'},
             {keys:["층층나무","층층"], name:'층층나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["오동나무","오동"], name:'오동나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["신나무"], name:'신나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["팥배나무","팥배"], name:'팥배나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["인동덩굴","인동"], name:'인동덩굴', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'덩굴'},
-            {keys:["함박꽃나무","함박꽃"], name:'함박꽃나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
+            {keys:["함박꽃나무","함박꽃"], name:'함박꽃나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["큰까치수염"], name:'큰까치수염', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["돌가시나무"], name:'돌가시나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
             {keys:["아까시나무","아카시아","아까시","Robinia"], name:'아까시나무', nectar:'풍부', pollen:'보통', blooming:'5월', honey:'아까시꿀', val:5, tips:'큰나무'},
-            {keys:["황벽나무","황벽"], name:'황벽나무', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'큰나무'},
+            {keys:["황벽나무","황벽"], name:'황벽나무', nectar:'풍부', pollen:'풍부', blooming:'5~6월', honey:'잡화꿀', val:5, tips:'큰나무'},
             {keys:["찔레꽃","찔레"], name:'찔레꽃', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["산딸나무","산딸"], name:'산딸나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["가중나무","가죽나무"], name:'가중나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["광나무"], name:'광나무', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'중교목'},
+            {keys:["광나무"], name:'광나무', nectar:'풍부', pollen:'풍부', blooming:'7~8월', honey:'잡화꿀', val:5, tips:'중교목'},
             {keys:["개오동나무","개오동"], name:'개오동나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["피나무"], name:'피나무', nectar:'풍부', pollen:'적음', blooming:'7월', honey:'피나무꿀', val:5, tips:'큰나무'},
-            {keys:["쉬나무"], name:'쉬나무', nectar:'풍부', pollen:'보통', blooming:'7월', honey:'쉬나무꿀', val:5, tips:'큰나무'},
+            {keys:["쉬나무"], name:'쉬나무', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'쉬나무꿀', val:5, tips:'큰나무'},
             {keys:["수수꽃다리","라일락"], name:'수수꽃다리(라일락)', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
             {keys:["마가목"], name:'마가목', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["조팝나무","조팝"], name:'조팝나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
             {keys:["고광나무"], name:'고광나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
-            {keys:["산딸기","딸기"], name:'산딸기', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
+            {keys:["산딸기","딸기"], name:'산딸기', nectar:'보통', pollen:'보통', blooming:'4~5월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["병꽃나무"], name:'병꽃나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'작은나무'},
-            {keys:["복분자딸기","복분자"], name:'복분자딸기', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
-            {keys:["쥐똥나무","쥐똥"], name:'쥐똥나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
+            {keys:["복분자딸기","복분자"], name:'복분자딸기', nectar:'풍부', pollen:'풍부', blooming:'5~6월', honey:'복분자꿀', val:4, tips:'꿀·화분 풍부. 작은나무'},
+            {keys:["쥐똥나무","쥐똥"], name:'쥐똥나무', nectar:'보통', pollen:'보통', blooming:'5~6월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["국수나무"], name:'국수나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'작은나무'},
             {keys:["미역줄나무"], name:'미역줄나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'덩굴'},
             {keys:["괴불나무"], name:'괴불나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'작은나무'},
             {keys:["노린재나무"], name:'노린재나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'작은나무'},
             {keys:["등나무","등"], name:'등나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'덩굴'},
-            {keys:["모감주나무","모감주"], name:'모감주나무', nectar:'풍부', pollen:'보통', blooming:'5월', honey:'모감주꿀', val:4, tips:'큰나무'},
+            {keys:["모감주나무","모감주"], name:'모감주나무', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'모감주꿀', val:4, tips:'큰나무'},
             {keys:["흰배롱나무","배롱나무"], name:'배롱나무', nectar:'보통', pollen:'풍부', blooming:'5~8월', honey:'잡화꿀', val:3, tips:'큰나무(수입종)'},
-            {keys:["음나무","엄나무"], name:'음나무', nectar:'풍부', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:4, tips:'큰나무'},
+            {keys:["음나무","엄나무"], name:'음나무', nectar:'풍부', pollen:'보통', blooming:'7~8월', honey:'잡화꿀', val:4, tips:'큰나무'},
             {keys:["두릅나무","두릅"], name:'두릅나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
             {keys:["고삼"], name:'고삼', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'여러해살이'},
-            {keys:["자귀나무","자귀"], name:'자귀나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
+            {keys:["자귀나무","자귀"], name:'자귀나무', nectar:'보통', pollen:'적음', blooming:'6~7월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["채송화"], name:'채송화', nectar:'없음', pollen:'풍부', blooming:'5~9월', honey:null, val:2, tips:'한해살이'},
             {keys:["도라지"], name:'도라지', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'여러해살이'},
-            {keys:["소나무","송화"], name:'소나무(송화)', nectar:'없음', pollen:'풍부', blooming:'5월', honey:null, val:2, tips:'큰나무'},
-            {keys:["잣나무","잣"], name:'잣나무', nectar:'없음', pollen:'풍부', blooming:'5월', honey:null, val:2, tips:'큰나무'},
+            {keys:["소나무","송화"], name:'소나무(송화)', nectar:'없음', pollen:'풍부', blooming:'5월', honey:null, val:3, tips:'큰나무'},
+            {keys:["잣나무","잣"], name:'잣나무', nectar:'없음', pollen:'풍부', blooming:'5월', honey:null, val:3, tips:'큰나무'},
             {keys:["귤나무","귤"], name:'귤나무', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:4, tips:'남부 작은나무'},
-            {keys:["레몬"], name:'레몬', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'남부 작은나무'},
+            {keys:["레몬"], name:'레몬', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:4, tips:'남부 작은나무'},
             {keys:["탱자나무","탱자"], name:'탱자나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
-            {keys:["갈참나무","갈참"], name:'갈참나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["졸참나무","졸참"], name:'졸참나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["신갈나무","신갈"], name:'신갈나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["굴참나무","굴참"], name:'굴참나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:2, tips:'큰나무'},
+            {keys:["갈참나무","갈참"], name:'갈참나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
+            {keys:["졸참나무","졸참"], name:'졸참나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
+            {keys:["신갈나무","신갈"], name:'신갈나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
+            {keys:["굴참나무","굴참"], name:'굴참나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
             {keys:["유자나무","유자"], name:'유자나무', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:4, tips:'큰나무(남부)'},
             {keys:["매자나무","매자"], name:'매자나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'작은나무'},
             {keys:["퉁피나무","퉁피"], name:'퉁피나무', nectar:'풍부', pollen:'보통', blooming:'5~6월', honey:'잡화꿀', val:4, tips:'큰나무'},
-            {keys:["호박"], name:'호박', nectar:'풍부', pollen:'풍부', blooming:'6월', honey:'잡화꿀', val:3, tips:'덩굴'},
+            {keys:["호박"], name:'호박', nectar:'풍부', pollen:'풍부', blooming:'6~9월', honey:'잡화꿀', val:4, tips:'덩굴'},
             {keys:["약모밀","어성초"], name:'약모밀(어성초)', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["돌나물"], name:'돌나물', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'낙엽소교목'},
             {keys:["다래"], name:'다래', nectar:'풍부', pollen:'풍부', blooming:'6월', honey:'잡화꿀', val:5, tips:'덩굴'},
@@ -7579,8 +7629,8 @@ function getUserInfo(){
             {keys:["참외"], name:'참외', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["수박"], name:'수박', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["고들빼기"], name:'고들빼기', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'두해살이'},
-            {keys:["대추나무","대추"], name:'대추나무', nectar:'풍부', pollen:'보통', blooming:'6월', honey:'대추꿀', val:5, tips:'큰나무'},
-            {keys:["밤나무","밤"], name:'밤나무', nectar:'풍부', pollen:'풍부', blooming:'6월', honey:'밤꿀', val:5, tips:'큰나무'},
+            {keys:["대추나무","대추"], name:'대추나무', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'대추꿀', val:5, tips:'큰나무'},
+            {keys:["밤나무","밤"], name:'밤나무', nectar:'풍부', pollen:'풍부', blooming:'6~7월', honey:'밤꿀', val:5, tips:'큰나무'},
             {keys:["범꼬리"], name:'범꼬리', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["초롱꽃"], name:'초롱꽃', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["수레국화"], name:'수레국화', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'한해살이'},
@@ -7589,7 +7639,7 @@ function getUserInfo(){
             {keys:["싱아"], name:'싱아', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["붉은인가목","인가목"], name:'붉은인가목', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해(덩굴)'},
             {keys:["낙지다리"], name:'낙지다리', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["오수유"], name:'오수유', nectar:'풍부', pollen:'보통', blooming:'6월', honey:'잡화꿀', val:4, tips:'중국쉬나무'},
+            {keys:["오수유"], name:'오수유', nectar:'풍부', pollen:'보통', blooming:'5~6월', honey:'잡화꿀', val:4, tips:'중국쉬나무'},
             {keys:["좀쌀풀"], name:'좀쌀풀', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["수영꽃","수영"], name:'수영꽃', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["용머리"], name:'용머리', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:2, tips:'여러해살이'},
@@ -7615,7 +7665,7 @@ function getUserInfo(){
             {keys:["박주가리"], name:'박주가리', nectar:'풍부', pollen:'보통', blooming:'7월', honey:'잡화꿀', val:4, tips:'여러해살이(덩굴)'},
             {keys:["하수오"], name:'하수오', nectar:'풍부', pollen:'보통', blooming:'7월', honey:'잡화꿀', val:4, tips:'여러해살이(덩굴)'},
             {keys:["쉬땅나무"], name:'쉬땅나무', nectar:'보통', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:2, tips:'작은나무'},
-            {keys:["참깨"], name:'참깨', nectar:'풍부', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:4, tips:'한해살이'},
+            {keys:["참깨"], name:'참깨', nectar:'풍부', pollen:'적음', blooming:'7~8월', honey:'잡화꿀', val:4, tips:'한해살이'},
             {keys:["벽오동"], name:'벽오동', nectar:'보통', pollen:'없음', blooming:'7월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["우엉"], name:'우엉', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["컴프리"], name:'컴프리', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
@@ -7625,14 +7675,14 @@ function getUserInfo(){
             {keys:["솔나물"], name:'솔나물', nectar:'풍부', pollen:'보통', blooming:'7월', honey:'잡화꿀', val:4, tips:'여러해살이'},
             {keys:["마타리"], name:'마타리', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:2, tips:'여러해살이'},
             {keys:["절굿대"], name:'절굿대', nectar:'없음', pollen:'적음', blooming:'7월', honey:null, val:1, tips:'한해살이'},
-            {keys:["싸리","싸리나무"], name:'싸리', nectar:'풍부', pollen:'보통', blooming:'7월', honey:'싸리꿀', val:5, tips:'작은나무'},
+            {keys:["싸리","싸리나무"], name:'싸리', nectar:'풍부', pollen:'보통', blooming:'7~9월', honey:'싸리꿀', val:5, tips:'작은나무'},
             {keys:["금밀초"], name:'금밀초', nectar:'풍부', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:4, tips:'여러해살이'},
             {keys:["아니스히습"], name:'아니스히습', nectar:'풍부', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:4, tips:'여러해살이'},
             {keys:["코스모스"], name:'코스모스', nectar:'적음', pollen:'보통', blooming:'7~10월', honey:'잡화꿀', val:2, tips:'한해살이'},
             {keys:["콩"], name:'콩', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["담싸리"], name:'담싸리', nectar:'없음', pollen:'풍부', blooming:'7월', honey:null, val:2, tips:'한해살이'},
             {keys:["낭이초"], name:'낭이초', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'작은나무(남부)'},
-            {keys:["익모초"], name:'익모초', nectar:'보통', pollen:'보통', blooming:'7월', honey:'잡화꿀', val:3, tips:'한해살이'},
+            {keys:["익모초"], name:'익모초', nectar:'보통', pollen:'보통', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'한해살이'},
             {keys:["무궁화"], name:'무궁화', nectar:'적음', pollen:'보통', blooming:'7~9월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["분홍비늘꽃"], name:'분홍비늘꽃', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["맥문동"], name:'맥문동', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
@@ -7649,13 +7699,13 @@ function getUserInfo(){
             {keys:["비비추"], name:'비비추', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["도깨비바늘"], name:'도깨비바늘', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["부추"], name:'부추', nectar:'적음', pollen:'적음', blooming:'8~9월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["칡자화","칡"], name:'칡', nectar:'보통', pollen:'풍부', blooming:'8월', honey:'잡화꿀', val:3, tips:'큰나무'},
+            {keys:["칡자화","칡"], name:'칡', nectar:'보통', pollen:'풍부', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["연꽃"], name:'연꽃', nectar:'보통', pollen:'보통', blooming:'8월', honey:'잡화꿀', val:3, tips:'여러해살이(수초)'},
             {keys:["참싸리"], name:'참싸리', nectar:'보통', pollen:'보통', blooming:'8~9월', honey:'싸리꿀', val:3, tips:'작은나무'},
-            {keys:["붉나무"], name:'붉나무', nectar:'풍부', pollen:'보통', blooming:'8월', honey:'잡화꿀', val:5, tips:'큰나무'},
+            {keys:["붉나무"], name:'붉나무', nectar:'풍부', pollen:'보통', blooming:'8~9월', honey:'잡화꿀', val:5, tips:'큰나무'},
             {keys:["벼"], name:'벼', nectar:'없음', pollen:'풍부', blooming:'8월', honey:null, val:2, tips:'풍매화'},
             {keys:["다름나무"], name:'다름나무', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'큰나무'},
-            {keys:["해바라기"], name:'해바라기', nectar:'풍부', pollen:'풍부', blooming:'8월', honey:'해바라기꿀', val:5, tips:'한해살이'},
+            {keys:["해바라기"], name:'해바라기', nectar:'풍부', pollen:'풍부', blooming:'7~8월', honey:'해바라기꿀', val:5, tips:'한해살이'},
             {keys:["가막사리"], name:'가막사리', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["등골나물"], name:'등골나물', nectar:'적음', pollen:'없음', blooming:'8월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["큰봉숭아","봉숭아"], name:'큰봉숭아', nectar:'보통', pollen:'풍부', blooming:'8월', honey:'잡화꿀', val:3, tips:'한해살이'},
@@ -7663,14 +7713,14 @@ function getUserInfo(){
             {keys:["사루비아"], name:'사루비아', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:2, tips:'한해살이'},
             {keys:["연백초"], name:'연백초', nectar:'보통', pollen:'보통', blooming:'8월', honey:'잡화꿀', val:3, tips:'여러해살이'},
             {keys:["왕고들빼기"], name:'왕고들빼기', nectar:'적음', pollen:'풍부', blooming:'8~9월', honey:'잡화꿀', val:2, tips:'한해살이'},
-            {keys:["오가피","오갈피"], name:'오가피', nectar:'보통', pollen:'보통', blooming:'8~9월', honey:'잡화꿀', val:3, tips:'작은나무'},
+            {keys:["오가피","오갈피"], name:'오가피', nectar:'풍부', pollen:'풍부', blooming:'6~7월', honey:'오가피꿀', val:4, tips:'꿀·화분 풍부. 작은나무'},
             {keys:["쑥부쟁이"], name:'쑥부쟁이', nectar:'보통', pollen:'보통', blooming:'8~9월', honey:'잡화꿀', val:3, tips:'여러해살이'},
-            {keys:["들깨"], name:'들깨', nectar:'풍부', pollen:'보통', blooming:'8월', honey:'들깨꿀', val:4, tips:'한해살이'},
-            {keys:["배초향","방아","방아잎"], name:'배초향(방아)', nectar:'풍부', pollen:'적음', blooming:'9월', honey:'배초향꿀', val:5, tips:'여러해살이'},
-            {keys:["메밀"], name:'메밀', nectar:'풍부', pollen:'보통', blooming:'9월', honey:'메밀꿀', val:5, tips:'한해살이'},
+            {keys:["들깨"], name:'들깨', nectar:'풍부', pollen:'보통', blooming:'9~10월', honey:'들깨꿀', val:4, tips:'한해살이'},
+            {keys:["배초향","방아","방아잎"], name:'배초향(방아)', nectar:'풍부', pollen:'적음', blooming:'8~9월', honey:'배초향꿀', val:5, tips:'여러해살이'},
+            {keys:["메밀"], name:'메밀', nectar:'풍부', pollen:'보통', blooming:'8~9월', honey:'메밀꿀', val:5, tips:'한해살이'},
             {keys:["찬느릅나무"], name:'찬느릅나무', nectar:'풍부', pollen:'적음', blooming:'9월', honey:'잡화꿀', val:4, tips:'큰나무'},
             {keys:["고마리"], name:'고마리', nectar:'적음', pollen:'적음', blooming:'9월', honey:'잡화꿀', val:1, tips:'한해살이'},
-            {keys:["구절초"], name:'구절초', nectar:'보통', pollen:'보통', blooming:'9월', honey:'잡화꿀', val:3, tips:'여러해살이'},
+            {keys:["구절초"], name:'구절초', nectar:'보통', pollen:'보통', blooming:'9~10월', honey:'잡화꿀', val:3, tips:'여러해살이'},
             {keys:["큰꿩의비름","꿩의비름"], name:'큰꿩의비름', nectar:'적음', pollen:'적음', blooming:'9월', honey:'잡화꿀', val:2, tips:'여러해살이'},
             {keys:["털머위"], name:'털머위', nectar:'적음', pollen:'적음', blooming:'9월', honey:'잡화꿀', val:2, tips:'여러해살이'},
             {keys:["물매화"], name:'물매화', nectar:'적음', pollen:'적음', blooming:'9월', honey:'잡화꿀', val:1, tips:'여러해살이'},
@@ -7678,7 +7728,7 @@ function getUserInfo(){
             {keys:["송이풀"], name:'송이풀', nectar:'적음', pollen:'적음', blooming:'9월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["황금초"], name:'황금초', nectar:'보통', pollen:'보통', blooming:'10월', honey:'잡화꿀', val:3, tips:'여러해살이'},
             {keys:["돼지감자"], name:'돼지감자', nectar:'보통', pollen:'보통', blooming:'10월', honey:'잡화꿀', val:3, tips:'여러해살이'},
-            {keys:["향유"], name:'향유', nectar:'보통', pollen:'보통', blooming:'10월', honey:'잡화꿀', val:3, tips:'한해살이'},
+            {keys:["향유"], name:'향유', nectar:'보통', pollen:'보통', blooming:'9~10월', honey:'잡화꿀', val:3, tips:'한해살이'},
             {keys:["꽃향유"], name:'꽃향유', nectar:'풍부', pollen:'없음', blooming:'9~10월', honey:'잡화꿀', val:4, tips:'한해살이'},
             {keys:["산국","감국"], name:'산국(감국)', nectar:'보통', pollen:'보통', blooming:'10월', honey:'잡화꿀', val:3, tips:'여러해살이'},
             {keys:["갯국화"], name:'갯국화', nectar:'적음', pollen:'적음', blooming:'10월', honey:'잡화꿀', val:2, tips:'여러해살이'},
@@ -7696,7 +7746,7 @@ function getUserInfo(){
             {keys:["타임","다임","thyme"], name:'타임(다임)', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'허브식물'},
             {keys:["베르가못"], name:'베르가못', nectar:'보통', pollen:'풍부', blooming:'5~7월', honey:'잡화꿀', val:4, tips:'큰나무'},
             {keys:["이나무"], name:'이나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
-            {keys:["꿀풀"], name:'꿀풀', nectar:'적음', pollen:'적음', blooming:'5월', honey:'꿀풀꿀', val:3, tips:'여러해살이'},
+            {keys:["꿀풀"], name:'꿀풀', nectar:'풍부', pollen:'보통', blooming:'5~7월', honey:'꿀풀꿀', val:3, tips:'여러해살이'},
             {keys:["아그배나무","아그배"], name:'아그배나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["말채나무","말채"], name:'말채나무', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:4, tips:'큰나무'},
             {keys:["쥐오줌풀"], name:'쥐오줌풀', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'여러해살이'},
@@ -7722,11 +7772,10 @@ function getUserInfo(){
             {keys:["족제비싸리"], name:'족제비싸리', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'작은나무'},
             {keys:["말발도리"], name:'말발도리', nectar:'적음', pollen:'적음', blooming:'5~6월', honey:'잡화꿀', val:1, tips:'작은나무'},
             {keys:["고욤나무","고욤"], name:'고욤나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'큰나무'},
-            {keys:["옻나무","옻"], name:'옻나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'큰나무'},
-            {keys:["복분자"], name:'복분자', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'덩굴'},
-            {keys:["토끼풀","클로버"], name:'토끼풀(클로버)', nectar:'없음', pollen:'적음', blooming:'5월', honey:'클로버꿀', val:2, tips:'여러해살이'},
-            {keys:["사방오리"], name:'사방오리', nectar:'없음', pollen:'풍부', blooming:'3월', honey:null, val:2, tips:'큰나무. 봄철 화분 공급원.'},
-            {keys:["꽝꽝나무"], name:'꽝꽝나무', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:2, tips:'남부 상록 작은나무. 화분 공급원.'},
+            {keys:["옻나무","옻"], name:'옻나무', nectar:'풍부', pollen:'보통', blooming:'5~6월', honey:'옻나무꿀', val:4, tips:'큰나무. 옻나무꿀 생산. 알레르기 주의.'},
+            {keys:["토끼풀","클로버"], name:'토끼풀(클로버)', nectar:'풍부', pollen:'보통', blooming:'5~9월', honey:'클로버꿀', val:4, tips:'장기간 개화. 꿀 풍부. 여러해살이'},
+            {keys:["사방오리"], name:'사방오리', nectar:'없음', pollen:'풍부', blooming:'3월', honey:null, val:3, tips:'봄철 주요 화분 수집종. 큰나무'},
+            {keys:["꽝꽝나무"], name:'꽝꽝나무', nectar:'적음', pollen:'적음', blooming:'5~6월', honey:'잡화꿀', val:2, tips:'남부 상록 작은나무. 화분 공급원.'},
             {keys:["명자나무","명자"], name:'명자나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'봄철 관목 밀원.'},
             {keys:["할미꽃"], name:'할미꽃', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:1, tips:'봄 화분 공급원.'},
             {keys:["제비꽃"], name:'제비꽃', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'봄철 소형 밀원.'},
@@ -8272,8 +8321,8 @@ function getUserInfo(){
             });
             var data = await res.json();
             if(data.error) throw new Error(data.error.message || data.error || '오류 발생');
-            if(!data.choices || !data.choices[0]) throw new Error('응답: ' + JSON.stringify(data).slice(0,200));
-            return data.choices[0].message.content;
+            if(!data.reply) throw new Error('응답 없음: ' + JSON.stringify(data).slice(0,100));
+            return data.reply;
         }
 
         // 홈 AI 빠른 질문
@@ -12641,22 +12690,57 @@ function getUserInfo(){
         function calcSugar() {
             const ratio = parseFloat(document.getElementById('sugar-ratio').value);
             const water = parseFloat(document.getElementById('sugar-water').value);
-            
-            if(!ratio || !water) {
-                showToast('⚠️ 모든 값을 입력해주세요');
+
+            const result = document.getElementById('sugar-result');
+            if(!ratio || !water || isNaN(ratio) || isNaN(water)) {
+                result.style.display = 'none';
                 return;
             }
-            
-            const sugar = water * ratio;
-            const totalVolume = water + (sugar * 0.6);
-            
-            const result = document.getElementById('sugar-result');
+
+            const sugar = water * ratio;                    // 설탕 kg
+            const totalVolume = water + (sugar * 0.6);     // 예상 용액량 L
+            const totalWeight = water + sugar;              // 총 중량 kg (물 1L≒1kg)
+
+            // 브릭스 = 설탕질량 / 총질량 × 100
+            const brix = (sugar / totalWeight) * 100;
+
+            // 비율 표시 (설탕:물)
+            const ratioDisplay = ratio >= 1
+                ? ratio.toFixed(ratio % 1 === 0 ? 0 : 1) + ' : 1'
+                : '1 : ' + (1/ratio).toFixed(ratio % 1 === 0 ? 0 : 1);
+
+            // 용도 안내
+            var usage = '';
+            if(brix >= 60)      usage = '저장용 · 월동 사양 (진한 시럽)';
+            else if(brix >= 50) usage = '일반 사양 · 세력 증강';
+            else if(brix >= 40) usage = '자극 사양 · 산란 촉진';
+            else                usage = '묽은 희석액 (수분 보충용)';
+
+            // 브릭스 색상
+            var brixColor = brix >= 60 ? '#f87171' : brix >= 50 ? '#fbbf24' : brix >= 40 ? '#4ade80' : '#60a5fa';
+
             result.style.display = 'block';
-            result.innerHTML = 
-                '<p style="color: #c084fc; font-weight: bold; margin-bottom: 12px;">📊 계산 결과</p>' +
-                '<p style="margin-bottom: 8px;">• 설탕: <strong style="color: var(--tx-gold);">' + sugar.toFixed(2) + ' kg</strong></p>' +
-                '<p style="margin-bottom: 8px;">• 물: <strong style="color: var(--tx-green);">' + water.toFixed(2) + ' L</strong></p>' +
-                '<p>• 예상 용액량: <strong style="color: #c084fc;">' + totalVolume.toFixed(2) + ' L</strong></p>';
+            result.innerHTML =
+                '<p style="color:#c084fc;font-weight:bold;margin-bottom:12px;">📊 계산 결과 <span style="font-size:0.8rem;font-weight:400;color:var(--tx-muted);">설탕 '+ratioDisplay+' 물</span></p>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">' +
+                  '<div style="background:rgba(255,179,0,0.1);border-radius:10px;padding:10px;text-align:center;">' +
+                    '<div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:3px;">🍚 설탕</div>' +
+                    '<div style="font-size:1.2rem;font-weight:900;color:var(--tx-gold);">' + sugar.toFixed(2) + ' kg</div>' +
+                  '</div>' +
+                  '<div style="background:rgba(96,165,250,0.1);border-radius:10px;padding:10px;text-align:center;">' +
+                    '<div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:3px;">💧 물</div>' +
+                    '<div style="font-size:1.2rem;font-weight:900;color:#60a5fa;">' + water.toFixed(1) + ' L</div>' +
+                  '</div>' +
+                  '<div style="background:rgba(192,132,252,0.1);border-radius:10px;padding:10px;text-align:center;">' +
+                    '<div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:3px;">🧴 예상 용액량</div>' +
+                    '<div style="font-size:1.2rem;font-weight:900;color:#c084fc;">' + totalVolume.toFixed(2) + ' L</div>' +
+                  '</div>' +
+                  '<div style="background:rgba(' + (brix>=60?'248,113,113':brix>=50?'251,191,36':brix>=40?'74,222,128':'96,165,250') + ',0.1);border-radius:10px;padding:10px;text-align:center;">' +
+                    '<div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:3px;">🔬 브릭스(Brix)</div>' +
+                    '<div style="font-size:1.2rem;font-weight:900;color:' + brixColor + ';">' + brix.toFixed(1) + '°</div>' +
+                  '</div>' +
+                '</div>' +
+                '<div style="background:rgba(255,179,0,0.08);border-radius:8px;padding:8px 12px;font-size:0.8rem;color:var(--tx-amber);">💡 ' + usage + '</div>';
         }
 
         function resetSugar() {
