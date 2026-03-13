@@ -7400,7 +7400,7 @@ function getUserInfo(){
                 btn.style.background = 'rgba(255,179,0,0.3)';
                 btn.style.color = 'var(--tx-muted)';
                 btn.style.cursor = 'not-allowed';
-                compressImage(original, 800, 0.6, function(compressed) {
+                compressImage(original, 600, 0.5, function(compressed) {
                     _flowerImageBase64 = compressed.split(',')[1];
                     btn.disabled = false;
                     btn.style.background = 'linear-gradient(135deg,#f59e0b,#d97706)';
@@ -7606,9 +7606,9 @@ function getUserInfo(){
                 body: JSON.stringify({ messages: messages })
             });
             var data = await res.json();
-            if(data.error) throw new Error(data.error.message || data.error || '오류 발생');
-            if(!data.choices || !data.choices[0]) throw new Error('응답: ' + JSON.stringify(data).slice(0,200));
-            return data.choices[0].message.content;
+            if(data.error) throw new Error(data.error || '오류 발생');
+            if(!data.reply) throw new Error('응답 없음');
+            return data.reply;
         }
 
         // 홈 AI 빠른 질문
