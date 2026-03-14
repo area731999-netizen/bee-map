@@ -2771,9 +2771,6 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         <!-- 외검 가능 여부 가이드 -->
         <div id="inspection-guide" style="margin: 16px; margin-top: -8px; display: none;"></div>
 
-        <!-- 이달의 추천 작업 -->
-        <div id="monthly-work-guide" style="margin: 16px; margin-top: 0;"></div>
-
 
 
         <!-- 동양종 준비중 화면 -->
@@ -2864,28 +2861,34 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <!-- 주간 날씨 카드 -->
             <div id="home-weekly-weather" style="margin-bottom:12px;"></div>
 
-            <!-- 이달의 밀원 카드 -->
+            <!-- 이달의 밀원 & 화분원 -->
             <div class="input-row" style="margin-bottom:12px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                    <span style="color:var(--tx-gold);font-weight:800;font-size:1rem;">🌸 이달의 밀원</span>
+                    <span style="color:var(--tx-gold);font-weight:800;font-size:1rem;">🌸 이달의 밀원 · 화분원</span>
                     <span id="home-nectar-month" style="font-size:0.75rem;color:var(--tx-muted);"></span>
+                </div>
+                <!-- 탭 -->
+                <div style="display:flex;gap:6px;margin-bottom:10px;">
+                    <button id="home-tab-nectar" onclick="switchHomeNectarTab('nectar')"
+                        style="flex:1;padding:7px;border-radius:10px;border:1px solid rgba(255,179,0,0.5);background:rgba(255,179,0,0.15);color:var(--tx-amber);font-size:0.82rem;font-weight:800;cursor:pointer;">
+                        🍯 꿀 밀원
+                    </button>
+                    <button id="home-tab-pollen" onclick="switchHomeNectarTab('pollen')"
+                        style="flex:1;padding:7px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--tx-muted);font-size:0.82rem;font-weight:800;cursor:pointer;">
+                        🌼 화분원
+                    </button>
                 </div>
                 <div id="home-nectar-list" style="display:flex;flex-direction:column;gap:7px;"></div>
                 <div style="margin-top:8px;font-size:0.72rem;color:var(--tx-muted);text-align:right;">※ 지역·해발·기온에 따라 차이 있음</div>
             </div>
 
-            <!-- 봄 세력 증가 플래너 -->
+            <!-- 절기별 양봉 관리 -->
             <div class="input-row" style="margin-bottom:12px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                    <span style="color:var(--tx-gold);font-weight:800;font-size:1rem;">🌱 봄 세력 증가 플래너</span>
-                    <span style="font-size:0.72rem;color:var(--tx-muted);">아까시 목표일 역산</span>
+                    <span style="color:var(--tx-gold);font-weight:800;font-size:1rem;">🌿 절기별 양봉 관리</span>
+                    <span id="jeolgi-next" style="font-size:0.72rem;color:var(--tx-muted);"></span>
                 </div>
-                <div style="display:flex;gap:8px;margin-bottom:10px;">
-                    <input type="date" id="spring-target-date" onchange="renderSpringPlanner()"
-                        style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,179,0,0.25);background:var(--bg-input);color:var(--tx-main);font-size:0.88rem;">
-                    <button onclick="renderSpringPlanner()" style="padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(135deg,#4ade80,#16a34a);color:#fff;font-weight:800;font-size:0.85rem;cursor:pointer;">계획</button>
-                </div>
-                <div id="spring-planner-result" style="display:none;display:flex;flex-direction:column;gap:7px;"></div>
+                <div id="jeolgi-card"></div>
             </div>
 
             <!-- 오늘의 일정 -->
@@ -2920,27 +2923,13 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 </div>
             </div>
 
-            <!-- AI 양봉 상담 카드 (홈) -->
+            <!-- 양봉 FAQ -->
             <div class="input-row" style="margin-bottom:80px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                    <span style="color:var(--tx-gold);font-weight:800;font-size:1rem;">🤖 AI 양봉 상담</span>
-                    <span style="font-size:0.72rem;color:var(--tx-muted);">AI 무료</span>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                    <span style="color:var(--tx-gold);font-weight:800;font-size:1rem;">📚 양봉 현장 가이드</span>
+                    <span style="font-size:0.72rem;color:var(--tx-muted);">카테고리를 선택하세요</span>
                 </div>
-                <!-- 빠른 질문 버튼 -->
-                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
-                    <button onclick="homeAiQuickAsk('응애 방제 시기는?')" style="padding:6px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">응애 방제 시기는?</button>
-                    <button onclick="homeAiQuickAsk('아카시아 채밀 적기')" style="padding:6px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">아카시아 채밀 적기</button>
-                    <button onclick="homeAiQuickAsk('분봉 예방법')" style="padding:6px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">분봉 예방법</button>
-                    <button onclick="homeAiQuickAsk('월동 준비 방법')" style="padding:6px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">월동 준비 방법</button>
-                    <button onclick="homeAiQuickAsk('여왕벌 교체 시기')" style="padding:6px 11px;border-radius:20px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.78rem;font-weight:700;cursor:pointer;">여왕벌 교체 시기</button>
-                </div>
-                <div style="display:flex;gap:8px;margin-bottom:10px;">
-                    <input id="home-ai-input" type="text" placeholder="양봉 관련 무엇이든 물어보세요..."
-                        onkeydown="if(event.key==='Enter') homeAiAsk()"
-                        style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,179,0,0.25);background:var(--bg-input);color:var(--tx-main);font-size:0.88rem;">
-                    <button onclick="homeAiAsk()" style="padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:800;font-size:0.88rem;cursor:pointer;">전송</button>
-                </div>
-                <div id="home-ai-result" style="display:none;background:var(--bg-input);border-radius:12px;padding:14px;font-size:0.88rem;color:var(--tx-main);line-height:1.7;max-height:220px;overflow-y:auto;"></div>
+                <div id="faq-container"></div>
             </div>
         </div>
 
@@ -3147,9 +3136,9 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
             <!-- 응애 방제 효과 계산기 -->
             <div style="background:var(--bg-card);border:1px solid rgba(255,179,0,0.15);border-radius:16px;padding:16px;margin-top:16px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-                    <span style="color:var(--tx-gold);font-weight:800;font-size:0.95rem;">🔬 응애 방제 효과 계산기</span>
-                    <span style="font-size:0.7rem;color:var(--tx-muted);">300마리 기준</span>
+                <div style="margin-bottom:14px;">
+                    <div style="font-weight:800;font-size:0.95rem;color:var(--tx-gold);margin-bottom:5px;">🔬 응애 방제 효과 계산기</div>
+                    <div style="font-size:0.78rem;color:var(--tx-muted);line-height:1.6;">21일 방제 완료 후 처리 전·후 응애수(300마리 기준)를 입력하면 방제 효과율과 A~D 등급을 자동 계산합니다. 효과가 낮으면 약제 내성을 의심하고 다른 계열로 교체하세요.</div>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
                     <div>
@@ -3165,6 +3154,11 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                             style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,179,0,0.25);background:var(--bg-input);color:var(--tx-main);font-size:1rem;font-weight:700;text-align:center;">
                     </div>
                 </div>
+                <!-- 리셋 버튼 -->
+                <button onclick="document.getElementById('mite-pre').value='';document.getElementById('mite-post').value='';document.getElementById('mite-result').style.display='none';"
+                    style="width:100%;padding:9px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(100,100,100,0.15);color:var(--tx-muted);font-size:0.82rem;font-weight:700;cursor:pointer;margin-bottom:10px;">
+                    🔄 초기화
+                </button>
                 <div id="mite-result" style="display:none;border-radius:12px;padding:14px;text-align:center;">
                     <div style="display:flex;align-items:center;justify-content:center;gap:16px;">
                         <div>
@@ -3178,7 +3172,42 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     </div>
                     <div id="mite-advice" style="margin-top:10px;font-size:0.8rem;color:var(--tx-main);line-height:1.6;background:var(--bg-input);border-radius:8px;padding:10px;text-align:left;"></div>
                 </div>
-                <div style="margin-top:8px;font-size:0.7rem;color:var(--tx-muted);">※ 알코올 세척법 또는 슈가롤법 기준. 처리 후 7~14일 후 재측정 권장.</div>
+
+                <!-- 등급 안내 -->
+                <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,0.07);padding-top:12px;">
+                    <div style="font-size:0.75rem;font-weight:800;color:var(--tx-muted);margin-bottom:8px;">📊 등급 기준 안내</div>
+                    <div style="display:flex;flex-direction:column;gap:7px;">
+                        <div style="display:flex;gap:10px;align-items:flex-start;background:rgba(74,222,128,0.07);border-radius:10px;padding:9px 12px;border-left:3px solid #4ade80;">
+                            <div style="font-size:1.1rem;font-weight:900;color:#4ade80;flex-shrink:0;min-width:22px;">A</div>
+                            <div>
+                                <div style="font-size:0.82rem;font-weight:800;color:#4ade80;">효과율 90% 이상 — 매우 우수</div>
+                                <div style="font-size:0.77rem;color:var(--tx-muted);margin-top:2px;line-height:1.5;">약제 효과가 탁월합니다. 현재 방제 약제와 처리 방법을 그대로 유지하세요. 다음 방제 시즌까지 정기 모니터링을 권장합니다.</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;align-items:flex-start;background:rgba(134,239,172,0.07);border-radius:10px;padding:9px 12px;border-left:3px solid #86efac;">
+                            <div style="font-size:1.1rem;font-weight:900;color:#86efac;flex-shrink:0;min-width:22px;">B</div>
+                            <div>
+                                <div style="font-size:0.82rem;font-weight:800;color:#86efac;">효과율 75~90% — 양호</div>
+                                <div style="font-size:0.77rem;color:var(--tx-muted);margin-top:2px;line-height:1.5;">방제 효과는 양호합니다. 현재 약제를 계속 사용할 수 있으나, 재검사로 잔존 응애를 확인하세요. 다음 시즌에는 다른 계열 약제로 로테이션을 권장합니다.</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;align-items:flex-start;background:rgba(251,191,36,0.07);border-radius:10px;padding:9px 12px;border-left:3px solid #fbbf24;">
+                            <div style="font-size:1.1rem;font-weight:900;color:#fbbf24;flex-shrink:0;min-width:22px;">C</div>
+                            <div>
+                                <div style="font-size:0.82rem;font-weight:800;color:#fbbf24;">효과율 50~75% — 미흡</div>
+                                <div style="font-size:0.77rem;color:var(--tx-muted);margin-top:2px;line-height:1.5;">약제 효과가 낮습니다. 약제 내성이 시작된 것으로 의심됩니다. 처리 방법(농도·횟수·기간)을 재검토하고, 다른 계열 약제로 교체를 적극 검토하세요.</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;align-items:flex-start;background:rgba(248,113,113,0.07);border-radius:10px;padding:9px 12px;border-left:3px solid #f87171;">
+                            <div style="font-size:1.1rem;font-weight:900;color:#f87171;flex-shrink:0;min-width:22px;">D</div>
+                            <div>
+                                <div style="font-size:0.82rem;font-weight:800;color:#f87171;">효과율 50% 미만 — 불량</div>
+                                <div style="font-size:0.77rem;color:var(--tx-muted);margin-top:2px;line-height:1.5;">약제 효과가 매우 낮습니다. 해당 약제에 대한 내성이 형성된 것으로 판단됩니다. 즉시 다른 계열 약제로 교체하고, 처리 방법 전체를 재검토하세요. 봉군 피해가 우려되므로 신속한 대응이 필요합니다.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;font-size:0.7rem;color:var(--tx-muted);">※ 알코올 세척법(300마리 기준) 기준. 같은 블럭 내 같은 약제 21일 처리 완료 후 측정.<br>※ A~D 등급 체계 참고: <span style="color:#60a5fa;">VarroaVault Mite Count Efficacy Calculator (varroavault.com)</span></div>
+                </div>
             </div>
         </div>
 
@@ -3969,24 +3998,6 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 </div>
             </div>
 
-            <!-- AI 밀원·양봉 채팅 -->
-            <div style="background:var(--bg-card);border:1px solid rgba(255,179,0,0.15);border-radius:14px;padding:14px;margin-top:14px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                    <span style="color:var(--tx-gold);font-weight:800;font-size:0.95rem;">🤖 AI 밀원·양봉 상담</span>
-                    <button onclick="clearFlowerChat()" style="font-size:0.72rem;color:var(--tx-muted);background:transparent;border:none;cursor:pointer;">대화 초기화</button>
-                </div>
-                <div id="flower-chat-messages" style="min-height:80px;max-height:320px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;">
-                    <div style="background:rgba(255,179,0,0.08);border-radius:10px;padding:10px;font-size:0.85rem;color:var(--tx-sub);">
-                        🐝 안녕하세요! 밀원식물이나 양봉에 관해 무엇이든 물어보세요.
-                    </div>
-                </div>
-                <div style="display:flex;gap:8px;">
-                    <input id="flower-chat-input" type="text" placeholder="질문을 입력하세요..."
-                        onkeydown="if(event.key==='Enter') flowerChatAsk()"
-                        style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,179,0,0.25);background:var(--bg-input);color:var(--tx-main);font-size:0.88rem;">
-                    <button onclick="flowerChatAsk()" id="flower-chat-btn" style="padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:800;font-size:0.88rem;cursor:pointer;">전송</button>
-                </div>
-            </div>
         </div>
         <div id="view-apiary-settings" class="view-group" style="padding-bottom: 140px;">
             <h2 class="text-2xl font-black mb-4 text-center" style="color: var(--tx-amber);">⚙️ 설정</h2>
@@ -5055,7 +5066,6 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                         }
 
                         try {
-                            renderMonthlyWorkGuide();
                         } catch(e) {}
 
                         try {
@@ -5251,156 +5261,6 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         }
 
         // ==================== 오늘의 작업 제안 ====================
-        // ==================== 이달의 추천 작업 ====================
-        const MONTHLY_WORK_GUIDE = {
-            1: {
-                label: '1월 — 월동 관리',
-                items: [
-                    { urgent: false, text: '월동벌 보온관리 철저히 유지' },
-                    { urgent: false, text: '벌통 내 습기 제거 및 환기 조절' },
-                    { urgent: false, text: '소문 조절로 보온 유지' },
-                    { urgent: true,  text: '먹이(사양) 부족 여부 확인 및 보충' },
-                    { urgent: true,  text: '응애·부저병 방제 준비' },
-                    { urgent: false, text: '수벌 유입 차단, 도봉 방지' },
-                    { urgent: false, text: '봄 증식 준비' },
-                ]
-            },
-            2: {
-                label: '2월 — 봄 증식 준비',
-                items: [
-                    { urgent: true,  text: '봄 증식을 위한 사양(설탕물) 시작' },
-                    { urgent: true,  text: '여왕벌 산란 촉진을 위한 보온 강화' },
-                    { urgent: false, text: '꽃가루(화분) 공급 시작' },
-                    { urgent: false, text: '소비 교체 및 벌통 내부 청소' },
-                    { urgent: true,  text: '응애 방제 실시 (봄 방제 시작)' },
-                    { urgent: false, text: '빈 벌통 소독 및 정비' },
-                    { urgent: false, text: '이른 봄 밀원 개화 시기 파악' },
-                ]
-            },
-            3: {
-                label: '3월 — 봄 활동 개시',
-                items: [
-                    { urgent: true,  text: '내검 시작 (10℃ 이상 시)' },
-                    { urgent: true,  text: '여왕벌 산란 상태 확인' },
-                    { urgent: false, text: '소초광 투입 (증소 시작)' },
-                    { urgent: false, text: '화분 및 사양 공급 지속' },
-                    { urgent: true,  text: '분봉 준비 및 분봉열 관찰' },
-                    { urgent: true,  text: '응애 방제 본격 시작' },
-                    { urgent: false, text: '약한 군 합봉 검토' },
-                    { urgent: false, text: '보온재 제거 시기 결정' },
-                ]
-            },
-            4: {
-                label: '4월 — 채밀·분봉 준비',
-                items: [
-                    { urgent: true,  text: '아카시아 채밀 준비 (계상 올리기)' },
-                    { urgent: true,  text: '분봉열 적극 관찰 및 왕대 확인' },
-                    { urgent: false, text: '인공분봉 및 교미상 준비' },
-                    { urgent: true,  text: '응애 방제 - 수벌집 활용하기 (채밀 전 마무리)' },
-                    { urgent: false, text: '소문 확대 (환기)' },
-                    { urgent: false, text: '이동봉장 운영 시작' },
-                    { urgent: false, text: '내검 주기 단축 (주 1회 이상)' },
-                    { urgent: true,  text: '중순 이후 말벌 여왕벌 잡기' },
-                ]
-            },
-            5: {
-                label: '5월 — 아카시아 채밀 최성기',
-                items: [
-                    { urgent: true,  text: '아카시아꿀 채밀 (5월 최성기)' },
-                    { urgent: true,  text: '채밀 후 응애 방제 즉시 실시' },
-                    { urgent: true,  text: '분봉 방지 철저 (분봉열 제거)' },
-                    { urgent: true,  text: '말벌 여왕벌 잡기' },
-                    { urgent: false, text: '인공분봉 및 여왕벌 교체' },
-                    { urgent: false, text: '고온 대비 차광막 설치' },
-                    { urgent: false, text: '잡화꿀 준비 (아카시아 이후 밀원 파악)' },
-                    { urgent: false, text: '도봉 방지 강화' },
-                ]
-            },
-            6: {
-                label: '6월 — 여왕벌 교체·방제',
-                items: [
-                    { urgent: false, text: '잡화꿀 채밀 (밤꿀·싸리꿀 등)' },
-                    { urgent: true,  text: '여왕벌 교체 (신왕 교체 적기)' },
-                    { urgent: true,  text: '응애 방제 본격 실시' },
-                    { urgent: false, text: '유럽부저병·노제마 예방 점검' },
-                    { urgent: false, text: '소문 최대 개방 (환기·고온 대비)' },
-                    { urgent: false, text: '차광막 설치 및 급수 공급' },
-                    { urgent: false, text: '도봉 방지 강화' },
-                ]
-            },
-            7: {
-                label: '7월 — 고온기·말벌 방제',
-                items: [
-                    { urgent: true,  text: '차광막·그늘 철저히 유지, 급수 공급' },
-                    { urgent: true,  text: '응애 방제 집중 실시 (고온기 번식 왕성)' },
-                    { urgent: true,  text: '말벌 트랩 설치 및 소문 망 설치' },
-                    { urgent: false, text: '싸리꿀·잡화꿀 채밀' },
-                    { urgent: false, text: '밀원 부족기 사양 공급 검토' },
-                    { urgent: false, text: '소문 최대 개방 (환기 강화)' },
-                    { urgent: false, text: '군세 약한 군 합봉 검토' },
-                ]
-            },
-            8: {
-                label: '8월 — 말벌·응애 집중 방제',
-                items: [
-                    { urgent: true,  text: '말벌 트랩 집중 설치 및 직접 포획' },
-                    { urgent: true,  text: '응애 방제 집중 실시 - 개미산 사용 (8월 최성기)' },
-                    { urgent: false, text: '고온 관리 지속 (차광·환기·급수)' },
-                    { urgent: true,  text: '월동 여왕벌 확인 및 교체' },
-                    { urgent: false, text: '가을 밀원 개화 시기 파악 (메밀 등)' },
-                    { urgent: false, text: '군세 강화를 위한 사양 시작' },
-                    { urgent: false, text: '이동봉장 복귀 준비' },
-                ]
-            },
-            9: {
-                label: '9월 — 월동 군세 확보',
-                items: [
-                    { urgent: true,  text: '월동 군세 확보 (강군 만들기)' },
-                    { urgent: true,  text: '여왕벌 산란 촉진 사양 집중 공급' },
-                    { urgent: true,  text: '응애 방제 마무리 (월동 전 완료 목표)' },
-                    { urgent: true,  text: '말벌 방제 지속, 소문 축소 시작' },
-                    { urgent: false, text: '약한 군 합봉 실시' },
-                    { urgent: false, text: '이동봉장 복귀 및 보온 준비 시작' },
-                ]
-            },
-            10: {
-                label: '10월 — 월동 준비 마무리',
-                items: [
-                    { urgent: true,  text: '월동 먹이 최종 확인 및 사양 보충' },
-                    { urgent: true,  text: '소문 축소 (도봉·말벌·냉기 차단)' },
-                    { urgent: false, text: '보온재 설치 시작' },
-                    { urgent: true,  text: '응애 방제 최종 마무리' },
-                    { urgent: false, text: '수벌 제거' },
-                    { urgent: false, text: '여왕벌 산란 중단 및 먹이량 확인' },
-                    { urgent: false, text: '이동봉장 완전 복귀 및 장비 정비' },
-                ]
-            },
-            11: {
-                label: '11월 — 월동 완료',
-                items: [
-                    { urgent: true,  text: '보온재 완전 설치 (벌통 외부 포장)' },
-                    { urgent: true,  text: '소문 최소화 (쥐·냉기 침입 차단)' },
-                    { urgent: false, text: '쥐막이 설치' },
-                    { urgent: true,  text: '옥살산 응애 최종 방제 (무봉판 시기)' },
-                    { urgent: false, text: '노제마 예방약 처리' },
-                    { urgent: false, text: '내검 자제 (벌무리 안정 유지)' },
-                    { urgent: false, text: '빈 벌통·소초광 세척 및 보관' },
-                ]
-            },
-            12: {
-                label: '12월 — 월동 안정 유지',
-                items: [
-                    { urgent: false, text: '보온 상태 외부 점검 (내검 금지)' },
-                    { urgent: false, text: '소문 확인 (얼음·눈 막힘 제거)' },
-                    { urgent: false, text: '쥐 침입 여부 확인' },
-                    { urgent: true,  text: '옥살산 응애 방제 (무봉판 최적 시기)' },
-                    { urgent: false, text: '먹이 부족 시 응급 사양만 실시' },
-                    { urgent: false, text: '장비 정비 및 내년 밀원 답사 계획 수립' },
-                    { urgent: false, text: '종봉 구입 계획 및 교육 참석' },
-                ]
-            }
-        };
-
         // ==================== 주간 날씨 카드 ====================
         const WEEKLY_WEATHER_CACHE_KEY = 'weeklyWeatherCache_v2';
 
@@ -5590,60 +5450,6 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             });
         }
 
-        function renderMonthlyWorkGuide() {
-            const el = document.getElementById('monthly-work-guide');
-            if (!el) return;
-
-            // 오늘 하루 닫기 체크
-            const today = new Date().toDateString();
-            if (localStorage.getItem('monthlyWorkClosed') === today) {
-                el.innerHTML = '';
-                return;
-            }
-
-            const month = new Date().getMonth() + 1;
-            const guide = MONTHLY_WORK_GUIDE[month];
-            if (!guide) return;
-
-            const urgentItems = guide.items.filter(i => i.urgent);
-            const normalItems = guide.items.filter(i => !i.urgent);
-
-            let html = `
-                <div style="background:linear-gradient(135deg,rgba(255,179,0,0.08) 0%,rgba(255,143,0,0.05) 100%);border:1px solid rgba(255,179,0,0.2);border-radius:16px;padding:14px 16px;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <span style="font-size:1.1rem;">📋</span>
-                            <span style="color:var(--tx-gold);font-weight:800;font-size:0.92rem;">${guide.label}</span>
-                        </div>
-                        <button onclick="closeMonthlyWorkGuide()" style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.5);border-radius:8px;color:#60a5fa;font-size:0.75rem;font-weight:700;padding:4px 10px;cursor:pointer;">오늘 그만보기 ✕</button>
-                    </div>`;
-
-            if (urgentItems.length > 0) {
-                html += `<div style="font-size:0.75rem;font-weight:900;color:#f87171;margin-bottom:5px;letter-spacing:0.3px;">🚨 이달 중점 작업</div>`;
-                html += urgentItems.map(i => `
-                    <div style="display:flex;align-items:flex-start;gap:7px;padding:6px 8px;background:rgba(248,113,113,0.07);border-left:3px solid #f87171;border-radius:8px;margin-bottom:5px;">
-                        <span style="font-size:0.82rem;color:var(--tx-main);font-weight:600;line-height:1.5;">${i.text}</span>
-                    </div>`).join('');
-            }
-
-            if (normalItems.length > 0) {
-                html += `<div style="font-size:0.75rem;font-weight:900;color:rgba(255,179,0,0.6);margin:8px 0 5px;letter-spacing:0.3px;">📌 일반 관리</div>`;
-                html += normalItems.map(i => `
-                    <div style="display:flex;align-items:flex-start;gap:7px;padding:5px 8px;background:rgba(255,179,0,0.05);border-left:3px solid rgba(255,179,0,0.3);border-radius:8px;margin-bottom:5px;">
-                        <span style="font-size:0.82rem;color:var(--tx-sub);line-height:1.5;">${i.text}</span>
-                    </div>`).join('');
-            }
-
-            html += `</div>`;
-            el.innerHTML = html;
-        }
-
-        function closeMonthlyWorkGuide() {
-            const today = new Date().toDateString();
-            localStorage.setItem('monthlyWorkClosed', today);
-            const el = document.getElementById('monthly-work-guide');
-            if (el) el.innerHTML = '';
-        }
 
         // ==================== 달력 미리보기 모달 ====================
         let previewModalDate = null;
@@ -7535,10 +7341,12 @@ function getUserInfo(){
             {keys:["복숭아나무","복숭아","복사"], name:'복숭아나무', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["버드나무","버들"], name:'버드나무', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["황매화"], name:'황매화', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'큰나무'},
-            {keys:["단풍나무","단풍"], name:'단풍나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["개살구나무","개살구"], name:'개살구나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
+            {keys:["단풍나무","단풍"], name:'단풍나무', nectar:'풍부', pollen:'보통', blooming:'3~4월', honey:'잡화꿀', val:4, tips:'봄철 우수 밀원. 큰나무'},
+
+            {keys:["복자기"], name:'복자기', nectar:'보통', pollen:'보통', blooming:'4~5월', honey:'잡화꿀', val:3, tips:'단풍나무류. 화밀 양호. 큰나무'},
+            {keys:["네군도단풍","네군도"], name:'네군도단풍', nectar:'풍부', pollen:'풍부', blooming:'3~4월', honey:'잡화꿀', val:4, tips:'외래종. 도심 가로수 밀원. 이른 봄 꿀·화분 풍부. 큰나무'},            {keys:["개살구나무","개살구"], name:'개살구나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["보리수나무(토종)","보리수","뜰보리수"], name:'보리수나무', nectar:'풍부', pollen:'적음', blooming:'4월', honey:'보리수꿀', val:4, tips:'큰나무'},
-            {keys:["능금나무","능금"], name:'능금나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
+            {keys:["능금나무","능금"], name:'능금나무', nectar:'풍부', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:4, tips:'사과속. 봄철 우수 밀원. 큰나무'},
             {keys:["상수리나무","상수리","도토리"], name:'상수리나무', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
             {keys:["사과나무","사과"], name:'사과나무', nectar:'풍부', pollen:'적음', blooming:'4월', honey:'사과꿀', val:4, tips:'큰나무'},
             {keys:["배나무","배"], name:'배나무', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
@@ -7568,7 +7376,7 @@ function getUserInfo(){
             {keys:["다래나무","다래"], name:'다래나무', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'덩굴'},
             {keys:["층층나무","층층"], name:'층층나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["오동나무","오동"], name:'오동나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
-            {keys:["신나무"], name:'신나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
+            {keys:["신나무"], name:'신나무', nectar:'풍부', pollen:'보통', blooming:'4~5월', honey:'잡화꿀', val:4, tips:'산지 군락 형성. 봄 밀원 우수. 큰나무'},
             {keys:["팥배나무","팥배"], name:'팥배나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["인동덩굴","인동"], name:'인동덩굴', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'덩굴'},
             {keys:["함박꽃나무","함박꽃"], name:'함박꽃나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
@@ -7579,11 +7387,11 @@ function getUserInfo(){
             {keys:["찔레꽃","찔레"], name:'찔레꽃', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["산딸나무","산딸"], name:'산딸나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["가중나무","가죽나무"], name:'가중나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["광나무"], name:'광나무', nectar:'풍부', pollen:'풍부', blooming:'7~8월', honey:'잡화꿀', val:5, tips:'중교목'},
+            {keys:["광나무"], name:'광나무', nectar:'풍부', pollen:'풍부', blooming:'6~7월', honey:'잡화꿀', val:5, tips:'중교목'},
             {keys:["개오동나무","개오동"], name:'개오동나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["피나무"], name:'피나무', nectar:'풍부', pollen:'적음', blooming:'7월', honey:'피나무꿀', val:5, tips:'큰나무'},
             {keys:["쉬나무"], name:'쉬나무', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'쉬나무꿀', val:5, tips:'큰나무'},
-            {keys:["수수꽃다리","라일락"], name:'수수꽃다리(라일락)', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
+            {keys:["수수꽃다리","라일락"], name:'수수꽃다리(라일락)', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["마가목"], name:'마가목', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["조팝나무","조팝"], name:'조팝나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
             {keys:["고광나무"], name:'고광나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
@@ -7595,9 +7403,9 @@ function getUserInfo(){
             {keys:["미역줄나무"], name:'미역줄나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'덩굴'},
             {keys:["괴불나무"], name:'괴불나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'작은나무'},
             {keys:["노린재나무"], name:'노린재나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'작은나무'},
-            {keys:["등나무","등"], name:'등나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'덩굴'},
+            {keys:["등나무","등"], name:'등나무', nectar:'풍부', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:4, tips:'덩굴'},
             {keys:["모감주나무","모감주"], name:'모감주나무', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'모감주꿀', val:4, tips:'큰나무'},
-            {keys:["흰배롱나무","배롱나무"], name:'배롱나무', nectar:'보통', pollen:'풍부', blooming:'5~8월', honey:'잡화꿀', val:3, tips:'큰나무(수입종)'},
+            {keys:["흰배롱나무","배롱나무"], name:'배롱나무', nectar:'보통', pollen:'풍부', blooming:'7~9월', honey:'잡화꿀', val:3, tips:'큰나무(수입종)'},
             {keys:["음나무","엄나무"], name:'음나무', nectar:'풍부', pollen:'보통', blooming:'7~8월', honey:'잡화꿀', val:4, tips:'큰나무'},
             {keys:["두릅나무","두릅"], name:'두릅나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
             {keys:["고삼"], name:'고삼', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'여러해살이'},
@@ -7620,7 +7428,7 @@ function getUserInfo(){
             {keys:["약모밀","어성초"], name:'약모밀(어성초)', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["돌나물"], name:'돌나물', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'낙엽소교목'},
             {keys:["다래"], name:'다래', nectar:'풍부', pollen:'풍부', blooming:'6월', honey:'잡화꿀', val:5, tips:'덩굴'},
-            {keys:["광대싸리"], name:'광대싸리', nectar:'없음', pollen:'풍부', blooming:'6월', honey:null, val:2, tips:'작은나무'},
+            {keys:["광대싸리"], name:'광대싸리', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'잡화꿀', val:4, tips:'여름 우수 밀원. 꿀벌이 매우 좋아함. 작은나무'},
             {keys:["헛개나무","헛개"], name:'헛개나무', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'잡화꿀', val:4, tips:'큰나무'},
             {keys:["명석딸기"], name:'명석딸기', nectar:'보통', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:2, tips:'덩굴'},
             {keys:["예덕나무","예덕"], name:'예덕나무', nectar:'보통', pollen:'없음', blooming:'6월', honey:'잡화꿀', val:2, tips:'큰나무(남부)'},
@@ -7688,18 +7496,18 @@ function getUserInfo(){
             {keys:["맥문동"], name:'맥문동', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["쐐기풀"], name:'쐐기풀', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["팥"], name:'팥', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'한해살이'},
-            {keys:["엉겅퀴"], name:'엉겅퀴', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:2, tips:'여러해살이'},
-            {keys:["박하"], name:'박하', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:2, tips:'한해살이'},
+            {keys:["엉겅퀴"], name:'엉겅퀴', nectar:'보통', pollen:'적음', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'여러해살이'},
+            {keys:["박하"], name:'박하', nectar:'보통', pollen:'적음', blooming:'7~8월', honey:'박하꿀', val:3, tips:'한해살이'},
             {keys:["과꽃"], name:'과꽃', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'한해살이'},
-            {keys:["층꽃풀","층꽃나무","층꽃"], name:'층꽃풀', nectar:'보통', pollen:'보통', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'여러해살이(남부)'},
+            {keys:["층꽃풀","층꽃나무","층꽃"], name:'층꽃풀', nectar:'보통', pollen:'보통', blooming:'8~9월', honey:'잡화꿀', val:3, tips:'여러해살이(남부)'},
             {keys:["전동싸리"], name:'전동싸리', nectar:'없음', pollen:'없음', blooming:'7~9월', honey:null, val:1, tips:'2년살이'},
-            {keys:["더덕"], name:'더덕', nectar:'보통', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:3, tips:'여러해살이(덩굴)'},
+            {keys:["더덕"], name:'더덕', nectar:'적음', pollen:'적음', blooming:'8~9월', honey:'잡화꿀', val:2, tips:'여러해살이(덩굴)'},
             {keys:["옥잠화"], name:'옥잠화', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["원추리"], name:'원추리', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["비비추"], name:'비비추', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["도깨비바늘"], name:'도깨비바늘', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["부추"], name:'부추', nectar:'적음', pollen:'적음', blooming:'8~9월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["칡자화","칡"], name:'칡', nectar:'보통', pollen:'풍부', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'큰나무'},
+            {keys:["칡자화","칡"], name:'칡', nectar:'보통', pollen:'풍부', blooming:'8~9월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["연꽃"], name:'연꽃', nectar:'보통', pollen:'보통', blooming:'8월', honey:'잡화꿀', val:3, tips:'여러해살이(수초)'},
             {keys:["참싸리"], name:'참싸리', nectar:'보통', pollen:'보통', blooming:'8~9월', honey:'싸리꿀', val:3, tips:'작은나무'},
             {keys:["붉나무"], name:'붉나무', nectar:'풍부', pollen:'보통', blooming:'8~9월', honey:'잡화꿀', val:5, tips:'큰나무'},
@@ -7737,12 +7545,11 @@ function getUserInfo(){
             {keys:["물푸레나무","물푸레"], name:'물푸레나무', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'작은나무'},
             {keys:["모과나무","모과"], name:'모과나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["능소화"], name:'능소화', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'덩굴'},
-            {keys:["자운영"], name:'자운영', nectar:'풍부', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:5, tips:'한해살이'},
+            {keys:["자운영"], name:'자운영', nectar:'풍부', pollen:'적음', blooming:'3~5월', honey:'잡화꿀', val:5, tips:'한해살이'},
             {keys:["애기똥풀"], name:'애기똥풀', nectar:'적음', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:2, tips:'한해살이'},
-            {keys:["오미자"], name:'오미자', nectar:'없음', pollen:'없음', blooming:'5월', honey:null, val:1, tips:'덩굴'},
-            {keys:["딱총나무"], name:'딱총나무', nectar:'없음', pollen:'없음', blooming:'5월', honey:null, val:1, tips:'작은나무'},
+            {keys:["딱총나무"], name:'딱총나무', nectar:'적음', pollen:'보통', blooming:'5~6월', honey:null, val:2, tips:'보조 밀원. 화분 공급원. 아까시~밤나무 공백기 벌 활동 보조. 작은나무'},
             {keys:["무","배추"], name:'무·배추', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:4, tips:'한해살이'},
-            {keys:["고로쇠나무","고로쇠"], name:'고로쇠나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
+            {keys:["고로쇠나무","고로쇠"], name:'고로쇠나무', nectar:'풍부', pollen:'보통', blooming:'3~4월', honey:'잡화꿀', val:4, tips:'이른 봄 밀원. 수액 채취로도 유명. 큰나무'},
             {keys:["타임","다임","thyme"], name:'타임(다임)', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'허브식물'},
             {keys:["베르가못"], name:'베르가못', nectar:'보통', pollen:'풍부', blooming:'5~7월', honey:'잡화꿀', val:4, tips:'큰나무'},
             {keys:["이나무"], name:'이나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
@@ -7887,7 +7694,250 @@ function getUserInfo(){
                 + '<span style="color:#fbbf24;">같은 계열 반복 사용 시 내성 발생 위험이 높습니다. 다른 계열 약제를 검토하세요.</span>';
         }
 
-        // ===== 봄 세력 증가 플래너 =====
+        // ===== 24절기 양봉 관리 =====
+        var JEOLGI_DATA = [
+          { name:'입춘~우수', period:'2월 초~중순', icon:'🌱', color:'#86efac',
+            summary:'봄벌 깨우기',
+            status:'여왕 산란 재개, 월동벌 수명 감소 시작, 봉세 최약기',
+            tasks:[
+              '기온 7°C 이상 지속 시 차광망 제거',
+              '숙성 화분떡 급여 (강군 3kg 기준)',
+              '봉지사양으로 아사 예방 (설탕 15kg / 물 20L)',
+              '소문 급수기 설치',
+            ],
+            caution:'내검 최소화 — 밀폐 시 습기 → 질병 원인',
+            tip:'꿀벌 육아열은 34~35°C 유지 필수. 이 시기 냉기 유입이 봉아 폐사 원인 1위. 소량 반복 급이가 과잉 1회보다 증식에 유리.',
+            months:[2] },
+
+          { name:'경칩~춘분', period:'3월', icon:'🐸', color:'#fbbf24',
+            summary:'산란 촉진·봉세 형성기',
+            status:'산란 급증, 육아권 형성, 봉세 회복 시작, 식량 소비 증가',
+            tasks:[
+              '첫 내검 — 식량·화분·산란·봉세 종합 확인',
+              '화분떡 소모량으로 산란 활성도 간접 파악',
+              '과밀군 봉세 고루기, 약세군 합봉',
+              '강군 계상 올리기',
+              '산란촉진 영양제 + 자극급이로 사각산란 유도',
+            ],
+            caution:'강군 과보온이 분봉열 유발 — 계상 설치로 공간 확보',
+            tip:'사각산란 유도가 강군의 조건.',
+            months:[3] },
+
+          { name:'청명~곡우', period:'4월', icon:'🌺', color:'#f59e0b',
+            summary:'분봉열 관리·격왕 설치',
+            status:'봉세 급증, 분봉 준비, 밀원 개화 시작 (벚꽃·유채)',
+            tasks:[
+              '왕대 점검 5~7일 주기 시작',
+              '벚꽃 개화 시 보온재 제거',
+              '과밀군 계상 올리기, 소비·소초광 증소',
+              '4월 중순 아까시 신왕 양성 개시',
+              '유밀 2주 전 격왕판 설치',
+              '신소비에서 벚꽃 채밀',
+            ],
+            caution:'왕대 관리 소홀 = 분봉 = 수확량 반감',
+            tip:'아까시 개화는 벚꽃 개화 후 약 20~25일 기준 역산.',
+            months:[4] },
+
+          { name:'입하~소만', period:'5월', icon:'🍯', color:'#f97316',
+            summary:'아까시 채밀 최성기',
+            status:'봉세 연중 최대, 채밀 시작, 분봉 최성기',
+            tasks:[
+              '외역봉 채밀주력군 집중 편성',
+              '유충소비 → 교미상 이동',
+              '저밀장 매일 숙성군 계상으로 이동',
+              '계상 왕대 철저 점검',
+              '우수 봉군 종봉 선발 → 자연왕대 유도',
+              '신왕 교체 최종 마감: 6월 15일',
+            ],
+            caution:'이동양봉 시 증소 보류',
+            tip:'아까시 개화기 자연왕 교미 성적이 연중 최우수. 꿀 만드는 젊은 벌이 함께 가도록 벌을 털지 않아도 됨.',
+            months:[5] },
+
+          { name:'망종~하지', period:'6월', icon:'🌿', color:'#34d399',
+            summary:'잡화꿀·밤꿀 채밀',
+            status:'채밀 후 봉세 감소, 분봉 잔존 가능, 응애 증가 시작',
+            tasks:[
+              '야생화꿀 생산 — 숙성군 저밀장 관리',
+              '밤꿀·헛개꿀 채밀',
+              '채밀 시 도봉 방지 — 소문 폐쇄·환기창 개방',
+              '교미상 편성, 여름 산란군 유지',
+              
+              '개미산 방제 (기온 30°C 미만 이른 아침 처리)',
+            ],
+            caution:'⚠️ 개미산·티몰 30°C 이상 폭염 시 급격 기화 → 봉군 피해. 반드시 새벽 소량 처리',
+            tip:'6월부터 응애 밀도 급증 시작. 방치 시 9월 이미 손쓰기 어려운 밀도 도달.',
+            months:[6] },
+
+          { name:'소서~대서', period:'7월', icon:'☀️', color:'#fb923c',
+            summary:'혹서기 하계 단순 관리',
+            status:'고온 스트레스, 산란 감소, 밀원 공백 시작',
+            tasks:[
+              '소문 완전 개방, 급수원 유지, 그늘 만들어 주기',
+              '밤꿀 최종 채밀 후 격왕판 제거',
+              '화분떡 + 백설탕 급이 — 7~8월 내검 최소화 가능',
+              '개미산 방제 — ⚠️ 30°C 이상 시 이른 새벽 소량 처리 엄수',
+              '도봉 경계',
+            ],
+            caution:'혹서기 개미산·티몰 과다 기화 → 여왕벌 피해 및 봉군 붕괴 위험',
+            tip:'하계는 간섭 최소화가 원칙. 응애 번식 주기 10일 — 여름 방치가 가을 붕괴 원인.',
+            months:[7] },
+
+          { name:'입추~처서', period:'8월', icon:'🍂', color:'#a78bfa',
+            summary:'가을벌 육성 전환·응애 집중 방제',
+            status:'가을벌 생산 시작, 응애 밀도 연중 최고, 장수말벌 출현',
+            tasks:[
+              '응애 집중 방제 (개미산 기준)',
+              '장수말벌 방제 — 소문 축소, 포획 트랩 설치',
+              '가을신왕 양성 개시 (이충, 무왕군 활용)',
+              '10일 후 교미상 편성',
+              '계상 공간 확보 — 착봉 밀착이 산란 활성 조건',
+              '월동 식량 장려급이 조기 개시',
+            ],
+            caution:'',
+            tip:'입추 이후 산란봉아가 월동벌. 월동벌 수명 6개월 이상 ',
+            months:[8] },
+
+          { name:'백로~추분', period:'9월', icon:'🌕', color:'#fbbf24',
+            summary:'월동벌 최대 확보·월동급이',
+            status:'월동벌 생산, 봉세 집중 관리 필요',
+            tasks:[
+              '소비 축소 — 밀집 관리',
+              '약세군 단상 관리 및 합봉',
+              '응애 최종 방제',
+              '월동급이: 설탕 15kg + 물 5되 + 소금 1줌 (10월 5일까지 완료)',
+              '소비 7매 기준 4매 봉개, 3매 반 이상 저밀',
+            ],
+            caution:'이 시기 관리 실패가 곧 이듬해 봉군 손실',
+            tip:'백로 산란봉아가 봉군 월동 성패 결정. 추분 이후 메밀·바이텍스·금밀초 밀원으로 월동식량 자연 보충 가능. 설탕물 2:1 브릭스 약 67° — 벌의 농축 부담 최소화.',
+            months:[9] },
+
+          { name:'한로~상강', period:'10월', icon:'🍁', color:'#f87171',
+            summary:'산란소비 정리·포장 준비',
+            status:'산란 감소, 벌 활동 축소',
+            tasks:[
+              '월동급이 완료 후 개미산 처리',
+              '산란왕 왕롱 감금, 유충소비 제거',
+              '장수말벌 경계 — 외역봉 소실로 봉세 급격 약화 가능',
+            ],
+            caution:'장수말벌 방심 금지',
+            tip:'한로~상강이 마지막 응애 방제 기회.',
+            months:[10] },
+
+          { name:'입동~소설', period:'11월', icon:'🏠', color:'#818cf8',
+            summary:'월동 포장 완료',
+            status:'월동 봉구 형성, 활동 급감',
+            tasks:[
+              '봉개소비 전무 확인 후 월동포장 (보온박스 최효)',
+              '포장 시간: 오전 8~11시 (오후 도봉 위험)',
+              '옥살산 훈증·흘림 또는 비넨볼 처리 (필수)',
+              '소문 5~6cm 유지',
+              '쥐약 설치',
+            ],
+            caution:'',
+            tip:'봉구 형성 온도 약 8°C 이하 — 이때부터 벌들이 뭉쳐 열 생산 시작. 겉포장 완료 후 동계 봉장 방문 불필요.',
+            months:[11] },
+
+          { name:'대설~대한', period:'12월~1월', icon:'❄️', color:'#93c5fd',
+            summary:'월동 완료·무간섭',
+            status:'산란 거의 없음, 에너지 소비 최소, 봉구로 월동 유지',
+            tasks:[
+              '소문 막힘 여부 외부 육안 확인만',
+              '겉포장 풍해 고정 재확인',
+              '쥐 피해 예방 재점검',
+              '이듬해 봉군 구성·밀원 계획 수립',
+              '절대 내검 금지',
+            ],
+            caution:'충격·소음 엄금 — 봉구 붕괴 시 동사 위험',
+            tip:'월동 중 최선은 무간섭. 봉구 내부 온도 약 20~30°C 자체 유지 — 건드리면 열 균형 붕괴.',
+            months:[12, 1] },
+        ];
+
+        function getCurrentJeolgi() {
+            var now = new Date();
+            var m = now.getMonth() + 1;
+            // 현재 구간 찾기
+            var current = JEOLGI_DATA[JEOLGI_DATA.length-1];
+            var nextIdx = 0;
+            for(var i=0; i<JEOLGI_DATA.length; i++) {
+                var months = JEOLGI_DATA[i].months;
+                if(months.indexOf(m) !== -1) {
+                    current = JEOLGI_DATA[i];
+                    nextIdx = (i+1) % JEOLGI_DATA.length;
+                    break;
+                }
+            }
+            var next = JEOLGI_DATA[nextIdx];
+            // 다음 구간 시작 월 첫날까지 남은 일수
+            var nextMonth = next.months[0];
+            var nextYear = now.getFullYear();
+            if(nextMonth <= m) nextYear++;
+            var nextDate = new Date(nextYear, nextMonth-1, 1);
+            var daysLeft = Math.round((nextDate - now) / 86400000);
+            return {current: current, next: next, daysLeft: daysLeft};
+        }
+
+        var _jeolgiExpanded = false;
+
+        function renderJeolgiCard() {
+            var el = document.getElementById('jeolgi-card');
+            var nextEl = document.getElementById('jeolgi-next');
+            if(!el) return;
+
+            var info = getCurrentJeolgi();
+            var j = info.current;
+
+            if(nextEl) nextEl.textContent = '다음: ' + info.next.name + ' (' + info.daysLeft + '일 후)';
+
+            function renderItem(item, isActive) {
+                var bg = isActive ? 'rgba(255,179,0,0.04)' : 'var(--bg-card)';
+                var border = isActive ? '1px solid ' + item.color + '44' : '1px solid rgba(255,179,0,0.12)';
+                return '<div style="background:'+bg+';border:'+border+';border-radius:14px;overflow:hidden;margin-bottom:8px;">'
+                    + '<div style="background:linear-gradient(135deg,'+item.color+'22,'+item.color+'11);padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.05);">'
+                    +   '<div style="display:flex;align-items:center;gap:8px;">'
+                    +     '<span style="font-size:1.3rem;">'+item.icon+'</span>'
+                    +     '<div style="flex:1;">'
+                    +       '<div style="display:flex;align-items:center;gap:6px;">'
+                    +         '<span style="font-weight:900;font-size:0.95rem;color:'+item.color+';">'+item.name+'</span>'
+                    +         '<span style="font-size:0.72rem;color:var(--tx-muted);">'+item.period+'</span>'
+                    +         (isActive ? '<span style="font-size:0.68rem;background:'+item.color+'33;color:'+item.color+';border-radius:6px;padding:1px 7px;font-weight:800;">현재</span>' : '')
+                    +       '</div>'
+                    +       '<div style="font-size:0.78rem;color:var(--tx-sub);margin-top:1px;">'+item.summary+'</div>'
+                    +     '</div>'
+                    +   '</div>'
+                    + '</div>'
+                    + '<div style="padding:10px 14px;">'
+                    +   '<div style="font-size:0.72rem;color:var(--tx-muted);font-weight:700;margin-bottom:5px;">🐝 벌 상태</div>'
+                    +   '<div style="font-size:0.8rem;color:var(--tx-sub);margin-bottom:8px;">'+item.status+'</div>'
+                    +   '<div style="font-size:0.72rem;color:var(--tx-muted);font-weight:700;margin-bottom:5px;">📋 관리</div>'
+                    +   item.tasks.map(function(t){
+                          return '<div style="display:flex;gap:7px;align-items:flex-start;margin-bottom:5px;">'
+                              + '<span style="color:'+item.color+';font-size:0.72rem;flex-shrink:0;margin-top:2px;">▶</span>'
+                              + '<span style="font-size:0.82rem;color:var(--tx-main);line-height:1.5;">'+t+'</span>'
+                              + '</div>';
+                        }).join('')
+                    +   (item.caution ? '<div style="margin-top:6px;padding:6px 10px;background:rgba(239,68,68,0.08);border-radius:8px;border-left:3px solid #f87171;">'
+                        + '<span style="font-size:0.77rem;color:#f87171;">⚠️ '+item.caution+'</span></div>' : '')
+                    +   '<div style="margin-top:8px;padding:7px 10px;background:rgba(255,179,0,0.06);border-radius:8px;border-left:3px solid '+item.color+';">'
+                    +     '<span style="font-size:0.77rem;color:var(--tx-amber);">💡 '+item.tip+'</span>'
+                    +   '</div>'
+                    + '</div>'
+                    + '</div>';
+            }
+
+            var html = renderItem(j, true);
+            html += '<button onclick="_jeolgiExpanded=!_jeolgiExpanded;renderJeolgiCard();" '
+                + 'style="width:100%;padding:9px;border-radius:10px;border:1px solid rgba(255,179,0,0.2);background:transparent;color:var(--tx-muted);font-size:0.8rem;font-weight:700;cursor:pointer;margin-bottom:4px;">'
+                + (_jeolgiExpanded ? '▲ 접기' : '📅 전체 절기 보기 ▼')
+                + '</button>';
+
+            if(_jeolgiExpanded) {
+                html += JEOLGI_DATA.filter(function(item){ return item.name !== j.name; })
+                    .map(function(item){ return renderItem(item, false); }).join('');
+            }
+
+            el.innerHTML = html;
+        }
+
         function renderSpringPlanner() {
             var el = document.getElementById('spring-planner-result');
             var dateEl = document.getElementById('spring-target-date');
@@ -7895,96 +7945,141 @@ function getUserInfo(){
 
             var target = new Date(dateEl.value);
             var today  = new Date();
-            var daysLeft = Math.round((target - today) / 86400000);
+            var targetMonth = target.getMonth() + 1; // 목표 월
+            var targetYear  = target.getFullYear();
 
-            if(daysLeft < 0) {
-                el.innerHTML='<div style="color:#f87171;font-size:0.85rem;text-align:center;">목표일이 오늘보다 이전입니다.</div>';
-                el.style.display='block'; return;
-            }
-
-            // 주차별 할 일 (목표일 기준 역산)
-            var tasks = [
-                {week:-8, icon:'🍯', title:'사양 시작', desc:'설탕물 1:1 자극 사양 시작. 산란 촉진.'},
-                {week:-7, icon:'🔬', title:'응애 정밀 검사', desc:'알코올 세척법으로 응애율 확인. 필요시 방제.'},
-                {week:-6, icon:'📦', title:'소비 점검·소독', desc:'곰팡이 소비 교체, 소초광 준비.'},
-                {week:-5, icon:'🌱', title:'증소 (소문 확대)', desc:'벌 수가 늘면 소문 확대. 증소 준비.'},
-                {week:-4, icon:'👑', title:'여왕벌 산란 확인', desc:'산란권 확인. 노왕이면 왕 교체 검토.'},
-                {week:-3, icon:'📐', title:'계상 준비', desc:'계상통 세척·소독. 필요 자재 점검.'},
-                {week:-2, icon:'🪣', title:'계상 올리기', desc:'벌이 80% 이상 차면 계상 투입.'},
-                {week:-1, icon:'🍃', title:'개화 직전 최종 점검', desc:'채밀 도구 세척. 채밀 일정 확정.'},
-                {week:0,  icon:'🌸', title:'목표일 (개화·채밀)', desc:'아까시 개화 시작. 채밀 대기.'},
+            // 목표일 기준 월별 플랜 (고정 월 기반)
+            var monthlyTasks = [
+                {month:1, icon:'❄️', title:'1월 — 월동 관리', desc:'보온재 점검. 먹이 부족 여부 확인. 소문 좁게 유지. 벌통 흔들기 금지.'},
+                {month:2, icon:'🌡️', title:'2월 — 월동 해제 준비', desc:'기온 5℃↑ 확인. 환기 시작. 보온 서서히 제거. 첫 내검 준비.'},
+                {month:3, icon:'🍯', title:'3월 — 사양·증소 시작', desc:'자극 사양(설탕물 1:1) 시작. 응애 정밀 검사. 소비 점검·소독. 벌세력에 따라 3월 말부터 계상 올리기.'},
+                {month:4, icon:'📦', title:'4월 — 세력 증강', desc:'증소(소문 확대). 소초광 투입. 분봉 징후 점검. 왕대 확인 및 제거. 계상 준비 완료.'},
+                {month:5, icon:'🌸', title:'5월 — 아까시 채밀', desc:'아까시 개화 시작. 계상 투입 완료. 채밀 도구 점검. 개화 직후 2~3일이 최적 채밀 타이밍.'},
+                {month:6, icon:'☀️', title:'6월 — 밤꿀·여름 관리', desc:'밤나무·대추나무 개화. 환기 강화. 분봉 마무리. 도봉 주의. 여름 사양 여부 결정.'},
+                {month:7, icon:'🌿', title:'7월 — 여름 밀원', desc:'싸리·피나무·쉬나무 개화. 무더위 차광. 물 공급 확인. 도봉 주의. 수벌 방출 확인.'},
+                {month:8, icon:'🌻', title:'8월 — 가을 벌 육성 시작', desc:'해바라기·붉나무·배초향. 가을 여왕벌 교체 검토. 응애 방제 집중. 가을 벌 육성 시작.'},
+                {month:9, icon:'🍂', title:'9월 — 가을 채밀·월동 준비', desc:'메밀·들깨·꽃향유. 추가 채밀. 월동 먹이 점검. 보온재 준비. 응애 마지막 방제.'},
+                {month:10, icon:'🍁', title:'10월 — 월동 준비 완료', desc:'월동 먹이 충분히 저장 확인(15~20kg). 소문 좁히기. 보온재 투입. 내검 최소화.'},
+                {month:11, icon:'🧣', title:'11월 — 월동 돌입', desc:'보온 완료. 소문 완전히 좁히기. 이후 봄까지 내검 금지. 외부 충격·소음 차단.'},
+                {month:12, icon:'❄️', title:'12월 — 완전 월동', desc:'조용한 장소 유지. 먹이 부족 시 응급 사양 고려. 설치류 침입 주의.'},
             ];
 
-            var html = tasks.map(function(t) {
-                var taskDate = new Date(target);
-                taskDate.setDate(target.getDate() + t.week*7);
-                var diff = Math.round((taskDate - today) / 86400000);
-                var isPast   = diff < 0;
-                var isToday  = diff === 0;
-                var isSoon   = diff >= 0 && diff <= 7;
-                var dateStr  = (taskDate.getMonth()+1)+'/'+(taskDate.getDate());
+            var todayMonth = today.getMonth() + 1;
 
-                var bg    = isPast ? 'rgba(100,100,100,0.1)' : isSoon ? 'rgba(251,191,36,0.12)' : 'var(--bg-input)';
-                var alpha = isPast ? '0.45' : '1';
-                var badge = isPast ? '<span style="font-size:0.65rem;background:rgba(100,100,100,0.3);color:var(--tx-muted);border-radius:6px;padding:1px 6px;">완료</span>'
-                          : isToday ? '<span style="font-size:0.65rem;background:rgba(74,222,128,0.25);color:#4ade80;border-radius:6px;padding:1px 6px;">오늘</span>'
-                          : isSoon  ? '<span style="font-size:0.65rem;background:rgba(251,191,36,0.25);color:#fbbf24;border-radius:6px;padding:1px 6px;">D-'+diff+'</span>'
-                          : '<span style="font-size:0.65rem;color:var(--tx-muted);">D-'+diff+'</span>';
+            var html = monthlyTasks.map(function(t) {
+                var isCurrentMonth = t.month === todayMonth;
+                var isPast = t.month < todayMonth || (t.month === todayMonth && today.getDate() > 25);
+                var isTarget = t.month === targetMonth;
 
-                return '<div style="display:flex;gap:10px;align-items:flex-start;background:'+bg+';border-radius:10px;padding:10px;opacity:'+alpha+';">'
-                    + '<div style="font-size:1.4rem;flex-shrink:0;line-height:1.2;">'+t.icon+'</div>'
+                var bg = isCurrentMonth ? 'rgba(251,191,36,0.12)'
+                       : isPast ? 'rgba(100,100,100,0.07)'
+                       : 'var(--bg-input)';
+                var alpha = isPast && !isCurrentMonth ? '0.5' : '1';
+
+                var badges = '';
+                if(isCurrentMonth) badges += '<span style="font-size:0.65rem;background:rgba(251,191,36,0.3);color:#fbbf24;border-radius:6px;padding:1px 7px;font-weight:800;">이번달</span>';
+                if(isTarget)       badges += '<span style="font-size:0.65rem;background:rgba(255,100,100,0.25);color:#f87171;border-radius:6px;padding:1px 7px;margin-left:3px;">목표</span>';
+                if(isPast && !isCurrentMonth) badges += '<span style="font-size:0.65rem;background:rgba(100,100,100,0.2);color:var(--tx-muted);border-radius:6px;padding:1px 7px;">완료</span>';
+
+                return '<div style="display:flex;gap:10px;align-items:flex-start;background:'+bg+';border-radius:12px;padding:11px 12px;opacity:'+alpha+';'+(isCurrentMonth?'border:1px solid rgba(251,191,36,0.3);':'border:1px solid transparent;')+'">'
+                    + '<div style="font-size:1.5rem;flex-shrink:0;line-height:1.2;">'+t.icon+'</div>'
                     + '<div style="flex:1;">'
-                    + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">'
+                    + '<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:3px;">'
                     + '<span style="font-weight:800;font-size:0.88rem;color:var(--tx-main);">'+t.title+'</span>'
-                    + badge
+                    + badges
                     + '</div>'
-                    + '<div style="font-size:0.75rem;color:var(--tx-muted);">'+dateStr+' &nbsp;'+t.desc+'</div>'
+                    + '<div style="font-size:0.75rem;color:var(--tx-muted);line-height:1.6;">'+t.desc+'</div>'
                     + '</div>'
                     + '</div>';
             }).join('');
 
             el.innerHTML = html;
-            el.style.display='block';
+            el.style.display = 'flex';
+            el.style.flexDirection = 'column';
+            el.style.gap = '6px';
         }
 
 
+        var _homeNectarTab = 'nectar'; // 'nectar' or 'pollen'
+
+        function switchHomeNectarTab(tab) {
+            _homeNectarTab = tab;
+            var nt = document.getElementById('home-tab-nectar');
+            var pt = document.getElementById('home-tab-pollen');
+            if(nt && pt) {
+                nt.style.background  = tab==='nectar' ? 'rgba(255,179,0,0.15)' : 'transparent';
+                nt.style.borderColor = tab==='nectar' ? 'rgba(255,179,0,0.5)'  : 'rgba(255,255,255,0.1)';
+                nt.style.color       = tab==='nectar' ? 'var(--tx-amber)'       : 'var(--tx-muted)';
+                pt.style.background  = tab==='pollen' ? 'rgba(74,222,128,0.12)' : 'transparent';
+                pt.style.borderColor = tab==='pollen' ? 'rgba(74,222,128,0.4)'  : 'rgba(255,255,255,0.1)';
+                pt.style.color       = tab==='pollen' ? '#4ade80'                : 'var(--tx-muted)';
+            }
+            renderHomeNectarList();
+        }
+
         function renderHomeNectar() {
             var now = new Date();
-            var m = now.getMonth() + 1; // 1~12
+            var m = now.getMonth() + 1;
             var monthNames = ['','1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-            document.getElementById('home-nectar-month').textContent = monthNames[m] + ' 개화 밀원';
+            document.getElementById('home-nectar-month').textContent = monthNames[m];
 
-            // 봄 세력 플래너 기본값: 올해 5월 10일 (아까시 평균 개화)
-            var dateEl = document.getElementById('spring-target-date');
-            if(dateEl && !dateEl.value) {
-                dateEl.value = now.getFullYear() + '-05-10';
-                renderSpringPlanner();
+            // 절기별 관리 카드 렌더링
+            renderJeolgiCard();
+            // FAQ 렌더링
+            if(document.getElementById('faq-container') && !document.getElementById('faq-container').innerHTML) {
+                renderFAQ();
+            }
+            switchHomeNectarTab(_homeNectarTab);
+        }
+
+        function renderHomeNectarList() {
+            var now = new Date();
+            var m = now.getMonth() + 1;
+            var all = getMonthNectarList(m);
+            var el = document.getElementById('home-nectar-list');
+            if(!el) return;
+
+            var list;
+            if(_homeNectarTab === 'nectar') {
+                // 꿀 밀원: nectar 풍부·보통 우선, val 높은 순, 최대 6개
+                list = all.filter(function(p){ return p.nectar==='풍부' || p.nectar==='보통'; });
+                list.sort(function(a,b){
+                    var na = a.nectar==='풍부'?2:1;
+                    var nb = b.nectar==='풍부'?2:1;
+                    return nb-na || b.val-a.val;
+                });
+                list = list.slice(0,6);
+            } else {
+                // 화분원: pollen 풍부·보통 우선, nectar 없음/적음 포함, val 순
+                list = all.filter(function(p){ return p.pollen==='풍부' || p.pollen==='보통'; });
+                list.sort(function(a,b){
+                    var pa = a.pollen==='풍부'?2:1;
+                    var pb = b.pollen==='풍부'?2:1;
+                    return pb-pa || b.val-a.val;
+                });
+                list = list.slice(0,6);
             }
 
-            var list = getMonthNectarList(m);
-            // val 높은 순, 최대 6개
-            list.sort(function(a,b){return b.val - a.val;});
-            list = list.slice(0,6);
-
-            var el = document.getElementById('home-nectar-list');
             if(!list.length) {
-                el.innerHTML = '<div style="color:var(--tx-muted);font-size:0.85rem;text-align:center;padding:10px;">이달 밀원 데이터가 없습니다.</div>';
+                el.innerHTML = '<div style="color:var(--tx-muted);font-size:0.85rem;text-align:center;padding:10px;">이달 데이터가 없습니다.</div>';
                 return;
             }
+
             el.innerHTML = list.map(function(p) {
-                var stars = '';
-                for(var i=0;i<5;i++) stars += i<p.val ? '⭐' : '☆';
-                var nc = p.nectar==='풍부'?'#4ade80':p.nectar==='보통'?'#fbbf24':'#f87171';
-                var pc = p.pollen==='풍부'?'#4ade80':p.pollen==='보통'?'#fbbf24':'#f87171';
-                return '<div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-input);border-radius:10px;padding:9px 12px;">'
-                    + '<div>'
+                var nc = p.nectar==='풍부'?'#4ade80':p.nectar==='보통'?'#fbbf24':'#9ca3af';
+                var pc = p.pollen==='풍부'?'#4ade80':p.pollen==='보통'?'#fbbf24':'#9ca3af';
+                var valDot = p.val>=5?'🔴':p.val>=4?'🟠':p.val>=3?'🟡':'⚪';
+                var badge = _homeNectarTab==='nectar'
+                    ? '<span style="font-size:0.68rem;color:'+nc+';">꿀 '+p.nectar+'</span>'
+                    : '<span style="font-size:0.68rem;color:'+pc+';">화분 '+p.pollen+'</span>';
+                return '<div style="display:flex;align-items:center;gap:10px;background:var(--bg-input);border-radius:10px;padding:9px 12px;">'
+                    + '<span style="font-size:1rem;">'+valDot+'</span>'
+                    + '<div style="flex:1;">'
                     + '<span style="font-weight:700;font-size:0.9rem;color:var(--tx-main);">'+p.name+'</span>'
                     + '<span style="font-size:0.72rem;color:var(--tx-muted);margin-left:6px;">'+p.blooming+'</span>'
                     + '</div>'
                     + '<div style="display:flex;align-items:center;gap:8px;">'
-                    + '<span style="font-size:0.72rem;color:'+nc+';">꿀 '+p.nectar+'</span>'
-                    + '<span style="font-size:0.72rem;color:'+pc+';">화분 '+p.pollen+'</span>'
-                    + '<span style="font-size:0.72rem;">'+stars+'</span>'
+                    + badge
                     + '</div>'
                     + '</div>';
             }).join('');
@@ -8302,20 +8397,184 @@ function getUserInfo(){
             btn.style.cursor = 'not-allowed';
         }
 
-        // ==================== AI 양봉 상담 (Cloudflare Worker + Gemini) ====================
-        var _flowerChatHistory = [];
+        // ==================== 양봉 현장 가이드 FAQ ====================
+        var FAQ_DATA = [
+          { cat:'🌸 봄 관리 (3~5월)', color:'#f59e0b', items:[
+            { q:'월동 해제 후 첫 내검은 언제?',
+              a:'낮 기온이 14°C 이상으로 3일 이상 유지될 때 첫 내검을 합니다. 보통 중부 기준 3월 중~하순. 소문을 조금 열고 사망봉군 정리, 사양 시작(1:1 설탕물), 응애 상태 확인 순으로 진행합니다.' },
+            { q:'봄 사양은 언제, 어떻게?',
+              a:'3월 중순~4월 초, 1:1 설탕물로 자극 사양을 시작합니다. 한 번에 많이 주지 않고 200~300mL씩 3~5일 간격으로 급여해 산란을 자극합니다. 4월 중순 이후 세력이 붙으면 사양을 줄이고 계상 준비를 합니다.' },
+            { q:'아까시 채밀 적기는?',
+              a:'아까시꽃이 70~80% 개화하고 꽃에 꿀이 맺히기 시작할 때가 채밀 적기입니다. 비 온 다음 날 오전 일찍 확인하고, 손으로 소비를 기울여 꿀이 흐르지 않으면 채밀합니다. 중부 기준 5월 5~15일이 최성기입니다.' },
+            { q:'아까시 전 분봉 예방은?',
+              a:'4월 하순부터 5~7일 간격으로 왕대를 점검·제거합니다. 벌이 80% 이상 차면 즉시 계상을 올리고 소문을 최대로 열어 환기시킵니다. 노왕은 교체하고 세력이 너무 강하면 인공분봉으로 분산합니다.' },
+            { q:'계상 올리는 시기는?',
+              a:'벌이 하통 소비 80% 이상을 점령하고 왕대가 보이기 시작할 때 계상을 올립니다. 보통 아까시 10~15일 전이 적기입니다. 계상에 꿀 묻은 소비를 2~3장 넣어 벌을 유인합니다.' },
+            { q:'봄 응애 방제 시기는?',
+              a:'3월 내검 시 응애율을 확인하고 2% 이상이면 즉시 방제합니다. 아까시 채밀 전에는 개미산이나 옥살산 계열을 사용하고 약제 처리 후 최소 2주 후 채밀합니다. 채밀 중에는 절대 약제를 사용하지 않습니다.' },
+          ]},
+          { cat:'☀️ 여름 관리 (6~8월)', color:'#34d399', items:[
+            { q:'여름 응애 방제는 언제?',
+              a:'8월이 응애 최성기입니다. 7월 밤꿀 채밀 후 바로 방제를 시작하고 8월 중순까지 집중 처리합니다. 권장 천연방제제: 개미산(기화기), 옥살산, 티몰, 쿠마포스, 구연산 제재. 기온이 높을수록 개미산·티몰 효과가 좋습니다. 방제 효과를 계산기로 확인하세요.' },
+            { q:'여름 밀원 공백기 관리는?',
+              a:'6월 하순~8월 초는 밀원 공백기입니다. 설탕물 사양보다 단백질(화분떡) 공급이 더 중요합니다. 환기를 위해 소문을 최대로 열고 차광망을 씌우며, 물 공급원을 벌통 근처에 설치합니다.' },
+            { q:'이동양봉 적기와 주의사항은?',
+              a:'5월 아까시→6월 밤꿀→7월 피나무·쉬나무 순으로 이동합니다. 이동 전날 저녁 소문을 막고 새벽 이동이 원칙입니다. 목적지 착지 후 30분간 환기 후 소문을 엽니다. 이동 전 응애율 확인 필수.' },
+            { q:'여름 환기 관리 방법은?',
+              a:'소문을 최대로 열고 개포를 망사형으로 교체합니다. 직사광선을 피해 그늘에 벌통을 배치하고 차광막을 설치합니다. 물 공급원은 벌통에서 50m 이내에 설치합니다. 기온 35°C 이상이면 벌통 위에 물을 뿌려줍니다.' },
+            { q:'밤꿀 채밀 적기는?',
+              a:'밤꽃이 80% 이상 개화하고 소비에 꿀이 가득 차 뚜껑을 80% 이상 덮었을 때가 적기입니다. 중부 기준 6월 15~25일. 밤꿀은 수분 함량이 높아 완숙 여부를 꼭 확인하고, 수분 20% 이하일 때 채밀합니다.' },
+          ]},
+          { cat:'🍂 가을·월동 (9~11월)', color:'#60a5fa', items:[
+            { q:'월동 사양은 언제, 얼마나?',
+              a:'9월 중순~10월 초에 2:1(설탕:물) 진한 시럽으로 월동 사양을 합니다. 10장 벌통 기준 설탕 10~12kg을 목표로 급여합니다. 10월 이후에는 기온이 낮아 벌이 먹지 않으므로 10월 초까지 완료합니다.' },
+            { q:'월동 응애 최종 방제는?',
+              a:'11월 무봉판(산란이 끊긴 후) 시기에 옥살산 기화 또는 흘림처리를 합니다. 봉개방(뚜껑 있는 방) 응애에 효과가 없으므로 반드시 무봉판 상태에서 처리합니다. 처리 후 1~2주 뒤 응애 낙하수를 확인합니다.' },
+            { q:'월동 준비 체크리스트는?',
+              a:'①응애 방제 완료 ②월동 먹이 충분(10장통 10kg 이상) ③소문 축소(새끼손가락 1개 너비) ④보온포 씌우기 ⑤쥐막이 설치 ⑥벌통 앞쪽 약간 기울이기(습기 배출) ⑦봉군 세력 확인(5매 이상). 11월 초까지 완료합니다.' },
+            { q:'가을 여왕벌 교체 시기는?',
+              a:'9월 중순이 가을 교체 적기입니다. 새 여왕이 월동 전 산란을 충분히 해야 하므로 9월 15일 이전에 교체를 완료합니다. 처녀왕 교미기간(10~14일)을 고려하면 9월 초에 이충을 시작합니다.' },
+            { q:'월동 중 관리 요령은?',
+              a:'12월~2월은 절대 벌통을 열지 않습니다. 외부에서 소문 상태와 사망봉이 쌓이지 않았는지만 확인합니다. 소문이 막히면 즉시 제거합니다. 1~2월에 갑자기 따뜻해져도 내검하지 말고 3월을 기다립니다.' },
+          ]},
+          { cat:'🦠 질병·방제', color:'#f87171', items:[
+            { q:'꿀벌응애 방제 약제 종류와 선택법은?',
+              a:'⚠️ 아미트라즈·플루발리네이트(피레스로이드계)는 국내 내성인자가 많이 생겨 비권장합니다.\n권장 천연방제제: ①개미산(유기산계, 기화기·겔, 채밀기 적합) ②옥살산(유기산계, 무봉판 시 기화·흘림 처리) ③티몰(테르펜계, 25~35°C 적정, 30°C 이상 고온 시 사용량 조절 필요) ④쿠마포스(유기인계, 기화기) ⑤구연산 제재(흘림·사양). ⚠️ 개미산·티몰은 30°C 이상 폭염 시 급격한 기화로 꿀벌 피해 발생 가능 — 아침 일찍 처리하거나 사용량을 줄이세요.' },
+            { q:'노제마병 증상과 치료는?',
+              a:'이른 봄 벌통 앞 노란 설사, 봄 세력 증가 불량, 복부 팽만이 주요 증상입니다. 노제마균(Nosema ceranae)은 포자충으로 환경 개선이 우선입니다. 오염 소비 교체, 영양 공급 강화, 환기 개선이 기본입니다. 푸마길린을 사양액에 혼합 투여합니다.' },
+            { q:'미국부저병(AFB) 증상과 대처는?',
+              a:'봉개방에서 썩은 냄새가 나고 뚜껑이 꺼지며 성냥개비로 긁으면 실처럼 늘어납니다. 감염 소비는 소각 처리하고 벌통을 소독합니다.' },
+            { q:'석고병 증상과 대처는?',
+              a:'애벌레가 하얀 석회 덩어리처럼 굳어 소문 앞에 쌓입니다. 저온·고습 환경에서 발생합니다. 감염 소비를 제거하고 환기를 개선합니다. 벌통을 햇빛이 잘 드는 곳으로 옮기고 세력이 강한 봉군 유지가 예방법입니다.' },
+            { q:'작은벌집딱정벌레(SHB) 방제법은?',
+              a:'성충이 소비에 알을 낳아 꿀과 화분을 오염시킵니다. 벌통 바닥에 SHB 트랩을 설치하고 세력이 약한 봉군은 합봉합니다. 여름철에 주로 발생하므로 정기 점검이 중요합니다. 발견 즉시 성충을 잡아 제거합니다.' },
+            { q:'응애 방제 효과를 어떻게 판단하나?',
+              a:'방제 전후 알코올 세척법으로 300마리 기준 응애수를 측정합니다. 효과율 = (처리전-처리후)/처리전×100. 90% 이상이면 A등급(우수), 75~90% B등급(양호), 75% 미만이면 약제 교체를 검토합니다. 앱의 응애 효과 계산기를 활용하세요.' },
+          ]},
+          { cat:'👑 여왕벌 관리', color:'#a78bfa', items:[
+            { q:'여왕벌 교체 적기는?',
+              a:'봄: 4월 하순~5월 초(아까시 유밀 전). 가을: 9월 중순(월동 전 안정화). 노왕(2년 이상)은 산란력이 떨어지므로 1년마다 교체를 권장합니다. 유밀 최성기나 한겨울에는 절대 교체하지 않습니다.' },
+            { q:'이충(왕대 만들기) 방법은?',
+              a:'1~3일령 애벌레를 왕완 컵에 옮깁니다. 무왕군이나 격리된 군에 넣어 10~14일 후 처녀왕이 나옵니다. 교미는 날씨 좋은 날 14~18일 사이에 이루어지고 교미 후 2~3일 뒤 산란을 시작합니다. 교미 실패율을 고려해 왕대를 여분으로 준비합니다.' },
+            { q:'왕대 발견 시 처리 방법은?',
+              a:'분봉 예방 목적이면 왕대를 모두 제거하고 5일 후 다시 점검합니다. 의도적인 왕 교체라면 구왕을 제거하고 가장 잘 생긴 왕대 1개만 남깁니다. 왕대를 너무 많이 남기면 처녀왕끼리 싸워 무왕군이 됩니다.' },
+            { q:'처녀왕 도입 방법은?',
+              a:'구왕 제거 후 24시간 후에 구매한 처녀왕을 신문지 도입법으로 도입합니다. 왕완 케이지에 넣어 소비 사이에 끼우고 2~3일 후 벌들이 케이지를 뜯으면 자연 도입됩니다. 도입 후 1주일간 내검하지 않습니다.' },
+            { q:'무왕군 발견 시 대처는?',
+              a:'내검 시 산란이 없고 왕대가 없으면 무왕군입니다. 즉시 다른 봉군에서 산란 중인 소비 1~2장을 넣어주면 벌들이 스스로 왕대를 만듭니다. 또는 준비된 왕대나 처녀왕을 도입합니다. 발견이 늦을수록 봉군 회복이 어렵습니다.' },
+          ]},
+          { cat:'🍯 사양 관리', color:'#fbbf24', items:[
+            { q:'자극 사양과 저장 사양의 차이는?',
+              a:'자극 사양: 1:1(설탕:물) 묽은 시럽을 소량씩 자주 급여해 산란을 촉진합니다. 봄(3~4월), 여름 공백기에 사용합니다. 저장 사양: 2:1 진한 시럽을 대량 급여해 월동 먹이를 비축합니다. 9월 중순~10월 초에 사용합니다.' },
+            { q:'화분떡 만들기와 급여법은?',
+              a:'대용화분(콩가루·효모·설탕)을 혼합해 반죽합니다. 이른 봄 화분 부족 시기(3~4월)와 여름 공백기(7~8월)에 효과적입니다.' },
+            { q:'설탕물 비율과 브릭스는?',
+              a:'1:1(설탕:물) = 약 50°Brix (자극 사양). 1.5:1 = 약 60°Brix (일반 사양). 2:1 = 약 67°Brix (저장 사양). 꿀의 브릭스는 78~82°로 높습니다. 앱의 사양액 계산기에서 브릭스를 자동 계산할 수 있습니다.' },
+            { q:'먹이 부족 봉군 응급 대처는?',
+              a:'겨울철 먹이 부족 시 설탕 덩어리(캔디)나 고체사료를 소비 위에 올립니다. 설탕에 물을 최소량 넣어 반죽한 뒤 굳혀서 사용합니다. 액상 시럽은 겨울에 사용하면 습도가 올라가 위험합니다. 응급 상황이 아니면 따뜻한 봄까지 기다립니다.' },
+          ]},
+          { cat:'🫙 채밀·꿀 관리', color:'#86efac', items:[
+            { q:'채밀 적기 판단 방법은?',
+              a:'소비를 기울였을 때 꿀이 흐르지 않고, 뚜껑(봉개)이 80% 이상 덮여 있을 때가 적기입니다. 수분 함량은 20% 이하여야 발효하지 않습니다. 굴절당도계로 브릭스 78° 이상을 확인합니다. 비 오기 전날은 채밀을 피합니다.' },
+            { q:'꿀 수분 함량이 높으면?',
+              a:'수분 20% 이상이면 발효 위험이 있습니다. 채밀한 꿀은 통풍이 잘 되는 곳에서 선풍기를 틀어 수분을 날립니다. 뚜껑을 열고 2~3일 건조 후 다시 측정합니다. 저수분 꿀(18% 이하)은 장기 보관이 가능합니다.' },
+            { q:'꿀이 결정화되면?',
+              a:'유채꿀은 채밀 후 2~4일 만에 결정화됩니다. 아까시꿀도 시간이 지나면 결정화될 수 있습니다. 결정화된 꿀은 40°C 이하 온수에 중탕으로 녹입니다. 50°C 이상 가열하면 효소가 파괴되어 품질이 저하됩니다.' },
+            { q:'밀랍(왁스) 활용법은?',
+              a:'채밀 후 남은 구소비와 밀랍 뚜껑을 모아 중탕으로 녹입니다. 불순물을 걸러내고 굳히면 고품질 밀랍이 됩니다. 소초광 제작, 화장품·양초 원료, 목재 코팅재로 활용합니다. kg당 시세가 높아 버리지 말고 모아야 합니다.' },
+          ]},
+          { cat:'🔀 분봉 관리', color:'#f97316', items:[
+            { q:'분봉 시 수습 방법은?',
+              a:'분봉이 나와 인근 나뭇가지에 뭉쳐 있을 때 빈 벌통을 아래에 놓고 가지를 흔들어 벌을 떨어뜨립니다. 여왕이 들어가면 나머지가 따라 들어갑니다. 수습 후 새 장소로 이동하고 소문을 반쯤 막아 정착을 돕습니다.' },
+            { q:'인공분봉 방법은?',
+              a:'세력이 너무 강한 봉군의 산란 소비 3~4장과 봉이 붙은 소비를 새 벌통으로 옮깁니다. 구왕이 있는 쪽에 새 여왕이나 왕대를 도입합니다. 원봉군과 인공분봉군을 2m 이상 떨어뜨려 놓습니다. 아까시 2~3주 전이 최적입니다.' },
+            { q:'분봉열 원인과 예방은?',
+              a:'분봉열 원인: 봉군 과밀, 공간 부족, 환기 불량, 노왕. 예방: ①5~7일 주기 왕대 점검·제거 ②계상 올려 공간 확보 ③소문 최대 개방 ④노왕 교체 ⑤인공분봉으로 세력 분산. 아까시 전 4월 하순이 가장 위험한 시기입니다.' },
+            { q:'분봉 후 남은 봉군 관리는?',
+              a:'분봉 후 원봉군에는 왕대가 여러 개 남아 있습니다. 가장 잘 발달한 왕대 1개만 남기고 나머지는 제거합니다. 또는 왕대 하나씩 봉지로 받아 인공분봉에 활용합니다. 처녀왕이 교미 후 산란 시작까지 2~3주 소요되므로 그 기간 동안 무리하게 내검하지 않습니다.' },
+          ]},
+        ];
+
+        function renderFAQ() {
+            var el = document.getElementById('faq-container');
+            if(!el) return;
+            var openCat = null;
+            var openQ = null;
+
+            function render() {
+                el.innerHTML = FAQ_DATA.map(function(cat, ci) {
+                    var isOpen = openCat === ci;
+                    var header = '<div onclick="faqToggleCat('+ci+')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:'+(isOpen?'12px 12px 0 0':'12px')+';background:var(--bg-card);border:1px solid rgba(255,179,0,0.15);cursor:pointer;margin-bottom:'+(isOpen?'0':'8px')+';">'
+                        + '<div style="display:flex;align-items:center;gap:8px;">'
+                        + '<span style="font-weight:800;font-size:0.92rem;color:'+cat.color+';">'+cat.cat+'</span>'
+                        + '<span style="font-size:0.72rem;color:var(--tx-muted);">'+cat.items.length+'개</span>'
+                        + '</div>'
+                        + '<span style="color:var(--tx-muted);font-size:0.8rem;transition:transform 0.2s;">'+(isOpen?'▲':'▼')+'</span>'
+                        + '</div>';
+
+                    var body = '';
+                    if(isOpen) {
+                        body = '<div style="border:1px solid rgba(255,179,0,0.15);border-top:none;border-radius:0 0 12px 12px;overflow:hidden;margin-bottom:8px;">'
+                            + cat.items.map(function(item, qi) {
+                                var qOpen = openCat===ci && openQ===qi;
+                                return '<div style="border-bottom:1px solid rgba(255,255,255,0.05);">'
+                                    + '<div onclick="faqToggleQ('+ci+','+qi+')" style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:'+(qOpen?'rgba(255,179,0,0.07)':'var(--bg-input)')+';cursor:pointer;">'
+                                    + '<span style="font-size:0.85rem;font-weight:700;color:var(--tx-main);flex:1;">Q. '+item.q+'</span>'
+                                    + '<span style="color:var(--tx-muted);font-size:0.75rem;margin-left:8px;flex-shrink:0;">'+(qOpen?'▲':'▼')+'</span>'
+                                    + '</div>'
+                                    + (qOpen ? '<div style="padding:12px 14px;background:rgba(255,179,0,0.04);font-size:0.83rem;color:var(--tx-main);line-height:1.75;border-top:1px solid rgba(255,179,0,0.1);">'+item.a.replace(/①|②|③|④|⑤|⑥|⑦/g, function(m){return '<span style="color:'+cat.color+';font-weight:700;">'+m+'</span>';})+'</div>' : '')
+                                    + '</div>';
+                            }).join('')
+                            + '</div>';
+                    }
+                    return header + body;
+                }).join('');
+            }
+
+            window.faqToggleCat = function(ci) {
+                openCat = openCat===ci ? null : ci;
+                openQ = null;
+                render();
+            };
+            window.faqToggleQ = function(ci, qi) {
+                if(openCat===ci && openQ===qi) { openQ=null; }
+                else { openCat=ci; openQ=qi; }
+                render();
+            };
+
+            render();
+        }
+
         var _WORKER_URL = 'https://beemaster-ai.area731999.workers.dev';
         var _AI_SYSTEM = `당신은 대한민국 양봉 전문가 AI입니다. 오직 꿀벌(Apis mellifera, 서양꿀벌) 양봉에 관한 전문 지식만 제공합니다.
 
 【핵심 규칙】
 - 반드시 한국어로 답변하세요.
 - 답변은 실용적이고 현장에서 바로 쓸 수 있어야 합니다.
-- 양봉 용어를 정확히 사용하세요: 분봉(swarm, 벌무리가 나뉘는 것), 내검(벌통 점검), 채밀(꿀 수확), 증소(벌통 확장), 계상(덧통), 응애(Varroa mite), 소초광(foundation frame) 등.
-- 5문장 이내로 간결하게 답변하되, 계절·시기가 중요한 경우 반드시 언급하세요.
-- 확실하지 않은 내용은 추측하지 말고 "전문가나 양봉협회에 문의하세요"라고 안내하세요.
+- 5문장 이내로 간결하게 답변하세요.
+- 확실하지 않은 내용은 추측하지 마세요.
+- 양봉 용어를 정확히 사용하세요: 분봉(swarm·벌무리가 나뉘는 것), 내검(벌통 점검), 채밀(꿀 수확), 증소(벌통 공간 확장), 계상(덧통 올리기), 응애(Varroa mite), 소초광(foundation frame), 이충(왕대에 애벌레 옮기기), 왕대(queen cell).
+
+【한국 양봉 계절 일정 - 반드시 이 기준으로 답변】
+- 1~2월: 월동 중. 벌통 건드리지 않음. 내검 불가. 여왕벌 교체 불가.
+- 3월: 월동 해제, 봄 내검 시작. 사양 시작(1:1 설탕물). 응애 방제 시작.
+- 4~5월: 봄 세력 증강기. 아까시 전 분봉 주의. 증소·계상 준비. 여왕벌 교체 적기(4월 하순~5월 초).
+- 5월: 아까시 유밀기. 채밀 최성기. 분봉 최성기 → 왕대 제거, 소문 확대.
+- 6~7월: 밤꿀·잡화꿀 채밀. 여름 관리(환기·물 공급). 이동양봉.
+- 8월: 응애 방제 집중 시기(여름 최성기). 가을벌 육성 준비.
+- 9월: 가을 채밀(메밀·배초향). 여왕벌 교체 적기(9월 중). 월동 준비 사양 시작.
+- 10~11월: 월동 준비 완료. 응애 최종 방제(무봉판 시기 옥살산). 보온포 씌우기.
+- 12월: 월동 돌입. 벌통 건드리지 않음.
+
+【여왕벌 교체 시기 - 중요】
+한국에서 여왕벌 교체 적기는 ①봄: 4월 하순~5월 초(아까시 전), ②가을: 9월 중순(월동 전 새 여왕 안정화). 절대로 한겨울(12~2월) 또는 유밀 최성기에 교체하지 않음.
+
+【분봉 예방법 - 중요】
+분봉은 벌무리가 둘로 나뉘는 현상. 예방: ①왕대 정기 제거(5~7일 주기 내검), ②계상 올려 공간 확보, ③소문 확대 및 환기, ④인공분봉으로 세력 분산.
 
 【전문 영역】
-꿀벌 분봉 예방 및 처리, 여왕벌 관리·교체·이충, 응애·노제마·부저병 방제, 계절별 양봉 관리(춘기·여름·가을·월동), 채밀 적기 판단, 사양 관리(설탕시럽·화분떡), 벌통 구조 및 소초광 관리, 밀원식물 개화 시기 및 이동양봉, 봉군 세력 관리.`;
+응애·노제마·부저병 방제, 계절별 사양 관리, 채밀 적기 판단, 밀원식물 개화 시기, 이동양봉, 봉군 세력 관리.`;
+
 
 
         async function callAiChat(userMsg, history) {
@@ -8357,47 +8616,6 @@ function getUserInfo(){
             } catch(e) {
                 resultEl.innerHTML = '<span style="color:#f87171;">오류: ' + e.message + '</span>';
             }
-        }
-
-        // 밀원탭 채팅
-        async function flowerChatAsk() {
-            var input = document.getElementById('flower-chat-input');
-            var q = (input.value || '').trim();
-            if(!q) return;
-            var btn = document.getElementById('flower-chat-btn');
-            var msgEl = document.getElementById('flower-chat-messages');
-
-            // 사용자 말풍선
-            msgEl.innerHTML += '<div style="align-self:flex-end;background:rgba(255,179,0,0.15);border-radius:12px 12px 2px 12px;padding:8px 12px;font-size:0.85rem;color:var(--tx-main);max-width:85%;">' + q + '</div>';
-            input.value = '';
-            btn.disabled = true;
-
-            // 로딩
-            var loadingId = 'ai-loading-' + Date.now();
-            msgEl.innerHTML += '<div id="'+loadingId+'" style="align-self:flex-start;background:rgba(255,255,255,0.05);border-radius:12px 12px 12px 2px;padding:8px 12px;font-size:0.85rem;color:var(--tx-muted);">🐝 답변 생성 중...</div>';
-            msgEl.scrollTop = msgEl.scrollHeight;
-
-            try {
-                var answer = await callAiChat(q, _flowerChatHistory);
-                _flowerChatHistory.push({ role: 'user', text: q });
-                _flowerChatHistory.push({ role: 'model', text: answer });
-                if(_flowerChatHistory.length > 20) _flowerChatHistory = _flowerChatHistory.slice(-20);
-
-                var loadEl = document.getElementById(loadingId);
-                if(loadEl) loadEl.outerHTML = '<div style="align-self:flex-start;background:rgba(255,255,255,0.05);border-radius:12px 12px 12px 2px;padding:8px 12px;font-size:0.85rem;color:var(--tx-main);max-width:90%;line-height:1.6;">' + answer.replace(/\n/g,'<br>') + '</div>';
-            } catch(e) {
-                var loadEl2 = document.getElementById(loadingId);
-                if(loadEl2) loadEl2.outerHTML = '<div style="color:#f87171;font-size:0.82rem;padding:6px;">오류: ' + e.message + '</div>';
-            } finally {
-                btn.disabled = false;
-                msgEl.scrollTop = msgEl.scrollHeight;
-            }
-        }
-
-        function clearFlowerChat() {
-            _flowerChatHistory = [];
-            document.getElementById('flower-chat-messages').innerHTML =
-                '<div style="background:rgba(255,179,0,0.08);border-radius:10px;padding:10px;font-size:0.85rem;color:var(--tx-sub);">🐝 안녕하세요! 밀원식물이나 양봉에 관해 무엇이든 물어보세요.</div>';
         }
 
         // ==================== 스와이프 탭 전환 ====================
@@ -9712,7 +9930,6 @@ function getUserInfo(){
             if(v === 'diary') {
                 setTimeout(() => {
                     renderLocationButtons();
-                    renderMonthlyWorkGuide();
                 }, 100);
             }
             
@@ -13361,7 +13578,7 @@ document.addEventListener('click', function(e) {
                 <div style="font-size: 24px; margin-bottom: 4px;">🏡</div>
                 홈
             </div>
-            <div id="nav-calendar" class="nav-item active" onclick="switchView('calendar', true)">
+            <div id="nav-calendar" class="nav-item active" onclick="switchView('calendar', true); setTimeout(function(){var el=document.getElementById('view-calendar');if(el)el.scrollTop=0;window.scrollTo(0,0);},50);">
                 <div style="font-size: 24px; margin-bottom: 4px;">📔</div>
                 기록
             </div>
