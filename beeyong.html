@@ -3916,9 +3916,6 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 <div style="color:var(--tx-amber);font-weight:700;margin-top:8px;">식물 인식 중...</div>
             </div>
 
-            <!-- 결과 -->
-            <div id="flower-result" style="display:none;margin-bottom:16px;"></div>
-
             <!-- 이름 직접 검색 -->
             <div style="background:var(--bg-card);border:1px solid rgba(255,179,0,0.15);border-radius:14px;padding:14px;margin-bottom:14px;">
                 <div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:8px;">🌿 식물 이름으로 직접 검색</div>
@@ -3929,6 +3926,9 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     <button onclick="analyzeFlowerByName()" style="padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:800;font-size:0.88rem;cursor:pointer;">검색</button>
                 </div>
             </div>
+
+            <!-- 결과 -->
+            <div id="flower-result" style="display:none;margin-bottom:16px;"></div>
 
             <!-- 월별 밀원 캘린더 -->
             <div style="background:var(--bg-card);border-radius:14px;padding:14px;margin-bottom:14px;">
@@ -7350,10 +7350,10 @@ function getUserInfo(){
             {keys:["상수리나무","상수리","도토리"], name:'상수리나무', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
             {keys:["사과나무","사과"], name:'사과나무', nectar:'풍부', pollen:'적음', blooming:'4월', honey:'사과꿀', val:4, tips:'큰나무'},
             {keys:["배나무","배"], name:'배나무', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["호도나무","호두나무","호두"], name:'호도나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'큰나무'},
+            {keys:["호도나무","호두나무","호두"], name:'호두나무', nectar:'없음', pollen:'풍부', blooming:'4~5월', honey:null, val:3, tips:'봄철 화분 특화형 밀원. 아까시 전 봉군 육성용 단백질 공급. 채밀 가치 없음.'},
             {keys:["돌배나무","돌배"], name:'돌배나무', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["능수버들"], name:'능수버들', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["파"], name:'파', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'여러해살이'},
+            {keys:["파"], name:'파', nectar:'풍부', pollen:'풍부', blooming:'5~6월', honey:'파꿀', val:4, tips:'대단위 파 밭 근처 우수 밀원. ⚠️ 농약 살포 주기 반드시 확인. 파꿀은 숙성 후 독특한 풍미.'},
             {keys:["봄까치풀"], name:'봄까치풀', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["참나무","도토리나무"], name:'참나무(도토리)', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
             {keys:["떡갈나무","떡갈"], name:'떡갈나무', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
@@ -7386,7 +7386,7 @@ function getUserInfo(){
             {keys:["황벽나무","황벽"], name:'황벽나무', nectar:'풍부', pollen:'풍부', blooming:'5~6월', honey:'잡화꿀', val:5, tips:'큰나무'},
             {keys:["찔레꽃","찔레"], name:'찔레꽃', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["산딸나무","산딸"], name:'산딸나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
-            {keys:["가중나무","가죽나무"], name:'가중나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'큰나무'},
+            {keys:["가중나무","가죽나무"], name:'가중나무', nectar:'풍부', pollen:'풍부', blooming:'6월', honey:'가중나무꿀', val:4, tips:'아까시~밤꿀 공백기 핵심 밀원. 척박한 땅에서도 잘 자라 밀원지 조성 유리. 꽃 특유의 냄새 있으나 꿀맛에 지장 없음.'},
             {keys:["광나무"], name:'광나무', nectar:'풍부', pollen:'풍부', blooming:'6~7월', honey:'잡화꿀', val:5, tips:'중교목'},
             {keys:["개오동나무","개오동"], name:'개오동나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["피나무"], name:'피나무', nectar:'풍부', pollen:'적음', blooming:'7월', honey:'피나무꿀', val:5, tips:'큰나무'},
@@ -7407,7 +7407,7 @@ function getUserInfo(){
             {keys:["모감주나무","모감주"], name:'모감주나무', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'모감주꿀', val:4, tips:'큰나무'},
             {keys:["흰배롱나무","배롱나무"], name:'배롱나무', nectar:'보통', pollen:'풍부', blooming:'7~9월', honey:'잡화꿀', val:3, tips:'큰나무(수입종)'},
             {keys:["음나무","엄나무"], name:'음나무', nectar:'풍부', pollen:'보통', blooming:'7~8월', honey:'잡화꿀', val:4, tips:'큰나무'},
-            {keys:["두릅나무","두릅"], name:'두릅나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
+            {keys:["두릅나무","두릅"], name:'두릅나무', nectar:'풍부', pollen:'풍부', blooming:'8~9월', honey:'두릅꿀', val:4, tips:'여름 무밀기 핵심 밀원. 월동벌 양성용 단백질·에너지원. 봉장 주변 식재 권장. 가시 많아 접근 주의.'},
             {keys:["고삼"], name:'고삼', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'여러해살이'},
             {keys:["자귀나무","자귀"], name:'자귀나무', nectar:'보통', pollen:'적음', blooming:'6~7월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["채송화"], name:'채송화', nectar:'없음', pollen:'풍부', blooming:'5~9월', honey:null, val:2, tips:'한해살이'},
@@ -7501,7 +7501,7 @@ function getUserInfo(){
             {keys:["과꽃"], name:'과꽃', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["층꽃풀","층꽃나무","층꽃"], name:'층꽃풀', nectar:'보통', pollen:'보통', blooming:'8~9월', honey:'잡화꿀', val:3, tips:'여러해살이(남부)'},
             {keys:["전동싸리"], name:'전동싸리', nectar:'없음', pollen:'없음', blooming:'7~9월', honey:null, val:1, tips:'2년살이'},
-            {keys:["더덕"], name:'더덕', nectar:'적음', pollen:'적음', blooming:'8~9월', honey:'잡화꿀', val:2, tips:'여러해살이(덩굴)'},
+            {keys:["더덕"], name:'더덕', nectar:'풍부', pollen:'풍부', blooming:'8~9월', honey:'더덕꿀', val:4, tips:'가을 고영양 밀원. 사포닌 풍부해 월동벌 면역력 강화. 더덕꿀은 인삼향 풍미로 고급 약꿀. 덩굴성 — 지지대 필요.'},
             {keys:["옥잠화"], name:'옥잠화', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["원추리"], name:'원추리', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["비비추"], name:'비비추', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'여러해살이'},
@@ -7567,7 +7567,6 @@ function getUserInfo(){
             {keys:["줄딸기"], name:'줄딸기', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'덩굴'},
             {keys:["귀룡나무"], name:'귀룡나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["가막살나무"], name:'가막살나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
-            {keys:["고염나무"], name:'고염나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'큰나무'},
             {keys:["천년초"], name:'천년초', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:4, tips:'다년생선인장'},
             {keys:["소태나무"], name:'소태나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["애기말발도리"], name:'애기말발도리', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
@@ -7582,7 +7581,7 @@ function getUserInfo(){
             {keys:["옻나무","옻"], name:'옻나무', nectar:'풍부', pollen:'보통', blooming:'5~6월', honey:'옻나무꿀', val:4, tips:'큰나무. 옻나무꿀 생산. 알레르기 주의.'},
             {keys:["토끼풀","클로버"], name:'토끼풀(클로버)', nectar:'풍부', pollen:'보통', blooming:'5~9월', honey:'클로버꿀', val:4, tips:'장기간 개화. 꿀 풍부. 여러해살이'},
             {keys:["사방오리"], name:'사방오리', nectar:'없음', pollen:'풍부', blooming:'3월', honey:null, val:3, tips:'봄철 주요 화분 수집종. 큰나무'},
-            {keys:["꽝꽝나무"], name:'꽝꽝나무', nectar:'적음', pollen:'적음', blooming:'5~6월', honey:'잡화꿀', val:2, tips:'남부 상록 작은나무. 화분 공급원.'},
+            {keys:["꽝꽝나무"], name:'꽝꽝나무', nectar:'풍부', pollen:'보통', blooming:'5~6월', honey:'잡화꿀', val:4, tips:'아까시 직후 밀원 공백기 보완. 남부·해안 지방 밀원. 봉장 울타리 겸용 가능. 암수딴그루 — 수나무 위주 식재 권장.'},
             {keys:["명자나무","명자"], name:'명자나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'봄철 관목 밀원.'},
             {keys:["할미꽃"], name:'할미꽃', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:1, tips:'봄 화분 공급원.'},
             {keys:["제비꽃"], name:'제비꽃', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'봄철 소형 밀원.'},
@@ -8206,16 +8205,21 @@ function getUserInfo(){
             _flowerImageBlob = file;
             var reader = new FileReader();
             reader.onload = function(ev) {
-                _flowerImageBase64 = ev.target.result.split(',')[1];
+                // 미리보기는 원본으로
                 document.getElementById('flower-preview-img').src = ev.target.result;
                 document.getElementById('flower-preview-wrap').style.display = 'block';
                 document.getElementById('flower-upload-placeholder').style.display = 'none';
                 document.getElementById('flower-result').style.display = 'none';
-                var btn = document.getElementById('flower-analyze-btn');
-                btn.disabled = false;
-                btn.style.background = 'linear-gradient(135deg,#f59e0b,#d97706)';
-                btn.style.color = '#fff';
-                btn.style.cursor = 'pointer';
+
+                // 전송용 이미지 압축 (600px / 60% 품질)
+                compressImage(ev.target.result, 600, 0.6, function(compressed) {
+                    _flowerImageBase64 = compressed.split(',')[1];
+                    var btn = document.getElementById('flower-analyze-btn');
+                    btn.disabled = false;
+                    btn.style.background = 'linear-gradient(135deg,#f59e0b,#d97706)';
+                    btn.style.color = '#fff';
+                    btn.style.cursor = 'pointer';
+                });
             };
             reader.readAsDataURL(file);
         }
@@ -8286,13 +8290,24 @@ function getUserInfo(){
             var query = (document.getElementById('flower-name-input').value || '').trim();
             if(!query) { alert('식물 이름을 입력해주세요.'); return; }
             var item = matchNectarDB(query, query);
+            var resultEl = document.getElementById('flower-result');
             if(item) {
                 renderFlowerResult({ name: item.name, scientific: '', score: null, nectarInfo: item }, null);
             } else {
-                document.getElementById('flower-result').innerHTML =
-                    '<div style="background:var(--bg-card);border-radius:14px;padding:16px;text-align:center;color:var(--tx-muted);">🌿 "<b style="color:var(--tx-main);">' + query + '</b>" 은(는) 밀원 DB에 없습니다.</div>';
-                document.getElementById('flower-result').style.display = 'block';
+                resultEl.innerHTML =
+                    '<div style="background:var(--bg-card);border-radius:14px;padding:16px;text-align:center;">'
+                    + '<div style="font-size:1.8rem;margin-bottom:8px;">🌿</div>'
+                    + '<div style="color:var(--tx-main);font-weight:700;margin-bottom:6px;">"<b style="color:var(--tx-amber);">' + query + '</b>" 은(는) 밀원 DB에 없습니다.</div>'
+                    + '<div style="font-size:0.8rem;color:var(--tx-muted);margin-bottom:14px;">사진으로 식물을 분석하면 밀원 여부를 확인할 수 있어요.</div>'
+                    + '<button onclick="document.getElementById(\'flower-upload-area\').scrollIntoView({behavior:\'smooth\'});document.getElementById(\'flower-file-input\').click();" '
+                    + 'style="padding:10px 20px;border-radius:12px;border:none;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:800;font-size:0.88rem;cursor:pointer;">📷 사진으로 분석하기</button>'
+                    + '</div>';
+                resultEl.style.display = 'block';
             }
+            // 결과로 자동 스크롤
+            setTimeout(function() {
+                resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }
 
         function renderFlowerResult(r, allResults, debugMsg) {
