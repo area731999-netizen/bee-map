@@ -3905,6 +3905,52 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
         <div id="view-calculator" class="view-group" style="padding-bottom: 120px;">
             <h2 class="text-2xl font-black mb-6 text-center" style="color: var(--tx-amber);">🧮 양봉 계산기</h2>
             
+            <!-- 화분떡 배합 계산기 -->
+            <div style="background:var(--bg-card);padding:20px;border-radius:16px;margin-bottom:100px;border:1px solid rgba(255,179,0,0.15);">
+                <h4 style="color:var(--tx-gold);font-weight:900;margin-bottom:6px;font-size:1.1rem;">🍯 화분떡(대용화분) 배합 계산기</h4>
+                <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:14px;line-height:1.6;">카테고리를 선택 후 원료 카드의 + 버튼을 눌러 추가하세요.</div>
+
+                <!-- 표준 레시피 불러오기 -->
+                <div style="margin-bottom:14px;">
+                    <div style="font-size:0.78rem;color:var(--tx-muted);font-weight:700;margin-bottom:8px;">📋 표준 레시피 불러오기</div>
+                    <div id="pf-recipe-btns" style="display:flex;flex-direction:column;gap:8px;"></div>
+                </div>
+
+                <!-- 카테고리 탭 -->
+                <div id="pf-cat-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;"></div>
+
+                <!-- 원료 카드 목록 -->
+                <div id="pf-ingredient-cards" style="margin-bottom:12px;"></div>
+
+                <!-- 직접 추가 버튼 -->
+                <button onclick="pfAddCustom()" style="width:100%;padding:10px;border-radius:12px;border:1px dashed rgba(255,179,0,0.4);background:transparent;color:var(--tx-amber);font-size:0.85rem;font-weight:700;cursor:pointer;margin-bottom:14px;">+ 원료 직접 추가</button>
+
+                <!-- 선택된 원료 목록 -->
+                <div id="pf-selected-list" style="margin-bottom:14px;"></div>
+
+                <!-- 목표 수분율 -->
+                <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-radius:12px;padding:12px;margin-bottom:12px;">
+                    <div style="font-size:0.78rem;color:#38bdf8;font-weight:700;margin-bottom:8px;">💧 목표 수분율 설정</div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="font-size:0.85rem;color:var(--tx-muted);">목표 수분율</span>
+                        <input type="number" id="pf-target-moisture" value="12" min="8" max="25" step="0.5"
+                            style="width:70px;padding:8px;border-radius:8px;border:1px solid rgba(56,189,248,0.3);background:var(--bg-input);color:#38bdf8;font-size:1rem;font-weight:900;text-align:center;">
+                        <span style="font-size:0.9rem;color:#38bdf8;font-weight:700;">%</span>
+                        <span style="font-size:0.72rem;color:var(--tx-muted);">(권장 10~14%)</span>
+                    </div>
+                </div>
+
+                <!-- 계산 버튼 -->
+                <div style="display:flex;gap:8px;margin-bottom:10px;">
+                    <button onclick="calcPollenFeed()" style="flex:1;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:14px;border-radius:10px;font-weight:800;border:none;cursor:pointer;">🧮 계산하기</button>
+                    <button onclick="resetPollenFeed()" style="background:rgba(100,100,100,0.5);color:white;padding:14px 20px;border-radius:10px;border:none;cursor:pointer;">초기화</button>
+                </div>
+
+                <!-- 결과 -->
+                <div id="pf-result" style="display:none;"></div>
+            </div>
+
+
             <!-- 개미산 계산 -->
             <div style="background: var(--bg-card); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,213,79,0.15);">
                 <h4 style="color: var(--tx-gold); font-weight: 900; margin-bottom: 16px; font-size: 1.1rem;">🧪 개미산 농도 계산</h4>
@@ -4000,50 +4046,6 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 <div id="sugar-result" style="margin-top: 12px; padding: 16px; background: var(--bg-purple); border-radius: 10px; display: none; color: var(--tx-main);"></div>
             </div>
 
-            <!-- 화분떡 배합 계산기 -->
-            <div style="background:var(--bg-card);padding:20px;border-radius:16px;margin-bottom:100px;border:1px solid rgba(255,179,0,0.15);">
-                <h4 style="color:var(--tx-gold);font-weight:900;margin-bottom:6px;font-size:1.1rem;">🍯 화분떡(대용화분) 배합 계산기</h4>
-                <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:14px;line-height:1.6;">카테고리를 선택 후 원료 카드의 + 버튼을 눌러 추가하세요.</div>
-
-                <!-- 표준 레시피 불러오기 -->
-                <div style="margin-bottom:14px;">
-                    <div style="font-size:0.78rem;color:var(--tx-muted);font-weight:700;margin-bottom:8px;">📋 표준 레시피 불러오기</div>
-                    <div id="pf-recipe-btns" style="display:flex;flex-direction:column;gap:8px;"></div>
-                </div>
-
-                <!-- 카테고리 탭 -->
-                <div id="pf-cat-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;"></div>
-
-                <!-- 원료 카드 목록 -->
-                <div id="pf-ingredient-cards" style="margin-bottom:12px;"></div>
-
-                <!-- 직접 추가 버튼 -->
-                <button onclick="pfAddCustom()" style="width:100%;padding:10px;border-radius:12px;border:1px dashed rgba(255,179,0,0.4);background:transparent;color:var(--tx-amber);font-size:0.85rem;font-weight:700;cursor:pointer;margin-bottom:14px;">+ 원료 직접 추가</button>
-
-                <!-- 선택된 원료 목록 -->
-                <div id="pf-selected-list" style="margin-bottom:14px;"></div>
-
-                <!-- 목표 수분율 -->
-                <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-radius:12px;padding:12px;margin-bottom:12px;">
-                    <div style="font-size:0.78rem;color:#38bdf8;font-weight:700;margin-bottom:8px;">💧 목표 수분율 설정</div>
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <span style="font-size:0.85rem;color:var(--tx-muted);">목표 수분율</span>
-                        <input type="number" id="pf-target-moisture" value="12" min="8" max="25" step="0.5"
-                            style="width:70px;padding:8px;border-radius:8px;border:1px solid rgba(56,189,248,0.3);background:var(--bg-input);color:#38bdf8;font-size:1rem;font-weight:900;text-align:center;">
-                        <span style="font-size:0.9rem;color:#38bdf8;font-weight:700;">%</span>
-                        <span style="font-size:0.72rem;color:var(--tx-muted);">(권장 10~14%)</span>
-                    </div>
-                </div>
-
-                <!-- 계산 버튼 -->
-                <div style="display:flex;gap:8px;margin-bottom:10px;">
-                    <button onclick="calcPollenFeed()" style="flex:1;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:14px;border-radius:10px;font-weight:800;border:none;cursor:pointer;">🧮 계산하기</button>
-                    <button onclick="resetPollenFeed()" style="background:rgba(100,100,100,0.5);color:white;padding:14px 20px;border-radius:10px;border:none;cursor:pointer;">초기화</button>
-                </div>
-
-                <!-- 결과 -->
-                <div id="pf-result" style="display:none;"></div>
-            </div>
         </div>
 
         <!-- 밀원식물 검색 화면 -->
@@ -7460,7 +7462,10 @@ function getUserInfo(){
             if(fBtn) { fBtn.style.background = isFeeding ? 'linear-gradient(135deg,#16a34a,#15803d)' : 'transparent'; fBtn.style.color = isFeeding ? '#fff' : 'var(--tx-sub)'; }
             if(cBtn) { cBtn.style.background = isCalc ? 'linear-gradient(135deg,#7c3aed,#5b21b6)' : 'transparent'; cBtn.style.color = isCalc ? '#fff' : 'var(--tx-sub)'; }
             if(isFeeding) renderFeedingSection();
-            if(isCalc) renderCalculatorSection();
+            if(isCalc) {
+                document.getElementById('section-calculator').innerHTML = '';
+                renderCalculatorSection();
+            }
         }
 
         // ==================== 밀원식물 검색 (Pl@ntNet) ====================
@@ -8926,7 +8931,9 @@ function getUserInfo(){
             if(calcView) {
                 sec.innerHTML = calcView.innerHTML;
             }
-            // 화분떡 계산기 원료 버튼 초기화
+            // 화분떡 계산기 원료 버튼 초기화 (항상 재초기화)
+            _pfSelected = [];
+            _pfActiveCat = null;
             setTimeout(function() { pfInit(); }, 50);
         }
 
@@ -13284,6 +13291,16 @@ function getUserInfo(){
                     {id:'pf17', weight:50}, // 설탕
                 ]
             },
+            {
+                id:'recipe4', name:'🌍 국제 표준형', desc:'USDA·영국 NBU 공통. 화분 미포함 — 질병 유입 방지. 기호성을 높이려면 화분 10~20% 추가 권장',
+                items:[
+                    {id:'pf1',  weight:30}, // 대두박
+                    {id:'pf8',  weight:10}, // 맥주효모
+                    {id:'pf5',  weight:10}, // 탈지분유
+                    {id:'pf17', weight:50}, // 설탕
+                    {id:'pf26', weight:0.5},// 비타민C (소량)
+                ]
+            },
         ];
 
         var _pfActiveCat = null;
@@ -13739,8 +13756,8 @@ function getUserInfo(){
                 // 💧 물 추가량 강조
                 +'<div style="background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);border-radius:12px;padding:14px;margin-bottom:12px;text-align:center;">'
                 +  '<div style="font-size:0.75rem;color:#38bdf8;font-weight:700;margin-bottom:4px;">💧 추가할 물의 양 (목표 수분율 '+targetMoisture+'%)</div>'
-                +  '<div style="font-size:2rem;font-weight:900;color:#38bdf8;">'+Math.round(addedWater)+'g</div>'
-                +  '<div style="font-size:0.72rem;color:var(--tx-muted);margin-top:2px;">≈ '+Math.round(addedWater/100)/10+'L &nbsp;|&nbsp; 실제 수분율 '+moisturePct+'%</div>'
+                +  '<div style="font-size:2rem;font-weight:900;color:#38bdf8;">'+(Math.round(addedWater/100)/10)+'kg</div>'
+                +  '<div style="font-size:0.72rem;color:var(--tx-muted);margin-top:2px;">실제 수분율 '+moisturePct+'%</div>'
                 +'</div>'
                 // 영양 분석
                 +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">'
