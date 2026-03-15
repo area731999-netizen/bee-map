@@ -13128,39 +13128,41 @@ function getUserInfo(){
 
         // ==================== 화분떡 배합 계산기 ====================
         var PF_DB = [
-            {id:'pf1',  name:'대두박(탈피)',       cat:'단백질원', protein:44, fat:1.5, carb:30, moisture:11, price:2000},
-            {id:'pf2',  name:'탈지대두분',          cat:'단백질원', protein:47, fat:1.0, carb:33, moisture:8,  price:2500},
-            {id:'pf3',  name:'발효대두분',           cat:'단백질원', protein:50, fat:1.5, carb:28, moisture:8,  price:4000},
-            {id:'pf4',  name:'대두단백농축(SPC)',    cat:'단백질원', protein:65, fat:1.0, carb:20, moisture:8,  price:8000},
-            {id:'pf5',  name:'탈지분유',             cat:'단백질원', protein:34, fat:1.0, carb:52, moisture:4,  price:6000},
-            {id:'pf6',  name:'전지분유',             cat:'단백질원', protein:26, fat:27,  carb:38, moisture:3,  price:5000},
-            {id:'pf7',  name:'유청단백질(WPC)',      cat:'단백질원', protein:75, fat:5.0, carb:10, moisture:5,  price:15000},
-            {id:'pf8',  name:'맥주효모(분말)',       cat:'효모류',   protein:45, fat:2.0, carb:35, moisture:6,  price:5000},
-            {id:'pf9',  name:'토르울라효모',          cat:'효모류',   protein:50, fat:2.5, carb:30, moisture:6,  price:6000},
-            {id:'pf10', name:'청국장가루',            cat:'발효식품', protein:40, fat:18,  carb:28, moisture:8,  price:4000},
-            {id:'pf11', name:'중국산 유채화분',       cat:'화분류',   protein:20, fat:4.5, carb:48, moisture:8,  price:7000,  isPollen:true},
-            {id:'pf12', name:'중국산 잡화분',          cat:'화분류',   protein:18, fat:4.0, carb:50, moisture:8,  price:6000,  isPollen:true},
-            {id:'pf13', name:'국내산 잡화분',          cat:'화분류',   protein:22, fat:5.0, carb:46, moisture:8,  price:15000, isPollen:true},
-            {id:'pf14', name:'도토리화분',             cat:'화분류',   protein:23, fat:5.5, carb:44, moisture:8,  price:18000, isPollen:true},
-            {id:'pf15', name:'MegaBee',               cat:'대용화분', protein:38, fat:2.0, carb:45, moisture:10, price:12000},
-            {id:'pf16', name:'FeedBee',               cat:'대용화분', protein:35, fat:3.0, carb:47, moisture:10, price:11000},
-            {id:'pf17', name:'설탕',                  cat:'에너지원', protein:0,  fat:0,   carb:100,moisture:0.5,price:1500},
-            {id:'pf18', name:'포도당',                 cat:'에너지원', protein:0,  fat:0,   carb:100,moisture:0.5,price:2000},
-            {id:'pf19', name:'과당',                   cat:'에너지원', protein:0,  fat:0,   carb:100,moisture:0.5,price:2500},
-            {id:'pf20', name:'꿀',                     cat:'에너지원', protein:0.3,fat:0,   carb:80, moisture:17, price:20000},
-            {id:'pf21', name:'전화당(시럽)',            cat:'에너지원', protein:0,  fat:0,   carb:75, moisture:25, price:2000},
-            {id:'pf22', name:'레시틴(대두)',            cat:'지방류',   protein:3.0,fat:65,  carb:12, moisture:1,  price:5000},
-            {id:'pf23', name:'카놀라유',                cat:'지방류',   protein:0,  fat:100, carb:0,  moisture:0,  price:2000},
-            {id:'pf24', name:'식초(양조)',              cat:'보존제',   protein:0,  fat:0,   carb:1,  moisture:95, price:1000},
-            {id:'pf25', name:'구연산',                  cat:'보존제',   protein:0,  fat:0,   carb:0,  moisture:0,  price:3000},
-            {id:'pf26', name:'비타민C(분말)',           cat:'기능성',   protein:0,  fat:0,   carb:0,  moisture:0,  price:5000},
-            {id:'pf27', name:'프로폴리스(분말)',         cat:'기능성',   protein:5,  fat:30,  carb:40, moisture:5,  price:50000},
-            {id:'pf28', name:'오가피효소액',             cat:'기능성',   protein:0.5,fat:0,   carb:15, moisture:80, price:8000},
-            {id:'pf29', name:'계란노른자(분말)',         cat:'기능성',   protein:32, fat:55,  carb:3,  moisture:4,  price:15000},
-            {id:'pf30', name:'클로렐라(분말)',           cat:'기능성',   protein:60, fat:9,   carb:15, moisture:5,  price:20000},
-            {id:'pf31', name:'소금',                    cat:'미네랄',   protein:0,  fat:0,   carb:0,  moisture:0,  price:500},
-            {id:'pf33', name:'물',                      cat:'수분조절',  protein:0,  fat:0,   carb:0,  moisture:100,price:0},
-            {id:'pf32', name:'양봉영양제(시판)',         cat:'영양제',   protein:5,  fat:2,   carb:30, moisture:10, price:10000, userEditable:true},
+            // 주원료 (kg 단위)
+            {id:'pf1',  name:'대두박(탈피)',       cat:'단백질원', unit:'kg', protein:44, fat:1.5, carb:30, moisture:11, price:2000},
+            {id:'pf2',  name:'탈지대두분',          cat:'단백질원', unit:'kg', protein:47, fat:1.0, carb:33, moisture:8,  price:2500},
+            {id:'pf3',  name:'발효대두분',           cat:'단백질원', unit:'kg', protein:50, fat:1.5, carb:28, moisture:8,  price:4000},
+            {id:'pf4',  name:'대두단백농축(SPC)',    cat:'단백질원', unit:'kg', protein:65, fat:1.0, carb:20, moisture:8,  price:8000},
+            {id:'pf5',  name:'탈지분유',             cat:'단백질원', unit:'kg', protein:34, fat:1.0, carb:52, moisture:4,  price:6000},
+            {id:'pf6',  name:'전지분유',             cat:'단백질원', unit:'kg', protein:26, fat:27,  carb:38, moisture:3,  price:5000},
+            {id:'pf7',  name:'유청단백질(WPC)',      cat:'단백질원', unit:'kg', protein:75, fat:5.0, carb:10, moisture:5,  price:15000},
+            {id:'pf8',  name:'맥주효모(분말)',       cat:'효모류',   unit:'kg', protein:45, fat:2.0, carb:35, moisture:6,  price:5000},
+            {id:'pf9',  name:'토르울라효모',          cat:'효모류',   unit:'kg', protein:50, fat:2.5, carb:30, moisture:6,  price:6000},
+            {id:'pf10', name:'청국장가루',            cat:'발효식품', unit:'kg', protein:40, fat:18,  carb:28, moisture:8,  price:4000},
+            {id:'pf11', name:'중국산 유채화분',       cat:'화분류',   unit:'kg', protein:20, fat:4.5, carb:48, moisture:8,  price:7000,  isPollen:true},
+            {id:'pf12', name:'중국산 잡화분',          cat:'화분류',   unit:'kg', protein:18, fat:4.0, carb:50, moisture:8,  price:6000,  isPollen:true},
+            {id:'pf13', name:'국내산 잡화분',          cat:'화분류',   unit:'kg', protein:22, fat:5.0, carb:46, moisture:8,  price:15000, isPollen:true},
+            {id:'pf14', name:'도토리화분',             cat:'화분류',   unit:'kg', protein:23, fat:5.5, carb:44, moisture:8,  price:18000, isPollen:true},
+            {id:'pf15', name:'MegaBee',               cat:'대용화분', unit:'kg', protein:38, fat:2.0, carb:45, moisture:10, price:12000},
+            {id:'pf16', name:'FeedBee',               cat:'대용화분', unit:'kg', protein:35, fat:3.0, carb:47, moisture:10, price:11000},
+            {id:'pf17', name:'설탕',                  cat:'에너지원', unit:'kg', protein:0,  fat:0,   carb:100,moisture:0.5,price:1500},
+            {id:'pf18', name:'포도당',                 cat:'에너지원', unit:'kg', protein:0,  fat:0,   carb:100,moisture:0.5,price:2000},
+            {id:'pf19', name:'과당',                   cat:'에너지원', unit:'kg', protein:0,  fat:0,   carb:100,moisture:0.5,price:2500},
+            {id:'pf20', name:'꿀',                     cat:'에너지원', unit:'kg', protein:0.3,fat:0,   carb:80, moisture:17, price:20000},
+            {id:'pf21', name:'전화당(시럽)',            cat:'에너지원', unit:'kg', protein:0,  fat:0,   carb:75, moisture:25, price:2000},
+            // 소량 원료 (g 단위) — minPct·maxPct: 전체 중량 대비 %
+            {id:'pf22', name:'레시틴(대두)',            cat:'지방류',   unit:'g',  protein:3.0,fat:65,  carb:12, moisture:1,  price:5000,  minPct:1.0, maxPct:2.0,  recommend:'전체의 1~2%'},
+            {id:'pf23', name:'카놀라유',                cat:'지방류',   unit:'g',  protein:0,  fat:100, carb:0,  moisture:0,  price:2000,  minPct:1.0, maxPct:5.0,  recommend:'전체의 1~5%'},
+            {id:'pf24', name:'식초(양조)',              cat:'보존제',   unit:'g',  protein:0,  fat:0,   carb:1,  moisture:95, price:1000,  minPct:1.0, maxPct:2.0,  recommend:'전체의 1~2%'},
+            {id:'pf25', name:'구연산',                  cat:'보존제',   unit:'g',  protein:0,  fat:0,   carb:0,  moisture:0,  price:3000,  minPct:0.5, maxPct:1.0,  recommend:'전체의 0.5~1%'},
+            {id:'pf26', name:'비타민C(분말)',           cat:'기능성',   unit:'g',  protein:0,  fat:0,   carb:0,  moisture:0,  price:5000,  minPct:0.5, maxPct:1.0,  recommend:'전체의 0.5~1%'},
+            {id:'pf27', name:'프로폴리스(분말)',         cat:'기능성',   unit:'g',  protein:5,  fat:30,  carb:40, moisture:5,  price:50000, minPct:1.0, maxPct:2.0,  recommend:'전체의 1~2%'},
+            {id:'pf28', name:'오가피효소액',             cat:'기능성',   unit:'g',  protein:0.5,fat:0,   carb:15, moisture:80, price:8000,  minPct:3.0, maxPct:5.0,  recommend:'전체의 3~5%'},
+            {id:'pf29', name:'계란노른자(분말)',         cat:'기능성',   unit:'g',  protein:32, fat:55,  carb:3,  moisture:4,  price:15000, minPct:5.0, maxPct:10.0, recommend:'전체의 5~10%'},
+            {id:'pf30', name:'클로렐라(분말)',           cat:'기능성',   unit:'g',  protein:60, fat:9,   carb:15, moisture:5,  price:20000, minPct:3.0, maxPct:5.0,  recommend:'전체의 3~5%'},
+            {id:'pf31', name:'소금',                    cat:'미네랄',   unit:'g',  protein:0,  fat:0,   carb:0,  moisture:0,  price:500,   minPct:0.3, maxPct:0.5,  recommend:'전체의 0.3~0.5%'},
+            {id:'pf33', name:'물',                      cat:'수분조절', unit:'g',  protein:0,  fat:0,   carb:0,  moisture:100,price:0},
+            {id:'pf32', name:'양봉영양제(시판)',         cat:'영양제',   unit:'g',  protein:5,  fat:2,   carb:30, moisture:10, price:10000, userEditable:true, recommend:'제품 설명서 참고'},
         ];
 
         var _pfSelected = [];
@@ -13233,17 +13235,27 @@ function getUserInfo(){
             var c = (catColor && catColor[_pfActiveCat]) || '#888';
             el.innerHTML = items.map(function(item) {
                 var isAdded = !!_pfSelected.find(function(s){ return s.id===item.id; });
+                var unitBadge = item.unit==='g'
+                    ? '<span style="font-size:0.65rem;background:rgba(56,189,248,0.2);color:#38bdf8;border-radius:6px;padding:1px 6px;font-weight:800;margin-left:4px;">g 단위</span>'
+                    : '<span style="font-size:0.65rem;background:rgba(251,191,36,0.2);color:#fbbf24;border-radius:6px;padding:1px 6px;font-weight:800;margin-left:4px;">kg 단위</span>';
+                var recommendBadge = item.recommend
+                    ? '<div style="font-size:0.7rem;color:#f87171;font-weight:700;margin-top:3px;">⚠️ 권장량: '+item.recommend+'</div>'
+                    : '';
                 return '<div style="display:flex;align-items:center;justify-content:space-between;'
-                    + 'background:var(--bg-input);border-radius:12px;padding:12px 14px;margin-bottom:8px;'
+                    + 'background:var(--bg-input);border-radius:12px;padding:13px 14px;margin-bottom:8px;'
                     + 'border:1px solid '+(isAdded ? c+'55' : 'transparent')+';'
                     + (isAdded ? 'opacity:0.5;' : '') + '">'
-                    + '<div>'
-                    +   '<div style="font-size:0.92rem;font-weight:800;color:var(--tx-main);margin-bottom:3px;">'+item.name+'</div>'
+                    + '<div style="flex:1;min-width:0;">'
+                    +   '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:3px;">'
+                    +     '<span style="font-size:0.95rem;font-weight:800;color:var(--tx-main);">'+item.name+'</span>'
+                    +     unitBadge
+                    +   '</div>'
                     +   '<div style="font-size:0.72rem;color:var(--tx-muted);">단백 '+item.protein+'% · 지방 '+item.fat+'% · 수분 '+item.moisture+'%</div>'
+                    +   recommendBadge
                     + '</div>'
                     + '<button onclick="pfAddIngredient('+JSON.stringify(item).replace(/"/g,"'")+',this)" '
-                    + 'style="width:38px;height:38px;border-radius:50%;border:2px solid '+c+';background:'+(isAdded?c+'33':'transparent')+';'
-                    + 'color:'+c+';font-size:1.2rem;font-weight:900;cursor:'+(isAdded?'default':'pointer')+';flex-shrink:0;">'
+                    + 'style="width:40px;height:40px;border-radius:50%;border:2px solid '+c+';background:'+(isAdded?c+'33':'transparent')+';'
+                    + 'color:'+c+';font-size:1.3rem;font-weight:900;cursor:'+(isAdded?'default':'pointer')+';flex-shrink:0;margin-left:10px;">'
                     + (isAdded ? '✓' : '+')
                     + '</button>'
                     + '</div>';
@@ -13285,17 +13297,48 @@ function getUserInfo(){
             var el = document.getElementById('pf-selected-list');
             if(!el) return;
             if(!_pfSelected.length) { el.innerHTML=''; return; }
-            el.innerHTML = _pfSelected.map(function(item, idx) {
-                return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;background:var(--bg-input);border-radius:10px;padding:8px 10px;">'
-                    + '<div style="flex:1;min-width:0;">'
-                    +   '<div style="font-size:0.8rem;font-weight:700;color:var(--tx-main);">'+item.name+'</div>'
-                    +   '<div style="font-size:0.68rem;color:var(--tx-muted);">단백 '+item.protein+'% | 지방 '+item.fat+'% | 수분 '+item.moisture+'%</div>'
+
+            // 주원료 합계 (kg → g 변환)
+            var mainTotal = 0;
+            _pfSelected.forEach(function(item) {
+                if(item.unit==='kg') mainTotal += (item.weight||0) * 1000;
+            });
+
+            el.innerHTML = '<div style="font-size:0.78rem;color:var(--tx-muted);font-weight:700;margin-bottom:8px;">📋 선택된 원료 — 중량 입력</div>'
+            + _pfSelected.map(function(item, idx) {
+                var isG = item.unit==='g';
+                var w = item.weight||0;
+                // 소량 원료 권장량 계산
+                var warnHtml = '';
+                if(isG && item.maxPct && mainTotal > 0) {
+                    var wg = w; // g
+                    var total = mainTotal + (_pfSelected.filter(function(s){ return s.unit==='g'; }).reduce(function(a,s){ return a+(s.weight||0);},0));
+                    var pct = wg / (total||1) * 100;
+                    if(wg > 0 && item.maxPct && pct > item.maxPct) {
+                        warnHtml = '<div style="font-size:0.7rem;color:#f87171;margin-top:3px;">⚠️ 권장 상한('+item.maxPct+'%) 초과!</div>';
+                    }
+                }
+                // 권장 최소량 자동 계산 (g 단위 원료)
+                var placeholder = isG && item.minPct && mainTotal > 0
+                    ? Math.round(mainTotal * item.minPct / 100) + ''
+                    : (isG ? '0' : '0');
+
+                return '<div style="background:var(--bg-input);border-radius:12px;padding:10px 12px;margin-bottom:8px;">'
+                    + '<div style="display:flex;align-items:center;gap:8px;">'
+                    +   '<div style="flex:1;min-width:0;">'
+                    +     '<div style="font-size:0.85rem;font-weight:800;color:var(--tx-main);">'+item.name+'</div>'
+                    +     (item.recommend ? '<div style="font-size:0.68rem;color:var(--tx-muted);">권장: '+item.recommend+'</div>' : '')
+                    +     warnHtml
+                    +   '</div>'
+                    +   '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">'
+                    +     '<input type="number" min="0" step="'+(isG?'1':'0.1')+'" placeholder="'+placeholder+'" value="'+(w||'')+'"'
+                    +     ' oninput="_pfSelected['+idx+'].weight=parseFloat(this.value)||0;pfRenderList();"'
+                    +     ' style="width:'+(isG?'65px':'70px')+';padding:7px;border-radius:8px;border:1px solid rgba(255,179,0,0.25);background:var(--bg-card);color:var(--tx-main);font-size:0.9rem;font-weight:700;text-align:center;">'
+                    +     '<span style="font-size:0.8rem;color:'+(isG?'#38bdf8':'#fbbf24')+';font-weight:800;min-width:16px;">'+(isG?'g':'kg')+'</span>'
+                    +   '</div>'
+                    +   '<button onclick="_pfSelected.splice('+idx+',1);pfRenderList();var cc={단백질원:\'#f59e0b\',효모류:\'#a78bfa\',발효식품:\'#f97316\',화분류:\'#34d399\',대용화분:\'#60a5fa\',에너지원:\'#fbbf24\',지방류:\'#fb923c\',보존제:\'#94a3b8\',기능성:\'#f472b6\',미네랄:\'#64748b\',영양제:\'#86efac\',수분조절:\'#38bdf8\'};pfRenderCards(cc);" '
+                    +   'style="background:rgba(239,68,68,0.15);border:none;color:#f87171;border-radius:8px;padding:5px 8px;cursor:pointer;font-size:0.78rem;flex-shrink:0;">✕</button>'
                     + '</div>'
-                    + '<input type="number" min="0" placeholder="g" value="'+(item.weight||'')+'"'
-                    + ' oninput="_pfSelected['+idx+'].weight=parseFloat(this.value)||0;"'
-                    + ' style="width:68px;padding:6px;border-radius:8px;border:1px solid rgba(255,179,0,0.25);background:var(--bg-card);color:var(--tx-main);font-size:0.85rem;text-align:center;">'
-                    + '<span style="font-size:0.72rem;color:var(--tx-muted);">g</span>'
-                    + '<button onclick="_pfSelected.splice('+idx+',1);pfRenderList();" style="background:rgba(239,68,68,0.15);border:none;color:#f87171;border-radius:8px;padding:5px 8px;cursor:pointer;font-size:0.75rem;">✕</button>'
                     + '</div>';
             }).join('');
         }
@@ -13311,7 +13354,8 @@ function getUserInfo(){
             var totalWeight=0, totalProtein=0, totalFat=0, totalCarb=0, totalMoisture=0;
             var totalCost=0, pollenWeight=0;
             _pfSelected.forEach(function(item) {
-                var w = item.weight||0; if(w<=0) return;
+                var w = (item.weight||0) * (item.unit==='kg' ? 1000 : 1); // 모두 g으로 통일
+                if(w<=0) return;
                 totalWeight   += w;
                 totalProtein  += w * item.protein  / 100;
                 totalFat      += w * item.fat      / 100;
