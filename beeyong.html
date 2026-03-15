@@ -3378,6 +3378,86 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             </div>
         </div>
 
+        <!-- 화분떡 원료 추가/수정 모달 -->
+        <div id="pf-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:16000;align-items:center;justify-content:center;padding:20px;">
+            <div style="background:var(--bg-card);border-radius:20px;padding:22px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                    <span id="pf-modal-title" style="font-size:1rem;font-weight:900;color:var(--tx-gold);">원료 추가</span>
+                    <button onclick="pfCloseModal()" style="background:transparent;border:none;color:var(--tx-muted);font-size:1.3rem;cursor:pointer;">✕</button>
+                </div>
+                <!-- 원료명 -->
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:5px;">원료명 *</div>
+                    <input id="pf-modal-name" type="text" placeholder="예: 발효대두분" class="field" style="font-size:0.9rem;">
+                </div>
+                <!-- 카테고리 -->
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:5px;">카테고리</div>
+                    <select id="pf-modal-cat" class="field" style="font-size:0.9rem;">
+                        <option>단백질원</option>
+                        <option>효모류</option>
+                        <option>발효식품</option>
+                        <option>화분류</option>
+                        <option>대용화분</option>
+                        <option>에너지원</option>
+                        <option>지방류</option>
+                        <option>보존제</option>
+                        <option>기능성</option>
+                        <option>미네랄</option>
+                        <option>영양제</option>
+                        <option>기타</option>
+                    </select>
+                </div>
+                <!-- 단위 -->
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:5px;">투입 단위</div>
+                    <div style="display:flex;gap:8px;">
+                        <button id="pf-unit-kg" onclick="pfSetUnit('kg')" style="flex:1;padding:10px;border-radius:10px;border:2px solid #fbbf24;background:rgba(251,191,36,0.2);color:#fbbf24;font-weight:800;cursor:pointer;">kg (주원료)</button>
+                        <button id="pf-unit-g" onclick="pfSetUnit('g')" style="flex:1;padding:10px;border-radius:10px;border:2px solid rgba(255,255,255,0.15);background:transparent;color:var(--tx-muted);font-weight:800;cursor:pointer;">g (소량원료)</button>
+                    </div>
+                </div>
+                <!-- 영양성분 -->
+                <div style="font-size:0.78rem;color:var(--tx-muted);font-weight:700;margin-bottom:8px;">📊 영양성분 (100g 기준 %)</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+                    <div>
+                        <div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:4px;">조단백질 %</div>
+                        <input id="pf-modal-protein" type="number" min="0" max="100" step="0.1" placeholder="예: 44" class="field" style="text-align:center;">
+                    </div>
+                    <div>
+                        <div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:4px;">조지방 %</div>
+                        <input id="pf-modal-fat" type="number" min="0" max="100" step="0.1" placeholder="예: 1.5" class="field" style="text-align:center;">
+                    </div>
+                    <div>
+                        <div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:4px;">탄수화물 %</div>
+                        <input id="pf-modal-carb" type="number" min="0" max="100" step="0.1" placeholder="예: 30" class="field" style="text-align:center;">
+                    </div>
+                    <div>
+                        <div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:4px;">수분 %</div>
+                        <input id="pf-modal-moisture" type="number" min="0" max="100" step="0.1" placeholder="예: 11" class="field" style="text-align:center;">
+                    </div>
+                </div>
+                <!-- 가격 -->
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:4px;">가격 (원/kg)</div>
+                    <input id="pf-modal-price" type="number" min="0" placeholder="예: 2000" class="field" style="text-align:center;">
+                </div>
+                <!-- 권장량 (소량 원료용) -->
+                <div id="pf-modal-recommend-wrap" style="display:none;margin-bottom:12px;">
+                    <div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:4px;">권장량 안내 (선택)</div>
+                    <input id="pf-modal-recommend" type="text" placeholder="예: 전체의 0.5~1%" class="field" style="font-size:0.85rem;">
+                </div>
+                <!-- 천연화분 여부 -->
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                    <input type="checkbox" id="pf-modal-isPollen" style="width:18px;height:18px;accent-color:#34d399;cursor:pointer;">
+                    <label for="pf-modal-isPollen" style="font-size:0.85rem;color:var(--tx-sub);cursor:pointer;">천연화분 원료 (기호성 계산에 반영)</label>
+                </div>
+                <!-- 저장 버튼 -->
+                <button onclick="pfSaveModal()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:800;font-size:0.95rem;cursor:pointer;margin-bottom:8px;">💾 저장</button>
+                <!-- 기본값 초기화 버튼 (기본 원료만 표시) -->
+                <button id="pf-modal-reset-btn" onclick="pfResetToDefault()" style="display:none;width:100%;padding:12px;border-radius:12px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.08);color:#f87171;font-weight:700;font-size:0.88rem;cursor:pointer;">🔄 앱 기본값으로 초기화</button>
+            </div>
+        </div>
+
         <!-- 가계부 화면 -->
         <div id="view-account" class="view-group" style="padding-bottom: 160px;">
             <div style="display:flex;gap:6px;margin-bottom:18px;padding:5px;background:var(--bg-input);border-radius:14px;border:1px solid var(--bd-green);">
@@ -13170,6 +13250,7 @@ function getUserInfo(){
         var _pfActiveCat = null;
 
         function pfInit() {
+            pfBackupDefaults(); // 원본 DB 백업
             var tabEl = document.getElementById('pf-cat-tabs');
             if(!tabEl || tabEl.innerHTML) return;
 
@@ -13253,11 +13334,16 @@ function getUserInfo(){
                     +   '<div style="font-size:0.72rem;color:var(--tx-muted);">단백 '+item.protein+'% · 지방 '+item.fat+'% · 수분 '+item.moisture+'%</div>'
                     +   recommendBadge
                     + '</div>'
+                    + '<div style="display:flex;gap:6px;align-items:center;flex-shrink:0;margin-left:8px;">'
+                    + '<button onclick="pfOpenEditModal(\''+item.id+'\')" '
+                    + 'style="width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);background:transparent;'
+                    + 'color:var(--tx-muted);font-size:0.85rem;cursor:pointer;">✏️</button>'
                     + '<button onclick="pfAddIngredient('+JSON.stringify(item).replace(/"/g,"'")+',this)" '
                     + 'style="width:40px;height:40px;border-radius:50%;border:2px solid '+c+';background:'+(isAdded?c+'33':'transparent')+';'
-                    + 'color:'+c+';font-size:1.3rem;font-weight:900;cursor:'+(isAdded?'default':'pointer')+';flex-shrink:0;margin-left:10px;">'
+                    + 'color:'+c+';font-size:1.3rem;font-weight:900;cursor:'+(isAdded?'default':'pointer')+';">'
                     + (isAdded ? '✓' : '+')
                     + '</button>'
+                    + '</div>'
                     + '</div>';
             }).join('');
         }
@@ -13278,18 +13364,141 @@ function getUserInfo(){
             pfRenderCards(catColor);
         }
 
+        var _pfModalMode = 'new'; // 'new' or 'edit'
+        var _pfModalEditId = null;
+        var _pfModalUnit = 'kg';
+
+        // 원본 DB 백업 (최초 1회)
+        var PF_DB_DEFAULT = null;
+        function pfBackupDefaults() {
+            if(!PF_DB_DEFAULT) PF_DB_DEFAULT = JSON.parse(JSON.stringify(PF_DB));
+        }
+
         window.pfAddCustom = function() {
-            var name = prompt('원료명 입력:');
-            if(!name) return;
-            var protein  = parseFloat(prompt('조단백질 % (예: 40):') || 0);
-            var fat      = parseFloat(prompt('조지방 % (예: 5):') || 0);
-            var carb     = parseFloat(prompt('탄수화물 % (예: 30):') || 0);
-            var moisture = parseFloat(prompt('수분 % (예: 8):') || 0);
-            var price    = parseFloat(prompt('가격 (원/kg, 예: 5000):') || 0);
-            var isPollen = confirm('천연화분 원료인가요?');
-            _pfSelected.push({id:'custom_'+Date.now(), name:name, cat:'사용자추가',
-                protein:protein, fat:fat, carb:carb, moisture:moisture,
-                price:price, isPollen:isPollen, weight:0});
+            _pfModalMode = 'new';
+            _pfModalEditId = null;
+            _pfModalUnit = 'kg';
+            document.getElementById('pf-modal-title').textContent = '➕ 원료 추가';
+            document.getElementById('pf-modal-name').value = '';
+            document.getElementById('pf-modal-cat').value = '단백질원';
+            document.getElementById('pf-modal-protein').value = '';
+            document.getElementById('pf-modal-fat').value = '';
+            document.getElementById('pf-modal-carb').value = '';
+            document.getElementById('pf-modal-moisture').value = '';
+            document.getElementById('pf-modal-price').value = '';
+            document.getElementById('pf-modal-recommend').value = '';
+            document.getElementById('pf-modal-isPollen').checked = false;
+            pfSetUnit('kg');
+            var modal = document.getElementById('pf-edit-modal');
+            modal.style.display = 'flex';
+        };
+
+        window.pfOpenEditModal = function(itemId) {
+            var item = PF_DB.find(function(i){ return i.id===itemId; });
+            if(!item) return;
+            _pfModalMode = 'edit';
+            _pfModalEditId = itemId;
+            _pfModalUnit = item.unit || 'kg';
+            document.getElementById('pf-modal-title').textContent = '✏️ 원료 수정 — ' + item.name;
+            document.getElementById('pf-modal-name').value = item.name;
+            document.getElementById('pf-modal-cat').value = item.cat;
+            document.getElementById('pf-modal-protein').value = item.protein;
+            document.getElementById('pf-modal-fat').value = item.fat;
+            document.getElementById('pf-modal-carb').value = item.carb;
+            document.getElementById('pf-modal-moisture').value = item.moisture;
+            document.getElementById('pf-modal-price').value = item.price || 0;
+            document.getElementById('pf-modal-recommend').value = item.recommend || '';
+            document.getElementById('pf-modal-isPollen').checked = !!item.isPollen;
+            pfSetUnit(_pfModalUnit);
+            // 기본 원료면 초기화 버튼 표시, 사용자 추가 원료면 숨김
+            var isBuiltIn = PF_DB_DEFAULT && !!PF_DB_DEFAULT.find(function(d){ return d.id===itemId; });
+            document.getElementById('pf-modal-reset-btn').style.display = isBuiltIn ? 'block' : 'none';
+            var modal = document.getElementById('pf-edit-modal');
+            modal.style.display = 'flex';
+        };
+
+        window.pfSetUnit = function(unit) {
+            _pfModalUnit = unit;
+            var kgBtn = document.getElementById('pf-unit-kg');
+            var gBtn  = document.getElementById('pf-unit-g');
+            var recWrap = document.getElementById('pf-modal-recommend-wrap');
+            if(unit==='kg') {
+                kgBtn.style.borderColor='#fbbf24'; kgBtn.style.background='rgba(251,191,36,0.2)'; kgBtn.style.color='#fbbf24';
+                gBtn.style.borderColor='rgba(255,255,255,0.15)'; gBtn.style.background='transparent'; gBtn.style.color='var(--tx-muted)';
+                recWrap.style.display='none';
+            } else {
+                gBtn.style.borderColor='#38bdf8'; gBtn.style.background='rgba(56,189,248,0.2)'; gBtn.style.color='#38bdf8';
+                kgBtn.style.borderColor='rgba(255,255,255,0.15)'; kgBtn.style.background='transparent'; kgBtn.style.color='var(--tx-muted)';
+                recWrap.style.display='block';
+            }
+        };
+
+        window.pfCloseModal = function() {
+            document.getElementById('pf-edit-modal').style.display='none';
+        };
+
+        window.pfResetToDefault = function() {
+            if(!_pfModalEditId || !PF_DB_DEFAULT) return;
+            var orig = PF_DB_DEFAULT.find(function(d){ return d.id===_pfModalEditId; });
+            if(!orig) return;
+            if(!confirm('"'+orig.name+'" 을(를) 앱 기본값으로 초기화하시겠어요?\n\n단백질 '+orig.protein+'% / 지방 '+orig.fat+'% / 탄수화물 '+orig.carb+'% / 수분 '+orig.moisture+'%')) return;
+            // DB 복원
+            var idx = PF_DB.findIndex(function(i){ return i.id===_pfModalEditId; });
+            if(idx>=0) Object.assign(PF_DB[idx], orig);
+            // 선택 목록도 반영
+            var si = _pfSelected.findIndex(function(s){ return s.id===_pfModalEditId; });
+            if(si>=0) Object.assign(_pfSelected[si], orig);
+            showToast('✅ 기본값으로 초기화 완료');
+            pfCloseModal();
+            var catColor = {단백질원:'#f59e0b',효모류:'#a78bfa',발효식품:'#f97316',화분류:'#34d399',대용화분:'#60a5fa',에너지원:'#fbbf24',지방류:'#fb923c',보존제:'#94a3b8',기능성:'#f472b6',미네랄:'#64748b',영양제:'#86efac',수분조절:'#38bdf8',기타:'#888'};
+            pfRenderCards(catColor);
+            pfRenderList();
+        };
+
+        window.pfSaveModal = function() {
+            var name     = document.getElementById('pf-modal-name').value.trim();
+            if(!name) { showToast('원료명을 입력해주세요'); return; }
+            var cat      = document.getElementById('pf-modal-cat').value;
+            var protein  = parseFloat(document.getElementById('pf-modal-protein').value) || 0;
+            var fat      = parseFloat(document.getElementById('pf-modal-fat').value) || 0;
+            var carb     = parseFloat(document.getElementById('pf-modal-carb').value) || 0;
+            var moisture = parseFloat(document.getElementById('pf-modal-moisture').value) || 0;
+            var price    = parseFloat(document.getElementById('pf-modal-price').value) || 0;
+            var recommend= document.getElementById('pf-modal-recommend').value.trim() || null;
+            var isPollen = document.getElementById('pf-modal-isPollen').checked;
+
+            var catColor = {단백질원:'#f59e0b',효모류:'#a78bfa',발효식품:'#f97316',화분류:'#34d399',대용화분:'#60a5fa',에너지원:'#fbbf24',지방류:'#fb923c',보존제:'#94a3b8',기능성:'#f472b6',미네랄:'#64748b',영양제:'#86efac',수분조절:'#38bdf8',기타:'#888'};
+
+            if(_pfModalMode==='edit') {
+                // 기존 원료 수정
+                var idx = PF_DB.findIndex(function(i){ return i.id===_pfModalEditId; });
+                if(idx>=0) {
+                    PF_DB[idx].name=name; PF_DB[idx].cat=cat; PF_DB[idx].unit=_pfModalUnit;
+                    PF_DB[idx].protein=protein; PF_DB[idx].fat=fat; PF_DB[idx].carb=carb;
+                    PF_DB[idx].moisture=moisture; PF_DB[idx].price=price;
+                    PF_DB[idx].recommend=recommend; PF_DB[idx].isPollen=isPollen;
+                }
+                // 선택 목록에도 반영
+                var si = _pfSelected.findIndex(function(s){ return s.id===_pfModalEditId; });
+                if(si>=0) Object.assign(_pfSelected[si], PF_DB[idx]);
+                showToast('✅ 원료 수정 완료');
+            } else {
+                // 신규 원료 추가
+                var newItem = {
+                    id:'custom_'+Date.now(), name:name, cat:cat, unit:_pfModalUnit,
+                    protein:protein, fat:fat, carb:carb, moisture:moisture,
+                    price:price, isPollen:isPollen, recommend:recommend||undefined
+                };
+                PF_DB.push(newItem);
+                showToast('✅ 원료 추가 완료');
+            }
+
+            pfCloseModal();
+            // 카테고리 탭·카드 재생성
+            _pfActiveCat = cat;
+            var tabEl = document.getElementById('pf-cat-tabs');
+            if(tabEl) tabEl.innerHTML='';
+            pfInit();
             pfRenderList();
         };
 
