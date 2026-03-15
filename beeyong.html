@@ -3919,6 +3919,31 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 </div>
                 <div id="sugar-result" style="margin-top: 12px; padding: 16px; background: var(--bg-purple); border-radius: 10px; display: none; color: var(--tx-main);"></div>
             </div>
+
+            <!-- 화분떡 배합 계산기 -->
+            <div style="background:var(--bg-card);padding:20px;border-radius:16px;margin-bottom:100px;border:1px solid rgba(255,179,0,0.15);">
+                <h4 style="color:var(--tx-gold);font-weight:900;margin-bottom:6px;font-size:1.1rem;">🍯 화분떡(대용화분) 배합 계산기</h4>
+                <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:14px;line-height:1.6;">원료를 선택하고 중량(g)을 입력하면 영양가·기호성·원가를 자동 계산합니다.</div>
+
+                <!-- 원료 선택 -->
+                <div style="margin-bottom:14px;">
+                    <div style="font-size:0.78rem;color:var(--tx-muted);font-weight:700;margin-bottom:8px;">📦 원료 선택</div>
+                    <div id="pf-ingredient-btns" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;"></div>
+                    <button onclick="pfAddCustom()" style="padding:5px 12px;border-radius:12px;border:1px dashed rgba(255,179,0,0.4);background:transparent;color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">+ 원료 직접 추가</button>
+                </div>
+
+                <!-- 선택된 원료 목록 -->
+                <div id="pf-selected-list" style="margin-bottom:14px;"></div>
+
+                <!-- 계산 버튼 -->
+                <div style="display:flex;gap:8px;margin-bottom:10px;">
+                    <button onclick="calcPollenFeed()" style="flex:1;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:14px;border-radius:10px;font-weight:800;border:none;cursor:pointer;">🧮 계산하기</button>
+                    <button onclick="resetPollenFeed()" style="background:rgba(100,100,100,0.5);color:white;padding:14px 20px;border-radius:10px;border:none;cursor:pointer;">초기화</button>
+                </div>
+
+                <!-- 결과 -->
+                <div id="pf-result" style="display:none;"></div>
+            </div>
         </div>
 
         <!-- 밀원식물 검색 화면 -->
@@ -8797,11 +8822,12 @@ function getUserInfo(){
         function renderCalculatorSection() {
             var sec = document.getElementById('section-calculator');
             if(!sec) return;
-            // 기존 view-calculator 내용을 그대로 이동
             var calcView = document.getElementById('view-calculator');
             if(calcView) {
                 sec.innerHTML = calcView.innerHTML;
             }
+            // 화분떡 계산기 원료 버튼 초기화
+            setTimeout(function() { pfInit(); }, 50);
         }
 
         function renderFeedingSection() {
@@ -13080,7 +13106,181 @@ function getUserInfo(){
             document.getElementById('sugar-result').style.display = 'none';
         }
 
-        // ==================== 가계부 함수 ====================
+        function resetSugar() {
+            document.getElementById('sugar-ratio').value = '';
+            document.getElementById('sugar-water').value = '';
+            document.getElementById('sugar-result').style.display = 'none';
+        }
+
+        // ==================== 화분떡 배합 계산기 ====================
+        var PF_DB = [
+            {id:'pf1',  name:'대두박(탈피)',       cat:'단백질원', protein:44, fat:1.5, carb:30, moisture:11, price:2000},
+            {id:'pf2',  name:'탈지대두분',          cat:'단백질원', protein:47, fat:1.0, carb:33, moisture:8,  price:2500},
+            {id:'pf3',  name:'발효대두분',           cat:'단백질원', protein:50, fat:1.5, carb:28, moisture:8,  price:4000},
+            {id:'pf4',  name:'대두단백농축(SPC)',    cat:'단백질원', protein:65, fat:1.0, carb:20, moisture:8,  price:8000},
+            {id:'pf5',  name:'탈지분유',             cat:'단백질원', protein:34, fat:1.0, carb:52, moisture:4,  price:6000},
+            {id:'pf6',  name:'전지분유',             cat:'단백질원', protein:26, fat:27,  carb:38, moisture:3,  price:5000},
+            {id:'pf7',  name:'유청단백질(WPC)',      cat:'단백질원', protein:75, fat:5.0, carb:10, moisture:5,  price:15000},
+            {id:'pf8',  name:'맥주효모(분말)',       cat:'효모류',   protein:45, fat:2.0, carb:35, moisture:6,  price:5000},
+            {id:'pf9',  name:'토르울라효모',          cat:'효모류',   protein:50, fat:2.5, carb:30, moisture:6,  price:6000},
+            {id:'pf10', name:'청국장가루',            cat:'발효식품', protein:40, fat:18,  carb:28, moisture:8,  price:4000},
+            {id:'pf11', name:'중국산 유채화분',       cat:'화분류',   protein:20, fat:4.5, carb:48, moisture:8,  price:7000,  isPollen:true},
+            {id:'pf12', name:'중국산 잡화분',          cat:'화분류',   protein:18, fat:4.0, carb:50, moisture:8,  price:6000,  isPollen:true},
+            {id:'pf13', name:'국내산 잡화분',          cat:'화분류',   protein:22, fat:5.0, carb:46, moisture:8,  price:15000, isPollen:true},
+            {id:'pf14', name:'도토리화분',             cat:'화분류',   protein:23, fat:5.5, carb:44, moisture:8,  price:18000, isPollen:true},
+            {id:'pf15', name:'MegaBee',               cat:'대용화분', protein:38, fat:2.0, carb:45, moisture:10, price:12000},
+            {id:'pf16', name:'FeedBee',               cat:'대용화분', protein:35, fat:3.0, carb:47, moisture:10, price:11000},
+            {id:'pf17', name:'설탕',                  cat:'에너지원', protein:0,  fat:0,   carb:100,moisture:0.5,price:1500},
+            {id:'pf18', name:'포도당',                 cat:'에너지원', protein:0,  fat:0,   carb:100,moisture:0.5,price:2000},
+            {id:'pf19', name:'과당',                   cat:'에너지원', protein:0,  fat:0,   carb:100,moisture:0.5,price:2500},
+            {id:'pf20', name:'꿀',                     cat:'에너지원', protein:0.3,fat:0,   carb:80, moisture:17, price:20000},
+            {id:'pf21', name:'전화당(시럽)',            cat:'에너지원', protein:0,  fat:0,   carb:75, moisture:25, price:2000},
+            {id:'pf22', name:'레시틴(대두)',            cat:'지방류',   protein:3.0,fat:65,  carb:12, moisture:1,  price:5000},
+            {id:'pf23', name:'카놀라유',                cat:'지방류',   protein:0,  fat:100, carb:0,  moisture:0,  price:2000},
+            {id:'pf24', name:'식초(양조)',              cat:'보존제',   protein:0,  fat:0,   carb:1,  moisture:95, price:1000},
+            {id:'pf25', name:'구연산',                  cat:'보존제',   protein:0,  fat:0,   carb:0,  moisture:0,  price:3000},
+            {id:'pf26', name:'비타민C(분말)',           cat:'기능성',   protein:0,  fat:0,   carb:0,  moisture:0,  price:5000},
+            {id:'pf27', name:'프로폴리스(분말)',         cat:'기능성',   protein:5,  fat:30,  carb:40, moisture:5,  price:50000},
+            {id:'pf28', name:'오가피효소액',             cat:'기능성',   protein:0.5,fat:0,   carb:15, moisture:80, price:8000},
+            {id:'pf29', name:'계란노른자(분말)',         cat:'기능성',   protein:32, fat:55,  carb:3,  moisture:4,  price:15000},
+            {id:'pf30', name:'클로렐라(분말)',           cat:'기능성',   protein:60, fat:9,   carb:15, moisture:5,  price:20000},
+            {id:'pf31', name:'소금',                    cat:'미네랄',   protein:0,  fat:0,   carb:0,  moisture:0,  price:500},
+            {id:'pf32', name:'양봉영양제(시판)',         cat:'영양제',   protein:5,  fat:2,   carb:30, moisture:10, price:10000, userEditable:true},
+        ];
+
+        var _pfSelected = [];
+
+        function pfInit() {
+            var el = document.getElementById('pf-ingredient-btns');
+            if(!el || el.innerHTML) return;
+            var catColor = {
+                '단백질원':'#f59e0b','효모류':'#a78bfa','발효식품':'#f97316',
+                '화분류':'#34d399','대용화분':'#60a5fa','에너지원':'#fbbf24',
+                '지방류':'#fb923c','보존제':'#94a3b8','기능성':'#f472b6',
+                '미네랄':'#64748b','영양제':'#86efac'
+            };
+            PF_DB.forEach(function(item) {
+                var c = catColor[item.cat] || '#888';
+                var btn = document.createElement('button');
+                btn.textContent = item.name;
+                btn.style.cssText = 'padding:5px 10px;border-radius:12px;border:1px solid '+c+'55;background:'+c+'18;color:'+c+';font-size:0.73rem;font-weight:700;cursor:pointer;margin-bottom:2px;';
+                btn.onclick = function() { pfAddIngredient(item); };
+                el.appendChild(btn);
+            });
+        }
+        window.pfInit = pfInit;
+
+        function pfAddIngredient(item) {
+            if(_pfSelected.find(function(s){ return s.id===item.id; })) {
+                showToast('이미 추가된 원료예요'); return;
+            }
+            _pfSelected.push(Object.assign({}, item, {weight:0}));
+            pfRenderList();
+        }
+
+        window.pfAddCustom = function() {
+            var name = prompt('원료명 입력:');
+            if(!name) return;
+            var protein  = parseFloat(prompt('조단백질 % (예: 40):') || 0);
+            var fat      = parseFloat(prompt('조지방 % (예: 5):') || 0);
+            var carb     = parseFloat(prompt('탄수화물 % (예: 30):') || 0);
+            var moisture = parseFloat(prompt('수분 % (예: 8):') || 0);
+            var price    = parseFloat(prompt('가격 (원/kg, 예: 5000):') || 0);
+            var isPollen = confirm('천연화분 원료인가요?');
+            _pfSelected.push({id:'custom_'+Date.now(), name:name, cat:'사용자추가',
+                protein:protein, fat:fat, carb:carb, moisture:moisture,
+                price:price, isPollen:isPollen, weight:0});
+            pfRenderList();
+        };
+
+        function pfRenderList() {
+            var el = document.getElementById('pf-selected-list');
+            if(!el) return;
+            if(!_pfSelected.length) { el.innerHTML=''; return; }
+            el.innerHTML = _pfSelected.map(function(item, idx) {
+                return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;background:var(--bg-input);border-radius:10px;padding:8px 10px;">'
+                    + '<div style="flex:1;min-width:0;">'
+                    +   '<div style="font-size:0.8rem;font-weight:700;color:var(--tx-main);">'+item.name+'</div>'
+                    +   '<div style="font-size:0.68rem;color:var(--tx-muted);">단백 '+item.protein+'% | 지방 '+item.fat+'% | 수분 '+item.moisture+'%</div>'
+                    + '</div>'
+                    + '<input type="number" min="0" placeholder="g" value="'+(item.weight||'')+'"'
+                    + ' oninput="_pfSelected['+idx+'].weight=parseFloat(this.value)||0;"'
+                    + ' style="width:68px;padding:6px;border-radius:8px;border:1px solid rgba(255,179,0,0.25);background:var(--bg-card);color:var(--tx-main);font-size:0.85rem;text-align:center;">'
+                    + '<span style="font-size:0.72rem;color:var(--tx-muted);">g</span>'
+                    + '<button onclick="_pfSelected.splice('+idx+',1);pfRenderList();" style="background:rgba(239,68,68,0.15);border:none;color:#f87171;border-radius:8px;padding:5px 8px;cursor:pointer;font-size:0.75rem;">✕</button>'
+                    + '</div>';
+            }).join('');
+        }
+
+        window.calcPollenFeed = function() {
+            if(!_pfSelected.length) { showToast('원료를 먼저 선택해주세요'); return; }
+            var totalWeight=0, totalProtein=0, totalFat=0, totalCarb=0, totalMoisture=0;
+            var totalCost=0, pollenWeight=0;
+            _pfSelected.forEach(function(item) {
+                var w = item.weight||0; if(w<=0) return;
+                totalWeight   += w;
+                totalProtein  += w * item.protein  / 100;
+                totalFat      += w * item.fat      / 100;
+                totalCarb     += w * item.carb     / 100;
+                totalMoisture += w * item.moisture / 100;
+                totalCost     += w * (item.price||0) / 1000;
+                if(item.isPollen) pollenWeight += w;
+            });
+            if(totalWeight<=0) { showToast('중량을 입력해주세요'); return; }
+
+            var proteinPct  = (totalProtein /totalWeight*100).toFixed(1);
+            var fatPct      = (totalFat     /totalWeight*100).toFixed(1);
+            var carbPct     = (totalCarb    /totalWeight*100).toFixed(1);
+            var moisturePct = (totalMoisture/totalWeight*100).toFixed(1);
+            var pollenPct   = (pollenWeight /totalWeight*100).toFixed(1);
+            var costPer1kg  = Math.round(totalCost/totalWeight*1000);
+
+            var palGrade, palColor, palMsg;
+            if(pollenPct>=30)      { palGrade='우수'; palColor='#4ade80'; palMsg='천연화분 '+pollenPct+'% — 기호성 최상. 산란 촉진 탁월.'; }
+            else if(pollenPct>=20) { palGrade='보통'; palColor='#fbbf24'; palMsg='천연화분 '+pollenPct+'% — 권장 표준. 경제성·기호성 균형.'; }
+            else                   { palGrade='낮음'; palColor='#f87171'; palMsg='⚠️ 천연화분 '+pollenPct+'% — 기호성 저하 우려. 20% 이상 권장.'; }
+
+            var warns = [];
+            if(parseFloat(proteinPct)<20)  warns.push('⚠️ 조단백질 '+proteinPct+'% — 20% 미만. 영양 부족 우려.');
+            if(parseFloat(moisturePct)>18) warns.push('⚠️ 수분 '+moisturePct+'% — 18% 초과. 발효·변질 위험.');
+            if(parseFloat(moisturePct)<12) warns.push('⚠️ 수분 '+moisturePct+'% — 12% 미만. 너무 딱딱해 급이 어려울 수 있음.');
+
+            var el = document.getElementById('pf-result');
+            el.style.display='block';
+            el.innerHTML =
+                '<div style="font-size:0.78rem;font-weight:800;color:#c084fc;margin-bottom:12px;">📊 배합 결과 (총 '+totalWeight.toLocaleString()+'g)</div>'
+                +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">'
+                +  '<div style="background:rgba(74,222,128,0.1);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:0.68rem;color:var(--tx-muted);margin-bottom:3px;">🥩 조단백질</div><div style="font-size:1.3rem;font-weight:900;color:#4ade80;">'+proteinPct+'%</div></div>'
+                +  '<div style="background:rgba(251,191,36,0.1);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:0.68rem;color:var(--tx-muted);margin-bottom:3px;">💧 수분</div><div style="font-size:1.3rem;font-weight:900;color:#fbbf24;">'+moisturePct+'%</div></div>'
+                +  '<div style="background:rgba(96,165,250,0.1);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:0.68rem;color:var(--tx-muted);margin-bottom:3px;">🫒 조지방</div><div style="font-size:1.3rem;font-weight:900;color:#60a5fa;">'+fatPct+'%</div></div>'
+                +  '<div style="background:rgba(167,139,250,0.1);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:0.68rem;color:var(--tx-muted);margin-bottom:3px;">🌾 탄수화물</div><div style="font-size:1.3rem;font-weight:900;color:#a78bfa;">'+carbPct+'%</div></div>'
+                +'</div>'
+                +'<div style="background:rgba(255,179,0,0.07);border-radius:10px;padding:10px;margin-bottom:8px;">'
+                +  '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">'
+                +    '<span style="font-size:0.78rem;font-weight:700;color:var(--tx-muted);">🐝 기호성 등급</span>'
+                +    '<span style="font-size:0.9rem;font-weight:900;color:'+palColor+';">'+palGrade+'</span>'
+                +  '</div>'
+                +  '<div style="font-size:0.78rem;color:var(--tx-sub);">'+palMsg+'</div>'
+                +'</div>'
+                +'<div style="background:rgba(255,179,0,0.07);border-radius:10px;padding:10px;margin-bottom:8px;">'
+                +  '<div style="display:flex;align-items:center;justify-content:space-between;">'
+                +    '<span style="font-size:0.78rem;font-weight:700;color:var(--tx-muted);">💰 1kg 제조 원가</span>'
+                +    '<span style="font-size:1.1rem;font-weight:900;color:var(--tx-gold);">'+costPer1kg.toLocaleString()+'원</span>'
+                +  '</div>'
+                +  '<div style="font-size:0.72rem;color:var(--tx-muted);margin-top:2px;">시판 화분떡 평균 5,000~8,000원/kg 대비</div>'
+                +'</div>'
+                +(warns.length ? '<div style="background:rgba(239,68,68,0.08);border-radius:10px;padding:10px;border-left:3px solid #f87171;margin-bottom:8px;">'
+                +  warns.map(function(w){ return '<div style="font-size:0.78rem;color:#f87171;margin-bottom:3px;">'+w+'</div>'; }).join('')
+                +'</div>' : '')
+                +'<div style="font-size:0.7rem;color:var(--tx-muted);line-height:1.7;">💡 수분 15~18% 유지 권장 | 구연산·비타민C로 pH 4~5 약산성 조절 | 대두박 미분(고운 가루) 사용 권장</div>';
+        };
+
+        window.resetPollenFeed = function() {
+            _pfSelected = [];
+            pfRenderList();
+            document.getElementById('pf-result').style.display='none';
+        };
+
         function calcAccTotal() {
             const quantity = parseFloat(document.getElementById('acc-quantity')?.value);
             const unitPriceInput = document.getElementById('acc-unit-price');
