@@ -8315,6 +8315,28 @@ function getUserInfo(){
             }, 100);
         }
 
+        // 위키피디아 이미지 가져오기
+        async function fetchWikiImage(plantName) {
+            try {
+                var url = 'https://ko.wikipedia.org/w/api.php?action=query&titles=' + encodeURIComponent(plantName)
+                    + '&prop=pageimages&format=json&pithumbsize=400&origin=*';
+                var res = await fetch(url);
+                var data = await res.json();
+                var pages = data.query.pages;
+                var page = pages[Object.keys(pages)[0]];
+                if(page && page.thumbnail) return page.thumbnail.source;
+                // 한국어 없으면 영어 위키 시도
+                var url2 = 'https://en.wikipedia.org/w/api.php?action=query&titles=' + encodeURIComponent(plantName)
+                    + '&prop=pageimages&format=json&pithumbsize=400&origin=*';
+                var res2 = await fetch(url2);
+                var data2 = await res2.json();
+                var pages2 = data2.query.pages;
+                var page2 = pages2[Object.keys(pages2)[0]];
+                if(page2 && page2.thumbnail) return page2.thumbnail.source;
+                return null;
+            } catch(e) { return null; }
+        }
+
         function renderFlowerResult(r, allResults, debugMsg) {
             var el = document.getElementById('flower-result');
             if(!r) {
@@ -8364,7 +8386,12 @@ function getUserInfo(){
             }
 
             el.innerHTML =
-                '<div style="background:var(--bg-card);border:1px solid rgba(255,179,0,0.2);border-radius:18px;padding:20px;">' +
+                '<div style="background:var(--bg-card);border:1px solid rgba(255,179,0,0.2);border-radius:18px;overflow:hidden;">' +
+                    // 사진 영역
+                    '<div id="wiki-img-wrap" style="width:100%;height:200px;background:rgba(255,179,0,0.05);display:flex;align-items:center;justify-content:center;">' +
+                        '<span style="color:var(--tx-muted);font-size:0.8rem;">🌿 사진 불러오는 중...</span>' +
+                    '</div>' +
+                    '<div style="padding:16px;">' +
                     '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">' +
                         '<div>' +
                             '<div style="font-size:1.4rem;font-weight:900;color:var(--tx-gold);">' + r.name + '</div>' +
@@ -8398,8 +8425,26 @@ function getUserInfo(){
                     '</div>' : '') +
                     otherResults +
                     '<button onclick="resetFlowerSearch()" style="width:100%;margin-top:14px;padding:12px;border-radius:10px;border:1px solid rgba(255,179,0,0.3);background:transparent;color:var(--tx-amber);font-weight:700;font-size:0.9rem;cursor:pointer;">📷 다른 사진 분석하기</button>' +
+                    '</div>' +
                 '</div>';
             el.style.display = 'block';
+
+            // 위키피디아 이미지 비동기 로드
+            var searchName = item ? item.name : r.name;
+            fetchWikiImage(searchName).then(function(imgUrl) {
+                var wrap = document.getElementById('wiki-img-wrap');
+                if(!wrap) return;
+                if(imgUrl) {
+                    wrap.innerHTML = '<img src="'+imgUrl+'" style="width:100%;height:200px;object-fit:cover;" onerror="this.parentElement.style.display=\'none\'">'
+                        + '<div style="position:absolute;bottom:6px;right:8px;font-size:0.62rem;color:rgba(255,255,255,0.6);background:rgba(0,0,0,0.4);padding:1px 5px;border-radius:4px;">📷 Wikipedia</div>'
+                        + '<div style="position:absolute;bottom:6px;left:8px;font-size:0.62rem;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.4);padding:1px 5px;border-radius:4px;">※ 실제와 다를 수 있습니다</div>';
+                    wrap.style.position = 'relative';
+                    wrap.style.height = '200px';
+                    wrap.style.overflow = 'hidden';
+                } else {
+                    wrap.style.display = 'none';
+                }
+            });
         }
 
         function resetFlowerSearch() {
