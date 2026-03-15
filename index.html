@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#1a0e00">
+    <meta name="theme-color" content="#2a1800">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>BEE MASTER - 양봉 관리 앱</title>
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        html, body { height: 100%; overflow: hidden; background: #0f0800; font-family: 'Noto Sans KR', sans-serif; }
+        html, body { height: 100%; overflow: hidden; background: #2a1800; font-family: 'Noto Sans KR', sans-serif; }
 
         .bg {
             position: fixed; inset: 0;
-            background: radial-gradient(ellipse at 30% 20%, rgba(180,100,10,0.18) 0%, transparent 60%),
-                        radial-gradient(ellipse at 75% 80%, rgba(100,60,5,0.22) 0%, transparent 55%),
-                        linear-gradient(160deg, #0f0800 0%, #1c1005 50%, #0a0500 100%);
+            background: radial-gradient(ellipse at 30% 20%, rgba(220,140,20,0.25) 0%, transparent 60%),
+                        radial-gradient(ellipse at 75% 80%, rgba(120,80,10,0.2) 0%, transparent 55%),
+                        linear-gradient(160deg, #2a1800 0%, #3d2208 50%, #1e1004 100%);
         }
         .hex-pattern {
-            position: fixed; inset: 0; opacity: 0.045;
+            position: fixed; inset: 0; opacity: 0.06;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V18L28 2l28 16v32L28 66zm0-8l20-12V30L28 18 8 30v16l20 12z' fill='%23D4A017'/%3E%3C/svg%3E");
             background-size: 56px 100px;
         }
         .glow-top {
             position: fixed; top: -120px; left: 50%; transform: translateX(-50%);
             width: 500px; height: 300px;
-            background: radial-gradient(ellipse, rgba(212,160,23,0.12) 0%, transparent 70%);
+            background: radial-gradient(ellipse, rgba(212,160,23,0.15) 0%, transparent 70%);
             pointer-events: none;
         }
         .container {
@@ -33,64 +33,86 @@
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; padding: 24px 20px;
         }
+
+        /* 로고 */
         .logo-wrap { text-align: center; margin-bottom: 10px; animation: fadeDown 0.7s cubic-bezier(0.34,1.4,0.64,1) both; }
         .logo-bee {
-            font-size: 3.8rem; display: block; margin-bottom: 4px;
-            filter: drop-shadow(0 0 18px rgba(212,160,23,0.5));
+            font-size: 4rem; display: block; margin-bottom: 6px;
+            filter: drop-shadow(0 0 20px rgba(212,160,23,0.55));
             animation: float 3s ease-in-out infinite;
         }
         .logo-title {
-            font-family: 'Gowun Batang', serif; font-size: 2.2rem; font-weight: 700;
+            font-family: 'Gowun Batang', serif; font-size: 2.4rem; font-weight: 700;
             color: #D4A017; letter-spacing: 6px; text-shadow: 0 0 30px rgba(212,160,23,0.35);
         }
-        .logo-sub { font-size: 0.78rem; color: rgba(212,160,23,0.55); letter-spacing: 3px; margin-top: 5px; font-weight: 600; }
+        .logo-sub { font-size: 0.82rem; color: rgba(212,160,23,0.6); letter-spacing: 3px; margin-top: 6px; font-weight: 600; }
+
         .divider {
             width: 120px; height: 1px;
             background: linear-gradient(90deg, transparent, rgba(212,160,23,0.4), transparent);
-            margin: 20px auto 24px; animation: fadeIn 1s 0.3s both;
+            margin: 18px auto 22px; animation: fadeIn 1s 0.3s both;
         }
+
+        /* 카드 */
         .cards {
             display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
-            width: 100%; max-width: 400px;
+            width: 100%; max-width: 420px;
             animation: fadeUp 0.7s 0.2s cubic-bezier(0.34,1.3,0.64,1) both;
         }
         .card {
-            position: relative; border-radius: 24px; padding: 28px 16px 24px;
+            position: relative; border-radius: 24px; padding: 26px 14px 22px;
             text-align: center; cursor: pointer;
             transition: transform 0.25s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.25s;
             text-decoration: none; display: block; overflow: hidden;
         }
-        .card::before {
-            content: ''; position: absolute; inset: 0; border-radius: 24px;
-            border: 1px solid rgba(212,160,23,0.2); transition: border-color 0.25s;
-        }
         .card:active { transform: scale(0.96); }
-        .card-western {
-            background: linear-gradient(145deg, rgba(40,24,5,0.95) 0%, rgba(28,16,3,0.98) 100%);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(212,160,23,0.15);
-        }
-        .card-native {
-            background: linear-gradient(145deg, rgba(35,18,5,0.95) 0%, rgba(22,12,3,0.98) 100%);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(180,100,20,0.15);
-        }
+
         .card-shine {
             position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
             transform: skewX(-15deg); transition: left 0.5s; pointer-events: none;
         }
         .card:active .card-shine { left: 130%; }
-        .card-icon { font-size: 3rem; display: block; margin-bottom: 10px; filter: drop-shadow(0 2px 10px rgba(212,160,23,0.3)); }
-        .card-name { font-family: 'Gowun Batang', serif; font-size: 1.15rem; font-weight: 700; color: #D4A017; letter-spacing: 2px; margin-bottom: 5px; }
-        .card-en { font-size: 0.7rem; color: rgba(212,160,23,0.45); letter-spacing: 1.5px; font-weight: 600; text-transform: uppercase; margin-bottom: 12px; }
-        .card-desc { font-size: 0.75rem; color: rgba(200,180,140,0.6); line-height: 1.6; }
-        .card-arrow { display: inline-block; margin-top: 14px; font-size: 0.75rem; color: rgba(212,160,23,0.5); letter-spacing: 1px; font-weight: 700; }
+
+        /* 양봉 카드 — 골드 */
+        .card-western {
+            background: linear-gradient(145deg, rgba(110,65,12,0.95) 0%, rgba(80,45,8,0.98) 100%);
+            border: 2px solid rgba(212,160,23,0.65);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,200,80,0.3);
+        }
+        /* 토종벌 카드 — 그린 */
+        .card-native {
+            background: linear-gradient(145deg, rgba(20,70,30,0.95) 0%, rgba(12,50,18,0.98) 100%);
+            border: 2px solid rgba(60,180,80,0.6);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(100,220,120,0.2);
+        }
+
+        .card-icon { font-size: 3.2rem; display: block; margin-bottom: 10px; }
+
+        /* 카드 텍스트 — 양봉 */
+        .card-western .card-name  { color: #FFD060; }
+        .card-western .card-en    { color: rgba(255,208,96,0.6); }
+        .card-western .card-desc  { color: rgba(235,210,170,0.88); }
+        .card-western .card-arrow { color: rgba(255,208,96,0.75); }
+        .card-western .card-tag   { background: rgba(212,160,23,0.3); color: #FFD060; border: 1px solid rgba(255,200,80,0.55); }
+
+        /* 카드 텍스트 — 토종벌 */
+        .card-native .card-name   { color: #7EE89A; }
+        .card-native .card-en     { color: rgba(126,232,154,0.6); }
+        .card-native .card-desc   { color: rgba(180,230,190,0.88); }
+        .card-native .card-arrow  { color: rgba(126,232,154,0.75); }
+        .card-native .card-tag    { background: rgba(60,180,80,0.25); color: #7EE89A; border: 1px solid rgba(80,200,100,0.5); }
+
+        .card-name  { font-family: 'Gowun Batang', serif; font-size: 1.5rem; font-weight: 700; letter-spacing: 3px; margin-bottom: 4px; }
+        .card-en    { font-size: 0.68rem; letter-spacing: 1.5px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; }
+        .card-desc  { font-size: 0.82rem; line-height: 1.65; margin-bottom: 12px; }
+        .card-arrow { display: inline-block; font-size: 0.9rem; font-weight: 800; letter-spacing: 1px; }
         .card-tag {
             position: absolute; top: 12px; right: 12px;
-            font-size: 0.62rem; font-weight: 800; padding: 3px 8px; border-radius: 20px; letter-spacing: 0.5px;
+            font-size: 0.65rem; font-weight: 800; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.5px;
         }
-        .tag-western { background: rgba(212,160,23,0.15); color: #D4A017; border: 1px solid rgba(212,160,23,0.3); }
-        .tag-native  { background: rgba(180,100,20,0.15); color: #C8840A; border: 1px solid rgba(180,100,20,0.3); }
-        .footer-text { margin-top: 28px; font-size: 0.72rem; color: rgba(212,160,23,0.25); letter-spacing: 1.5px; text-align: center; animation: fadeIn 1s 0.6s both; }
+
+        .footer-text { margin-top: 24px; font-size: 0.72rem; color: rgba(212,160,23,0.25); letter-spacing: 1.5px; text-align: center; animation: fadeIn 1s 0.6s both; }
 
         @keyframes fadeDown { from { opacity:0; transform:translateY(-24px); } to { opacity:1; transform:translateY(0); } }
         @keyframes fadeUp   { from { opacity:0; transform:translateY(24px);  } to { opacity:1; transform:translateY(0); } }
@@ -112,7 +134,7 @@
         <div class="cards">
             <a class="card card-western" href="beeyong.html">
                 <div class="card-shine"></div>
-                <span class="card-tag tag-western">서양종</span>
+                <span class="card-tag">서양종</span>
                 <span class="card-icon">🍯</span>
                 <div class="card-name">양 봉</div>
                 <div class="card-en">Western Bee</div>
@@ -121,7 +143,7 @@
             </a>
             <a class="card card-native" href="dongyang.html">
                 <div class="card-shine"></div>
-                <span class="card-tag tag-native">동양종</span>
+                <span class="card-tag">동양종</span>
                 <span class="card-icon">🏺</span>
                 <div class="card-name">토종벌</div>
                 <div class="card-en">Korean Native</div>
