@@ -2902,6 +2902,31 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             <!-- 주간 날씨 카드 -->
             <div id="home-weekly-weather" style="margin-bottom:12px;"></div>
 
+            <!-- 오늘의 일정 -->
+            <div class="input-row" style="margin-bottom:12px;">
+                <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">📅 오늘의 일정</div>
+                <div id="dash-today" style="color:var(--tx-sub); font-size:0.9rem;">오늘 일정이 없습니다.</div>
+            </div>
+
+            <!-- 방역 현황 -->
+            <div class="input-row" style="margin-bottom:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                    <span style="color:var(--tx-gold); font-weight:800; font-size:1rem;">🛡️ 방역 현황</span>
+                    <button onclick="switchView('disease',true)" style="background:rgba(220,38,38,0.15);color:#f87171;border:1px solid rgba(220,38,38,0.3);border-radius:8px;padding:5px 12px;font-size:0.8rem;font-weight:700;cursor:pointer;">+ 방역</button>
+                </div>
+                <div id="dash-disease" style="color:var(--tx-sub); font-size:0.9rem;">방역 기록이 없습니다.</div>
+            </div>
+
+            <!-- 최근 일지 -->
+            <div class="input-row" style="margin-bottom:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                    <span style="color:var(--tx-gold); font-weight:800; font-size:1rem;">📝 최근 일지</span>
+                    <button onclick="switchView('diary',true)" style="background:rgba(255,179,0,0.15);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.3);border-radius:8px;padding:5px 12px;font-size:0.8rem;font-weight:700;cursor:pointer;">+ 일지</button>
+                </div>
+                <div id="dash-recent" style="color:var(--tx-sub); font-size:0.9rem;">최근 일지가 없습니다.</div>
+            </div>
+
+
             <!-- 이달의 밀원 & 화분원 -->
             <div class="input-row" style="margin-bottom:12px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -2930,30 +2955,6 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     <span id="jeolgi-next" style="font-size:0.72rem;color:var(--tx-muted);"></span>
                 </div>
                 <div id="jeolgi-card"></div>
-            </div>
-
-            <!-- 오늘의 일정 -->
-            <div class="input-row" style="margin-bottom:12px;">
-                <div style="color:var(--tx-gold); font-weight:800; font-size:1rem; margin-bottom:10px;">📅 오늘의 일정</div>
-                <div id="dash-today" style="color:var(--tx-sub); font-size:0.9rem;">오늘 일정이 없습니다.</div>
-            </div>
-
-            <!-- 방역 현황 -->
-            <div class="input-row" style="margin-bottom:12px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                    <span style="color:var(--tx-gold); font-weight:800; font-size:1rem;">🛡️ 방역 현황</span>
-                    <button onclick="switchView('disease',true)" style="background:rgba(220,38,38,0.15);color:#f87171;border:1px solid rgba(220,38,38,0.3);border-radius:8px;padding:5px 12px;font-size:0.8rem;font-weight:700;cursor:pointer;">+ 방역</button>
-                </div>
-                <div id="dash-disease" style="color:var(--tx-sub); font-size:0.9rem;">방역 기록이 없습니다.</div>
-            </div>
-
-            <!-- 최근 일지 -->
-            <div class="input-row" style="margin-bottom:12px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                    <span style="color:var(--tx-gold); font-weight:800; font-size:1rem;">📝 최근 일지</span>
-                    <button onclick="switchView('diary',true)" style="background:rgba(255,179,0,0.15);color:var(--tx-amber);border:1px solid rgba(255,179,0,0.3);border-radius:8px;padding:5px 12px;font-size:0.8rem;font-weight:700;cursor:pointer;">+ 일지</button>
-                </div>
-                <div id="dash-recent" style="color:var(--tx-sub); font-size:0.9rem;">최근 일지가 없습니다.</div>
             </div>
 
             <!-- 양봉 FAQ -->
@@ -5477,6 +5478,35 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             }
         }
 
+        // 좌표 → 중기예보 지점코드 매핑
+        function getRegId(lat, lng) {
+            // 중기육상예보 regId (대략적 경계)
+            if (lat >= 37.0 && lng >= 126.0 && lng <= 128.0) return '11B00000'; // 서울·경기·인천
+            if (lat >= 37.0 && lng >= 127.5 && lng <= 129.5) return '11D10000'; // 강원영서
+            if (lat >= 37.0 && lng >= 128.5) return '11D20000';                 // 강원영동
+            if (lat >= 36.0 && lat < 37.5 && lng >= 127.0 && lng < 128.5) return '11C10000'; // 충북
+            if (lat >= 36.0 && lat < 37.5 && lng < 127.5) return '11C20000';   // 충남
+            if (lat >= 35.0 && lat < 36.5 && lng >= 127.0 && lng < 128.0) return '11F10000'; // 전북
+            if (lat >= 34.0 && lat < 35.5 && lng < 127.5) return '11F20000';   // 전남
+            if (lat >= 35.5 && lng >= 128.0 && lng < 129.5) return '11H10000'; // 경북
+            if (lat >= 34.5 && lat < 36.0 && lng >= 128.0) return '11H20000';  // 경남
+            if (lat < 34.0) return '11G00000';                                  // 제주
+            return '11B00000'; // 기본값 서울·경기
+        }
+        function getRegIdTemp(lat, lng) {
+            if (lat >= 37.0 && lng >= 126.0 && lng <= 128.0) return '11B10101';
+            if (lat >= 37.0 && lng >= 127.5 && lng <= 129.5) return '11D10301';
+            if (lat >= 37.0 && lng >= 128.5) return '11D20501';
+            if (lat >= 36.0 && lat < 37.5 && lng >= 127.0 && lng < 128.5) return '11C10301';
+            if (lat >= 36.0 && lat < 37.5 && lng < 127.5) return '11C20401';
+            if (lat >= 35.0 && lat < 36.5 && lng >= 127.0 && lng < 128.0) return '11F10201';
+            if (lat >= 34.0 && lat < 35.5 && lng < 127.5) return '11F20401';
+            if (lat >= 35.5 && lng >= 128.0 && lng < 129.5) return '11H10701';
+            if (lat >= 34.5 && lat < 36.0 && lng >= 128.0) return '11H20201';
+            if (lat < 34.0) return '11G00201';
+            return '11B10101';
+        }
+
         async function fetchWeeklyWeatherByCoord(lat, lng, label) {
             // 캐시 확인 (1시간, 위치별)
             const cacheKey = WEEKLY_WEATHER_CACHE_KEY + '_' + Math.round(lat*100) + '_' + Math.round(lng*100);
@@ -5502,7 +5532,9 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     baseHour = 23;
                 }
                 const baseTime = String(baseHour).padStart(2,'0') + '00';
-                const url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${apiKey}&numOfRows=1500&pageNo=1&dataType=JSON&base_date=${baseDate}&base_time=${baseTime}&nx=${nx}&ny=${ny}`;
+
+                // ① 단기예보 (오늘~3일)
+                const url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${apiKey}&numOfRows=2000&pageNo=1&dataType=JSON&base_date=${baseDate}&base_time=${baseTime}&nx=${nx}&ny=${ny}`;
                 const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
                 const json = await res.json();
                 const items = json?.response?.body?.items?.item || [];
@@ -5518,21 +5550,75 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     if (item.category === 'TMP') dayMap[d].tmp.push(parseFloat(item.fcstValue));
                 }
 
-                const days = Object.keys(dayMap).sort().slice(0, 5);
-                if (days.length === 0) throw new Error('no data');
+                let shortDays = Object.keys(dayMap).sort();
+                if (shortDays.length === 0) throw new Error('no data');
 
-                const data = days.map(d => {
+                const data = shortDays.map(d => {
                     const sky = dayMap[d].sky.length ? Math.round(dayMap[d].sky.reduce((a,b)=>a+b,0)/dayMap[d].sky.length) : 1;
                     const ptyArr = dayMap[d].pty.filter(v => v > 0);
                     const pty = ptyArr.length ? ptyArr[0] : 0;
                     const date = new Date(d.slice(0,4)+'-'+d.slice(4,6)+'-'+d.slice(6,8));
-                    // TMP 시간별 기온에서 최고/최저 계산 (TMX/TMN 없을 때 대체)
                     const tmpMax = dayMap[d].tmp.length ? Math.max(...dayMap[d].tmp) : null;
                     const tmpMin = dayMap[d].tmp.length ? Math.min(...dayMap[d].tmp) : null;
                     const tmx = dayMap[d].tmx != null ? dayMap[d].tmx : tmpMax;
                     const tmn = dayMap[d].tmn != null ? dayMap[d].tmn : tmpMin;
                     return { date: date.toISOString(), sky, pty, tmx, tmn };
                 });
+
+                // ② 단기예보가 5일 미만이면 중기예보로 보충
+                if (data.length < 5) {
+                    try {
+                        const midHour = hour >= 18 ? 18 : 6;
+                        const midBase = baseDate + String(midHour).padStart(2,'0') + '00';
+                        const regId = getRegId(lat, lng);
+                        const regIdT = getRegIdTemp(lat, lng);
+
+                        // 중기육상예보 (날씨상태)
+                        const midLandUrl = `https://apis.data.go.kr/1360000/MidFcstInfoService/getMidLandFcst?serviceKey=${apiKey}&numOfRows=10&pageNo=1&dataType=JSON&regId=${regId}&tmFc=${midBase}`;
+                        // 중기기온예보
+                        const midTaUrl   = `https://apis.data.go.kr/1360000/MidFcstInfoService/getMidTa?serviceKey=${apiKey}&numOfRows=10&pageNo=1&dataType=JSON&regId=${regIdT}&tmFc=${midBase}`;
+
+                        const [landRes, taRes] = await Promise.all([
+                            fetch(midLandUrl, { signal: AbortSignal.timeout(6000) }),
+                            fetch(midTaUrl,   { signal: AbortSignal.timeout(6000) })
+                        ]);
+                        const landJson = await landRes.json();
+                        const taJson   = await taRes.json();
+                        const landItem = landJson?.response?.body?.items?.item?.[0] || {};
+                        const taItem   = taJson?.response?.body?.items?.item?.[0]   || {};
+
+                        // 중기예보는 3일(D+3)~10일(D+10) 제공
+                        // 현재 data 마지막 날 다음날부터 5일까지 채움
+                        const lastDate = new Date(data[data.length-1].date);
+                        while (data.length < 5) {
+                            lastDate.setDate(lastDate.getDate() + 1);
+                            const diff = Math.round((lastDate - new Date(new Date().toDateString())) / 86400000);
+                            const key = diff; // D+N
+                            // 기상청 중기예보 필드명: wf3Am~wf10Am, taMin3~taMax10
+                            const wfKey  = `wf${key}Am`  in landItem ? `wf${key}Am`  : `wf${key}`;
+                            const minKey = `taMin${key}`;
+                            const maxKey = `taMax${key}`;
+                            const wf  = landItem[wfKey] || landItem[`wf${key}Pm`] || '';
+                            const tmn = taItem[minKey] != null ? parseFloat(taItem[minKey]) : null;
+                            const tmx = taItem[maxKey] != null ? parseFloat(taItem[maxKey]) : null;
+                            // 날씨상태 → sky/pty 변환
+                            let sky = 1, pty = 0;
+                            if (wf.includes('비') || wf.includes('Rain')) pty = 1;
+                            else if (wf.includes('눈') || wf.includes('Snow')) pty = 3;
+                            else if (wf.includes('흐')) sky = 4;
+                            else if (wf.includes('구름')) sky = 3;
+                            data.push({ date: new Date(lastDate).toISOString(), sky, pty, tmx, tmn });
+                        }
+                    } catch(midErr) {
+                        console.warn('중기예보 실패:', midErr);
+                        // 중기예보 실패 시 마지막 날 복사해서 채움
+                        while (data.length < 5) {
+                            const lastDate = new Date(data[data.length-1].date);
+                            lastDate.setDate(lastDate.getDate() + 1);
+                            data.push({...data[data.length-1], date: lastDate.toISOString(), tmx: null, tmn: null});
+                        }
+                    }
+                }
 
                 localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data }));
                 renderWeeklyWeatherCards(data, label);
@@ -5569,9 +5655,34 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             const locLabel = label || '현재 위치';
             const isGPS = locLabel === '현재 위치';
 
-            const cards = rawData
-                .filter(d => { const date = new Date(d.date); date.setHours(0,0,0,0); return date.getTime() >= today.getTime(); })
-                .slice(0, 5)
+            // 오늘 데이터 없으면 첫 번째 항목 앞에 오늘 카드 추가
+            const filtered = rawData.filter(d => {
+                const date = new Date(d.date); date.setHours(0,0,0,0);
+                return date.getTime() >= today.getTime();
+            });
+            const hasToday = filtered.some(d => {
+                const date = new Date(d.date); date.setHours(0,0,0,0);
+                return date.getTime() === today.getTime();
+            });
+            if(!hasToday && filtered.length > 0) {
+                const first = {...filtered[0], date: today.toISOString()};
+                filtered.unshift(first);
+            }
+
+            const sliced = filtered.slice(0, 5);
+
+            // 5일 미만이면 마지막 날 다음 날짜로 빈 카드 채움
+            while(sliced.length < 5) {
+                const lastDate = new Date(sliced[sliced.length-1].date);
+                lastDate.setDate(lastDate.getDate() + 1);
+                sliced.push({
+                    date: lastDate.toISOString(),
+                    sky: 1, pty: 0, tmx: null, tmn: null,
+                    emoji: '?', label: '--'
+                });
+            }
+
+            const cards = sliced
                 .map(d => {
                 const date = new Date(d.date); date.setHours(0,0,0,0);
                 const dow = DOW[date.getDay()];
@@ -8411,7 +8522,7 @@ function getUserInfo(){
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         image: 'data:' + mimeType + ';base64,' + _flowerImageBase64,
-                        prompt: '이 식물의 이름을 식별해주세요. 반드시 다음 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요:\n{"koreanName":"한국어 일반명","scientificName":"학명","confidence":85,"description":"간단한 특징 1줄"}'
+                        prompt: '이 식물 사진을 보고 식별해주세요. 반드시 아래 JSON 형식으로만 답변하세요. 절대 다른 텍스트 포함 금지.\n\n중요: koreanName은 반드시 한국어로 작성하세요. 예) 민들레, 아까시나무, 석곡, 산수유 등. 영어나 학명을 koreanName에 넣지 마세요.\n\n{"koreanName":"한국어 일반명(필수)","scientificName":"학명","confidence":85,"description":"한국어로 간단한 특징 1줄"}'
                     })
                 });
                 var data = await res.json();
@@ -8427,10 +8538,14 @@ function getUserInfo(){
                 var scientificName = result.scientificName || '';
                 var score = result.confidence || 0;
 
+                // 한국어 이름이 학명이거나 영문인 경우 학명을 한국어 이름 앞에 표시
+                var isKorean = /[가-힣]/.test(koreanName);
+                var displayName = isKorean ? koreanName : (koreanName || scientificName);
+
                 var nectarInfo = matchNectarDB(scientificName, koreanName);
 
                 renderFlowerResult({
-                    name: nectarInfo ? nectarInfo.name : koreanName,
+                    name: nectarInfo ? nectarInfo.name : displayName,
                     scientific: scientificName,
                     score: score,
                     description: result.description || '',
@@ -13292,7 +13407,7 @@ function getUserInfo(){
                 ]
             },
             {
-                id:'recipe4', name:'🌍 국제 표준형', desc:'USDA·영국 NBU 공통. 화분 미포함 — 질병 유입 방지. 기호성을 높이려면 화분 10~20% 추가 권장',
+                id:'recipe4', name:'🌍 국제 표준형', desc:'USDA·영국 NBU 공통. 화분 무첨가 — 질병 유입 방지',
                 items:[
                     {id:'pf1',  weight:30}, // 대두박
                     {id:'pf8',  weight:10}, // 맥주효모
