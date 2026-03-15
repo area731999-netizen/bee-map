@@ -4005,6 +4005,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 <h4 style="color:var(--tx-gold);font-weight:900;margin-bottom:6px;font-size:1.1rem;">🍯 화분떡(대용화분) 배합 계산기</h4>
                 <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:14px;line-height:1.6;">카테고리를 선택 후 원료 카드의 + 버튼을 눌러 추가하세요.</div>
 
+                <!-- 표준 레시피 불러오기 -->
+                <div style="margin-bottom:14px;">
+                    <div style="font-size:0.78rem;color:var(--tx-muted);font-weight:700;margin-bottom:8px;">📋 표준 레시피 불러오기</div>
+                    <div id="pf-recipe-btns" style="display:flex;flex-direction:column;gap:8px;"></div>
+                </div>
+
                 <!-- 카테고리 탭 -->
                 <div id="pf-cat-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;"></div>
 
@@ -13231,26 +13237,60 @@ function getUserInfo(){
             {id:'pf20', name:'꿀',                     cat:'에너지원', unit:'kg', protein:0.3,fat:0,   carb:80, moisture:17, price:20000},
             {id:'pf21', name:'전화당(시럽)',            cat:'에너지원', unit:'kg', protein:0,  fat:0,   carb:75, moisture:25, price:2000},
             // 소량 원료 (g 단위) — minPct·maxPct: 전체 중량 대비 %
-            {id:'pf22', name:'레시틴(대두)',            cat:'지방류',   unit:'g',  protein:3.0,fat:65,  carb:12, moisture:1,  price:5000,  minPct:1.0, maxPct:2.0,  recommend:'전체의 1~2%'},
-            {id:'pf23', name:'카놀라유',                cat:'지방류',   unit:'g',  protein:0,  fat:100, carb:0,  moisture:0,  price:2000,  minPct:1.0, maxPct:5.0,  recommend:'전체의 1~5%'},
-            {id:'pf24', name:'식초(양조)',              cat:'보존제',   unit:'g',  protein:0,  fat:0,   carb:1,  moisture:95, price:1000,  minPct:1.0, maxPct:2.0,  recommend:'전체의 1~2%'},
-            {id:'pf25', name:'구연산',                  cat:'보존제',   unit:'g',  protein:0,  fat:0,   carb:0,  moisture:0,  price:3000,  minPct:0.5, maxPct:1.0,  recommend:'전체의 0.5~1%'},
-            {id:'pf26', name:'비타민C(분말)',           cat:'기능성',   unit:'g',  protein:0,  fat:0,   carb:0,  moisture:0,  price:5000,  minPct:0.5, maxPct:1.0,  recommend:'전체의 0.5~1%'},
-            {id:'pf27', name:'프로폴리스(분말)',         cat:'기능성',   unit:'g',  protein:5,  fat:30,  carb:40, moisture:5,  price:50000, minPct:1.0, maxPct:2.0,  recommend:'전체의 1~2%'},
-            {id:'pf28', name:'오가피효소액',             cat:'기능성',   unit:'g',  protein:0.5,fat:0,   carb:15, moisture:80, price:8000,  minPct:3.0, maxPct:5.0,  recommend:'전체의 3~5%'},
-            {id:'pf29', name:'계란노른자(분말)',         cat:'기능성',   unit:'g',  protein:32, fat:55,  carb:3,  moisture:4,  price:15000, minPct:5.0, maxPct:10.0, recommend:'전체의 5~10%'},
-            {id:'pf30', name:'클로렐라(분말)',           cat:'기능성',   unit:'g',  protein:60, fat:9,   carb:15, moisture:5,  price:20000, minPct:3.0, maxPct:5.0,  recommend:'전체의 3~5%'},
-            {id:'pf31', name:'소금',                    cat:'미네랄',   unit:'g',  protein:0,  fat:0,   carb:0,  moisture:0,  price:500,   minPct:0.3, maxPct:0.5,  recommend:'전체의 0.3~0.5%'},
+            {id:'pf22', name:'레시틴(대두)',            cat:'지방류',   unit:'g',  protein:3.0,fat:65,  carb:12, moisture:1,  price:5000,  minPct:0.2, maxPct:1.0,  recommend:'전체의 0.2~0.5%, 상한 1%'},
+            {id:'pf23', name:'카놀라유',                cat:'지방류',   unit:'g',  protein:0,  fat:100, carb:0,  moisture:0,  price:2000,  minPct:1.0, maxPct:3.0,  recommend:'전체의 1~2%, 상한 3%'},
+            {id:'pf24', name:'식초(양조)',              cat:'보존제',   unit:'g',  protein:0,  fat:0,   carb:1,  moisture:95, price:1000,  minPct:0.5, maxPct:1.5,  recommend:'전체의 0.5~1.5%. 액체라 수분에 포함하여 계산'},
+            {id:'pf25', name:'구연산',                  cat:'보존제',   unit:'g',  protein:0,  fat:0,   carb:0,  moisture:0,  price:3000,  minPct:0.2, maxPct:0.3,  recommend:'전체의 0.2~0.3%, 상한 0.3% (초과 시 기피)'},
+            {id:'pf26', name:'비타민C(분말)',           cat:'기능성',   unit:'g',  protein:0,  fat:0,   carb:0,  moisture:0,  price:5000,  minPct:0.05,maxPct:0.1,  recommend:'전체의 0.05~0.1%. 구연산과 합계 0.2% 이내'},
+            {id:'pf27', name:'프로폴리스(분말)',         cat:'기능성',   unit:'g',  protein:5,  fat:30,  carb:40, moisture:5,  price:50000, minPct:0.05,maxPct:0.2,  recommend:'전체의 0.05~0.1%, 상한 0.2% (초과 시 기피)'},
+            {id:'pf27l',name:'프로폴리스(액상)',         cat:'기능성',   unit:'g',  protein:1,  fat:10,  carb:15, moisture:70, price:30000, minPct:0.3, maxPct:1.0,  recommend:'10kg 기준 30~50ml, 상한 100ml. 당액에 섞어 알코올 휘발 후 사용'},
+            {id:'pf28', name:'오가피효소액',             cat:'기능성',   unit:'g',  protein:0.5,fat:0,   carb:15, moisture:80, price:8000,  minPct:2.0, maxPct:10.0, recommend:'전체의 2~10%. 액체라 수분에 포함. 구연산 10~20% 줄여서 사용'},
+            {id:'pf29', name:'계란노른자(분말)',         cat:'기능성',   unit:'g',  protein:32, fat:55,  carb:3,  moisture:4,  price:15000, minPct:2.0, maxPct:10.0, recommend:'전체의 2~5%, 육아기 5~8%, 상한 10%. 보존제 병행 필수'},
+            {id:'pf30', name:'클로렐라(분말)',           cat:'기능성',   unit:'g',  protein:60, fat:9,   carb:15, moisture:5,  price:20000, minPct:1.0, maxPct:5.0,  recommend:'전체의 1~3%, 상한 5% (초과 시 냄새로 기피)'},
+            {id:'pf31', name:'소금',                    cat:'미네랄',   unit:'g',  protein:0,  fat:0,   carb:0,  moisture:0,  price:500,   minPct:0.1, maxPct:0.2,  recommend:'전체의 0.1%, 상한 0.2% (초과 시 독성 위험!)'},
             {id:'pf33', name:'물',                      cat:'수분조절', unit:'kg', protein:0,  fat:0,   carb:0,  moisture:100,price:0},
             {id:'pf32', name:'양봉영양제(시판)',         cat:'영양제',   unit:'g',  protein:5,  fat:2,   carb:30, moisture:10, price:10000, userEditable:true, recommend:'제품 설명서 참고'},
         ];
 
         var _pfSelected = [];
 
+        // 표준 레시피 (원료 50% : 설탕 50% 구조)
+        var PF_RECIPES = [
+            {
+                id:'recipe1', name:'🌸 봄철 기본형', desc:'산란 촉진. 경제성·기호성 균형',
+                items:[
+                    {id:'pf11', weight:30}, // 중국산 유채화분
+                    {id:'pf1',  weight:10}, // 대두박
+                    {id:'pf8',  weight:10}, // 맥주효모
+                    {id:'pf17', weight:50}, // 설탕
+                ]
+            },
+            {
+                id:'recipe2', name:'⭐ 고품질형', desc:'육아 활성기. 아미노산 균형 최상',
+                items:[
+                    {id:'pf13', weight:35}, // 국내산 잡화분
+                    {id:'pf1',  weight:8},  // 대두박
+                    {id:'pf8',  weight:5},  // 맥주효모
+                    {id:'pf5',  weight:2},  // 탈지분유
+                    {id:'pf17', weight:50}, // 설탕
+                ]
+            },
+            {
+                id:'recipe3', name:'💰 경제형', desc:'무밀기 세력 유지. 저비용',
+                items:[
+                    {id:'pf12', weight:20}, // 중국산 잡화분
+                    {id:'pf1',  weight:20}, // 대두박
+                    {id:'pf8',  weight:10}, // 맥주효모
+                    {id:'pf17', weight:50}, // 설탕
+                ]
+            },
+        ];
+
         var _pfActiveCat = null;
 
         function pfInit() {
-            pfBackupDefaults(); // 원본 DB 백업
+            pfBackupDefaults();
+            pfRenderRecipeBtns();
             var tabEl = document.getElementById('pf-cat-tabs');
             if(!tabEl || tabEl.innerHTML) return;
 
@@ -13364,7 +13404,56 @@ function getUserInfo(){
             pfRenderCards(catColor);
         }
 
-        var _pfModalMode = 'new'; // 'new' or 'edit'
+        // 표준 레시피 버튼 렌더링
+        function pfRenderRecipeBtns() {
+            var el = document.getElementById('pf-recipe-btns');
+            if(!el || el.innerHTML) return;
+            PF_RECIPES.forEach(function(recipe) {
+                var btn = document.createElement('button');
+                btn.style.cssText = 'width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,179,0,0.25);background:rgba(255,179,0,0.05);cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;';
+                btn.innerHTML = '<div>'
+                    + '<div style="font-size:0.9rem;font-weight:800;color:var(--tx-gold);">'+recipe.name+'</div>'
+                    + '<div style="font-size:0.72rem;color:var(--tx-muted);margin-top:2px;">'+recipe.desc+'</div>'
+                    + '</div>'
+                    + '<span style="font-size:0.78rem;color:var(--tx-amber);font-weight:700;">불러오기 →</span>';
+                btn.onclick = function() { pfLoadRecipe(recipe.id); };
+                el.appendChild(btn);
+            });
+        }
+
+        window.pfLoadRecipe = function(recipeId) {
+            var recipe = PF_RECIPES.find(function(r){ return r.id===recipeId; });
+            if(!recipe) return;
+            if(_pfSelected.length > 0 && !confirm('현재 선택된 원료가 초기화됩니다. 계속하시겠어요?')) return;
+
+            _pfSelected = [];
+            recipe.items.forEach(function(ri) {
+                var item = PF_DB.find(function(d){ return d.id===ri.id; });
+                if(item) _pfSelected.push(Object.assign({}, item, {weight: ri.weight}));
+            });
+
+            var catColor = {단백질원:'#f59e0b',효모류:'#a78bfa',발효식품:'#f97316',화분류:'#34d399',대용화분:'#60a5fa',에너지원:'#fbbf24',지방류:'#fb923c',보존제:'#94a3b8',기능성:'#f472b6',미네랄:'#64748b',영양제:'#86efac',수분조절:'#38bdf8',기타:'#888'};
+            pfRenderList();
+            pfRenderCards(catColor);
+            showToast('✅ '+recipe.name+' 불러오기 완료');
+        };
+
+        // 자동 보정 로직: 원료 합계 변경 시 설탕을 동일하게 자동 조정
+        window.pfAutoAdjustSugar = function() {
+            var sugarItem = _pfSelected.find(function(s){ return s.id==='pf17'; });
+            if(!sugarItem) return;
+            // 설탕 제외 주원료(kg) 합계 계산
+            var mainTotal = 0;
+            _pfSelected.forEach(function(item) {
+                if(item.id==='pf17') return; // 설탕 제외
+                if(item.unit==='kg') mainTotal += (item.weight||0);
+            });
+            if(mainTotal <= 0) return;
+            // 설탕 = 원료 합계와 동일 (50:50)
+            sugarItem.weight = mainTotal;
+            pfRenderList();
+            showToast('🍯 설탕 자동 보정: '+mainTotal+'kg');
+        };
         var _pfModalEditId = null;
         var _pfModalUnit = 'kg';
 
@@ -13513,7 +13602,10 @@ function getUserInfo(){
                 if(item.unit==='kg') mainTotal += (item.weight||0) * 1000;
             });
 
-            el.innerHTML = '<div style="font-size:0.78rem;color:var(--tx-muted);font-weight:700;margin-bottom:8px;">📋 선택된 원료 — 중량 입력</div>'
+            el.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+            + '<div style="font-size:0.78rem;color:var(--tx-muted);font-weight:700;">📋 선택된 원료 — 중량 입력</div>'
+            + '<button onclick="pfAutoAdjustSugar()" style="padding:5px 12px;border-radius:10px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.72rem;font-weight:700;cursor:pointer;">🍯 설탕 50:50 자동 보정</button>'
+            + '</div>'
             + _pfSelected.map(function(item, idx) {
                 var isG = item.unit==='g';
                 var w = item.weight||0;
@@ -13603,6 +13695,42 @@ function getUserInfo(){
             if(targetMoisture>14) warns.push('⚠️ 수분 '+targetMoisture+'% — 14% 초과. 소비 위에서 흘러내릴 수 있음.');
             if(targetMoisture<8)  warns.push('⚠️ 수분 '+targetMoisture+'% — 8% 미만. 너무 딱딱해 벌이 먹기 어려울 수 있음.');
             if(addedWater <= 0)   warns.push('ℹ️ 원료 내 수분만으로 목표 수분율 이미 충족. 추가 물 불필요.');
+
+            // 원료별 상한 초과 경고
+            _pfSelected.forEach(function(item) {
+                var wg = (item.weight||0) * (item.unit==='kg' ? 1000 : 1);
+                if(wg<=0 || !item.maxPct) return;
+                var pct = wg / finalWeight * 100;
+                if(item.id==='pf31' && pct > 0.2) {
+                    warns.push('🚨 소금 '+pct.toFixed(2)+'% — 상한 0.2% 초과! 벌에게 독성 위험!');
+                } else if(item.id==='pf25' && pct > 0.3) {
+                    warns.push('⚠️ 구연산 '+pct.toFixed(2)+'% — 상한 0.3% 초과. 강한 산미로 기피 가능.');
+                } else if(item.id==='pf27' && pct > 0.2) {
+                    warns.push('⚠️ 프로폴리스(분말) '+pct.toFixed(2)+'% — 상한 0.2% 초과. 강한 향으로 기피 가능.');
+                } else if(item.id==='pf27l' && (item.weight||0) > 100) {
+                    warns.push('⚠️ 프로폴리스(액상) '+(item.weight||0)+'g — 상한 100ml 초과. 알코올 향으로 기피 가능. 당액에 섞어 알코올 휘발 후 사용 권장.');
+                } else if(item.maxPct && pct > item.maxPct) {
+                    warns.push('⚠️ '+item.name+' '+pct.toFixed(1)+'% — 권장 상한('+item.maxPct+'%) 초과.');
+                }
+            });
+
+            // 구연산+비타민C 합산 산도 경고
+            var acidTotal = 0;
+            _pfSelected.forEach(function(item) {
+                if(item.id==='pf25'||item.id==='pf26') {
+                    acidTotal += (item.weight||0) / finalWeight * 100;
+                }
+            });
+            if(acidTotal > 0.2) warns.push('⚠️ 구연산+비타민C 합계 '+acidTotal.toFixed(2)+'% — 산도 과도. 0.2% 이내로 조정 권장.');
+
+            // 계란노른자 사용 시 보존제 권고
+            var hasEgg = _pfSelected.find(function(i){ return i.id==='pf29' && (i.weight||0)>0; });
+            var hasPreservative = _pfSelected.find(function(i){ return (i.id==='pf24'||i.id==='pf25') && (i.weight||0)>0; });
+            if(hasEgg && !hasPreservative) warns.push('ℹ️ 계란노른자 사용 시 변질 방지를 위해 구연산 또는 식초 병행을 권장합니다.');
+
+            // 소금 미투입 시 권고
+            var hasSalt = _pfSelected.find(function(i){ return i.id==='pf31' && (i.weight||0)>0; });
+            if(!hasSalt) warns.push('ℹ️ 미네랄 보충을 위해 소금(0.1%) 소량 첨가를 권장합니다.');
 
             var el = document.getElementById('pf-result');
             el.style.display='block';
