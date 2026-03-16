@@ -13390,7 +13390,7 @@ function getUserInfo(){
             {
                 id:'recipe2', name:'⭐ 고품질형', desc:'육아 활성기. 아미노산 균형 최상',
                 items:[
-                    {id:'pf13', weight:35}, // 국내산 잡화분
+                    {id:'pf11', weight:35}, // 중국산 유채화분 (기본. 필요시 국내산으로 변경)
                     {id:'pf1',  weight:8},  // 대두박
                     {id:'pf8',  weight:5},  // 맥주효모
                     {id:'pf5',  weight:2},  // 탈지분유
@@ -13877,7 +13877,7 @@ function getUserInfo(){
             var el = document.getElementById('pf-result');
             el.style.display='block';
             el.innerHTML =
-                '<div style="font-size:0.78rem;font-weight:800;color:#c084fc;margin-bottom:12px;">📊 배합 결과 (가루 '+totalWeight.toLocaleString()+'g + 물 '+Math.round(addedWater)+'g = 총 '+Math.round(finalWeight).toLocaleString()+'g)</div>'
+                '<div style="font-size:0.78rem;font-weight:800;color:#c084fc;margin-bottom:12px;">📊 배합 결과 (가루 '+(Math.round(totalWeight/100)/10).toLocaleString()+'kg + 물 '+(Math.round(addedWater/100)/10)+'kg = 총 '+(Math.round(finalWeight/100)/10).toLocaleString()+'kg)</div>'
                 // 💧 물 추가량 강조
                 +'<div style="background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);border-radius:12px;padding:14px;margin-bottom:12px;text-align:center;">'
                 +  '<div style="font-size:0.75rem;color:#38bdf8;font-weight:700;margin-bottom:4px;">💧 추가할 물의 양 (목표 수분율 '+targetMoisture+'%)</div>'
@@ -13910,7 +13910,7 @@ function getUserInfo(){
                 +(warns.length ? '<div style="background:rgba(239,68,68,0.08);border-radius:10px;padding:10px;border-left:3px solid #f87171;margin-bottom:8px;">'
                 +  warns.map(function(w){ return '<div style="font-size:0.78rem;color:#f87171;margin-bottom:3px;">'+w+'</div>'; }).join('')
                 +'</div>' : '')
-                +'<div style="font-size:0.7rem;color:var(--tx-muted);line-height:1.7;">💡 여름 10~11% | 봄·가을 11~13% | 겨울 13~14% | 구연산·비타민C로 pH 4~5 약산성 조절 권장</div>';
+                +'<div style="font-size:0.7rem;color:var(--tx-muted);line-height:1.7;">💡 여름엔 수분을 낮게, 겨울엔 약간 높게 조절 권장 (전문업체 기준 약 10~14%) | 구연산·비타민C로 pH 4~5 약산성 조절 권장</div>';
         };
 
         window.resetPollenFeed = function() {
