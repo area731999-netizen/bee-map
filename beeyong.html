@@ -13823,7 +13823,7 @@ function getUserInfo(){
             else                   { palGrade='낮음'; palColor='#f87171'; palMsg='⚠️ 천연화분 '+pollenPct+'% — 기호성 저하 우려. 20% 이상 권장.'; }
 
             var warns = [];
-            if(parseFloat(proteinPct)<20)  warns.push('⚠️ 조단백질 '+proteinPct+'% — 20% 미만. 영양 부족 우려.');
+            if(parseFloat(proteinPct)<20)  warns.push('⚠️ 조단백질 '+proteinPct+'% — 20% 미만. 영양 부족 우려. (※ 대용화분 기준. 천연화분 위주 배합은 발효 후 흡수율이 높아 실제 영양은 충분할 수 있음)');
             if(targetMoisture>14) warns.push('⚠️ 수분 '+targetMoisture+'% — 14% 초과. 소비 위에서 흘러내릴 수 있음.');
             if(targetMoisture<8)  warns.push('⚠️ 수분 '+targetMoisture+'% — 8% 미만. 너무 딱딱해 벌이 먹기 어려울 수 있음.');
             if(addedWater <= 0)   warns.push('ℹ️ 원료 내 수분만으로 목표 수분율 이미 충족. 추가 물 불필요.');
