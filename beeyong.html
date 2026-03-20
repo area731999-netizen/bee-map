@@ -3908,48 +3908,69 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             
             <!-- 화분떡 배합 계산기 -->
             <div style="background:var(--bg-card);padding:20px;border-radius:16px;margin-bottom:100px;border:1px solid rgba(255,179,0,0.15);">
-                <h4 style="color:var(--tx-gold);font-weight:900;margin-bottom:6px;font-size:1.1rem;">🍯 화분떡(대용화분) 배합 계산기</h4>
-                <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:14px;line-height:1.6;">카테고리를 선택 후 원료 카드의 + 버튼을 눌러 추가하세요.</div>
+                <h4 style="color:var(--tx-gold);font-weight:900;margin-bottom:4px;font-size:1.1rem;">🍯 화분떡(대용화분) 배합 계산기</h4>
+                <div style="font-size:0.72rem;color:var(--tx-muted);margin-bottom:16px;">원료를 선택하고 중량을 입력한 후 계산하세요.</div>
 
-                <!-- 표준 레시피 불러오기 -->
-                <div style="margin-bottom:14px;">
-                    <div style="font-size:0.78rem;color:var(--tx-muted);font-weight:700;margin-bottom:8px;">📋 표준 레시피 불러오기</div>
-                    <div id="pf-recipe-btns" style="display:flex;flex-direction:column;gap:8px;"></div>
-                </div>
-
-                <!-- 카테고리 탭 -->
-                <div id="pf-cat-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;"></div>
-
-                <!-- 원료 카드 목록 -->
-                <div id="pf-ingredient-cards" style="margin-bottom:12px;"></div>
-
-                <!-- 직접 추가 버튼 -->
-                <button onclick="pfAddCustom()" style="width:100%;padding:10px;border-radius:12px;border:1px dashed rgba(255,179,0,0.4);background:transparent;color:var(--tx-amber);font-size:0.85rem;font-weight:700;cursor:pointer;margin-bottom:14px;">+ 원료 직접 추가</button>
-
-                <!-- 선택된 원료 목록 -->
-                <div id="pf-selected-list" style="margin-bottom:14px;"></div>
-                <div id="pf-recipe-tip" style="display:none;"></div>
-
-                <!-- 목표 수분율 -->
-                <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-radius:12px;padding:12px;margin-bottom:12px;">
-                    <div style="font-size:0.78rem;color:#38bdf8;font-weight:700;margin-bottom:8px;">💧 목표 수분율 설정</div>
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <span style="font-size:0.85rem;color:var(--tx-muted);">목표 수분율</span>
-                        <input type="number" id="pf-target-moisture" value="12" min="8" max="25" step="0.5"
-                            style="width:70px;padding:8px;border-radius:8px;border:1px solid rgba(56,189,248,0.3);background:var(--bg-input);color:#38bdf8;font-size:1rem;font-weight:900;text-align:center;">
-                        <span style="font-size:0.9rem;color:#38bdf8;font-weight:700;">%</span>
-                        <span style="font-size:0.72rem;color:var(--tx-muted);">(권장 10~14%)</span>
+                <!-- STEP 1 : 원료 선택 -->
+                <div style="border:2px solid rgba(96,165,250,0.45);border-radius:16px;background:rgba(96,165,250,0.04);padding:14px;margin-bottom:14px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                        <div style="background:#3b82f6;color:#fff;font-size:0.7rem;font-weight:900;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+                        <div style="font-size:0.9rem;font-weight:900;color:#60a5fa;">원료 선택</div>
                     </div>
+
+                    <!-- 표준 레시피 불러오기 -->
+                    <div style="margin-bottom:12px;">
+                        <div style="font-size:0.75rem;color:var(--tx-muted);font-weight:700;margin-bottom:8px;">📋 표준 레시피 불러오기</div>
+                        <div id="pf-recipe-btns" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+                    </div>
+
+                    <!-- 불러온 레시피 & 선택된 원료 — 레시피 버튼 바로 아래 -->
+                    <div id="pf-selected-list" style="margin-bottom:6px;"></div>
+                    <div id="pf-recipe-tip" style="display:none;"></div>
+
+                    <!-- 원료 추가 안내 -->
+                    <div style="border-top:1px solid rgba(96,165,250,0.2);margin:12px 0 10px;"></div>
+                    <div style="font-size:0.75rem;color:#60a5fa;font-weight:700;margin-bottom:8px;">➕ 원료를 추가하거나 직접 조합하려면 아래에서 선택하세요</div>
+
+                    <!-- 카테고리 탭 -->
+                    <div id="pf-cat-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;"></div>
+
+                    <!-- 원료 카드 목록 -->
+                    <div id="pf-ingredient-cards" style="margin-bottom:10px;"></div>
+
+                    <!-- 직접 추가 버튼 -->
+                    <button onclick="pfAddCustom()" style="width:100%;padding:9px;border-radius:12px;border:1px dashed rgba(96,165,250,0.4);background:transparent;color:#60a5fa;font-size:0.82rem;font-weight:700;cursor:pointer;">+ 원료 직접 추가</button>
                 </div>
 
-                <!-- 계산 버튼 -->
-                <div style="display:flex;gap:8px;margin-bottom:10px;">
-                    <button onclick="calcPollenFeed()" style="flex:1;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:14px;border-radius:10px;font-weight:800;border:none;cursor:pointer;">🧮 계산하기</button>
-                    <button onclick="resetPollenFeed()" style="background:rgba(100,100,100,0.5);color:white;padding:14px 20px;border-radius:10px;border:none;cursor:pointer;">초기화</button>
-                </div>
+                <!-- STEP 2 : 배합 계산 -->
+                <div style="border:2px solid rgba(255,179,0,0.45);border-radius:16px;background:rgba(255,179,0,0.04);padding:14px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                        <div style="background:#d97706;color:#fff;font-size:0.7rem;font-weight:900;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+                        <div style="font-size:0.9rem;font-weight:900;color:var(--tx-gold);">중량 입력 & 계산</div>
+                        <div style="font-size:0.7rem;color:var(--tx-muted);">원료별 중량 입력 후 계산하기</div>
+                    </div>
 
-                <!-- 결과 -->
-                <div id="pf-result" style="display:none;"></div>
+                    <!-- 목표 수분율 -->
+                    <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-radius:12px;padding:12px;margin-bottom:12px;">
+                        <div style="font-size:0.78rem;color:#38bdf8;font-weight:700;margin-bottom:8px;">💧 목표 수분율 설정</div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span style="font-size:0.85rem;color:var(--tx-muted);">목표 수분율</span>
+                            <input type="number" id="pf-target-moisture" value="12" min="8" max="25" step="0.5"
+                                style="width:70px;padding:8px;border-radius:8px;border:1px solid rgba(56,189,248,0.3);background:var(--bg-input);color:#38bdf8;font-size:1rem;font-weight:900;text-align:center;">
+                            <span style="font-size:0.9rem;color:#38bdf8;font-weight:700;">%</span>
+                            <span style="font-size:0.72rem;color:var(--tx-muted);">(권장 10~14%)</span>
+                        </div>
+                    </div>
+
+                    <!-- 계산 버튼 -->
+                    <div style="display:flex;gap:8px;margin-bottom:10px;">
+                        <button onclick="calcPollenFeed()" style="flex:1;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:14px;border-radius:10px;font-weight:800;border:none;cursor:pointer;">🧮 계산하기</button>
+                        <button onclick="resetPollenFeed()" style="background:rgba(100,100,100,0.5);color:white;padding:14px 20px;border-radius:10px;border:none;cursor:pointer;">초기화</button>
+                    </div>
+
+                    <!-- 결과 -->
+                    <div id="pf-result" style="display:none;"></div>
+                </div>
             </div>
 
 
@@ -4099,12 +4120,12 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
             <!-- 월별 밀원 캘린더 -->
             <div style="background:var(--bg-card);border-radius:14px;padding:14px;margin-bottom:14px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                    <span style="color:var(--tx-gold);font-weight:800;font-size:0.95rem;">📅 월별 밀원 캘린더</span>
-                    <div style="display:flex;align-items:center;gap:8px;">
+                <div style="margin-bottom:12px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                        <span style="color:var(--tx-gold);font-weight:800;font-size:0.95rem;white-space:nowrap;">📅 월별 밀원 캘린더</span>
                         <span id="nectar-cal-count" style="font-size:0.75rem;color:var(--tx-amber);font-weight:700;"></span>
-                        <span style="font-size:0.7rem;color:var(--tx-muted);">※ 지역·해발·기온에 따라 차이 있음</span>
                     </div>
+                    <div style="font-size:0.68rem;color:var(--tx-muted);">※ 지역·해발·기온에 따라 차이 있음</div>
                 </div>
                 <!-- 월 탭 -->
                 <div id="nectar-cal-tabs" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px;">
@@ -7586,41 +7607,41 @@ function getUserInfo(){
         var _PLANTNET_KEY = '2b10IAFvO1O9VZrN4oN4IY3Oe';
 
         var NECTAR_DB = [
-            {keys:["매화나무","매화"], name:'매화나무', nectar:'적음', pollen:'적음', blooming:'2~3월', honey:'잡화꿀', val:2, tips:'작은나무'},
+            {keys:["매화나무","매화","매실나무","매실"], name:'매화나무', nectar:'보통', pollen:'풍부', blooming:'3월', honey:'잡화꿀', val:5, tips:'극초기 최상급 보조 밀원. 여왕벌 산란 촉진. 천연화분 미네랄 풍부. 큰나무'},
             {keys:["동백나무","동백"], name:'동백나무', nectar:'보통', pollen:'풍부', blooming:'2~3월', honey:'동백꿀', val:3, tips:'상록큰나무(남부)'},
             {keys:["사스레피나무","사스레피"], name:'사스레피나무', nectar:'풍부', pollen:'보통', blooming:'2~3월', honey:'잡화꿀', val:4, tips:'상록작은나무(남부)'},
             {keys:["영춘화"], name:'영춘화', nectar:'보통', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["생강나무","생강"], name:'생강나무', nectar:'보통', pollen:'보통', blooming:'3월', honey:'잡화꿀', val:3, tips:'중키나무'},
-            {keys:["개불알풀"], name:'개불알풀', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:1, tips:'한해살이'},
-            {keys:["갯버들"], name:'갯버들', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:2, tips:'작은나무'},
+            {keys:["개불알풀"], name:'개불알풀', nectar:'풍부', pollen:'보통', blooming:'2~4월', honey:'잡화꿀', val:4, tips:'초봄 첫 비행 고당도 에너지원. 잡초형 지면 밀원. 한해살이'},
+            {keys:["갯버들"], name:'갯버들', nectar:'풍부', pollen:'풍부', blooming:'3월', honey:'잡화꿀', val:5, tips:'자웅이주. 수꽃-화분 압도적(노란색), 암꽃-화밀 풍부. 봄벌 육아 핵심. 수변 식생'},
             {keys:["왕버들","왕버들나무"], name:'왕버들', nectar:'보통', pollen:'풍부', blooming:'3~4월', honey:'잡화꿀', val:4, tips:'봄철 주요 화분 수집종. 큰나무'},
-            {keys:["꽃다지"], name:'꽃다지', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:1, tips:'한해살이'},
-            {keys:["광대나물"], name:'광대나물', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:2, tips:'한해살이'},
+            {keys:["꽃다지"], name:'꽃다지', nectar:'보통', pollen:'풍부', blooming:'3~4월', honey:'잡화꿀', val:4, tips:'노란색 군락. 봄벌 화분 주역. 잡초형. 한해살이'},
+            {keys:["광대나물"], name:'광대나물', nectar:'풍부', pollen:'보통', blooming:'2~5월', honey:'잡화꿀', val:4, tips:'초봄 화밀 중심. 고당도. 잡초형. 봄까치꽃이라고도 함'},
             {keys:["수선화"], name:'수선화', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["개암나무"], name:'개암나무', nectar:'없음', pollen:'풍부', blooming:'3월', honey:null, val:3, tips:'봄철 주요 화분 수집종. 작은나무'},
             {keys:["오리나무"], name:'오리나무', nectar:'없음', pollen:'풍부', blooming:'3월', honey:null, val:3, tips:'봄철 주요 화분 수집종. 큰나무'},
-            {keys:["느릅나무"], name:'느릅나무', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:2, tips:'큰나무'},
+            {keys:["느릅나무"], name:'느릅나무', nectar:'없음', pollen:'풍부', blooming:'3월', honey:'잡화꿀', val:4, tips:'화분 특화. 황갈색 대량 화분. 잎보다 꽃 먼저 핌. 큰나무'},
             {keys:["산수유"], name:'산수유', nectar:'풍부', pollen:'보통', blooming:'3월', honey:'산수유꿀', val:4, tips:'큰나무'},
-            {keys:["복수초"], name:'복수초', nectar:'적음', pollen:'적음', blooming:'3월', honey:'잡화꿀', val:1, tips:'숙근초'},
-            {keys:["회양목"], name:'회양목', nectar:'적음', pollen:'보통', blooming:'3월', honey:'잡화꿀', val:2, tips:'상록작은나무'},
-            {keys:["수양버들"], name:'수양버들', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["물오리나무"], name:'물오리나무', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["매실나무","매실"], name:'매실나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
+            {keys:["복수초"], name:'복수초', nectar:'적음', pollen:'보통', blooming:'2~3월', honey:'잡화꿀', val:3, tips:'꽃 내부 온도↑ 벌 저체온 방지. 극초기 화분 공급. 개체수 적음'},
+            {keys:["회양목"], name:'회양목', nectar:'풍부', pollen:'풍부', blooming:'3~4월', honey:'잡화꿀', val:5, tips:'초봄 화밀·화분 압도적. 조경수로 흔함. 기온 10°C↑ 벌 집중. 상록작은나무'},
+            {keys:["수양버들"], name:'수양버들', nectar:'풍부', pollen:'풍부', blooming:'3~4월', honey:'잡화꿀', val:4, tips:'자웅이주. 암꽃-화밀, 수꽃-화분 풍부. 큰나무'},
+            {keys:["물오리나무"], name:'물오리나무', nectar:'없음', pollen:'풍부', blooming:'3월', honey:'잡화꿀', val:4, tips:'최조기 화분 특화. 황갈색 화분 대량. 월동 후 첫 단백질 공급. 큰나무'},
+            
             {keys:["유채","유채꽃"], name:'유채', nectar:'풍부', pollen:'풍부', blooming:'3~5월', honey:'유채꿀', val:5, tips:'한해살이'},
             {keys:["진달래"], name:'진달래', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["앵두나무","앵두"], name:'앵두나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["자두나무","자두"], name:'자두나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
-            {keys:["고리버들"], name:'고리버들', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["산버들"], name:'산버들', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["백목련","목련"], name:'백목련', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["땅딸기"], name:'땅딸기', nectar:'보통', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'여러해살이'},
+            {keys:["고리버들"], name:'고리버들', nectar:'풍부', pollen:'풍부', blooming:'3~4월', honey:'잡화꿀', val:5, tips:'갯버들과 초봄 화분 양대산맥. 수변 군락. 노란색 화분. 큰나무'},
+            {keys:["산버들"], name:'산버들', nectar:'보통', pollen:'풍부', blooming:'3~4월', honey:'잡화꿀', val:4, tips:'산간 지역 세력 유지. 개화기간 연장. 큰나무'},
+            {keys:["백목련","목련"], name:'백목련', nectar:'보통', pollen:'풍부', blooming:'3~4월', honey:'잡화꿀', val:4, tips:'화분 특화. 황백색 대량 화분. 조경수 흔함. 꽃샘추위 취약'},
+            {keys:["땅딸기"], name:'땅딸기', nectar:'풍부', pollen:'풍부', blooming:'4~5월', honey:'잡화꿀', val:3, tips:'고당도 화밀. 지면 밀원. 여러해살이'},
             {keys:["민들레"], name:'민들레', nectar:'적음', pollen:'풍부', blooming:'3~5월', honey:'잡화꿀', val:3, tips:'여러해살이'},
             {keys:["왕벚나무","왕벚","벚나무","벚"], name:'왕벚나무', nectar:'풍부', pollen:'풍부', blooming:'4월', honey:'벚꿀', val:5, tips:'큰나무'},
             {keys:["산벚나무","산벚"], name:'산벚나무', nectar:'풍부', pollen:'풍부', blooming:'4월', honey:'벚꿀', val:5, tips:'큰나무'},
             {keys:["살구나무","살구"], name:'살구나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
-            {keys:["복숭아나무","복숭아","복사"], name:'복숭아나무', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
+            {keys:["복숭아나무","복숭아","복사"], name:'복숭아나무', nectar:'풍부', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:4, tips:'과수 지역 핵심 밀원. 화밀·화분 풍부. ⚠️ 농약 살포 주의'},
             {keys:["버드나무","버들"], name:'버드나무', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
-            {keys:["황매화"], name:'황매화', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'큰나무'},
+            {keys:["황매화"], name:'황매화', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'홑꽃 품종만 밀원 가치. 작은나무'},
             {keys:["단풍나무","단풍"], name:'단풍나무', nectar:'풍부', pollen:'보통', blooming:'3~4월', honey:'잡화꿀', val:4, tips:'봄철 우수 밀원. 큰나무'},
 
             {keys:["복자기"], name:'복자기', nectar:'보통', pollen:'보통', blooming:'4~5월', honey:'잡화꿀', val:3, tips:'단풍나무류. 화밀 양호. 큰나무'},
@@ -7631,24 +7652,24 @@ function getUserInfo(){
             {keys:["사과나무","사과"], name:'사과나무', nectar:'풍부', pollen:'적음', blooming:'4월', honey:'사과꿀', val:4, tips:'큰나무'},
             {keys:["배나무","배"], name:'배나무', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["호도나무","호두나무","호두"], name:'호두나무', nectar:'없음', pollen:'풍부', blooming:'4~5월', honey:null, val:3, tips:'봄철 화분 특화형 밀원. 아까시 전 봉군 육성용 단백질 공급. 채밀 가치 없음.'},
-            {keys:["돌배나무","돌배"], name:'돌배나무', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["능수버들"], name:'능수버들', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
+            {keys:["돌배나무","돌배"], name:'돌배나무', nectar:'풍부', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:5, tips:'유인력 강함. 화분 매우 풍부. ⚠️ 농약 주의. 큰나무'},
+            {keys:["능수버들"], name:'능수버들', nectar:'풍부', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:5, tips:'압도적 화분량. 자웅이주. 큰나무'},
             {keys:["파"], name:'파', nectar:'풍부', pollen:'풍부', blooming:'5~6월', honey:'파꿀', val:4, tips:'대단위 파 밭 근처 우수 밀원. ⚠️ 농약 살포 주기 반드시 확인. 파꿀은 숙성 후 독특한 풍미.'},
-            {keys:["봄까치풀"], name:'봄까치풀', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'여러해살이'},
+            {keys:["봄까치풀"], name:'봄까치풀', nectar:'풍부', pollen:'보통', blooming:'2~4월', honey:'잡화꿀', val:4, tips:'개불알풀의 별칭. 초봄 고당도 화밀. 잡초형'},
             {keys:["참나무","도토리나무"], name:'참나무(도토리)', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
             {keys:["떡갈나무","떡갈"], name:'떡갈나무', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
-            {keys:["팽나무"], name:'팽나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'큰나무'},
+            {keys:["팽나무"], name:'팽나무', nectar:'없음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'대형목 총 화분량 상당. 큰나무'},
             {keys:["아로니아"], name:'아로니아', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'작은나무'},
-            {keys:["자작나무"], name:'자작나무', nectar:'적음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:2, tips:'큰나무'},
+            {keys:["자작나무"], name:'자작나무', nectar:'없음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:3, tips:'수꽃이삭 황갈색 대량 화분. 큰나무'},
             {keys:["감탕나무"], name:'감탕나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["까치박달나무","까치박달"], name:'까치박달나무', nectar:'보통', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["박태기나무","박태기"], name:'박태기나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'작은나무'},
-            {keys:["호랑가시나무"], name:'호랑가시나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'작은나무'},
-            {keys:["화살나무"], name:'화살나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'작은나무'},
+            {keys:["호랑가시나무"], name:'호랑가시나무', nectar:'풍부', pollen:'보통', blooming:'4~5월', honey:'잡화꿀', val:4, tips:'남부 4~5월 주요 밀원. 유밀량 아주 많음. 상록작은나무'},
+            {keys:["화살나무"], name:'화살나무', nectar:'보통', pollen:'없음', blooming:'4월', honey:'잡화꿀', val:3, tips:'밀샘 노출 벌 접근 쉬움. 작은나무'},
             {keys:["초피나무","초피"], name:'초피나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'작은나무(나물)'},
             {keys:["으름덩굴","으름"], name:'으름덩굴', nectar:'보통', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:3, tips:'덩굴'},
-            {keys:["고추나무"], name:'고추나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'작은나무'},
-            {keys:["소귀나무"], name:'소귀나무', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'작은나무'},
+            {keys:["고추나무"], name:'고추나무', nectar:'풍부', pollen:'풍부', blooming:'5~6월', honey:'잡화꿀', val:4, tips:'아까시 직후 공백 메움. 산기슭 군락 대량 유밀'},
+            {keys:["소귀나무"], name:'소귀나무', nectar:'보통', pollen:'풍부', blooming:'3~4월', honey:'잡화꿀', val:3, tips:'제주·남부 해안 상록수. 초봄 화분 공급'},
             {keys:["산사나무","산사"], name:'산사나무', nectar:'풍부', pollen:'보통', blooming:'4~5월', honey:'잡화꿀', val:4, tips:'작은나무'},
             {keys:["애기사과나무","애기사과"], name:'애기사과나무', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:4, tips:'작은나무'},
             {keys:["때죽나무","때죽"], name:'때죽나무', nectar:'풍부', pollen:'적음', blooming:'5~6월', honey:'때죽꿀', val:5, tips:'큰나무'},
@@ -7658,10 +7679,10 @@ function getUserInfo(){
             {keys:["오동나무","오동"], name:'오동나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["신나무"], name:'신나무', nectar:'풍부', pollen:'보통', blooming:'4~5월', honey:'잡화꿀', val:4, tips:'산지 군락 형성. 봄 밀원 우수. 큰나무'},
             {keys:["팥배나무","팥배"], name:'팥배나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
-            {keys:["인동덩굴","인동"], name:'인동덩굴', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'덩굴'},
+            {keys:["인동덩굴","인동"], name:'인동덩굴', nectar:'풍부', pollen:'없음', blooming:'5~8월', honey:'잡화꿀', val:4, tips:'개화기 길어 여름 내내 유밀. 금은화라고도 함. 덩굴'},
             {keys:["함박꽃나무","함박꽃"], name:'함박꽃나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
-            {keys:["큰까치수염"], name:'큰까치수염', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["돌가시나무"], name:'돌가시나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
+            {keys:["큰까치수염"], name:'큰까치수염', nectar:'보통', pollen:'없음', blooming:'6~7월', honey:'잡화꿀', val:3, tips:'꼬리 모양 꽃. 벌 줄지어 방문. 여러해살이'},
+            {keys:["돌가시나무"], name:'돌가시나무', nectar:'풍부', pollen:'보통', blooming:'5~6월', honey:'잡화꿀', val:3, tips:'해안·들판. 장미향 풍부한 꿀. 작은나무'},
             {keys:["아까시나무","아카시아","아까시","Robinia"], name:'아까시나무', nectar:'풍부', pollen:'보통', blooming:'5월', honey:'아까시꿀', val:5, tips:'큰나무'},
             {keys:["황벽나무","황벽"], name:'황벽나무', nectar:'풍부', pollen:'풍부', blooming:'5~6월', honey:'잡화꿀', val:5, tips:'큰나무'},
             {keys:["찔레꽃","찔레"], name:'찔레꽃', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
@@ -7676,16 +7697,16 @@ function getUserInfo(){
             {keys:["수수꽃다리","라일락"], name:'수수꽃다리(라일락)', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["마가목"], name:'마가목', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["조팝나무","조팝"], name:'조팝나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
-            {keys:["고광나무"], name:'고광나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
+            {keys:["고광나무"], name:'고광나무', nectar:'풍부', pollen:'없음', blooming:'5~6월', honey:'잡화꿀', val:4, tips:'오렌지 향 강력 유인. 아까시 직후 세력 유지. 작은나무'},
             {keys:["산딸기","딸기"], name:'산딸기', nectar:'보통', pollen:'보통', blooming:'4~5월', honey:'잡화꿀', val:3, tips:'작은나무'},
-            {keys:["병꽃나무"], name:'병꽃나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'작은나무'},
+            {keys:["병꽃나무"], name:'병꽃나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'보조 밀원. 작은나무'},
             {keys:["복분자딸기","복분자"], name:'복분자딸기', nectar:'풍부', pollen:'풍부', blooming:'5~6월', honey:'복분자꿀', val:4, tips:'꿀·화분 풍부. 작은나무'},
             {keys:["쥐똥나무","쥐똥"], name:'쥐똥나무', nectar:'보통', pollen:'보통', blooming:'5~6월', honey:'잡화꿀', val:3, tips:'작은나무'},
             {keys:["국수나무"], name:'국수나무', nectar:'풍부', pollen:'보통', blooming:'5~6월', honey:'잡화꿀', val:4, tips:'아까시 후 무밀기 구원투수. 군락 밀집 유밀량 풍부. 토종벌·서양종 공통 선호. 전국 자생'},
-            {keys:["미역줄나무"], name:'미역줄나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'덩굴'},
-            {keys:["괴불나무"], name:'괴불나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'작은나무'},
-            {keys:["노린재나무"], name:'노린재나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'작은나무'},
-            {keys:["등나무","등"], name:'등나무', nectar:'풍부', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:4, tips:'덩굴'},
+            {keys:["미역줄나무"], name:'미역줄나무', nectar:'풍부', pollen:'없음', blooming:'5~6월', honey:'잡화꿀', val:4, tips:'숲속 덩굴 유밀량 압도적. 6월 효자 밀원. 덩굴'},
+            {keys:["괴불나무"], name:'괴불나무', nectar:'보통', pollen:'없음', blooming:'5~6월', honey:'잡화꿀', val:3, tips:'6월 산중 봉장 귀중 먹이원. 작은나무'},
+            {keys:["노린재나무"], name:'노린재나무', nectar:'보통', pollen:'없음', blooming:'5~6월', honey:'잡화꿀', val:3, tips:'솜털 꽃 향긋한 꿀. 작은나무'},
+            {keys:["등나무","등"], name:'등나무', nectar:'풍부', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:4, tips:'아까시와 비슷한 시기. 향긋한 꿀. 덩굴'},
             {keys:["모감주나무","모감주"], name:'모감주나무', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'모감주꿀', val:4, tips:'큰나무'},
             {keys:["흰배롱나무","배롱나무"], name:'배롱나무', nectar:'보통', pollen:'풍부', blooming:'7~9월', honey:'잡화꿀', val:3, tips:'큰나무(수입종)'},
             {keys:["음나무","엄나무"], name:'음나무', nectar:'풍부', pollen:'보통', blooming:'7~8월', honey:'잡화꿀', val:4, tips:'큰나무'},
@@ -7698,22 +7719,22 @@ function getUserInfo(){
             {keys:["잣나무","잣"], name:'잣나무', nectar:'없음', pollen:'풍부', blooming:'5월', honey:null, val:3, tips:'큰나무'},
             {keys:["귤나무","귤"], name:'귤나무', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:4, tips:'남부 작은나무'},
             {keys:["레몬"], name:'레몬', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:4, tips:'남부 작은나무'},
-            {keys:["탱자나무","탱자"], name:'탱자나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
+            {keys:["탱자나무","탱자"], name:'탱자나무', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:4, tips:'향 강해 유인력 좋음. 아까시 직전 저밀량 증가. 작은나무'},
             {keys:["갈참나무","갈참"], name:'갈참나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
             {keys:["졸참나무","졸참"], name:'졸참나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
             {keys:["신갈나무","신갈"], name:'신갈나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
             {keys:["굴참나무","굴참"], name:'굴참나무', nectar:'적음', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'주요 화분 수집종. 큰나무'},
             {keys:["유자나무","유자"], name:'유자나무', nectar:'풍부', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:4, tips:'큰나무(남부)'},
-            {keys:["매자나무","매자"], name:'매자나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'작은나무'},
+            {keys:["매자나무","매자"], name:'매자나무', nectar:'풍부', pollen:'없음', blooming:'4~5월', honey:'잡화꿀', val:3, tips:'노란 꽃 뭉쳐 피며 벌들 선호. 작은나무'},
             {keys:["퉁피나무","퉁피"], name:'퉁피나무', nectar:'풍부', pollen:'보통', blooming:'5~6월', honey:'잡화꿀', val:4, tips:'큰나무'},
             {keys:["호박"], name:'호박', nectar:'풍부', pollen:'풍부', blooming:'6~9월', honey:'잡화꿀', val:4, tips:'덩굴'},
             {keys:["약모밀","어성초"], name:'약모밀(어성초)', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["돌나물"], name:'돌나물', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'낙엽소교목'},
+            {keys:["돌나물"], name:'돌나물', nectar:'보통', pollen:'없음', blooming:'5~6월', honey:'잡화꿀', val:2, tips:'별 모양 꽃 꿀 고임. 지면 밀원'},
             {keys:["다래"], name:'다래', nectar:'풍부', pollen:'풍부', blooming:'6월', honey:'잡화꿀', val:5, tips:'덩굴'},
             {keys:["광대싸리"], name:'광대싸리', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'잡화꿀', val:4, tips:'여름 우수 밀원. 꿀벌이 매우 좋아함. 작은나무'},
             {keys:["헛개나무","헛개"], name:'헛개나무', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'잡화꿀', val:4, tips:'큰나무'},
             {keys:["명석딸기"], name:'명석딸기', nectar:'보통', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:2, tips:'덩굴'},
-            {keys:["예덕나무","예덕"], name:'예덕나무', nectar:'보통', pollen:'없음', blooming:'6월', honey:'잡화꿀', val:2, tips:'큰나무(남부)'},
+            {keys:["예덕나무","예덕"], name:'예덕나무', nectar:'풍부', pollen:'없음', blooming:'6~7월', honey:'잡화꿀', val:4, tips:'남부 효자 밀원. 작은 꽃 꿀 왕성. 채밀 가능. 큰나무'},
             {keys:["오이"], name:'오이', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["가지"], name:'가지', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["참외"], name:'참외', nectar:'보통', pollen:'보통', blooming:'6~8월', honey:'잡화꿀', val:3, tips:'화분매개 임대 수익. 장기 개화로 무밀기 먹이원. 농약 살포 주의'},
@@ -7721,22 +7742,22 @@ function getUserInfo(){
             {keys:["고들빼기"], name:'고들빼기', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'두해살이'},
             {keys:["대추나무","대추"], name:'대추나무', nectar:'풍부', pollen:'보통', blooming:'6~7월', honey:'대추꿀', val:5, tips:'큰나무'},
             {keys:["밤나무","밤"], name:'밤나무', nectar:'풍부', pollen:'풍부', blooming:'6~7월', honey:'밤꿀', val:5, tips:'큰나무'},
-            {keys:["범꼬리"], name:'범꼬리', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["초롱꽃"], name:'초롱꽃', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["수레국화"], name:'수레국화', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'한해살이'},
+            {keys:["범꼬리"], name:'범꼬리', nectar:'보통', pollen:'없음', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'고산·습지 군락. 안정 유밀. 여러해살이'},
+            {keys:["초롱꽃"], name:'초롱꽃', nectar:'보통', pollen:'없음', blooming:'6~8월', honey:'잡화꿀', val:3, tips:'통꽃 장시간 채집. 여러해살이'},
+            {keys:["수레국화"], name:'수레국화', nectar:'풍부', pollen:'풍부', blooming:'5~7월', honey:'잡화꿀', val:4, tips:'개화기 길고 당도 높음. 관상용으로도 우수'},
             {keys:["호장근"], name:'호장근', nectar:'보통', pollen:'보통', blooming:'6월', honey:'잡화꿀', val:3, tips:'여러해살이'},
             {keys:["알팔파"], name:'알팔파', nectar:'보통', pollen:'보통', blooming:'6월', honey:'잡화꿀', val:3, tips:'사료작물'},
-            {keys:["싱아"], name:'싱아', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["붉은인가목","인가목"], name:'붉은인가목', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해(덩굴)'},
-            {keys:["낙지다리"], name:'낙지다리', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
+            {keys:["싱아"], name:'싱아', nectar:'보통', pollen:'없음', blooming:'6~8월', honey:'잡화꿀', val:2, tips:'산기슭 대형 군락. 꾸준한 소량 유밀'},
+            {keys:["붉은인가목","인가목"], name:'붉은인가목', nectar:'보통', pollen:'풍부', blooming:'5~6월', honey:'잡화꿀', val:3, tips:'산장미. 향 진함. 화분 많음'},
+            {keys:["낙지다리"], name:'낙지다리', nectar:'보통', pollen:'없음', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'습지 근처. 7월 무밀기 안정 먹이원'},
             {keys:["오수유"], name:'오수유', nectar:'풍부', pollen:'보통', blooming:'5~6월', honey:'잡화꿀', val:4, tips:'중국쉬나무'},
-            {keys:["좀쌀풀"], name:'좀쌀풀', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'한해살이'},
-            {keys:["수영꽃","수영"], name:'수영꽃', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'한해살이'},
+            {keys:["좀쌀풀"], name:'좀쌀풀', nectar:'보통', pollen:'보통', blooming:'6~8월', honey:'잡화꿀', val:3, tips:'노란 꽃 군락. 벌 강력 유인. 여러해살이'},
+            {keys:["수영꽃","수영"], name:'수영꽃', nectar:'없음', pollen:'풍부', blooming:'5~7월', honey:'잡화꿀', val:2, tips:'화분 특화. 여름철 육아 보조'},
             {keys:["용머리"], name:'용머리', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:2, tips:'여러해살이'},
-            {keys:["석잠풀"], name:'석잠풀', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["으아리"], name:'으아리', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
+            {keys:["석잠풀"], name:'석잠풀', nectar:'풍부', pollen:'없음', blooming:'6~8월', honey:'잡화꿀', val:4, tips:'꿀풀과. 유밀량 우수. 벌 줄지어 방문. 여러해살이'},
+            {keys:["으아리"], name:'으아리', nectar:'보통', pollen:'없음', blooming:'6~7월', honey:'잡화꿀', val:3, tips:'덩굴성. 산기슭 화려한 꽃. 벌 유인'},
             {keys:["여귀"], name:'여귀', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["조록싸리"], name:'조록싸리', nectar:'보통', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:2, tips:'해거리싱함'},
+            {keys:["조록싸리"], name:'조록싸리', nectar:'풍부', pollen:'풍부', blooming:'6~7월', honey:'잡화꿀', val:5, tips:'여름 잡화꿀 주성분. 유밀량 아주 많음. 작은나무'},
             {keys:["튤립나무","백합나무"], name:'튤립나무(백합나무)', nectar:'풍부', pollen:'풍부', blooming:'6월', honey:'잡화꿀', val:5, tips:'큰나무'},
             {keys:["붓들레아","버들레아"], name:'붓들레아', nectar:'보통', pollen:'보통', blooming:'6월', honey:'잡화꿀', val:3, tips:'낙엽관목'},
             {keys:["주엽나무"], name:'주엽나무', nectar:'보통', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:3, tips:'큰나무'},
@@ -7744,63 +7765,64 @@ function getUserInfo(){
             {keys:["함다리나무"], name:'함다리나무', nectar:'보통', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:2, tips:'큰나무'},
             {keys:["담쟁이덩굴","담쟁이"], name:'담쟁이덩굴', nectar:'풍부', pollen:'풍부', blooming:'6~7월', honey:'잡화꿀', val:4, tips:'여름 무밀기 구원투수. 도심~산지 전국 분포. 가을 벌 육아 지원. 프로폴리스 원료'},
             {keys:["질경이"], name:'질경이', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["장구밥나무"], name:'장구밥나무', nectar:'적음', pollen:'적음', blooming:'6월', honey:'잡화꿀', val:1, tips:'작은나무'},
+            {keys:["장구밥나무"], name:'장구밥나무', nectar:'풍부', pollen:'없음', blooming:'7월', honey:'잡화꿀', val:4, tips:'7월 무밀기 유밀량 상당. 하얀 꽃. 작은나무'},
             {keys:["둥굴레"], name:'둥굴레', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["달맞이꽃","달맞이"], name:'달맞이꽃', nectar:'적음', pollen:'보통', blooming:'7월', honey:'잡화꿀', val:2, tips:'한해살이'},
-            {keys:["달개비꽃","달개비"], name:'달개비꽃', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
+            {keys:["달맞이꽃","달맞이"], name:'달맞이꽃', nectar:'없음', pollen:'풍부', blooming:'7~9월', honey:'잡화꿀', val:2, tips:'화분 특화. 아침 일찍 채집. 한해살이'},
+            {keys:["달개비꽃","달개비"], name:'달개비꽃', nectar:'없음', pollen:'풍부', blooming:'7~8월', honey:'잡화꿀', val:2, tips:'지면·습지 화분 위주. 여러해살이'},
             {keys:["털부처꽃","부처꽃"], name:'털부처꽃', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["산초나무","산초"], name:'산초나무', nectar:'보통', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:2, tips:'작은나무'},
-            {keys:["개망초"], name:'개망초', nectar:'없음', pollen:'적음', blooming:'7월', honey:null, val:1, tips:'한해살이'},
+            {keys:["산초나무","산초"], name:'산초나무', nectar:'풍부', pollen:'풍부', blooming:'7~8월', honey:'잡화꿀', val:4, tips:'향 강함. 가을 벌 양성 시작. 작은나무'},
+            {keys:["개망초"], name:'개망초', nectar:'보통', pollen:'보통', blooming:'6~8월', honey:null, val:3, tips:'잡초형. 무밀기 세력 유지 숨은 공신. 한해살이'},
             {keys:["옥수수"], name:'옥수수', nectar:'없음', pollen:'풍부', blooming:'7월', honey:null, val:2, tips:'한해살이(화분)'},
             {keys:["박주가리"], name:'박주가리', nectar:'풍부', pollen:'보통', blooming:'7월', honey:'잡화꿀', val:4, tips:'여러해살이(덩굴)'},
             {keys:["하수오"], name:'하수오', nectar:'풍부', pollen:'보통', blooming:'7월', honey:'잡화꿀', val:4, tips:'여러해살이(덩굴)'},
-            {keys:["쉬땅나무"], name:'쉬땅나무', nectar:'보통', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:2, tips:'작은나무'},
+            {keys:["쉬땅나무"], name:'쉬땅나무', nectar:'풍부', pollen:'풍부', blooming:'7월', honey:'잡화꿀', val:5, tips:'7월 무밀기 효자 밀원. 유밀량 아주 우수. 작은나무'},
             {keys:["참깨"], name:'참깨', nectar:'풍부', pollen:'적음', blooming:'7~8월', honey:'잡화꿀', val:4, tips:'한해살이'},
-            {keys:["벽오동"], name:'벽오동', nectar:'보통', pollen:'없음', blooming:'7월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["우엉"], name:'우엉', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["컴프리"], name:'컴프리', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
+            {keys:["벽오동"], name:'벽오동', nectar:'풍부', pollen:'없음', blooming:'7월', honey:'잡화꿀', val:4, tips:'고당도 화밀. 벌 접근 쉬움. 큰나무'},
+            {keys:["우엉"], name:'우엉', nectar:'풍부', pollen:'없음', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'대형 잎 아래 밀샘. 꿀 많음. 여러해살이'},
+            {keys:["컴프리"], name:'컴프리', nectar:'풍부', pollen:'없음', blooming:'6~7월', honey:'잡화꿀', val:3, tips:'대형 잎 아래 밀샘. 여러해살이'},
             {keys:["바이텍스"], name:'바이텍스', nectar:'풍부', pollen:'적음', blooming:'7~10월', honey:'바이텍스꿀', val:5, tips:'작은나무'},
-            {keys:["물싸리"], name:'물싸리', nectar:'보통', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:2, tips:'한해살이'},
+            {keys:["물싸리"], name:'물싸리', nectar:'보통', pollen:'보통', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'노란꽃 오랫동안 피어 비상 식량. 한해살이'},
             {keys:["채꽃"], name:'채꽃', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'한해살이'},
             {keys:["솔나물"], name:'솔나물', nectar:'풍부', pollen:'보통', blooming:'7월', honey:'잡화꿀', val:4, tips:'여러해살이'},
-            {keys:["마타리"], name:'마타리', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:2, tips:'여러해살이'},
-            {keys:["절굿대"], name:'절굿대', nectar:'없음', pollen:'적음', blooming:'7월', honey:null, val:1, tips:'한해살이'},
+            {keys:["마타리"], name:'마타리', nectar:'풍부', pollen:'풍부', blooming:'8~9월', honey:'잡화꿀', val:4, tips:'노란 군락. 가을 잡화꿀 품질 향상. 여러해살이'},
+            {keys:["절굿대"], name:'절굿대', nectar:'풍부', pollen:'없음', blooming:'7~8월', honey:null, val:3, tips:'보라색 공 모양 꽃. 꿀 많아 벌 줄지어 방문'},
             {keys:["싸리","싸리나무"], name:'싸리', nectar:'풍부', pollen:'보통', blooming:'7~9월', honey:'싸리꿀', val:5, tips:'작은나무'},
             {keys:["금밀초"], name:'금밀초', nectar:'풍부', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:4, tips:'여러해살이'},
             {keys:["아니스히습"], name:'아니스히습', nectar:'풍부', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:4, tips:'여러해살이'},
-            {keys:["코스모스"], name:'코스모스', nectar:'적음', pollen:'보통', blooming:'7~10월', honey:'잡화꿀', val:2, tips:'한해살이'},
+            {keys:["코스모스"], name:'코스모스', nectar:'보통', pollen:'풍부', blooming:'8~10월', honey:'잡화꿀', val:3, tips:'대량 화분. 가을 산란 유지. 한해살이'},
             {keys:["서광","만수국","마리골드","Marigold","프렌치마리골드"], name:'서광(만수국)', nectar:'보통', pollen:'풍부', blooming:'6~10월', honey:'잡화꿀', val:4, tips:'가을 월동벌 양성 핵심 밀원. 서리 전까지 장기 개화. 루테인 면역 강화. 봉장 주변 해충 기피 효과'},
-            {keys:["콩"], name:'콩', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'한해살이'},
-            {keys:["담싸리"], name:'담싸리', nectar:'없음', pollen:'풍부', blooming:'7월', honey:null, val:2, tips:'한해살이'},
+            {keys:["콩"], name:'콩', nectar:'풍부', pollen:'없음', blooming:'7~8월', honey:'잡화꿀', val:4, tips:'유밀 우수. ⚠️ 농약 살포 주의. 한해살이'},
+            {keys:["담싸리"], name:'담싸리', nectar:'풍부', pollen:'풍부', blooming:'7~8월', honey:null, val:4, tips:'싸리류. 7~8월 산간 봉장 귀중 먹이원. 한해살이'},
             {keys:["낭이초"], name:'낭이초', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'작은나무(남부)'},
             {keys:["익모초"], name:'익모초', nectar:'보통', pollen:'보통', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'한해살이'},
-            {keys:["무궁화"], name:'무궁화', nectar:'적음', pollen:'보통', blooming:'7~9월', honey:'잡화꿀', val:2, tips:'큰나무'},
-            {keys:["분홍비늘꽃"], name:'분홍비늘꽃', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["맥문동"], name:'맥문동', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["쐐기풀"], name:'쐐기풀', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["팥"], name:'팥', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'한해살이'},
+            {keys:["무궁화"], name:'무궁화', nectar:'없음', pollen:'풍부', blooming:'7~9월', honey:'잡화꿀', val:2, tips:'화분 위주. 개화기 길음. 큰나무'},
+            {keys:["분홍비늘꽃","분홍바늘꽃"], name:'분홍바늘꽃', nectar:'풍부', pollen:'없음', blooming:'7~8월', honey:'잡화꿀', val:5, tips:'고산지대 최고 여름 밀원. 채밀 가치 높음. 여러해살이'},
+            {keys:["낭아초"], name:'낭아초', nectar:'풍부', pollen:'없음', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'덩굴성. 7~8월 유밀량 좋음. 여러해살이'},
+            {keys:["맥문동"], name:'맥문동', nectar:'없음', pollen:'풍부', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'그늘 적응. 8월 화분 안정 공급. 여러해살이'},
+            {keys:["쐐기풀"], name:'쐐기풀', nectar:'없음', pollen:'풍부', blooming:'7~8월', honey:'잡화꿀', val:2, tips:'화분 위주. 여러해살이'},
+            {keys:["팥"], name:'팥', nectar:'풍부', pollen:'없음', blooming:'7~8월', honey:'잡화꿀', val:4, tips:'유밀 우수. ⚠️ 농약 살포 주의. 한해살이'},
             {keys:["엉겅퀴"], name:'엉겅퀴', nectar:'보통', pollen:'적음', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'여러해살이'},
             {keys:["박하"], name:'박하', nectar:'보통', pollen:'적음', blooming:'7~8월', honey:'박하꿀', val:3, tips:'한해살이'},
-            {keys:["과꽃"], name:'과꽃', nectar:'적음', pollen:'적음', blooming:'7월', honey:'잡화꿀', val:1, tips:'한해살이'},
+            {keys:["과꽃"], name:'과꽃', nectar:'보통', pollen:'보통', blooming:'8~9월', honey:'잡화꿀', val:3, tips:'늦여름~가을. 기호도 높음. 한해살이'},
             {keys:["층꽃풀","층꽃나무","층꽃"], name:'층꽃풀', nectar:'보통', pollen:'보통', blooming:'8~9월', honey:'잡화꿀', val:3, tips:'여러해살이(남부)'},
-            {keys:["전동싸리"], name:'전동싸리', nectar:'없음', pollen:'없음', blooming:'7~9월', honey:null, val:1, tips:'2년살이'},
+            {keys:["전동싸리"], name:'전동싸리', nectar:'풍부', pollen:'없음', blooming:'7~9월', honey:null, val:5, tips:'허니클로버. 꿀 매우 많고 개화기 길어 채밀 가능. 2년살이'},
             {keys:["더덕"], name:'더덕', nectar:'풍부', pollen:'풍부', blooming:'8~9월', honey:'더덕꿀', val:4, tips:'가을 고영양 밀원. 사포닌 풍부해 월동벌 면역력 강화. 더덕꿀은 인삼향 풍미로 고급 약꿀. 덩굴성 — 지지대 필요.'},
-            {keys:["옥잠화"], name:'옥잠화', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["원추리"], name:'원추리', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["비비추"], name:'비비추', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'여러해살이'},
-            {keys:["도깨비바늘"], name:'도깨비바늘', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'한해살이'},
-            {keys:["부추"], name:'부추', nectar:'적음', pollen:'적음', blooming:'8~9월', honey:'잡화꿀', val:1, tips:'여러해살이'},
+            {keys:["옥잠화"], name:'옥잠화', nectar:'보통', pollen:'보통', blooming:'8~9월', honey:'잡화꿀', val:3, tips:'향 강함. 야간 유밀 활발. 여러해살이'},
+            {keys:["원추리"], name:'원추리', nectar:'보통', pollen:'풍부', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'백합과. 화분 크고 풍부. 여러해살이'},
+            {keys:["비비추"], name:'비비추', nectar:'보통', pollen:'풍부', blooming:'8월', honey:'잡화꿀', val:3, tips:'백합과. 화분 크고 풍부. 여러해살이'},
+            {keys:["도깨비바늘"], name:'도깨비바늘', nectar:'보통', pollen:'풍부', blooming:'8~10월', honey:'잡화꿀', val:3, tips:'들판·길가 흔함. 늦가을까지 지속. 한해살이'},
+            {keys:["부추"], name:'부추', nectar:'풍부', pollen:'풍부', blooming:'8~9월', honey:'잡화꿀', val:4, tips:'향 진하고 당도 높음. 월동 사양 부담 경감. 여러해살이'},
             {keys:["칡자화","칡"], name:'칡', nectar:'보통', pollen:'풍부', blooming:'8~9월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["연꽃"], name:'연꽃', nectar:'보통', pollen:'보통', blooming:'8월', honey:'잡화꿀', val:3, tips:'여러해살이(수초)'},
             {keys:["참싸리"], name:'참싸리', nectar:'보통', pollen:'보통', blooming:'8~9월', honey:'싸리꿀', val:3, tips:'작은나무'},
             {keys:["붉나무"], name:'붉나무', nectar:'풍부', pollen:'보통', blooming:'8~9월', honey:'잡화꿀', val:5, tips:'큰나무'},
-            {keys:["벼"], name:'벼', nectar:'없음', pollen:'풍부', blooming:'8월', honey:null, val:2, tips:'풍매화'},
-            {keys:["다름나무"], name:'다름나무', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'큰나무'},
+            {keys:["벼"], name:'벼', nectar:'없음', pollen:'풍부', blooming:'8~9월', honey:null, val:4, tips:'아침 단시간 대량 화분. 풍매화'},
+            {keys:["다름나무"], name:'다름나무', nectar:'보통', pollen:'보통', blooming:'8월', honey:'잡화꿀', val:3, tips:'보조 밀원. 큰나무'},
             {keys:["해바라기"], name:'해바라기', nectar:'풍부', pollen:'풍부', blooming:'7~8월', honey:'해바라기꿀', val:5, tips:'한해살이'},
-            {keys:["가막사리"], name:'가막사리', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:1, tips:'한해살이'},
-            {keys:["등골나물"], name:'등골나물', nectar:'적음', pollen:'없음', blooming:'8월', honey:'잡화꿀', val:1, tips:'여러해살이'},
+            {keys:["가막사리"], name:'가막사리', nectar:'보통', pollen:'풍부', blooming:'8~10월', honey:'잡화꿀', val:3, tips:'습지 주변. 9월 화분 주역. 한해살이'},
+            {keys:["등골나물"], name:'등골나물', nectar:'풍부', pollen:'없음', blooming:'9~10월', honey:'잡화꿀', val:5, tips:'가을 야생화 유밀 최상. 나비·벌 집중. 월동 직전 핵심 밀원'},
             {keys:["큰봉숭아","봉숭아"], name:'큰봉숭아', nectar:'보통', pollen:'풍부', blooming:'8월', honey:'잡화꿀', val:3, tips:'한해살이'},
-            {keys:["쑥"], name:'쑥', nectar:'없음', pollen:'보통', blooming:'8월', honey:null, val:2, tips:'여러해살이'},
+            {keys:["쑥"], name:'쑥', nectar:'없음', pollen:'풍부', blooming:'8~9월', honey:null, val:4, tips:'화분 압도적. 가을 산란 원동력. 여러해살이'},
             {keys:["사루비아"], name:'사루비아', nectar:'적음', pollen:'적음', blooming:'8월', honey:'잡화꿀', val:2, tips:'한해살이'},
             {keys:["연백초"], name:'연백초', nectar:'보통', pollen:'보통', blooming:'8월', honey:'잡화꿀', val:3, tips:'여러해살이'},
             {keys:["왕고들빼기"], name:'왕고들빼기', nectar:'적음', pollen:'풍부', blooming:'8~9월', honey:'잡화꿀', val:2, tips:'한해살이'},
@@ -7810,12 +7832,12 @@ function getUserInfo(){
             {keys:["배초향","방아","방아잎"], name:'배초향(방아)', nectar:'풍부', pollen:'적음', blooming:'8~9월', honey:'배초향꿀', val:5, tips:'여러해살이'},
             {keys:["메밀"], name:'메밀', nectar:'풍부', pollen:'보통', blooming:'8~9월', honey:'메밀꿀', val:5, tips:'한해살이'},
             {keys:["찬느릅나무"], name:'찬느릅나무', nectar:'풍부', pollen:'적음', blooming:'9월', honey:'잡화꿀', val:4, tips:'큰나무'},
-            {keys:["고마리"], name:'고마리', nectar:'적음', pollen:'적음', blooming:'9월', honey:'잡화꿀', val:1, tips:'한해살이'},
+            {keys:["고마리"], name:'고마리', nectar:'풍부', pollen:'없음', blooming:'9~10월', honey:'잡화꿀', val:5, tips:'습지 뒤덮는 9~10월 최고 밀원. 유밀량 압도적'},
             {keys:["구절초"], name:'구절초', nectar:'보통', pollen:'보통', blooming:'9~10월', honey:'잡화꿀', val:3, tips:'여러해살이'},
             {keys:["산씀바귀","씀바귀","Lactuca"], name:'산씀바귀', nectar:'보통', pollen:'풍부', blooming:'8~10월', honey:'잡화꿀', val:3, tips:'늦여름 무밀기 보조 밀원. 월동벌 화분 공급. 전국 산야 자생. 예초 후에도 재생'},
-            {keys:["큰꿩의비름","꿩의비름"], name:'큰꿩의비름', nectar:'적음', pollen:'적음', blooming:'9월', honey:'잡화꿀', val:2, tips:'여러해살이'},
-            {keys:["털머위"], name:'털머위', nectar:'적음', pollen:'적음', blooming:'9월', honey:'잡화꿀', val:2, tips:'여러해살이'},
-            {keys:["물매화"], name:'물매화', nectar:'적음', pollen:'적음', blooming:'9월', honey:'잡화꿀', val:1, tips:'여러해살이'},
+            {keys:["큰꿩의비름","꿩의비름"], name:'큰꿩의비름', nectar:'풍부', pollen:'풍부', blooming:'9~10월', honey:'잡화꿀', val:4, tips:'다육. 가뭄 강함. 늦가을 에너지·화분 공급'},
+            {keys:["털머위"], name:'털머위', nectar:'풍부', pollen:'풍부', blooming:'10~11월', honey:'잡화꿀', val:5, tips:'남부·해안 늦가을 핵심 밀원. 추위 강함. 월동 직전'},
+            {keys:["물매화"], name:'물매화', nectar:'보통', pollen:'없음', blooming:'8~10월', honey:'잡화꿀', val:2, tips:'고산 습지. 소량 귀한 에너지원'},
             {keys:["양미역취"], name:'양미역취', nectar:'보통', pollen:'풍부', blooming:'8~10월', honey:'잡화꿀', val:3, tips:'가을 월동벌 화분 공급. 전국 산야 자생'},
             {keys:["미역취","Solidago","골든로드","goldenrod"], name:'미역취', nectar:'풍부', pollen:'풍부', blooming:'8~10월', honey:'미역취꿀', val:5, tips:'가을 최상급 밀원. 황금빛 고품질 꿀. 월동 준비 마지막 에너지·단백질 동시 공급. 북미서 Goldenrod 꿀로 최고급 취급'},
             {keys:["송이풀"], name:'송이풀', nectar:'적음', pollen:'적음', blooming:'9월', honey:'잡화꿀', val:1, tips:'한해살이'},
@@ -7824,15 +7846,15 @@ function getUserInfo(){
             {keys:["향유"], name:'향유', nectar:'보통', pollen:'보통', blooming:'9~10월', honey:'잡화꿀', val:3, tips:'한해살이'},
             {keys:["꽃향유"], name:'꽃향유', nectar:'풍부', pollen:'없음', blooming:'9~10월', honey:'잡화꿀', val:4, tips:'한해살이'},
             {keys:["산국","감국"], name:'산국(감국)', nectar:'보통', pollen:'보통', blooming:'10월', honey:'잡화꿀', val:3, tips:'여러해살이'},
-            {keys:["갯국화"], name:'갯국화', nectar:'적음', pollen:'적음', blooming:'10월', honey:'잡화꿀', val:2, tips:'여러해살이'},
-            {keys:["와송"], name:'와송', nectar:'적음', pollen:'보통', blooming:'10월', honey:'잡화꿀', val:2, tips:'여러해살이'},
+            {keys:["갯국화"], name:'갯국화', nectar:'풍부', pollen:'풍부', blooming:'10~11월', honey:'잡화꿀', val:4, tips:'바닷가. 11월까지 마지막 단백질 공급. 여러해살이'},
+            {keys:["와송"], name:'와송', nectar:'보통', pollen:'보통', blooming:'9~10월', honey:'잡화꿀', val:3, tips:'바위·지붕 다육 밀원. 늦가을 기력 보충'},
             {keys:["차나무"], name:'차나무', nectar:'적음', pollen:'풍부', blooming:'10월', honey:'차꿀', val:3, tips:'작은나무(남부)'},
             {keys:["물푸레나무","물푸레"], name:'물푸레나무', nectar:'적음', pollen:'풍부', blooming:'4~5월', honey:'잡화꿀', val:3, tips:'아까시 유밀 전 화분 공급원. 전국 분포. 큰나무'},
             {keys:["모과나무","모과"], name:'모과나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:3, tips:'큰나무'},
-            {keys:["능소화"], name:'능소화', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:2, tips:'덩굴'},
+            {keys:["능소화"], name:'능소화', nectar:'보통', pollen:'없음', blooming:'7~8월', honey:'잡화꿀', val:3, tips:'장마 전후 보조 밀원. 통꽃 깊숙이 채집. 덩굴'},
             {keys:["자운영"], name:'자운영', nectar:'풍부', pollen:'적음', blooming:'3~5월', honey:'잡화꿀', val:5, tips:'한해살이'},
-            {keys:["애기똥풀"], name:'애기똥풀', nectar:'적음', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:2, tips:'한해살이'},
-            {keys:["딱총나무"], name:'딱총나무', nectar:'적음', pollen:'보통', blooming:'5~6월', honey:null, val:2, tips:'보조 밀원. 화분 공급원. 아까시~밤나무 공백기 벌 활동 보조. 작은나무'},
+            {keys:["애기똥풀"], name:'애기똥풀', nectar:'없음', pollen:'풍부', blooming:'4~7월', honey:'잡화꿀', val:3, tips:'주황색 화분. 지천에 분포. 보조 화분 공급. 여러해살이'},
+            {keys:["딱총나무"], name:'딱총나무', nectar:'보통', pollen:'보통', blooming:'4~5월', honey:null, val:3, tips:'이른 봄 산기슭 보조 자원. 작은나무'},
             {keys:["무","배추"], name:'무·배추', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:4, tips:'한해살이'},
             {keys:["고로쇠나무","고로쇠"], name:'고로쇠나무', nectar:'풍부', pollen:'보통', blooming:'3~4월', honey:'잡화꿀', val:4, tips:'이른 봄 밀원. 수액 채취로도 유명. 큰나무'},
             {keys:["타임","다임","thyme"], name:'타임(다임)', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'허브식물'},
@@ -7846,39 +7868,39 @@ function getUserInfo(){
             {keys:["블루베리","Vaccinium","블루베리꽃"], name:'블루베리', nectar:'보통', pollen:'적음', blooming:'4~5월', honey:'블루베리꿀', val:3, tips:'고당도 꿀 생산 가능. 화분 단백질 낮아 보조 밀원 병행 필요. 수정벌 임대 수익 가능'},
             {keys:["갓","겨자"], name:'갓(겨자)', nectar:'보통', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:3, tips:'한해살이(월동)'},
             {keys:["등넝쿨"], name:'등넝쿨', nectar:'없음', pollen:'적음', blooming:'5월', honey:null, val:1, tips:'작은나무'},
-            {keys:["멍석딸기"], name:'멍석딸기', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'덩굴'},
+            {keys:["멍석딸기"], name:'멍석딸기', nectar:'풍부', pollen:'풍부', blooming:'5~6월', honey:'잡화꿀', val:3, tips:'산딸기류. 늦게 피어 무밀기 하순 담당. 작은나무'},
             {keys:["밀감나무","밀감"], name:'밀감나무', nectar:'풍부', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:4, tips:'소교목(남부)'},
             {keys:["감나무","감"], name:'감나무', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
-            {keys:["골담초"], name:'골담초', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
-            {keys:["줄딸기"], name:'줄딸기', nectar:'보통', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'덩굴'},
+            {keys:["골담초"], name:'골담초', nectar:'풍부', pollen:'없음', blooming:'4~5월', honey:'잡화꿀', val:5, tips:'꿀 매우 많음. 벌 머리 깊숙이 박고 채집. 아까시 전 최상 밀원'},
+            {keys:["줄딸기"], name:'줄딸기', nectar:'풍부', pollen:'풍부', blooming:'4~5월', honey:'잡화꿀', val:4, tips:'덩굴 딸기. 당도 매우 높음. 아까시 직전 저밀량 증가'},
             {keys:["귀룡나무"], name:'귀룡나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
-            {keys:["가막살나무"], name:'가막살나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
+            {keys:["가막살나무"], name:'가막살나무', nectar:'풍부', pollen:'풍부', blooming:'5~6월', honey:'잡화꿀', val:5, tips:'아까시 직후 채밀 가능. 군락 하얀 꽃. 큰나무'},
             {keys:["천년초"], name:'천년초', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:4, tips:'다년생선인장'},
             {keys:["소태나무"], name:'소태나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무'},
             {keys:["애기말발도리"], name:'애기말발도리', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:2, tips:'작은나무'},
             {keys:["검팽나무"], name:'검팽나무', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:4, tips:'큰나무'},
-            {keys:["푸조나무"], name:'푸조나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'큰나무'},
+            {keys:["푸조나무"], name:'푸조나무', nectar:'없음', pollen:'풍부', blooming:'4월', honey:'잡화꿀', val:3, tips:'대형목. 느릅나무류. 대량 화분. 큰나무'},
             {keys:["섬야광나무"], name:'섬야광나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'작은나무'},
             {keys:["검양옻나무"], name:'검양옻나무', nectar:'보통', pollen:'보통', blooming:'5월', honey:'잡화꿀', val:3, tips:'큰나무(남부)'},
             {keys:["붓꽃"], name:'붓꽃', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'여러해살이'},
             {keys:["족제비싸리"], name:'족제비싸리', nectar:'풍부', pollen:'풍부', blooming:'5월', honey:'잡화꿀', val:5, tips:'작은나무'},
-            {keys:["말발도리"], name:'말발도리', nectar:'적음', pollen:'적음', blooming:'5~6월', honey:'잡화꿀', val:1, tips:'작은나무'},
+            {keys:["말발도리"], name:'말발도리', nectar:'풍부', pollen:'풍부', blooming:'5~6월', honey:'잡화꿀', val:4, tips:'산야 하얗게 덮음. 대량 유밀. 아까시 직후 세력 유지. 작은나무'},
             {keys:["고욤나무","고욤"], name:'고욤나무', nectar:'적음', pollen:'적음', blooming:'5월', honey:'잡화꿀', val:1, tips:'큰나무'},
             {keys:["옻나무","옻"], name:'옻나무', nectar:'풍부', pollen:'보통', blooming:'5~6월', honey:'옻나무꿀', val:4, tips:'큰나무. 옻나무꿀 생산. 알레르기 주의.'},
             {keys:["토끼풀","클로버"], name:'토끼풀(클로버)', nectar:'풍부', pollen:'보통', blooming:'5~9월', honey:'클로버꿀', val:4, tips:'장기간 개화. 꿀 풍부. 여러해살이'},
             {keys:["사방오리"], name:'사방오리', nectar:'없음', pollen:'풍부', blooming:'3월', honey:null, val:3, tips:'봄철 주요 화분 수집종. 큰나무'},
             {keys:["꽝꽝나무"], name:'꽝꽝나무', nectar:'풍부', pollen:'보통', blooming:'5~6월', honey:'잡화꿀', val:4, tips:'아까시 직후 밀원 공백기 보완. 남부·해안 지방 밀원. 봉장 울타리 겸용 가능. 암수딴그루 — 수나무 위주 식재 권장.'},
-            {keys:["명자나무","명자"], name:'명자나무', nectar:'보통', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:2, tips:'봄철 관목 밀원.'},
-            {keys:["할미꽃"], name:'할미꽃', nectar:'적음', pollen:'보통', blooming:'4월', honey:'잡화꿀', val:1, tips:'봄 화분 공급원.'},
-            {keys:["제비꽃"], name:'제비꽃', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'봄철 소형 밀원.'},
+            {keys:["명자나무","명자"], name:'명자나무', nectar:'풍부', pollen:'없음', blooming:'4~5월', honey:'잡화꿀', val:3, tips:'진한 붉은 꽃. 벌 많이 붙음. 화밀 특화. 작은나무'},
+            {keys:["할미꽃"], name:'할미꽃', nectar:'없음', pollen:'보통', blooming:'3~4월', honey:'잡화꿀', val:2, tips:'산기슭 소량 화분. 산란 자극. 숙근초'},
+            {keys:["제비꽃"], name:'제비꽃', nectar:'보통', pollen:'보통', blooming:'3~5월', honey:'잡화꿀', val:3, tips:'지면 보조 밀원. 벌 낮게 날며 꿀 채집. 여러해살이'},
             {keys:["바구지꽃","바구지"], name:'바구지꽃', nectar:'적음', pollen:'적음', blooming:'4월', honey:'잡화꿀', val:1, tips:'봄 소형 밀원.'},
             {keys:["치자나무","치자"], name:'치자나무', nectar:'보통', pollen:'보통', blooming:'6월', honey:'잡화꿀', val:3, tips:'6월 관목 밀원. 기능성 꿀.'},
             {keys:["나도밤나무"], name:'나도밤나무', nectar:'보통', pollen:'보통', blooming:'6월', honey:'잡화꿀', val:3, tips:'6월 큰나무 밀원.'},
             {keys:["참취"], name:'참취', nectar:'보통', pollen:'보통', blooming:'8~9월', honey:'잡화꿀', val:3, tips:'가을 밀원. 가을 벌 단백질원.'},
             {keys:["환삼덩굴","환삼"], name:'환삼덩굴', nectar:'없음', pollen:'풍부', blooming:'9월', honey:null, val:3, tips:'9월 화분 대량 공급. 월동 벌 건강 핵심.'},
-            {keys:["물봉선"], name:'물봉선', nectar:'보통', pollen:'보통', blooming:'9월', honey:'잡화꿀', val:2, tips:'9월 습지 밀원.'},
+            {keys:["물봉선"], name:'물봉선', nectar:'풍부', pollen:'풍부', blooming:'8~9월', honey:'잡화꿀', val:4, tips:'꿀주머니 풍부. 흰 화분 대량. 월동 벌 육아 지원'},
             {keys:["국화"], name:'국화', nectar:'보통', pollen:'보통', blooming:'10월', honey:'잡화꿀', val:3, tips:'서리 전 마지막 밀원.'},
-            {keys:["고시락"], name:'고시락', nectar:'보통', pollen:'보통', blooming:'10월', honey:'잡화꿀', val:2, tips:'가을 들풀 밀원.'},
+            {keys:["고시락"], name:'고시락', nectar:'없음', pollen:'보통', blooming:'9~11월', honey:'잡화꿀', val:2, tips:'늦가을 소량 화분'},
             {keys:["팔손이","팔손이나무"], name:'팔손이', nectar:'보통', pollen:'보통', blooming:'11월', honey:'잡화꿀', val:3, tips:'남부 겨울 희귀 밀원.'},
             {keys:["비파나무","비파"], name:'비파나무', nectar:'보통', pollen:'보통', blooming:'11~12월', honey:'비파꿀', val:3, tips:'남부 겨울 희귀 밀원. 기온 관리 중요.'},
         ];
@@ -13543,12 +13565,10 @@ function getUserInfo(){
             if(!el || el.innerHTML) return;
             PF_RECIPES.forEach(function(recipe) {
                 var btn = document.createElement('button');
-                btn.style.cssText = 'width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,179,0,0.25);background:rgba(255,179,0,0.05);cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;';
-                btn.innerHTML = '<div>'
-                    + '<div style="font-size:0.9rem;font-weight:800;color:var(--tx-gold);">'+recipe.name+'</div>'
-                    + '<div style="font-size:0.72rem;color:var(--tx-muted);margin-top:2px;">'+recipe.desc+'</div>'
-                    + '</div>'
-                    + '<span style="font-size:0.78rem;color:var(--tx-amber);font-weight:700;">불러오기 →</span>';
+                btn.style.cssText = 'width:100%;padding:14px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.25);background:rgba(255,179,0,0.05);cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;';
+                btn.innerHTML = '<div style="font-size:0.95rem;font-weight:900;color:var(--tx-gold);">'+recipe.name+'</div>'
+                    + '<div style="font-size:0.72rem;color:var(--tx-muted);line-height:1.4;">'+recipe.desc+'</div>'
+                    + '<div style="font-size:0.78rem;color:var(--tx-amber);font-weight:800;margin-top:4px;">불러오기 →</div>';
                 btn.onclick = function() { pfLoadRecipe(recipe.id); };
                 el.appendChild(btn);
             });
@@ -13572,6 +13592,12 @@ function getUserInfo(){
             pfRenderList();
             pfRenderCards(catColor);
             showToast('✅ '+recipe.name+' 불러오기 완료');
+
+            // 불러온 후 선택 원료 목록으로 자동 스크롤
+            setTimeout(function() {
+                var el = document.getElementById('pf-selected-list');
+                if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+            }, 200);
 
             // 국제표준형 선택 시 카놀라유 추가 권장 안내
             if(recipe.id === 'recipe4') {
