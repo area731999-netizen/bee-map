@@ -3928,6 +3928,11 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     <div id="pf-selected-list" style="margin-bottom:6px;"></div>
                     <div id="pf-recipe-tip" style="display:none;"></div>
 
+                    <!-- 계산하기 단축 버튼 (원료 선택 직후 바로 계산 가능) -->
+                    <div id="pf-quick-calc" style="display:none;margin-bottom:10px;">
+                        <button onclick="calcPollenFeed()" style="width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:13px;border-radius:10px;font-weight:800;border:none;cursor:pointer;font-size:0.95rem;">🧮 바로 계산하기</button>
+                    </div>
+
                     <!-- 원료 추가 안내 -->
                     <div style="border-top:1px solid rgba(96,165,250,0.2);margin:12px 0 10px;"></div>
                     <div style="font-size:0.75rem;color:#60a5fa;font-weight:700;margin-bottom:8px;">➕ 원료를 추가하거나 직접 조합하려면 아래에서 선택하세요</div>
@@ -13777,7 +13782,13 @@ function getUserInfo(){
         function pfRenderList() {
             var el = document.getElementById('pf-selected-list');
             if(!el) return;
-            if(!_pfSelected.length) { el.innerHTML=''; return; }
+            var quickCalc = document.getElementById('pf-quick-calc');
+            if(!_pfSelected.length) {
+                el.innerHTML='';
+                if(quickCalc) quickCalc.style.display='none';
+                return;
+            }
+            if(quickCalc) quickCalc.style.display='block';
 
             // 주원료 합계 (kg → g 변환)
             var mainTotal = 0;
