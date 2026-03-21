@@ -3924,13 +3924,22 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                         <div id="pf-recipe-btns" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch;"></div>
                     </div>
 
+                    <!-- 내 레시피 -->
+                    <div style="margin-bottom:12px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                            <div style="font-size:0.75rem;color:#4ade80;font-weight:700;">⭐ 내 레시피</div>
+                            <button onclick="pfSaveMyRecipe()" style="padding:5px 12px;border-radius:10px;border:1px solid rgba(74,222,128,0.4);background:rgba(74,222,128,0.08);color:#4ade80;font-size:0.72rem;font-weight:700;cursor:pointer;">💾 현재 배합 저장</button>
+                        </div>
+                        <div id="pf-my-recipes" style="display:flex;flex-direction:column;gap:6px;"></div>
+                    </div>
+
                     <!-- 불러온 레시피 & 선택된 원료 — 레시피 버튼 바로 아래 -->
                     <div id="pf-selected-list" style="margin-bottom:6px;"></div>
                     <div id="pf-recipe-tip" style="display:none;"></div>
 
                     <!-- 계산하기 단축 버튼 (원료 선택 직후 바로 계산 가능) -->
                     <div id="pf-quick-calc" style="display:none;margin-bottom:10px;">
-                        <button onclick="calcPollenFeed()" style="width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:13px;border-radius:10px;font-weight:800;border:none;cursor:pointer;font-size:0.95rem;">🧮 바로 계산하기</button>
+                        <button onclick="calcPollenFeed()" style="width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:13px;border-radius:10px;font-weight:800;border:none;cursor:pointer;font-size:0.95rem; transition:transform 0.1s,filter 0.1s;" onmousedown="this.style.transform='scale(0.96)';this.style.filter='brightness(0.85)'" onmouseup="this.style.transform='';this.style.filter=''" ontouchstart="this.style.transform='scale(0.96)';this.style.filter='brightness(0.85)'" ontouchend="this.style.transform='';this.style.filter=''">🧮 바로 계산하기</button>
                     </div>
 
                     <!-- 원료 추가 안내 -->
@@ -3969,7 +3978,7 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
 
                     <!-- 계산 버튼 -->
                     <div style="display:flex;gap:8px;margin-bottom:10px;">
-                        <button onclick="calcPollenFeed()" style="flex:2;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:14px;border-radius:10px;font-weight:800;border:none;cursor:pointer;">🧮 계산하기</button>
+                        <button onclick="calcPollenFeed()" style="flex:2;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:14px;border-radius:10px;font-weight:800;border:none;cursor:pointer; transition:transform 0.1s,filter 0.1s;" onmousedown="this.style.transform='scale(0.96)';this.style.filter='brightness(0.85)'" onmouseup="this.style.transform='';this.style.filter=''" ontouchstart="this.style.transform='scale(0.96)';this.style.filter='brightness(0.85)'" ontouchend="this.style.transform='';this.style.filter=''">🧮 계산하기</button>
                         <button onclick="resetPollenFeed()" style="flex:1;background:rgba(100,100,100,0.5);color:white;padding:14px;border-radius:10px;border:none;cursor:pointer;text-align:center;">초기화</button>
                     </div>
 
@@ -13587,6 +13596,7 @@ function getUserInfo(){
         function pfInit() {
             pfBackupDefaults();
             pfRenderRecipeBtns();
+            pfRenderMyRecipes();
             var tabEl = document.getElementById('pf-cat-tabs');
             if(!tabEl || tabEl.innerHTML) return;
 
@@ -13597,8 +13607,12 @@ function getUserInfo(){
                 '미네랄':'#64748b','영양제':'#86efac','수분조절':'#38bdf8'
             };
 
-            // 카테고리 목록 추출
+            // 카테고리 목록 추출 — 화분류·대용화분 먼저, 나머지 뒤
             var cats = [];
+            var priorityCats = ['화분류','대용화분','단백질원','효모류','발효식품','에너지원','지방류','보존제','기능성','미네랄','영양제','수분조절'];
+            priorityCats.forEach(function(cat) {
+                if(PF_DB.some(function(item){ return item.cat===cat; })) cats.push(cat);
+            });
             PF_DB.forEach(function(item) {
                 if(cats.indexOf(item.cat)===-1) cats.push(item.cat);
             });
@@ -13618,8 +13632,8 @@ function getUserInfo(){
                 tabEl.appendChild(btn);
             });
 
-            // 처음엔 단백질원 펼쳐두기
-            _pfActiveCat = '단백질원';
+            // 처음엔 화분류 펼쳐두기
+            _pfActiveCat = '화분류';
             pfRenderCatTabs(catColor);
             pfRenderCards(catColor);
         }
@@ -13701,6 +13715,86 @@ function getUserInfo(){
         }
 
         // 표준 레시피 버튼 렌더링
+        // ==================== 내 레시피 저장/불러오기 ====================
+        var PF_MY_RECIPES_KEY = 'pf_my_recipes';
+
+        function pfGetMyRecipes() {
+            try { return JSON.parse(localStorage.getItem(PF_MY_RECIPES_KEY) || '[]'); } catch(e) { return []; }
+        }
+        function pfSaveMyRecipes(list) {
+            localStorage.setItem(PF_MY_RECIPES_KEY, JSON.stringify(list));
+        }
+
+        window.pfSaveMyRecipe = function() {
+            if(!_pfSelected.length) { showToast('저장할 원료가 없습니다.'); return; }
+            var name = prompt('레시피 이름을 입력하세요 (예: 내 봄철 기본)');
+            if(!name || !name.trim()) return;
+            var list = pfGetMyRecipes();
+            if(list.length >= 10) { showToast('⚠️ 최대 10개까지 저장 가능합니다. 불필요한 레시피를 삭제해주세요.'); return; }
+            var moisture = parseFloat(document.getElementById('pf-target-moisture') && document.getElementById('pf-target-moisture').value) || 13.3;
+            var recipe = {
+                id: 'my_' + Date.now(),
+                name: name.trim(),
+                date: new Date().toLocaleDateString('ko-KR', {month:'2-digit',day:'2-digit'}),
+                moisture: moisture,
+                items: _pfSelected.map(function(i){ return {id:i.id, name:i.name, weight:i.weight, unit:i.unit, protein:i.protein, fat:i.fat, carb:i.carb, moisture:i.moisture, price:i.price, isPollen:i.isPollen, cat:i.cat}; })
+            };
+            list.unshift(recipe);
+            pfSaveMyRecipes(list);
+            pfRenderMyRecipes();
+            showToast('✅ "'+name.trim()+'" (수분 '+moisture+'%) 저장 완료!');
+        };
+
+        window.pfLoadMyRecipe = function(id) {
+            var list = pfGetMyRecipes();
+            var recipe = list.find(function(r){ return r.id===id; });
+            if(!recipe) return;
+            if(_pfSelected.length > 0 && !confirm('현재 선택된 원료가 초기화됩니다. 계속하시겠어요?')) return;
+            _pfSelected = recipe.items.map(function(i){ return Object.assign({}, i); });
+            _pfActiveRecipe = {name: '⭐ '+recipe.name};
+            // 수분율 복원
+            var moistureEl = document.getElementById('pf-target-moisture');
+            if(moistureEl && recipe.moisture) moistureEl.value = recipe.moisture;
+            var catColor = {단백질원:'#f59e0b',효모류:'#a78bfa',발효식품:'#f97316',화분류:'#34d399',대용화분:'#60a5fa',에너지원:'#fbbf24',지방류:'#fb923c',보존제:'#94a3b8',기능성:'#f472b6',미네랄:'#64748b',영양제:'#86efac',수분조절:'#38bdf8',기타:'#888'};
+            pfRenderList();
+            pfRenderCards(catColor);
+            showToast('✅ "'+recipe.name+'" (수분 '+(recipe.moisture||13.3)+'%) 불러오기 완료');
+            setTimeout(function() {
+                var el = document.getElementById('pf-selected-list');
+                if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+            }, 200);
+        };
+
+        window.pfDeleteMyRecipe = function(id) {
+            if(!confirm('이 레시피를 삭제하시겠어요?')) return;
+            var list = pfGetMyRecipes().filter(function(r){ return r.id!==id; });
+            pfSaveMyRecipes(list);
+            pfRenderMyRecipes();
+            showToast('🗑️ 레시피 삭제 완료');
+        };
+
+        function pfRenderMyRecipes() {
+            var el = document.getElementById('pf-my-recipes');
+            if(!el) return;
+            var list = pfGetMyRecipes();
+            if(!list.length) {
+                el.innerHTML = '<div style="font-size:0.75rem;color:var(--tx-muted);text-align:center;padding:10px;">저장된 레시피가 없습니다.<br>배합 후 💾 버튼으로 저장하세요.</div>';
+                return;
+            }
+            el.innerHTML = list.map(function(r) {
+                var itemSummary = r.items.slice(0,3).map(function(i){ return i.name+(i.unit==='kg'?i.weight+'kg':i.weight+'g'); }).join(', ') + (r.items.length>3 ? ' 외 '+(r.items.length-3)+'종' : '');
+                return '<div style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.25);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;">'
+                    + '<div style="flex:1;min-width:0;cursor:pointer;" onclick="pfLoadMyRecipe(\''+r.id+'\')">'
+                    +   '<div style="font-size:0.85rem;font-weight:800;color:#4ade80;">⭐ '+r.name+'</div>'
+                    +   '<div style="font-size:0.68rem;color:var(--tx-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+itemSummary+'</div>'
+                    +   '<div style="font-size:0.65rem;color:var(--tx-muted);margin-top:1px;">'+r.date+' &nbsp;|&nbsp; 💧 수분 '+(r.moisture||13.3)+'%</div>'
+                    + '</div>'
+                    + '<button onclick="pfLoadMyRecipe(\''+r.id+'\')" style="padding:5px 10px;border-radius:8px;border:1px solid rgba(74,222,128,0.3);background:rgba(74,222,128,0.1);color:#4ade80;font-size:0.72rem;font-weight:700;cursor:pointer;flex-shrink:0;">불러오기</button>'
+                    + '<button onclick="pfDeleteMyRecipe(\''+r.id+'\')" style="padding:5px 8px;border-radius:8px;border:none;background:rgba(239,68,68,0.15);color:#f87171;font-size:0.72rem;cursor:pointer;flex-shrink:0;">🗑️</button>'
+                    + '</div>';
+            }).join('');
+        }
+
         function pfRenderRecipeBtns() {
             var el = document.getElementById('pf-recipe-btns');
             if(!el || el.innerHTML) return;
@@ -14086,8 +14180,14 @@ function getUserInfo(){
             var hasSalt = _pfSelected.find(function(i){ return i.id==='pf31' && (i.weight||0)>0; });
             if(!hasSalt) warns.push('ℹ️ 미네랄 보충을 위해 소금(0.1%) 소량 첨가를 권장합니다.');
 
-            var el = document.getElementById('pf-result');
+            // section-calculator 안의 pf-result를 우선 찾고, 없으면 일반 getElementById
+            var sec = document.getElementById('section-calculator');
+            var el = (sec && sec.querySelector('#pf-result')) || document.getElementById('pf-result');
             el.style.display='block';
+            // 계산 결과로 자동 스크롤
+            setTimeout(function() {
+                el.scrollIntoView({behavior:'smooth', block:'start'});
+            }, 150);
             el.innerHTML =
                 '<div style="font-size:0.78rem;font-weight:800;color:#c084fc;margin-bottom:12px;">📊 배합 결과 (가루 '+(Math.round(totalWeight/100)/10).toLocaleString()+'kg + 물 '+(Math.round(addedWater/100)/10)+'kg = 총 '+(Math.round(finalWeight/100)/10).toLocaleString()+'kg)</div>'
                 // 💧 물 추가량 강조
