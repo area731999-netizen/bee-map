@@ -3988,18 +3988,113 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
             </div>
 
 
-            <!-- 개미산 계산 -->
-            <div style="background: var(--bg-card); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,213,79,0.15);">
-                <h4 style="color: var(--tx-gold); font-weight: 900; margin-bottom: 16px; font-size: 1.1rem;">🧪 개미산 농도 계산</h4>
-                
-                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+
+            <!-- 계산기 아코디언 -->
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:100px;">
+
+                <div style="background:var(--bg-card);border-radius:16px;border:1px solid rgba(255,213,79,0.15);overflow:hidden;">
+                    <button onclick="toggleCalcAcc('acc-sugar')" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:transparent;border:none;cursor:pointer;text-align:left;">
+                        <span style="font-size:1rem;font-weight:900;color:var(--tx-gold);">🍯 설탕 사양액 계산</span>
+                        <span id="acc-sugar-arrow" style="color:var(--tx-muted);font-size:1rem;transition:transform 0.25s;">▼</span>
+                    </button>
+                    <div id="acc-sugar" style="display:none;padding:0 18px 18px;">
+                        <!-- 탭 -->
+                <div style="display:flex;gap:8px;margin-bottom:14px;">
+                    <button id="sugar-tab-direct" onclick="setSugarTab('direct')" style="flex:1;padding:10px;background:#d97706;color:white;border-radius:10px;font-weight:700;border:none;cursor:pointer;font-size:0.85rem;">설탕량 입력</button>
+                    <button id="sugar-tab-ratio" onclick="setSugarTab('ratio')" style="flex:1;padding:10px;background:var(--bg-input);color:var(--tx-sub);border-radius:10px;font-weight:700;border:none;cursor:pointer;font-size:0.85rem;">비율 입력</button>
+                </div>
+
+                <!-- 설탕량 직접 입력 탭 (기본) -->
+                <div id="sugar-direct">
+                    <p style="color:var(--tx-sub);font-size:0.82rem;margin-bottom:12px;">💡 설탕 kg을 입력하면 물량이 자동 계산됩니다</p>
+                    <!-- 비율 빠른 선택 -->
+                    <div style="margin-bottom:10px;">
+                        <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:6px;">희석 비율 선택</div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            <button onclick="setSugarDirectRatio(1)" id="sdr-1" style="padding:6px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">1:1 자극</button>
+                            <button onclick="setSugarDirectRatio(1.5)" id="sdr-1.5" style="padding:6px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">1:1.5 보통</button>
+                            <button onclick="setSugarDirectRatio(2)" id="sdr-2" style="padding:6px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">1:2 묽음</button>
+                            <button onclick="setSugarDirectRatio(0.5)" id="sdr-0.5" style="padding:6px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">2:1 저장</button>
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+                        <div>
+                            <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:4px;">설탕 (kg)</div>
+                            <input type="number" id="sugar-direct-kg" placeholder="예: 20" class="field" oninput="calcSugarDirect()">
+                        </div>
+                        <div>
+                            <div style="font-size:0.75rem;color:#60a5fa;margin-bottom:4px;">💧 필요한 물 (L)</div>
+                            <input type="number" id="sugar-direct-water" placeholder="자동 계산" class="field" style="background:rgba(96,165,250,0.08);border-color:rgba(96,165,250,0.3);color:#60a5fa;font-weight:800;" readonly>
+                        </div>
+                    </div>
+                    <div id="sugar-direct-result" style="display:none;"></div>
+                </div>
+
+                <!-- 비율 입력 탭 (기존) -->
+                <div id="sugar-ratio-tab" style="display:none;">
+                    <p style="color:var(--tx-sub);font-size:0.82rem;margin-bottom:10px;">💡 설탕:물 비율과 물의 양으로 계산</p>
+                    <div style="margin-bottom:10px;">
+                        <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:5px;">설탕:물 비율</div>
+                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                            <span style="font-size:0.85rem;color:var(--tx-gold);font-weight:700;white-space:nowrap;">설탕 1 : 물</span>
+                            <input type="number" id="sugar-ratio" placeholder="예: 1" class="field" style="flex:1;text-align:center;" oninput="calcSugar()">
+                        </div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            <button onclick="document.getElementById('sugar-ratio').value=1;calcSugar()" style="padding:5px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">1:1 (자극)</button>
+                            <button onclick="document.getElementById('sugar-ratio').value=0.67;calcSugar()" style="padding:5px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">1:1.5 (보통)</button>
+                            <button onclick="document.getElementById('sugar-ratio').value=0.5;calcSugar()" style="padding:5px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">1:2 (묽음)</button>
+                            <button onclick="document.getElementById('sugar-ratio').value=2;calcSugar()" style="padding:5px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">2:1 (저장)</button>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:5px;">물의 양</div>
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <input type="number" id="sugar-water" placeholder="예: 10" class="field" style="flex:1;text-align:center;" oninput="calcSugar()">
+                            <span style="font-size:0.85rem;color:var(--tx-gold);font-weight:700;">L</span>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        <button onclick="calcSugar()" style="flex:1;background:#A0522D;color:white;padding:14px;border-radius:10px;font-weight:700;border:none;cursor:pointer;">계산</button>
+                        <button onclick="resetSugar()" style="background:rgba(100,100,100,0.5);color:white;padding:14px 20px;border-radius:10px;border:none;cursor:pointer;">초기화</button>
+                    </div>
+                    <div id="sugar-result" style="margin-top:12px;padding:16px;background:var(--bg-purple);border-radius:10px;display:none;color:var(--tx-main);"></div>
+                </div>
+                    </div>
+                </div>
+                <div style="background:var(--bg-card);border-radius:16px;border:1px solid rgba(255,213,79,0.15);overflow:hidden;">
+                    <button onclick="toggleCalcAcc('acc-formic')" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:transparent;border:none;cursor:pointer;text-align:left;">
+                        <span style="font-size:1rem;font-weight:900;color:var(--tx-gold);">🧪 개미산 농도 계산</span>
+                        <span id="acc-formic-arrow" style="color:var(--tx-muted);font-size:1rem;transition:transform 0.25s;">▼</span>
+                    </button>
+                    <div id="acc-formic" style="display:none;padding:0 18px 18px;">
+                        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
                     <button id="formic-volume-btn" onclick="setFormicMode('volume')" style="flex: 1; padding: 12px; background: #9a3412; color: white; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">부피 (L)</button>
                     <button id="formic-weight-btn" onclick="setFormicMode('weight')" style="flex: 1; padding: 12px; background: var(--bg-card); color: var(--tx-sub); border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">무게 기준</button>
                 </div>
 
                 <div id="formic-volume" style="display: block;">
-                    <p style="color: var(--tx-sub); font-size: 0.82rem; margin-bottom: 12px;">💡 공식: V₁ = (C₂ × V₂) ÷ C₁ &nbsp;|&nbsp; C₁=85%, C₂=목표농도, V₂=희석액총량(L)</p>
-                    <input type="number" id="formic-v-target" placeholder="목표 농도 (%) 예: 60" class="field" style="margin-bottom: 12px;">
+                    <p style="color: var(--tx-sub); font-size: 0.82rem; margin-bottom: 12px;">💡 공식: V₁ = (C₂ × V₂) ÷ C₁</p>
+                    <!-- 현재 농도 입력 -->
+                    <div style="margin-bottom:10px;">
+                        <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:4px;">현재 개미산 농도 (%)</div>
+                        <input type="number" id="formic-v-current" value="85" min="1" max="100" class="field" style="margin-bottom:6px;">
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            <button onclick="document.getElementById('formic-v-current').value=85" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.72rem;font-weight:700;cursor:pointer;">85% (표준)</button>
+                            <button onclick="document.getElementById('formic-v-current').value=65" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.72rem;font-weight:700;cursor:pointer;">65%</button>
+                            <button onclick="document.getElementById('formic-v-current').value=60" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.72rem;font-weight:700;cursor:pointer;">60%</button>
+                            <button onclick="document.getElementById('formic-v-current').value=95" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.72rem;font-weight:700;cursor:pointer;">95%</button>
+                        </div>
+                    </div>
+                    <!-- 목표 농도 빠른 선택 -->
+                    <div style="margin-bottom:10px;">
+                        <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:4px;">목표 농도 (%)</div>
+                        <input type="number" id="formic-v-target" placeholder="예: 60" class="field" style="margin-bottom:6px;">
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            <button onclick="document.getElementById('formic-v-target').value=65" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(160,130,255,0.3);background:rgba(160,130,255,0.08);color:#a78bfa;font-size:0.72rem;font-weight:700;cursor:pointer;">65% (강)</button>
+                            <button onclick="document.getElementById('formic-v-target').value=60" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(160,130,255,0.3);background:rgba(160,130,255,0.08);color:#a78bfa;font-size:0.72rem;font-weight:700;cursor:pointer;">60% (표준)</button>
+                            <button onclick="document.getElementById('formic-v-target').value=50" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(160,130,255,0.3);background:rgba(160,130,255,0.08);color:#a78bfa;font-size:0.72rem;font-weight:700;cursor:pointer;">50% (약)</button>
+                        </div>
+                    </div>
                     <input type="number" id="formic-v-total" placeholder="희석액 총량 (L) 예: 1" class="field" style="margin-bottom: 12px;">
                     <div style="display: flex; gap: 8px;">
                         <button onclick="calcFormicVolume()" style="flex: 1; background: #A0522D; color: white; padding: 14px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">계산</button>
@@ -4009,8 +4104,27 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                 </div>
 
                 <div id="formic-weight" style="display: none;">
-                    <p style="color: var(--tx-sub); font-size: 0.82rem; margin-bottom: 12px;">💡 공식: M₁ = (C₂ × M₂) ÷ C₁ &nbsp;|&nbsp; C₁=85%, C₂=목표농도, M₂=희석액총량(kg) · 비중 1.19 적용</p>
-                    <input type="number" id="formic-w-target" placeholder="목표 농도 (%) 예: 60" class="field" style="margin-bottom: 12px;">
+                    <p style="color: var(--tx-sub); font-size: 0.82rem; margin-bottom: 12px;">💡 공식: M₁ = (C₂ × M₂) ÷ C₁ · 비중 적용</p>
+                    <!-- 현재 농도 입력 -->
+                    <div style="margin-bottom:10px;">
+                        <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:4px;">현재 개미산 농도 (%)</div>
+                        <input type="number" id="formic-w-current" value="85" min="1" max="100" class="field" style="margin-bottom:6px;">
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            <button onclick="document.getElementById('formic-w-current').value=85" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.72rem;font-weight:700;cursor:pointer;">85% (표준)</button>
+                            <button onclick="document.getElementById('formic-w-current').value=65" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.72rem;font-weight:700;cursor:pointer;">65%</button>
+                            <button onclick="document.getElementById('formic-w-current').value=60" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.72rem;font-weight:700;cursor:pointer;">60%</button>
+                            <button onclick="document.getElementById('formic-w-current').value=95" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.72rem;font-weight:700;cursor:pointer;">95%</button>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:4px;">목표 농도 (%)</div>
+                        <input type="number" id="formic-w-target" placeholder="예: 60" class="field" style="margin-bottom:6px;">
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            <button onclick="document.getElementById('formic-w-target').value=65" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(160,130,255,0.3);background:rgba(160,130,255,0.08);color:#a78bfa;font-size:0.72rem;font-weight:700;cursor:pointer;">65% (강)</button>
+                            <button onclick="document.getElementById('formic-w-target').value=60" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(160,130,255,0.3);background:rgba(160,130,255,0.08);color:#a78bfa;font-size:0.72rem;font-weight:700;cursor:pointer;">60% (표준)</button>
+                            <button onclick="document.getElementById('formic-w-target').value=50" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(160,130,255,0.3);background:rgba(160,130,255,0.08);color:#a78bfa;font-size:0.72rem;font-weight:700;cursor:pointer;">50% (약)</button>
+                        </div>
+                    </div>
                     <input type="number" id="formic-w-total" placeholder="희석액 총량 (kg) 예: 1" class="field" style="margin-bottom: 12px;">
                     <div style="display: flex; gap: 8px;">
                         <button onclick="calcFormicWeight()" style="flex: 1; background: #A0522D; color: white; padding: 14px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">계산</button>
@@ -4018,27 +4132,60 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     </div>
                     <div id="formic-w-result" style="margin-top: 12px; padding: 16px; background: var(--bg-purple); border-radius: 10px; display: none; color: var(--tx-main);"></div>
                 </div>
-            </div>
-
-            <!-- 옥살산 흘림처리 계산 -->
-            <div style="background: var(--bg-card); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,213,79,0.15);">
-                <h4 style="color: var(--tx-gold); font-weight: 900; margin-bottom: 8px; font-size: 1.1rem;">💧 옥살산 흘림처리 농도 계산</h4>
-                <p style="color: var(--tx-sub); font-size: 0.82rem; margin-bottom: 14px;">💡 기본 배합: 물 1kg + 설탕 1kg + 옥살산 70g = 3.38%</p>
-                <input type="number" id="oxalic-water" placeholder="물의 양 (kg)" class="field" style="margin-bottom: 12px;">
-                <input type="number" id="oxalic-sugar" placeholder="설탕의 양 (kg)" class="field" style="margin-bottom: 12px;">
-                <input type="number" id="oxalic-amount" placeholder="옥살산의 양 (g)" class="field" style="margin-bottom: 12px;">
-                <div style="display: flex; gap: 8px;">
-                    <button onclick="calcOxalic()" style="flex: 1; background: #A0522D; color: white; padding: 14px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">계산</button>
-                    <button onclick="resetOxalic()" style="background: rgba(100,100,100,0.5); color: white; padding: 14px 20px; border-radius: 10px; border: none; cursor: pointer;">초기화</button>
+                    </div>
                 </div>
-                <div id="oxalic-result" style="margin-top: 12px; padding: 16px; background: var(--bg-purple); border-radius: 10px; display: none; color: var(--tx-main);"></div>
-            </div>
-
-            <!-- 주정 계산 -->
-            <div style="background: var(--bg-card); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,213,79,0.15);">
-                <h4 style="color: var(--tx-gold); font-weight: 900; margin-bottom: 16px; font-size: 1.1rem;">🍶 주정 농도 계산</h4>
-
-                <!-- 탭 -->
+                <div style="background:var(--bg-card);border-radius:16px;border:1px solid rgba(255,213,79,0.15);overflow:hidden;">
+                    <button onclick="toggleCalcAcc('acc-oxalic')" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:transparent;border:none;cursor:pointer;text-align:left;">
+                        <span style="font-size:1rem;font-weight:900;color:var(--tx-gold);">💧 옥살산 흘림처리 계산</span>
+                        <span id="acc-oxalic-arrow" style="color:var(--tx-muted);font-size:1rem;transition:transform 0.25s;">▼</span>
+                    </button>
+                    <div id="acc-oxalic" style="display:none;padding:0 18px 18px;">
+                        <!-- 탭 -->
+                <div style="display:flex;gap:8px;margin-bottom:14px;">
+                    <button id="oxalic-tab-calc" onclick="setOxalicTab('calc')" style="flex:1;padding:10px;background:#0e7490;color:white;border-radius:10px;font-weight:700;border:none;cursor:pointer;font-size:0.85rem;">농도 계산</button>
+                    <button id="oxalic-tab-reverse" onclick="setOxalicTab('reverse')" style="flex:1;padding:10px;background:var(--bg-input);color:var(--tx-sub);border-radius:10px;font-weight:700;border:none;cursor:pointer;font-size:0.85rem;">역산 (필요량)</button>
+                </div>
+                <!-- 농도 계산 탭 -->
+                <div id="oxalic-calc">
+                    <p style="color: var(--tx-sub); font-size: 0.82rem; margin-bottom: 14px;">💡 기본 배합: 물 1kg + 설탕 1kg + 옥살산 70g = 3.38%</p>
+                    <input type="number" id="oxalic-water" placeholder="물의 양 (kg)" class="field" style="margin-bottom: 12px;">
+                    <input type="number" id="oxalic-sugar" placeholder="설탕의 양 (kg)" class="field" style="margin-bottom: 12px;">
+                    <input type="number" id="oxalic-amount" placeholder="옥살산의 양 (g)" class="field" style="margin-bottom: 12px;">
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="calcOxalic()" style="flex: 1; background: #A0522D; color: white; padding: 14px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">계산</button>
+                        <button onclick="resetOxalic()" style="background: rgba(100,100,100,0.5); color: white; padding: 14px 20px; border-radius: 10px; border: none; cursor: pointer;">초기화</button>
+                    </div>
+                    <div id="oxalic-result" style="margin-top: 12px; padding: 16px; background: var(--bg-purple); border-radius: 10px; display: none; color: var(--tx-main);"></div>
+                </div>
+                <!-- 역산 탭 -->
+                <div id="oxalic-reverse" style="display:none;">
+                    <p style="color: var(--tx-sub); font-size: 0.82rem; margin-bottom: 14px;">💡 목표 농도와 총량을 입력하면 옥살산 필요량을 계산해요</p>
+                    <div style="margin-bottom:10px;">
+                        <div style="font-size:0.75rem;color:var(--tx-muted);margin-bottom:4px;">목표 농도 (%)</div>
+                        <input type="number" id="oxalic-r-pct" placeholder="예: 3.5" class="field" style="margin-bottom:6px;">
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            <button onclick="document.getElementById('oxalic-r-pct').value=3.5" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(56,189,248,0.3);background:rgba(56,189,248,0.08);color:#38bdf8;font-size:0.72rem;font-weight:700;cursor:pointer;">3.5% (표준)</button>
+                            <button onclick="document.getElementById('oxalic-r-pct').value=3.38" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(56,189,248,0.3);background:rgba(56,189,248,0.08);color:#38bdf8;font-size:0.72rem;font-weight:700;cursor:pointer;">3.38% (기본)</button>
+                            <button onclick="document.getElementById('oxalic-r-pct').value=4" style="padding:4px 10px;border-radius:10px;border:1px solid rgba(56,189,248,0.3);background:rgba(56,189,248,0.08);color:#38bdf8;font-size:0.72rem;font-weight:700;cursor:pointer;">4% (강)</button>
+                        </div>
+                    </div>
+                    <input type="number" id="oxalic-r-water" placeholder="물의 양 (kg)" class="field" style="margin-bottom:8px;">
+                    <input type="number" id="oxalic-r-sugar" placeholder="설탕의 양 (kg)" class="field" style="margin-bottom:12px;">
+                    <div style="display:flex;gap:8px;">
+                        <button onclick="calcOxalicReverse()" style="flex:1;background:#0e7490;color:white;padding:14px;border-radius:10px;font-weight:700;border:none;cursor:pointer;">🧮 옥살산 필요량 계산</button>
+                        <button onclick="resetOxalicReverse()" style="background:rgba(100,100,100,0.5);color:white;padding:14px 20px;border-radius:10px;border:none;cursor:pointer;">초기화</button>
+                    </div>
+                    <div id="oxalic-r-result" style="margin-top:12px;display:none;"></div>
+                </div>
+                    </div>
+                </div>
+                <div style="background:var(--bg-card);border-radius:16px;border:1px solid rgba(255,213,79,0.15);overflow:hidden;">
+                    <button onclick="toggleCalcAcc('acc-alcohol')" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:transparent;border:none;cursor:pointer;text-align:left;">
+                        <span style="font-size:1rem;font-weight:900;color:var(--tx-gold);">🍶 주정 농도 계산</span>
+                        <span id="acc-alcohol-arrow" style="color:var(--tx-muted);font-size:1rem;transition:transform 0.25s;">▼</span>
+                    </button>
+                    <div id="acc-alcohol" style="display:none;padding:0 18px 18px;">
+                        <!-- 탭 -->
                 <div style="display:flex;gap:8px;margin-bottom:16px;">
                     <button id="alc-tab-simple" onclick="setAlcTab('simple')" style="flex:1;padding:11px;background:#7c3aed;color:white;border-radius:10px;font-weight:700;border:none;cursor:pointer;font-size:0.85rem;">단순 희석</button>
                     <button id="alc-tab-blend" onclick="setAlcTab('blend')" style="flex:1;padding:11px;background:var(--bg-input);color:var(--tx-sub);border-radius:10px;font-weight:700;border:none;cursor:pointer;font-size:0.85rem;">혼합 배합</button>
@@ -4094,43 +4241,10 @@ body.light-mode .leaflet-control-zoom a:hover{background:#dbeafe!important}
                     </div>
                     <div id="blend-result" style="display:none;"></div>
                 </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- 설탕 사양액 계산 -->
-            <div style="background: var(--bg-card); padding: 20px; border-radius: 16px; margin-bottom: 100px; border: 1px solid rgba(255,213,79,0.15);">
-                <h4 style="color: var(--tx-gold); font-weight: 900; margin-bottom: 16px; font-size: 1.1rem;">🍯 설탕 사양액 계산</h4>
-
-                <!-- 설탕:물 비율 -->
-                <div style="margin-bottom:10px;">
-                    <div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:5px;">설탕:물 비율 <span style="color:var(--tx-amber);">(설탕 기준, 예: 설탕1:물1 → 1 입력)</span></div>
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="font-size:0.85rem;color:var(--tx-gold);font-weight:700;white-space:nowrap;">설탕 1 : 물</span>
-                        <input type="number" id="sugar-ratio" placeholder="예: 1" class="field" style="flex:1;text-align:center;" oninput="calcSugar()">
-                    </div>
-                    <!-- 빠른 선택 버튼 -->
-                    <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;">
-                        <button onclick="document.getElementById('sugar-ratio').value=1;calcSugar()" style="padding:5px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">1:1 (자극)</button>
-                        <button onclick="document.getElementById('sugar-ratio').value=0.67;calcSugar()" style="padding:5px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">1:1.5 (보통)</button>
-                        <button onclick="document.getElementById('sugar-ratio').value=0.5;calcSugar()" style="padding:5px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">1:2 (묽음)</button>
-                        <button onclick="document.getElementById('sugar-ratio').value=2;calcSugar()" style="padding:5px 12px;border-radius:12px;border:1px solid rgba(255,179,0,0.3);background:rgba(255,179,0,0.08);color:var(--tx-amber);font-size:0.75rem;font-weight:700;cursor:pointer;">2:1 (저장)</button>
-                    </div>
-                </div>
-
-                <!-- 물 양 -->
-                <div style="margin-bottom:12px;">
-                    <div style="font-size:0.78rem;color:var(--tx-muted);margin-bottom:5px;">물의 양</div>
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <input type="number" id="sugar-water" placeholder="예: 10" class="field" style="flex:1;text-align:center;" oninput="calcSugar()">
-                        <span style="font-size:0.85rem;color:var(--tx-gold);font-weight:700;">L</span>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 8px;">
-                    <button onclick="calcSugar()" style="flex: 1; background: #A0522D; color: white; padding: 14px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;">계산</button>
-                    <button onclick="resetSugar()" style="background: rgba(100,100,100,0.5); color: white; padding: 14px 20px; border-radius: 10px; border: none; cursor: pointer;">초기화</button>
-                </div>
-                <div id="sugar-result" style="margin-top: 12px; padding: 16px; background: var(--bg-purple); border-radius: 10px; display: none; color: var(--tx-main);"></div>
-            </div>
 
         </div>
 
@@ -13330,23 +13444,16 @@ function getUserInfo(){
         }
 
         function calcFormicVolume() {
-            var c2   = parseFloat(document.getElementById('formic-v-target').value); // 목표 농도(%)
-            var v2L  = parseFloat(document.getElementById('formic-v-total').value);  // 희석액 총량(L)
-            var c1   = 85; // 현재 개미산 농도
+            var c1   = parseFloat(document.getElementById('formic-v-current').value) || 85;
+            var c2   = parseFloat(document.getElementById('formic-v-target').value);
+            var v2L  = parseFloat(document.getElementById('formic-v-total').value);
             
-            if(!c2 || !v2L) {
-                showToast('⚠️ 모든 값을 입력해주세요');
-                return;
-            }
-            if(c2 <= 0 || c2 >= c1) {
-                showToast('⚠️ 목표 농도는 1~84% 사이로 입력해주세요');
-                return;
-            }
+            if(!c2 || !v2L) { showToast('⚠️ 모든 값을 입력해주세요'); return; }
+            if(c2 <= 0 || c2 >= c1) { showToast('⚠️ 목표 농도는 현재 농도('+c1+'%)보다 낮아야 합니다'); return; }
             
-            var v2mL  = v2L * 1000;                   // L → mL 환산
-            // 공식: C₁V₁ = C₂V₂  →  V₁ = (C₂ × V₂) ÷ C₁
-            var v1mL  = (c2 * v2mL) / c1;             // 필요한 85% 개미산(mL)
-            var waterMl = v2mL - v1mL;                // 추가할 물(mL)
+            var v2mL  = v2L * 1000;
+            var v1mL  = (c2 * v2mL) / c1;
+            var waterMl = v2mL - v1mL;
             var v1L   = v1mL / 1000;
             var waterL = waterMl / 1000;
 
@@ -13355,55 +13462,52 @@ function getUserInfo(){
             result.innerHTML =
                 '<p style="color: #c084fc; font-weight: bold; margin-bottom: 12px;">📊 계산 결과 (부피 기준)</p>' +
                 '<p style="color: var(--tx-sub); font-size: 0.8rem; margin-bottom: 10px;">공식: V₁ = (' + c2 + '% × ' + v2L + 'L) ÷ ' + c1 + '%</p>' +
-                '<p style="margin-bottom: 8px;">• 85% 개미산: <strong style="color: var(--tx-gold);">' + v1mL.toFixed(1) + ' mL</strong> <span style="color:var(--tx-sub);font-size:0.82rem;">(' + v1L.toFixed(3) + ' L)</span></p>' +
+                '<p style="margin-bottom: 8px;">• ' + c1 + '% 개미산: <strong style="color: var(--tx-gold);">' + v1mL.toFixed(1) + ' mL</strong> <span style="color:var(--tx-sub);font-size:0.82rem;">(' + v1L.toFixed(3) + ' L)</span></p>' +
                 '<p style="margin-bottom: 8px;">• 추가할 물: <strong style="color: var(--tx-green);">' + waterMl.toFixed(1) + ' mL</strong> <span style="color:var(--tx-sub);font-size:0.82rem;">(' + waterL.toFixed(3) + ' L)</span></p>' +
-                '<p style="margin-bottom: 8px;">• 희석액 총량: <strong style="color: #c084fc;">' + v2L + ' L (' + v2mL.toFixed(0) + ' mL)</strong></p>' +
-                '<p style="padding:8px;background:rgba(255,179,0,0.08);border-radius:6px;font-size:0.85rem;color:var(--tx-gold);margin-top:10px;">✅ 개미산 ' + v1mL.toFixed(1) + 'mL + 물 ' + waterMl.toFixed(1) + 'mL = ' + v2L + 'L</p>' +
-                '<p style="color: var(--tx-sub); font-size: 0.75rem; margin-top: 6px;">※ 용기(비커 등) 눈금으로 부피 측정 시 사용</p>';
+                '<p style="margin-bottom: 8px;">• 희석액 총량: <strong style="color: #c084fc;">' + v2L + ' L</strong></p>' +
+                '<p style="padding:8px;background:rgba(255,179,0,0.08);border-radius:6px;font-size:0.85rem;color:var(--tx-gold);margin-top:10px;">✅ 개미산 ' + v1mL.toFixed(1) + 'mL + 물 ' + waterMl.toFixed(1) + 'mL = ' + v2L + 'L (' + c2 + '%)</p>' +
+                '<p style="color: var(--tx-sub); font-size: 0.75rem; margin-top: 6px;">※ 용기 눈금으로 부피 측정 시 사용</p>';
+            setTimeout(function(){ result.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
         }
 
         function resetFormicVolume() {
+            document.getElementById('formic-v-current').value = '85';
             document.getElementById('formic-v-target').value = '';
             document.getElementById('formic-v-total').value = '';
             document.getElementById('formic-v-result').style.display = 'none';
         }
 
         function calcFormicWeight() {
-            var c2   = parseFloat(document.getElementById('formic-w-target').value); // 목표 농도(%)
-            var m2kg = parseFloat(document.getElementById('formic-w-total').value);  // 희석액 총량(kg)
-            var c1   = 85;    // 현재 개미산 농도
-            var sg   = 1.19;  // 85% 개미산 비중
+            var c1   = parseFloat(document.getElementById('formic-w-current').value) || 85;
+            var c2   = parseFloat(document.getElementById('formic-w-target').value);
+            var m2kg = parseFloat(document.getElementById('formic-w-total').value);
+            var sg   = c1 >= 80 ? 1.19 : 1.12; // 농도별 비중 근사
 
-            if(!c2 || !m2kg) {
-                showToast('⚠️ 모든 값을 입력해주세요');
-                return;
-            }
-            if(c2 <= 0 || c2 >= c1) {
-                showToast('⚠️ 목표 농도는 1~84% 사이로 입력해주세요');
-                return;
-            }
+            if(!c2 || !m2kg) { showToast('⚠️ 모든 값을 입력해주세요'); return; }
+            if(c2 <= 0 || c2 >= c1) { showToast('⚠️ 목표 농도는 현재 농도('+c1+'%)보다 낮아야 합니다'); return; }
 
-            var m2g   = m2kg * 1000;            // kg → g 환산
-            // 공식: M₁ = (C₂ × M₂) ÷ C₁
-            var m1g   = (c2 * m2g) / c1;        // 필요한 85% 개미산(g)
-            var waterg = m2g - m1g;              // 추가할 물(g)
+            var m2g   = m2kg * 1000;
+            var m1g   = (c2 * m2g) / c1;
+            var waterg = m2g - m1g;
             var m1kg  = m1g / 1000;
             var waterkg = waterg / 1000;
-            var acidMl = m1g / sg;               // 개미산 부피 참고(mL)
+            var acidMl = m1g / sg;
 
             var result = document.getElementById('formic-w-result');
             result.style.display = 'block';
             result.innerHTML =
                 '<p style="color: #c084fc; font-weight: bold; margin-bottom: 12px;">📊 계산 결과 (무게 기준)</p>' +
-                '<p style="color: var(--tx-sub); font-size: 0.8rem; margin-bottom: 10px;">공식: M₁ = (' + c2 + '% × ' + m2kg + 'kg) ÷ ' + c1 + '% &nbsp;|&nbsp; 비중 ' + sg + ' 적용</p>' +
-                '<p style="margin-bottom: 8px;">• 85% 개미산: <strong style="color: var(--tx-gold);">' + m1g.toFixed(1) + ' g</strong> <span style="color:var(--tx-sub);font-size:0.82rem;">(' + m1kg.toFixed(3) + ' kg ≈ ' + acidMl.toFixed(1) + ' mL)</span></p>' +
+                '<p style="color: var(--tx-sub); font-size: 0.8rem; margin-bottom: 10px;">공식: M₁ = (' + c2 + '% × ' + m2kg + 'kg) ÷ ' + c1 + '% · 비중 ' + sg + '</p>' +
+                '<p style="margin-bottom: 8px;">• ' + c1 + '% 개미산: <strong style="color: var(--tx-gold);">' + m1g.toFixed(1) + ' g</strong> <span style="color:var(--tx-sub);font-size:0.82rem;">≈ ' + acidMl.toFixed(1) + ' mL</span></p>' +
                 '<p style="margin-bottom: 8px;">• 추가할 물: <strong style="color: var(--tx-green);">' + waterg.toFixed(1) + ' g</strong> <span style="color:var(--tx-sub);font-size:0.82rem;">(' + waterkg.toFixed(3) + ' kg)</span></p>' +
-                '<p style="margin-bottom: 8px;">• 희석액 총 무게: <strong style="color: #c084fc;">' + m2kg + ' kg (' + m2g.toFixed(0) + ' g)</strong></p>' +
+                '<p style="margin-bottom: 8px;">• 희석액 총 무게: <strong style="color: #c084fc;">' + m2kg + ' kg</strong></p>' +
                 '<p style="padding:8px;background:rgba(255,179,0,0.08);border-radius:6px;font-size:0.85rem;color:var(--tx-gold);margin-top:10px;">✅ 개미산 ' + m1g.toFixed(1) + 'g 계량 후 물 부어 전체 ' + m2kg + 'kg 맞추세요</p>' +
-                '<p style="color: var(--tx-sub); font-size: 0.75rem; margin-top: 6px;">※ 저울 정밀 측정 시 사용 (화학적으로 더 정확)</p>';
+                '<p style="color: var(--tx-sub); font-size: 0.75rem; margin-top: 6px;">※ 저울 정밀 측정 시 사용</p>';
+            setTimeout(function(){ result.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
         }
 
         function resetFormicWeight() {
+            document.getElementById('formic-w-current').value = '85';
             document.getElementById('formic-w-target').value = '';
             document.getElementById('formic-w-total').value = '';
             document.getElementById('formic-w-result').style.display = 'none';
@@ -13412,38 +13516,25 @@ function getUserInfo(){
             var water = parseFloat(document.getElementById('oxalic-water').value);
             var sugar = parseFloat(document.getElementById('oxalic-sugar').value);
             var amount = parseFloat(document.getElementById('oxalic-amount').value);
-            
-            if(!water || !sugar || !amount) {
-                showToast('⚠️ 모든 값을 입력해주세요');
-                return;
-            }
-            
-            // 농도 = 옥살산(g) / (물(g) + 설탕(g) + 옥살산(g)) × 100
+            if(!water || !sugar || !amount) { showToast('⚠️ 모든 값을 입력해주세요'); return; }
             var waterG = water * 1000;
             var sugarG = sugar * 1000;
             var totalG = waterG + sugarG + amount;
             var concentration = (amount / totalG) * 100;
-            
-            // 총 용액량 (밀도 약 1.3 g/mL 적용)
             var totalMl = totalG / 1.3;
-            // 5mL/소비 × 소비5매 = 25mL/봉군 기준
-            var mlPerColony = 25;
-            var colonies = Math.floor(totalMl / mlPerColony);
-            
+            var colonies = Math.floor(totalMl / 25);
             var resultColor = (concentration >= 3 && concentration <= 5) ? '#4ade80' : '#ff6b6b';
-            var resultMsg = (concentration >= 3 && concentration <= 5) 
-                ? '✅ 권장 농도(3~5%) 범위 내입니다' 
-                : '⚠️ 권장 농도(3~5%)를 벗어났습니다';
-            
+            var resultMsg = (concentration >= 3 && concentration <= 5) ? '✅ 권장 농도(3~5%) 범위 내입니다' : '⚠️ 권장 농도(3~5%)를 벗어났습니다';
             var result = document.getElementById('oxalic-result');
             result.style.display = 'block';
             result.innerHTML =
                 '<p style="color: #c084fc; font-weight: bold; margin-bottom: 12px;">📊 계산 결과</p>' +
                 '<p style="margin-bottom: 8px;">• 옥살산 농도: <strong style="color: var(--tx-gold);">' + concentration.toFixed(2) + '%</strong></p>' +
                 '<p style="margin-bottom: 8px;">• 전체 용액량: <strong style="color: var(--tx-green);">' + totalMl.toFixed(0) + ' mL</strong></p>' +
-                '<p style="margin-bottom: 8px;">• 처리 가능 봉군 (5mL×소비5매=25mL/봉군): <strong style="color: var(--tx-editbtn);">' + colonies + ' 봉군</strong></p>' +
+                '<p style="margin-bottom: 8px;">• 처리 가능 봉군 (25mL/봉군): <strong style="color: var(--tx-editbtn);">' + colonies + ' 봉군</strong></p>' +
                 '<p style="color: ' + resultColor + '; font-size: 0.85rem; margin-top: 10px; padding: 8px; background: rgba(255,179,0,0.08); border-radius: 6px;">' + resultMsg + '</p>' +
-                '<p style="color: var(--tx-sub); font-size: 0.8rem; margin-top: 8px;">※ 옥살산 이수화물(Oxalic acid dihydrate) 기준</p>';
+                '<p style="color: var(--tx-sub); font-size: 0.8rem; margin-top: 8px;">※ 옥살산 이수화물 기준</p>';
+            setTimeout(function(){ result.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
         }
 
         function resetOxalic() {
@@ -13451,6 +13542,52 @@ function getUserInfo(){
             document.getElementById('oxalic-sugar').value = '';
             document.getElementById('oxalic-amount').value = '';
             document.getElementById('oxalic-result').style.display = 'none';
+        }
+
+        function setOxalicTab(tab) {
+            var isReverse = tab === 'reverse';
+            document.getElementById('oxalic-calc').style.display    = isReverse ? 'none' : 'block';
+            document.getElementById('oxalic-reverse').style.display  = isReverse ? 'block' : 'none';
+            document.getElementById('oxalic-tab-calc').style.background    = isReverse ? 'var(--bg-input)' : '#0e7490';
+            document.getElementById('oxalic-tab-calc').style.color         = isReverse ? 'var(--tx-sub)' : 'white';
+            document.getElementById('oxalic-tab-reverse').style.background = isReverse ? '#0e7490' : 'var(--bg-input)';
+            document.getElementById('oxalic-tab-reverse').style.color      = isReverse ? 'white' : 'var(--tx-sub)';
+        }
+
+        function calcOxalicReverse() {
+            var pct   = parseFloat(document.getElementById('oxalic-r-pct').value);
+            var water = parseFloat(document.getElementById('oxalic-r-water').value);
+            var sugar = parseFloat(document.getElementById('oxalic-r-sugar').value);
+            if(!pct || !water || !sugar) { showToast('⚠️ 모든 값을 입력해주세요'); return; }
+            if(pct <= 0 || pct >= 100) { showToast('⚠️ 농도는 1~99% 사이로 입력해주세요'); return; }
+            // 농도 = 옥살산 / (물+설탕+옥살산) * 100
+            // → 옥살산 = pct/100 × (물+설탕+옥살산)
+            // → 옥살산 × (1 - pct/100) = pct/100 × (물+설탕)
+            var waterG = water * 1000;
+            var sugarG = sugar * 1000;
+            var oxalicG = (pct/100) * (waterG + sugarG) / (1 - pct/100);
+            var totalG = waterG + sugarG + oxalicG;
+            var totalMl = totalG / 1.3;
+            var colonies = Math.floor(totalMl / 25);
+            var result = document.getElementById('oxalic-r-result');
+            result.style.display = 'block';
+            result.innerHTML =
+                '<div style="background:rgba(14,116,144,0.12);border:1.5px solid rgba(14,116,144,0.4);border-radius:12px;padding:14px;">' +
+                '<div style="font-size:0.78rem;color:#38bdf8;font-weight:800;margin-bottom:10px;">📊 역산 결과 — 목표 '+pct+'%</div>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">' +
+                '<div style="background:rgba(56,189,248,0.12);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:0.68rem;color:var(--tx-muted);">🧪 옥살산 필요량</div><div style="font-size:1.4rem;font-weight:900;color:#38bdf8;">'+oxalicG.toFixed(1)+'g</div></div>' +
+                '<div style="background:rgba(74,222,128,0.12);border-radius:10px;padding:10px;text-align:center;"><div style="font-size:0.68rem;color:var(--tx-muted);">🧴 총 용액량</div><div style="font-size:1.4rem;font-weight:900;color:#4ade80;">'+totalMl.toFixed(0)+'mL</div></div>' +
+                '</div>' +
+                '<div style="font-size:0.75rem;color:var(--tx-muted);">처리 가능 봉군: <strong style="color:#38bdf8;">'+colonies+'봉군</strong> (25mL/봉군 기준)</div>' +
+                '</div>';
+            setTimeout(function(){ result.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
+        }
+
+        function resetOxalicReverse() {
+            document.getElementById('oxalic-r-pct').value = '';
+            document.getElementById('oxalic-r-water').value = '';
+            document.getElementById('oxalic-r-sugar').value = '';
+            document.getElementById('oxalic-r-result').style.display = 'none';
         }
 
         function setAlcTab(tab) {
@@ -13571,6 +13708,7 @@ function getUserInfo(){
                 '<p style="margin-bottom: 8px;">• 추가할 물: <strong style="color: var(--tx-green);">' + waterNeeded.toFixed(3) + ' L</strong></p>' +
                 '<p style="margin-bottom: 8px;">• 희석액 총량: <strong style="color: #c084fc;">' + totalVol.toFixed(2) + ' L</strong></p>' +
                 '<p style="color: var(--tx-sub); font-size: 0.8rem; margin-top: 10px;">※ 공식: 주정량 = 목표농도 × 총량 ÷ 현재농도</p>';
+            setTimeout(function(){ result.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
         }
 
         function resetAlcohol() {
@@ -13578,6 +13716,89 @@ function getUserInfo(){
             document.getElementById('alcohol-target').value = '';
             document.getElementById('alcohol-volume').value = '';
             document.getElementById('alcohol-result').style.display = 'none';
+        }
+
+        // ── 계산기 아코디언 ──
+        var _calcAccOpen = null;
+        function toggleCalcAcc(id) {
+            var el    = document.getElementById(id);
+            var arrow = document.getElementById(id+'-arrow');
+            if(!el) return;
+            if(_calcAccOpen && _calcAccOpen !== id) {
+                var prev = document.getElementById(_calcAccOpen);
+                var prevArrow = document.getElementById(_calcAccOpen+'-arrow');
+                if(prev) prev.style.display = 'none';
+                if(prevArrow) { prevArrow.style.transform=''; prevArrow.style.color='var(--tx-muted)'; }
+            }
+            var isOpen = el.style.display !== 'none';
+            el.style.display = isOpen ? 'none' : 'block';
+            if(arrow) {
+                arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+                arrow.style.color = isOpen ? 'var(--tx-muted)' : 'var(--tx-gold)';
+            }
+            _calcAccOpen = isOpen ? null : id;
+        }
+
+        function setSugarTab(tab) {
+            var isDirect = tab === 'direct';
+            document.getElementById('sugar-direct').style.display       = isDirect ? 'block' : 'none';
+            document.getElementById('sugar-ratio-tab').style.display    = isDirect ? 'none' : 'block';
+            document.getElementById('sugar-tab-direct').style.background = isDirect ? '#d97706' : 'var(--bg-input)';
+            document.getElementById('sugar-tab-direct').style.color     = isDirect ? 'white' : 'var(--tx-sub)';
+            document.getElementById('sugar-tab-ratio').style.background  = isDirect ? 'var(--bg-input)' : '#d97706';
+            document.getElementById('sugar-tab-ratio').style.color      = isDirect ? 'var(--tx-sub)' : 'white';
+        }
+
+        var _sugarDirectRatio = 1; // 기본 1:1
+        function setSugarDirectRatio(waterPerSugar) {
+            _sugarDirectRatio = waterPerSugar;
+            // 버튼 하이라이트
+            ['1','1.5','2','0.5'].forEach(function(r){
+                var btn = document.getElementById('sdr-'+r);
+                if(btn) {
+                    var active = parseFloat(r) === waterPerSugar;
+                    btn.style.background = active ? 'rgba(255,179,0,0.25)' : 'rgba(255,179,0,0.08)';
+                    btn.style.borderColor = active ? 'rgba(255,179,0,0.7)' : 'rgba(255,179,0,0.3)';
+                }
+            });
+            calcSugarDirect();
+        }
+
+        function calcSugarDirect() {
+            var sugarKg = parseFloat(document.getElementById('sugar-direct-kg').value);
+            var waterEl = document.getElementById('sugar-direct-water');
+            var resultEl = document.getElementById('sugar-direct-result');
+            if(!sugarKg || sugarKg <= 0) {
+                waterEl.value = '';
+                resultEl.style.display = 'none';
+                return;
+            }
+            var waterL = sugarKg * _sugarDirectRatio;
+            waterEl.value = waterL.toFixed(1);
+
+            // 브릭스 계산
+            var totalWeight = sugarKg + waterL;
+            var brix = (sugarKg / totalWeight) * 100;
+            var totalVolume = waterL + sugarKg * 0.6;
+            var brixColor = brix >= 60 ? '#f87171' : brix >= 50 ? '#fbbf24' : brix >= 40 ? '#4ade80' : '#60a5fa';
+            var usage = brix >= 60 ? '저장용 · 월동 사양' : brix >= 50 ? '일반 사양 · 세력 증강' : brix >= 40 ? '자극 사양 · 산란 촉진' : '묽은 희석액';
+            var ratioLabel = _sugarDirectRatio <= 1
+                ? '설탕 1 : 물 ' + (1/_sugarDirectRatio === 1 ? '1' : (1/_sugarDirectRatio).toFixed(1))
+                : '설탕 ' + (1/_sugarDirectRatio).toFixed(1) + ' : 물 1';
+            if(_sugarDirectRatio === 1) ratioLabel = '설탕 1 : 물 1';
+            if(_sugarDirectRatio === 0.5) ratioLabel = '설탕 2 : 물 1';
+
+            resultEl.style.display = 'block';
+            resultEl.innerHTML =
+                '<div style="background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.3);border-radius:12px;padding:12px;margin-top:4px;">' +
+                '<div style="font-size:0.75rem;color:#fbbf24;font-weight:800;margin-bottom:8px;">📊 '+ratioLabel+'</div>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">' +
+                '<div style="background:rgba(255,179,0,0.1);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:0.65rem;color:var(--tx-muted);">🍚 설탕</div><div style="font-size:1.1rem;font-weight:900;color:var(--tx-gold);">'+sugarKg+'kg</div></div>' +
+                '<div style="background:rgba(96,165,250,0.1);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:0.65rem;color:var(--tx-muted);">💧 물</div><div style="font-size:1.1rem;font-weight:900;color:#60a5fa;">'+waterL.toFixed(1)+'L</div></div>' +
+                '<div style="background:rgba('+( brix>=60?'248,113,113':brix>=50?'251,191,36':brix>=40?'74,222,128':'96,165,250')+',0.1);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:0.65rem;color:var(--tx-muted);">🔬 Brix</div><div style="font-size:1.1rem;font-weight:900;color:'+brixColor+';">'+brix.toFixed(1)+'°</div></div>' +
+                '</div>' +
+                '<div style="font-size:0.75rem;color:#fbbf24;background:rgba(255,179,0,0.08);border-radius:8px;padding:6px 10px;">💡 '+usage+' | 예상 용액량 '+totalVolume.toFixed(1)+'L</div>' +
+                '</div>';
         }
 
         function calcSugar() {
@@ -13634,12 +13855,7 @@ function getUserInfo(){
                   '</div>' +
                 '</div>' +
                 '<div style="background:rgba(255,179,0,0.08);border-radius:8px;padding:8px 12px;font-size:0.8rem;color:var(--tx-amber);">💡 ' + usage + '</div>';
-        }
-
-        function resetSugar() {
-            document.getElementById('sugar-ratio').value = '';
-            document.getElementById('sugar-water').value = '';
-            document.getElementById('sugar-result').style.display = 'none';
+            setTimeout(function(){ result.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
         }
 
         function resetSugar() {
